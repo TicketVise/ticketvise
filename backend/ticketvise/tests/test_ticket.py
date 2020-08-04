@@ -96,7 +96,7 @@ class TicketTestApi(APITestCase, TicketTestCase):
         """
         self.client.force_login(self.student2)
 
-        response = self.client.get(f"/api/inboxs/{self.inbox.id}/tickets/{self.ticket.ticket_inbox_id}", follow=True)
+        response = self.client.get(f"/api/inboxes/{self.inbox.id}/tickets/{self.ticket.ticket_inbox_id}", follow=True)
         self.assertEqual(response.status_code, 403)
 
     def test_get_ticket_as_author(self):
@@ -105,7 +105,7 @@ class TicketTestApi(APITestCase, TicketTestCase):
         """
         self.client.force_login(self.student)
 
-        response = self.client.get(f"/api/inboxs/{self.inbox.id}/tickets/{self.ticket.ticket_inbox_id}", follow=True)
+        response = self.client.get(f"/api/inboxes/{self.inbox.id}/tickets/{self.ticket.ticket_inbox_id}", follow=True)
         self.assertEqual(response.status_code, 200)
 
     def test_get_ticket_as_ta_in_inbox(self):
@@ -114,7 +114,7 @@ class TicketTestApi(APITestCase, TicketTestCase):
         """
         self.client.force_login(self.assistant)
 
-        response = self.client.get(f"/api/inboxs/{self.inbox.id}/tickets/{self.ticket.ticket_inbox_id}", follow=True)
+        response = self.client.get(f"/api/inboxes/{self.inbox.id}/tickets/{self.ticket.ticket_inbox_id}", follow=True)
         self.assertEqual(response.status_code, 200)
 
     def test_get_ticket_as_ta_not_in_inbox(self):
@@ -123,7 +123,7 @@ class TicketTestApi(APITestCase, TicketTestCase):
         """
         self.client.force_login(self.assistant2)
 
-        response = self.client.get(f"/api/inboxs/{self.inbox.id}/tickets/{self.ticket.ticket_inbox_id}", follow=True)
+        response = self.client.get(f"/api/inboxes/{self.inbox.id}/tickets/{self.ticket.ticket_inbox_id}", follow=True)
         self.assertEqual(response.status_code, 403)
 
     def test_get_comment_as_student(self):
@@ -132,7 +132,7 @@ class TicketTestApi(APITestCase, TicketTestCase):
         """
         self.client.force_login(self.student2)
 
-        response = self.client.get(f"/api/inboxs/{self.inbox.id}/tickets/{self.ticket.ticket_inbox_id}/comments",
+        response = self.client.get(f"/api/inboxes/{self.inbox.id}/tickets/{self.ticket.ticket_inbox_id}/comments",
                                    follow=True)
         self.assertEqual(response.status_code, 403)
 
@@ -142,7 +142,7 @@ class TicketTestApi(APITestCase, TicketTestCase):
         """
         self.client.force_login(self.student)
 
-        response = self.client.get(f"/api/inboxs/{self.inbox.id}/tickets/{self.ticket.ticket_inbox_id}/comments",
+        response = self.client.get(f"/api/inboxes/{self.inbox.id}/tickets/{self.ticket.ticket_inbox_id}/comments",
                                    follow=True)
         self.assertEqual(response.status_code, 403)
 
@@ -152,7 +152,7 @@ class TicketTestApi(APITestCase, TicketTestCase):
         """
         self.client.force_login(self.assistant)
 
-        response = self.client.get(f"/api/inboxs/{self.inbox.id}/tickets/{self.ticket.ticket_inbox_id}/comments",
+        response = self.client.get(f"/api/inboxes/{self.inbox.id}/tickets/{self.ticket.ticket_inbox_id}/comments",
                                    follow=True)
         self.assertEqual(response.status_code, 200)
 
@@ -162,7 +162,7 @@ class TicketTestApi(APITestCase, TicketTestCase):
         """
         self.client.force_login(self.assistant2)
 
-        response = self.client.get(f"/api/inboxs/{self.inbox.id}/tickets/{self.ticket.ticket_inbox_id}/comments",
+        response = self.client.get(f"/api/inboxes/{self.inbox.id}/tickets/{self.ticket.ticket_inbox_id}/comments",
                                    follow=True)
         self.assertEqual(response.status_code, 403)
 
@@ -177,7 +177,7 @@ class TicketTestApi(APITestCase, TicketTestCase):
         }
 
         response = self.client.post(
-            f"/api/inboxs/{self.inbox.id}/tickets/{self.ticket.ticket_inbox_id}/comments/post", data,
+            f"/api/inboxes/{self.inbox.id}/tickets/{self.ticket.ticket_inbox_id}/comments/post", data,
             follow=True)
         self.assertEqual(response.status_code, 403)
 
@@ -192,7 +192,7 @@ class TicketTestApi(APITestCase, TicketTestCase):
         }
 
         response = self.client.post(
-            f"/api/inboxs/{self.inbox.id}/tickets/{self.ticket.ticket_inbox_id}/comments/post", data, follow=True)
+            f"/api/inboxes/{self.inbox.id}/tickets/{self.ticket.ticket_inbox_id}/comments/post", data, follow=True)
         self.assertEqual(response.status_code, 403)
 
     def test_post_comment_as_ta_in_inbox(self):
@@ -207,7 +207,7 @@ class TicketTestApi(APITestCase, TicketTestCase):
         }
 
         response = self.client.post(
-            f"/api/inboxs/{self.inbox.id}/tickets/{self.ticket.ticket_inbox_id}/comments/post", data, follow=True)
+            f"/api/inboxes/{self.inbox.id}/tickets/{self.ticket.ticket_inbox_id}/comments/post", data, follow=True)
         self.assertEqual(response.status_code, 201)
         self.assertNotEqual(Comment.objects.count(), count)
 
@@ -222,7 +222,7 @@ class TicketTestApi(APITestCase, TicketTestCase):
         }
 
         response = self.client.post(
-            f"/api/inboxs/{self.inbox.id}/tickets/{self.ticket.ticket_inbox_id}/comments/post", data, follow=True)
+            f"/api/inboxes/{self.inbox.id}/tickets/{self.ticket.ticket_inbox_id}/comments/post", data, follow=True)
         self.assertEqual(response.status_code, 403)
 
     def test_get_replies_as_student(self):
@@ -231,7 +231,7 @@ class TicketTestApi(APITestCase, TicketTestCase):
         """
         self.client.force_login(self.student2)
 
-        response = self.client.get(f"/api/inboxs/{self.inbox.id}/tickets/{self.ticket.ticket_inbox_id}/replies",
+        response = self.client.get(f"/api/inboxes/{self.inbox.id}/tickets/{self.ticket.ticket_inbox_id}/replies",
                                    follow=True)
         self.assertEqual(response.status_code, 403)
 
@@ -241,7 +241,7 @@ class TicketTestApi(APITestCase, TicketTestCase):
         """
         self.client.force_login(self.student)
 
-        response = self.client.get(f"/api/inboxs/{self.inbox.id}/tickets/{self.ticket.ticket_inbox_id}/replies",
+        response = self.client.get(f"/api/inboxes/{self.inbox.id}/tickets/{self.ticket.ticket_inbox_id}/replies",
                                    follow=True)
         self.assertEqual(response.status_code, 200)
 
@@ -251,7 +251,7 @@ class TicketTestApi(APITestCase, TicketTestCase):
         """
         self.client.force_login(self.assistant)
 
-        response = self.client.get(f"/api/inboxs/{self.inbox.id}/tickets/{self.ticket.ticket_inbox_id}/replies",
+        response = self.client.get(f"/api/inboxes/{self.inbox.id}/tickets/{self.ticket.ticket_inbox_id}/replies",
                                    follow=True)
         self.assertEqual(response.status_code, 200)
 
@@ -261,7 +261,7 @@ class TicketTestApi(APITestCase, TicketTestCase):
         """
         self.client.force_login(self.assistant2)
 
-        response = self.client.get(f"/api/inboxs/{self.inbox.id}/tickets/{self.ticket.ticket_inbox_id}/replies",
+        response = self.client.get(f"/api/inboxes/{self.inbox.id}/tickets/{self.ticket.ticket_inbox_id}/replies",
                                    follow=True)
         self.assertEqual(response.status_code, 403)
 
@@ -276,7 +276,7 @@ class TicketTestApi(APITestCase, TicketTestCase):
         }
 
         response = self.client.post(
-            f"/api/inboxs/{self.inbox.id}/tickets/{self.ticket.ticket_inbox_id}/replies/post", data,
+            f"/api/inboxes/{self.inbox.id}/tickets/{self.ticket.ticket_inbox_id}/replies/post", data,
             follow=True)
         self.assertEqual(response.status_code, 403)
 
@@ -292,7 +292,7 @@ class TicketTestApi(APITestCase, TicketTestCase):
         }
 
         response = self.client.post(
-            f"/api/inboxs/{self.inbox.id}/tickets/{self.ticket.ticket_inbox_id}/replies/post", data, follow=True)
+            f"/api/inboxes/{self.inbox.id}/tickets/{self.ticket.ticket_inbox_id}/replies/post", data, follow=True)
         self.assertEqual(response.status_code, 201)
         self.assertNotEqual(Comment.objects.count(), count)
 
@@ -308,7 +308,7 @@ class TicketTestApi(APITestCase, TicketTestCase):
         }
 
         response = self.client.post(
-            f"/api/inboxs/{self.inbox.id}/tickets/{self.ticket.ticket_inbox_id}/replies/post", data, follow=True)
+            f"/api/inboxes/{self.inbox.id}/tickets/{self.ticket.ticket_inbox_id}/replies/post", data, follow=True)
         self.assertEqual(response.status_code, 201)
         self.assertNotEqual(Comment.objects.count(), count)
 
@@ -323,7 +323,7 @@ class TicketTestApi(APITestCase, TicketTestCase):
         }
 
         response = self.client.post(
-            f"/api/inboxs/{self.inbox.id}/tickets/{self.ticket.ticket_inbox_id}/replies/post", data, follow=True)
+            f"/api/inboxes/{self.inbox.id}/tickets/{self.ticket.ticket_inbox_id}/replies/post", data, follow=True)
         self.assertEqual(response.status_code, 403)
 
     def test_get_staff_as_student(self):
@@ -332,7 +332,7 @@ class TicketTestApi(APITestCase, TicketTestCase):
         """
         self.client.force_login(self.student2)
 
-        response = self.client.get(f"/api/inboxs/{self.inbox.id}/staff",
+        response = self.client.get(f"/api/inboxes/{self.inbox.id}/staff",
                                    follow=True)
         self.assertEqual(response.status_code, 403)
 
@@ -342,7 +342,7 @@ class TicketTestApi(APITestCase, TicketTestCase):
         """
         self.client.force_login(self.student)
 
-        response = self.client.get(f"/api/inboxs/{self.inbox.id}/staff",
+        response = self.client.get(f"/api/inboxes/{self.inbox.id}/staff",
                                    follow=True)
         self.assertEqual(response.status_code, 403)
 
@@ -352,7 +352,7 @@ class TicketTestApi(APITestCase, TicketTestCase):
         """
         self.client.force_login(self.assistant)
 
-        response = self.client.get(f"/api/inboxs/{self.inbox.id}/staff",
+        response = self.client.get(f"/api/inboxes/{self.inbox.id}/staff",
                                    follow=True)
         self.assertEqual(response.status_code, 200)
 
@@ -362,7 +362,7 @@ class TicketTestApi(APITestCase, TicketTestCase):
         """
         self.client.force_login(self.assistant2)
 
-        response = self.client.get(f"/api/inboxs/{self.inbox.id}/staff",
+        response = self.client.get(f"/api/inboxes/{self.inbox.id}/staff",
                                    follow=True)
         self.assertEqual(response.status_code, 403)
 
@@ -372,7 +372,7 @@ class TicketTestApi(APITestCase, TicketTestCase):
         """
         self.client.force_login(self.student2)
 
-        response = self.client.get(f"/api/inboxs/{self.inbox.id}/labels",
+        response = self.client.get(f"/api/inboxes/{self.inbox.id}/labels",
                                    follow=True)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(json.loads(response.content),
@@ -384,7 +384,7 @@ class TicketTestApi(APITestCase, TicketTestCase):
         """
         self.client.force_login(self.assistant)
 
-        response = self.client.get(f"/api/inboxs/{self.inbox.id}/labels",
+        response = self.client.get(f"/api/inboxes/{self.inbox.id}/labels",
                                    follow=True)
         self.assertEqual(response.status_code, 200)
 
@@ -397,7 +397,7 @@ class TicketTestApi(APITestCase, TicketTestCase):
         """
         self.client.force_login(self.assistant2)
 
-        response = self.client.get(f"/api/inboxs/{self.inbox.id}/labels",
+        response = self.client.get(f"/api/inboxes/{self.inbox.id}/labels",
                                    follow=True)
         self.assertEqual(response.status_code, 403)
 
@@ -407,7 +407,7 @@ class TicketTestApi(APITestCase, TicketTestCase):
         """
         self.client.force_login(self.student2)
 
-        response = self.client.get(f"/api/inboxs/{self.inbox.id}/users/{self.ticket.author.id}/tickets/recent",
+        response = self.client.get(f"/api/inboxes/{self.inbox.id}/users/{self.ticket.author.id}/tickets/recent",
                                    follow=True)
         self.assertEqual(response.status_code, 403)
 
@@ -417,7 +417,7 @@ class TicketTestApi(APITestCase, TicketTestCase):
         """
         self.client.force_login(self.assistant)
 
-        response = self.client.get(f"/api/inboxs/{self.inbox.id}/users/{self.ticket.author.id}/tickets/recent",
+        response = self.client.get(f"/api/inboxes/{self.inbox.id}/users/{self.ticket.author.id}/tickets/recent",
                                    follow=True)
         self.assertEqual(response.status_code, 200)
 
@@ -427,7 +427,7 @@ class TicketTestApi(APITestCase, TicketTestCase):
         """
         self.client.force_login(self.assistant2)
 
-        response = self.client.get(f"/api/inboxs/{self.inbox.id}/users/{self.ticket.author.id}/tickets/recent",
+        response = self.client.get(f"/api/inboxes/{self.inbox.id}/users/{self.ticket.author.id}/tickets/recent",
                                    follow=True)
         self.assertEqual(response.status_code, 403)
 
@@ -437,7 +437,7 @@ class TicketTestApi(APITestCase, TicketTestCase):
         """
         self.client.force_login(self.student2)
 
-        response = self.client.put(f"/api/inboxs/{self.inbox.id}/tickets/{self.ticket.ticket_inbox_id}/assignee",
+        response = self.client.put(f"/api/inboxes/{self.inbox.id}/tickets/{self.ticket.ticket_inbox_id}/assignee",
                                    data={"assignee": self.assistant.id}, content_type="application/json")
         self.assertEqual(response.status_code, 403)
 
@@ -450,7 +450,7 @@ class TicketTestApi(APITestCase, TicketTestCase):
         """
         self.client.force_login(self.assistant)
 
-        response = self.client.put(f"/api/inboxs/{self.inbox.id}/tickets/{self.ticket.ticket_inbox_id}/assignee",
+        response = self.client.put(f"/api/inboxes/{self.inbox.id}/tickets/{self.ticket.ticket_inbox_id}/assignee",
                                    data={"assignee": self.assistant3.id}, content_type="application/json")
         self.assertEqual(response.status_code, 200)
 
@@ -463,7 +463,7 @@ class TicketTestApi(APITestCase, TicketTestCase):
         """
         self.client.force_login(self.assistant2)
 
-        response = self.client.put(f"/api/inboxs/{self.inbox.id}/tickets/{self.ticket.ticket_inbox_id}/assignee",
+        response = self.client.put(f"/api/inboxes/{self.inbox.id}/tickets/{self.ticket.ticket_inbox_id}/assignee",
                                    data={"assignee": self.assistant.id}, content_type="application/json")
         self.assertEqual(response.status_code, 403)
 

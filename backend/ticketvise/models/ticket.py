@@ -29,7 +29,7 @@ class Ticket(models.Model):
     #: The :class:`User` to whom the ticket is assigned. Nullable and optional.
     assignee = models.ForeignKey("User", models.CASCADE, blank=True, null=True, related_name=_("assignee"))
     #: The :class:`Inbox` that the ticket is associated with.
-    inbox = models.ForeignKey("ticketvise.models.inbox.Inbox", models.CASCADE, related_name="tickets")
+    inbox = models.ForeignKey("ticketvise.Inbox", models.CASCADE, related_name="tickets")
     #: The title of the ticket.
     title = models.CharField(max_length=100)
     #: Ticket ID for the inbox it is part of. Used in URLs and references.

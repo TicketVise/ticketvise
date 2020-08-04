@@ -37,12 +37,12 @@ class InboxesView(LoginRequiredMixin, TemplateView):
     :var str template_name: The name of the template to be rendered.
     :var User user: The user visiting the page.
     :var QuerySet<:class: `Inbox`> inboxes: The inboxes to display.
-    :var int num_inboxs: The total number of inboxes.
+    :var int num_inboxes: The total number of inboxes.
     :var int tiles_per_row: The amount of tiles in a row.
     :var int num_tiles_needed: The amount of empty tiles to get formatting nice.
     """
 
-    template_name = "inboxs.html"
+    template_name = "inboxes.html"
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -67,11 +67,11 @@ class InboxesView(LoginRequiredMixin, TemplateView):
     #     :return: None.
     #     """
     #     self.inboxes = request.user.inboxes.all()
-    #     self.num_inboxs = self.inboxes.count()
+    #     self.num_inboxes = self.inboxes.count()
     #
     #     # The number of extra tiles needed to make sure that every row of tiles contains 3 tiles.
     #     self.tiles_per_row = 3
-    #     self.num_tiles_needed = self.tiles_per_row - self.num_inboxs % self.tiles_per_row
+    #     self.num_tiles_needed = self.tiles_per_row - self.num_inboxes % self.tiles_per_row
     #     self.extra_tiles_list = list(range(self.num_tiles_needed))
     #
     #     return super().dispatch(request, *args, **kwargs)
@@ -86,4 +86,4 @@ class InboxesView(LoginRequiredMixin, TemplateView):
             relation.is_bookmarked = not relation.is_bookmarked
             relation.save()
 
-        return HttpResponseRedirect(reverse("inboxs"))
+        return HttpResponseRedirect(reverse("inboxes"))

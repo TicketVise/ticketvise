@@ -27,17 +27,17 @@ class InboxConfigureTestCase(TestCase):
         self.coordinator = User.objects.create_user(username="coordinator", email="coordinator@ticketvise.com",
                                                     password="test12345", is_staff=False)
 
-    def test_inboxs_page_student_200(self):
+    def test_inboxes_page_student_200(self):
         """
         Authorized users should see the inboxes page.
         """
         self.client.force_login(self.student)
         inbox = create_inbox("TestInbox", "TestInbox")
         self.student.add_inbox(inbox, User.Roles.STUDENT)
-        response = self.client.get(reverse("inboxs"))
+        response = self.client.get(reverse("inboxes"))
         self.assertEqual(response.status_code, 200)
 
-    def test_inboxs_page_assistant_200(self):
+    def test_inboxes_page_assistant_200(self):
         """
         Authorized users should see the inboxes page.
 
@@ -46,10 +46,10 @@ class InboxConfigureTestCase(TestCase):
         self.client.force_login(self.assistant)
         inbox = create_inbox("TestInbox", "TestInbox")
         self.assistant.add_inbox(inbox, User.Roles.ASSISTANT)
-        response = self.client.get(reverse("inboxs"))
+        response = self.client.get(reverse("inboxes"))
         self.assertEqual(response.status_code, 200)
 
-    def test_inboxs_page_coordinator_200(self):
+    def test_inboxes_page_coordinator_200(self):
         """
         Authorized users should see the inboxes page.
 
@@ -58,7 +58,7 @@ class InboxConfigureTestCase(TestCase):
         self.client.login(username=self.coordinator.username, password="test12345")
         inbox = create_inbox("TestInbox", "TestInbox")
         self.coordinator.add_inbox(inbox, User.Roles.COORDINATOR)
-        response = self.client.get(reverse("inboxs"))
+        response = self.client.get(reverse("inboxes"))
         self.assertEqual(response.status_code, 200)
 
     def test_flip_bookmark(self):

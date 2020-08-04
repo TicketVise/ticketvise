@@ -21,7 +21,7 @@ class Label(models.Model):
     """
 
     #: The :class:`Inbox` that the label is registered in.
-    inbox = models.ForeignKey("ticketvise.models.inbox.Inbox", on_delete=models.CASCADE, related_name="labels")
+    inbox = models.ForeignKey("ticketvise.Inbox", on_delete=models.CASCADE, related_name="labels")
     #: Label color, must be a valid hex color.
     color = models.CharField(max_length=7, validators=[validate_hex_color], default="#ff0000")
     #: Label name.

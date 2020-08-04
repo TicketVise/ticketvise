@@ -30,7 +30,7 @@ class NotificationsTestCase(TestCase):
         self.student = User.objects.create_user(
             username="student", email="root@ticketvise.com", password="test12345", is_staff=False,
         )
-        self.student.inboxs.add(self.inbox)
+        self.student.inboxes.add(self.inbox)
         self.student.set_password("test12345")
         self.student.save()
 

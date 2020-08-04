@@ -67,7 +67,7 @@ class DatabaseTestCase(TestCase):
         # Check new roles
         self.user.set_role_for_inbox(self.inbox, self.role)
         self.assertTrue(self.user.has_role_in_inbox(self.inbox, self.role))
-        self.assertEqual(self.user.get_inboxs_by_role(self.role).first(), self.inbox)
+        self.assertEqual(self.user.get_inboxes_by_role(self.role).first(), self.inbox)
         self.assertRaises(ValueError, self.user.set_role_for_inbox, not_enrolled_inbox, self.role)
 
         # Check is_assistant_or_coordinator

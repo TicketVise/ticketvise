@@ -45,7 +45,7 @@ class User(AbstractUser):
     #: Email address of the user, must be unique.
     email = models.EmailField(unique=True, max_length=254, verbose_name="email address")
     #: The :class:`Inbox` s that the user is enrolled in or that the user assists.
-    inboxes = models.ManyToManyField("ticketvise.models.inbox.Inbox", through="ticketvise.models.user.UserInbox", related_name="users")
+    inboxes = models.ManyToManyField("ticketvise.Inbox", through="ticketvise.UserInbox", related_name="users")
     #: URL to the avatar picture of the user. Defaults to :const:`ticketvise.settings.DEFAULT_AVATAR_PATH`.
     avatar_url = models.URLField(default=DEFAULT_AVATAR_PATH)
     #: Django groups that the user is part of. Unused.
@@ -179,7 +179,7 @@ class User(AbstractUser):
         """
         return UserInbox.objects.filter(user=self, role=role)
 
-    def get_inboxs_by_role(self, role):
+    def get_inboxes_by_role(self, role):
         """
         Gets a queryset of all inboxes where the user has the role.
 
@@ -191,7 +191,7 @@ class User(AbstractUser):
         entries = self.get_entries_by_role(role).values("inbox")
         inbox_ids = list(map(lambda entry: entry["inbox"], entries))
 
-        return self.inboxs.filter(id__in=inbox_ids)
+        return self.inboxes.filter(id__in=inbox_ids)
 
     def get_tickets_by_inbox(self, inbox):
         """
@@ -208,7 +208,7 @@ class User(AbstractUser):
         :return: ``True`` if the user is enrolled in or assigned to the inbox, ``False`` otherwise.
         :rtype: bool
         """
-        return inbox in self.inboxs.all()
+        return inbox in self.inboxes.all()
 
     def has_role_in_inbox(self, inbox, role):
         """
@@ -292,7 +292,7 @@ class UserInbox(models.Model):
     """
 
     user = models.ForeignKey(User, related_name="inbox_relationship", on_delete=models.CASCADE)
-    inbox = models.ForeignKey("ticketvise.models.inbox.Inbox", related_name="user_relationship", on_delete=models.CASCADE)
+    inbox = models.ForeignKey("ticketvise.Inbox", related_name="user_relationship", on_delete=models.CASCADE)
     #: Role that the user has in the inbox. Maximum length of 40 characters.
     #: Must be one of the choices in the :class:`User.Roles` class. Defaults to :attr:`User.Roles.STUDENT`.
     role = models.CharField(max_length=40, choices=User.Roles.choices, default=User.Roles.STUDENT)

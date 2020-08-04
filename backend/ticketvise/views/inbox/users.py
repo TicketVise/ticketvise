@@ -25,10 +25,10 @@ class InboxUsersView(InboxCoordinatorRequiredMixin, TemplateView):
         if not page_number.isnumeric():
             page_number = 1
 
-        users = (User.objects.filter(inboxs=inbox, username__icontains=q)
-                 | User.objects.filter(inboxs=inbox, first_name__icontains=q)
-                 | User.objects.filter(inboxs=inbox, last_name__icontains=q)
-                 | User.objects.filter(inboxs=inbox, email__contains=q)).order_by("first_name")
+        users = (User.objects.filter(inboxes=inbox, username__icontains=q)
+                 | User.objects.filter(inboxes=inbox, first_name__icontains=q)
+                 | User.objects.filter(inboxes=inbox, last_name__icontains=q)
+                 | User.objects.filter(inboxes=inbox, email__contains=q)).order_by("first_name")
 
         context = super(TemplateView, self).get_context_data(**kwargs)
 
