@@ -1,7 +1,7 @@
 from django.shortcuts import get_object_or_404
 from rest_framework.generics import ListAPIView
 
-from ticketvise.models.course import Course
+from ticketvise.models.inbox import Course
 from ticketvise.models.label import Label
 from ticketvise.models.user import User
 from ticketvise.views.api.security import UserIsCourseStaffMixin, UserIsInCourseMixin

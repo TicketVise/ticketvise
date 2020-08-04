@@ -4,7 +4,7 @@ Scheduling
 Schedules the ticket according to its labels or the scheduling policy of
 the course.
 """
-from ticketvise.models.course import Course, SchedulingAlgorithm
+from ticketvise.models.inbox import Course, SchedulingAlgorithm
 from ticketvise.models.ticket import Ticket
 
 

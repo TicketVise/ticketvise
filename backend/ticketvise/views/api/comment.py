@@ -4,7 +4,7 @@ from rest_framework.generics import ListAPIView, CreateAPIView
 from rest_framework.serializers import ModelSerializer
 
 from ticketvise.models.comment import Comment
-from ticketvise.models.course import Course
+from ticketvise.models.inbox import Course
 from ticketvise.models.ticket import Ticket
 from ticketvise.models.user import UserCourseRelationship
 from ticketvise.views.api.security import UserHasAccessToTicketMixin, UserIsCourseStaffMixin

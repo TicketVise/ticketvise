@@ -8,7 +8,7 @@ from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 
 from ticketvise.models.comment import Comment
-from ticketvise.models.course import Course
+from ticketvise.models.inbox import Course
 from ticketvise.models.label import Label
 from ticketvise.models.notification import Notification, MentionNotification
 from ticketvise.models.ticket import Ticket, TicketStatusChangedNotification

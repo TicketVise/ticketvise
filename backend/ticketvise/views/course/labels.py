@@ -4,7 +4,7 @@ from django.urls import reverse
 from django.views.generic import TemplateView, UpdateView, CreateView, DeleteView
 
 from ticketvise import settings
-from ticketvise.models.course import Course
+from ticketvise.models.inbox import Course
 from ticketvise.models.label import Label
 from ticketvise.views.course.base import LabelCoordinatorRequiredMixin, CourseCoordinatorRequiredMixin
 

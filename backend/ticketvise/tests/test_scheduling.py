@@ -5,7 +5,7 @@ This file tests the scheduling algorithms to divide the workload amond TAs.
 """
 from django.test import TestCase, Client
 
-from ticketvise.models.course import SchedulingAlgorithm
+from ticketvise.models.inbox import SchedulingAlgorithm
 from ticketvise.models.ticket import Ticket
 from ticketvise.models.user import User, UserCourseRelationship
 from ticketvise.scheduling import schedule_ticket

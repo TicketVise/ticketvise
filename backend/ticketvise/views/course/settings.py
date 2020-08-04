@@ -1,7 +1,7 @@
 from django.urls import reverse
 from django.views.generic import UpdateView
 
-from ticketvise.models.course import Course
+from ticketvise.models.inbox import Course
 from ticketvise.views.course.base import CourseCoordinatorRequiredMixin
 
 

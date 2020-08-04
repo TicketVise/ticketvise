@@ -19,7 +19,7 @@ from rest_framework.generics import UpdateAPIView, ListAPIView, RetrieveAPIView,
 from rest_framework.serializers import ModelSerializer
 from rest_framework.views import APIView
 
-from ticketvise.models.course import Course
+from ticketvise.models.inbox import Course
 from ticketvise.models.label import Label
 from ticketvise.models.ticket import Ticket, TicketAttachment
 from ticketvise.models.user import User, UserCourseRelationship

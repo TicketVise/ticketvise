@@ -21,7 +21,7 @@ from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
 from django.views.generic import RedirectView
 
-from ticketvise.models.course import Course
+from ticketvise.models.inbox import Course
 from ticketvise.models.user import User, UserCourseRelationship
 from ticketvise.views.lti.validation import LtiLaunchForm
 

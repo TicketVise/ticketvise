@@ -1,6 +1,6 @@
 from django.urls import reverse
 
-from ticketvise.models.course import Course
+from ticketvise.models.inbox import Course
 from ticketvise.tests.course.utils import CourseTestCase
 
 

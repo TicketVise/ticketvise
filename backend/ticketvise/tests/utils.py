@@ -7,7 +7,7 @@ from random import choice
 from string import ascii_uppercase, ascii_lowercase, digits
 
 from ticketvise.models.comment import Comment
-from ticketvise.models.course import Course
+from ticketvise.models.inbox import Course
 from ticketvise.models.label import Label
 from ticketvise.models.ticket import Ticket
 from ticketvise.models.user import User

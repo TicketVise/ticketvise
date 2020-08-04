@@ -10,7 +10,7 @@ from django.urls import reverse
 from rest_framework.test import APITestCase
 
 from ticketvise.models.comment import Comment
-from ticketvise.models.course import Course
+from ticketvise.models.inbox import Course
 from ticketvise.models.label import Label
 from ticketvise.models.ticket import Ticket
 from ticketvise.models.user import User

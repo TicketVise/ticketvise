@@ -8,7 +8,7 @@ from urllib.parse import urlencode
 from django.test import TestCase, Client
 from django.urls import reverse
 
-from ticketvise.models.course import Course
+from ticketvise.models.inbox import Course
 from ticketvise.models.user import User
 
 

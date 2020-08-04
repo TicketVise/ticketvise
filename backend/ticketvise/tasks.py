@@ -9,7 +9,7 @@ from django.db.models import Q
 from django.utils import timezone
 
 from .email import send_email
-from .models.course import Course
+from .models.inbox import Course
 from .models.ticket import Ticket
 from .models.user import User
 

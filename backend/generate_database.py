@@ -9,7 +9,7 @@ os.environ.setdefault("DJANGO_SETTINGS_MODULE", "ticketvise.settings")
 django.setup()
 
 from ticketvise.models.comment import Comment  # noqa: E402
-from ticketvise.models.course import Course  # noqa: E402
+from ticketvise.models.inbox import Course  # noqa: E402
 from ticketvise.models.label import Label  # noqa: E402
 from ticketvise.models.ticket import Ticket  # noqa: E402
 from ticketvise.models.user import User, UserCourseRelationship  # noqa: E402

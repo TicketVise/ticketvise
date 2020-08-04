@@ -1,7 +1,7 @@
 from django.contrib.auth.mixins import AccessMixin
 from django.shortcuts import get_object_or_404
 
-from ticketvise.models.course import Course
+from ticketvise.models.inbox import Course
 from ticketvise.models.label import Label
 from ticketvise.models.ticket import Ticket
 from ticketvise.models.user import UserCourseRelationship

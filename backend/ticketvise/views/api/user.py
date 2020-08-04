@@ -5,7 +5,7 @@ from django.views import View
 from rest_framework.generics import RetrieveAPIView
 from rest_framework.serializers import ModelSerializer
 
-from ticketvise.models.course import Course
+from ticketvise.models.inbox import Course
 from ticketvise.models.user import User
 from ticketvise.views.api.security import UserIsCourseStaffMixin
 

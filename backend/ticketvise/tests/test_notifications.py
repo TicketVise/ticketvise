@@ -10,7 +10,7 @@ from django.test import TestCase, Client
 from django.urls import reverse
 
 from ticketvise.models.comment import Comment
-from ticketvise.models.course import Course
+from ticketvise.models.inbox import Course
 from ticketvise.models.notification import Notification, MentionNotification, CommentNotification
 from ticketvise.models.ticket import Ticket, TicketStatusChangedNotification
 from ticketvise.models.user import User
