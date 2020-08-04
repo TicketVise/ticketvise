@@ -1,0 +1,25 @@
+version: '3.7'
+
+services:
+  web:
+    image: ticketvise/ticketvise/backend:latest
+    build:
+      context: .
+    command: >
+      sh -c "python manage.py wait_for_database &&
+             python manage.py migrate --no-input &&
+             python generate_database.py &&
+             python manage.py runserver 0.0.0.0:6000"
+    volumes:
+      - ./backend:/backend
+
+  proxy:
+    image: ticketvise/ticketvise/proxy:latest
+    build: ./nginx
+    ports:
+      - 8000:8000
+    volumes:
+      - ./nginx/nginx.dev.conf:/etc/nginx/conf.d/nginx.conf:ro
+      - ./backend/ticketvise/media:/home/media:ro
+      - ./backend/ticketvise/static:/home/static:ro
+

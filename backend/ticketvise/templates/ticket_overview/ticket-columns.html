@@ -1,0 +1,124 @@
+<!--
+    TEMPLATE FOR THE TICKET OVERVIEW COLUMNS.
+-->
+{% load humanize %}
+{% load ticketvise_extras %}
+
+{% for column_title, ticket_list in tickets %}
+    <div class="column ticket-column" id="{{ column_title }}">
+    <!-- COLUMN HEADER. CYCLE THROUGH A LIST OF BULMA COLORS EACH TIME A NEW COLUMN IS CREATED. -->
+    {% if role != ROLE_STUDENT or assignee_visible %}
+        <div class="container has-background-{% cycle 'danger-dark' 'warning' 'success' 'grey' %}
+                        has-text-centered has-text-{% cycle 'white' 'black' 'black' 'white' %} py-1">
+    {% else %}
+        <div class="container has-background-{% cycle 'danger' 'success' 'dark' %}
+                        has-text-centered has-text-{% cycle 'white' 'black' 'white' %} py-1">
+    {% endif %}
+<p>
+    {{ column_title }} ({{ ticket_list.count }})
+</p>
+
+{% if role != ROLE_STUDENT %}
+    <!-- SHOW CHECKBOX FOR SELECTING ALL TICKETS IN THIS COLUMN. -->
+    <div class="is-marginless pretty p-icon p-round select-column" style="display: none;">
+        <input autocomplete="off" type="checkbox" name="select-column-checkbox" value="{{ column_title }}"
+               class="select-column-checkbox" id="select-column-{{ column_title }}"/>
+        <div class="state">
+            <i class="icon fa fa-check"></i>
+            <label></label>
+        </div>
+    </div>
+{% endif %}
+</div>
+
+<!-- TICKETS CONTAINER. -->
+<div class="container has-background-light full-height tickets-container">
+    <div class="tile is-mobile">
+        <div style="padding: 10px 15px 0px 15px" class="tile is-parent is-vertical" id="{{ column_title }}-tickets">
+            {% for ticket in ticket_list %}
+                <article class="tile is-child notification box is-white ticket">
+                    <a href="{% url 'ticket' ticket.course.id ticket.ticket_course_id %}" class="ticket-link">
+                        <nav class="level mb-1 is-mobile">
+                            <!-- SHOW EDIT ICON. -->
+                            {% if role != ROLE_STUDENT %}
+                                <div class="level-left edit-pencil" id="{{ ticket.id }}">
+                                    <p class="level-item">
+                                        <i class="fa fa-pencil"></i>
+                                    </p>
+                                </div>
+                            {% endif %}
+
+                            {% if role == ROLE_STUDENT %}
+                                <p class="has-text-weight-semibold is-size-6 ticket-title ">
+                                    {{ ticket.title }}
+                                </p>
+                            {% endif %}
+
+                            <!-- SHOW SELECT CHECKBOX. -->
+                            <div class="pretty p-icon p-round level-left select-ticket" id="{{ ticket.id }}"
+                                 style="display: none;">
+                                {% if role != ROLE_STUDENT %}
+                                    <input autocomplete="off" type="checkbox" name="edit-checkbox"
+                                           value="{{ ticket.id }}" id="{{ column_title }}-{{ ticket.id }}"
+                                           class="select-ticket-checkbox {{ column_title }}-ticket"/>
+                                    <div class="state p-info-o">
+                                        <i class="icon fa fa-check has-text-primary"></i>
+                                        <label></label>
+                                    </div>
+                                {% endif %}
+                            </div>
+
+                            <div class="level-right" style="align-self: flex-start;">
+                                <p class="level-item heading is-size-7 has-text-right is-marginless">
+                                    {{ ticket.date_created|naturaltime }}
+                                </p>
+                            </div>
+                        </nav>
+
+                        {% if role != ROLE_STUDENT or assignee_visible %}
+                            <p class="is-size-7">
+                                {% if ticket.assignee %}
+                                    Assigned to: {{ ticket.assignee.get_full_name }}
+                                {% else %}
+                                    Assigned to: None
+                                {% endif %}
+                            </p>
+                        {% endif %}
+
+                        {% if role != ROLE_STUDENT %}
+                            <p class="has-text-weight-semibold is-size-6 ticket-title ">
+                                {{ ticket.title }}
+                            </p>
+                        {% endif %}
+
+                        {% if role != ROLE_STUDENT %}
+                            <div class="container">
+                                <p class="is-size-7 has-text-left">
+                                    From: {{ ticket.author.get_full_name }}
+                                </p>
+                            </div>
+                        {% endif %}
+
+                        <!-- SHOW THE LABELS OF THE TICKET. -->
+                        <br>
+                        <div class="tags are-normal">
+                            {% for label in ticket.labels.all %}
+                                <span style="background-color: {{ label.color }};
+                                        color: {% get_label_text_color label %}" class="tag">
+                                            {{ label.name }}
+                                        </span>
+                            {% endfor %}
+                        </div>
+                    </a>
+                </article>
+
+                {% if role != ROLE_STUDENT %}
+                    <!-- QUICK MENU FOR EDITING LABELS AND ASSIGNEE OF A TICKET. -->
+                    {% include "ticket_overview/quick-menu.html" %}
+                {% endif %}
+            {% endfor %}
+        </div>
+    </div>
+</div>
+</div>
+{% endfor %}

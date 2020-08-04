@@ -1,0 +1,160 @@
+{% extends "base.html" %}
+
+{% load ticketvise_extras %}
+
+{% block body %}
+    <div class="app-container">
+        <!-- THE CONTAINER FOR THE NAVIGATION BAR. -->
+        <nav class="navbar has-shadow" role="navigation" aria-label="main navigation">
+            <!-- LOGO OF TICKETVISE. -->
+            <div class="navbar-brand">
+                <a class="navbar-item" href="/">
+                    {% load static %}
+                    <img src="{% static '../assets/styles/img/logo/logo.png' %}" class="logo-img">
+                    <p class="logo-text has-text-info">TicketVise</p>
+                </a>
+
+                <a role="button" class="navbar-burger" data-target="navbarBasicExample" aria-label="menu"
+                   aria-expanded="false">
+                    <span aria-hidden="true"></span>
+                    <span aria-hidden="true"></span>
+                    <span aria-hidden="true"></span>
+                </a>
+            </div>
+
+            <!-- THE CONTENT OF THE NAVIGATION BAR ON THE LEFT HAND SIDE. -->
+            <div id="navbarBasicExample" class="navbar-menu">
+                {% if user.is_authenticated %}
+                    <div class="navbar-start">
+                        <a class="navbar-item" href="/courses">
+                            Courses
+                        </a>
+                        {% if user.is_superuser %}
+                            <a class="navbar-item" href="/settings/lti">
+                                Settings
+                            </a>
+                        {% endif %}
+                    </div>
+                {% endif %}
+
+                <!-- THE CONTENT OF THE NAVIGATION BAR ON THE RIGHT HAND SIDE. -->
+                <div class="navbar-end">
+                    {% if user.is_authenticated and not user.has_usable_password %}
+                        {% get_reset_password_url user as reset_url %}
+                        <div class="navbar-item">
+                            <a href="{{ reset_url }}" class="button is-info is-outlined">
+                        <span class="icon is-small">
+                            <i class="fa fa-lightbulb-o"></i>
+                        </span>
+                                <span>Complete account with password</span>
+                            </a>
+                        </div>
+                    {% endif %}
+                    {% if user.is_authenticated %}
+                        <a class="navbar-item" href="{% url 'notifications' %}">
+                            {% number_of_unread_notifications user as count %}
+                            {% if count > 0 %}
+                                <span class="badge is-right is-link is-hidden-tablet mr-5">{{ count }}</span>
+                                <span class="badge is-bottom is-link is-hidden-mobile">{{ count }}</span>
+                            {% endif %}
+                            <i class="fa fa-bell-o is-hidden-mobile"></i>
+                            <span class="is-hidden-tablet">notifications</span>
+                        </a>
+
+                        <!-- DROPDOWN BUTTON FOR THE USER. -->
+                        <div class="navbar-item has-dropdown is-hoverable">
+                            <a class="navbar-link">
+                                <div class="columns is-vcentered is-mobile">
+                                    <div class="column">
+                                        <figure class="image">
+                                            <img class="width-inherit"
+                                                 src="{{ user.avatar_url }}">
+                                        </figure>
+                                    </div>
+                                    <div class="column" style="white-space: nowrap">
+                                        {{ user.get_full_name }}
+                                    </div>
+                                </div>
+                            </a>
+
+                            <!-- DROPDOWN CONTENT FOR THE USER. -->
+                            <div class="navbar-dropdown">
+                                <a class="navbar-item" href="/profile">
+                                    Profile
+                                </a>
+                                <hr class="navbar-divider">
+                                <a class="navbar-item" href="/logout/">
+                                    Log out
+                                </a>
+                            </div>
+                        </div>
+                    {% endif %}
+
+                    <!-- THE LOG IN BUTTON WILL ONLY BE VISIBLE ON THE /ERROR PAGES,
+                    SINCE THIS IS THE ONLY PAGE A NON-AUTHENTICATED USER CAN VISIT. -->
+                    {% if not user.is_authenticated %}
+                        <div class="navbar-item">
+                            <div class="buttons">
+                                <a class="button is-link" href="/login/">
+                                    Log in
+                                </a>
+                            </div>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+
+        </nav>
+
+        <div class="main-section">
+            {% block content %}
+                if you see this, something is wrong!
+            {% endblock content %}
+        </div>
+
+        <footer class="footer">
+            <div class="content has-text-centered flex-center no-margin">
+                <a class="navbar-item" href="/">
+                    <!-- <img src="{% static '../assets/styles/img/logo/logo.png' %}" class="logo-img"> -->
+                    <p class="logo-text has-text-info">TicketVise</p>
+                </a>
+            </div>
+            <p class="content has-text-centered no-margin">Made with lots of <i class="fa fa-heart has-text-link"></i> by <a href="/team"><i class="fa fa-users"></i></a></p>
+
+            <hr class="divider"/>
+
+            <div class="content footer-links flex-center row">
+                <div class="col-4">
+                    <div class="footer-links--item">&copy; 2020 | TicketVise</div>
+                </div>
+                <div class="col-4">
+                    <p class="has-text-centered">
+                        <a class="footer-links--item" href="mailto:feedback@ticketvise.com">Give feedback</a>
+                    </p>
+                </div>
+                <div class="col-4 has-text-right">
+                    <a class="footer-links--item" href="/privacy">Privacy</a>
+                    <a class="footer-links--item" href="/terms">Terms of Service</a>
+                </div>
+            </div>
+        </footer>
+    </div>
+{% endblock body %}
+
+{% block navbar-javascript %}
+    <script>
+        $(document).ready(function () {
+            /**
+             * On mobile, open up the dropdown when a user clicks on the burger icon
+             * and close it when the user clicks on the closing icon.
+             */
+            $(".navbar-burger").click(function () {
+                $(".navbar-burger").toggleClass("is-active");
+                $(".navbar-menu").toggleClass("is-active");
+            });
+        });
+    </script>
+{% endblock navbar-javascript %}
+
+{% block javascript %}
+{% endblock javascript %}

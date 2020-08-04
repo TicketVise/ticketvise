@@ -1,0 +1,82 @@
+<!--
+    TEMPLATE FOR THE BULK EDIT QUICK MENU.
+ -->
+{% load ticketvise_extras %}
+
+<div class="modal " id="bulk-edit-menu">
+    <div class="modal-background"></div>
+    <div class="modal-card">
+        <header class="modal-card-head">
+            <p class="modal-card-title" id="bulk-edit-title">Edit selected tickets</p>
+            <button class="delete" aria-label="close" id="bulk-edit-cancel"></button>
+        </header>
+        {% csrf_token %}
+        <form method="POST" class="bulk-edit-form" id="bulk-form">
+            <section class="modal-card-body">
+                <!-- SELECT TICKET ASSIGNEE. -->
+                <div class="field">
+                    <label class="label">Assignee</label>
+                    <div class="control">
+                        <div class="select">
+                            <select name="assignee-select">
+                                <option value="" selected="selected">-- No change --</option>
+                                <option value="None">None</option>
+                                {% for assignee in assistants_coordinators %}
+                                    <option value="{{ assignee.id }}">
+                                        {{ assignee.get_full_name }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <br>
+
+                <!-- ADD/DELETE LABELS TO/FROM SELECTED TICKETS. -->
+                {% with "add delete" as actions %}
+                    {% for action in actions.split %}
+                        <div class="field">
+                            <label class="label">{% cycle "Add labels" "Delete labels" %}</label>
+                            <div class="control">
+                                <div class="select">
+                                    <select class="bulk" name="label-selector" id="label-select-{{ action }}">
+                                        <option value="none" disabled selected>
+                                            -- Select labels --
+                                        </option>
+                                        {% for label in labels %}
+                                            <option value="{{ action }}-{{ label.id }}">
+                                                {{ label.name }}
+                                            </option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- SHOW SELECTED LABELS TO ADD/DELETE TO/FROM THE TICKETS. -->
+                        <div class="tags">
+                            {% for label in labels %}
+                                <span style="background-color: {{ label.color }};
+                                        color: {% get_label_text_color label %}; display: none"
+                                      class="tag is-warning is-medium" id="label-tag-{{ action }}-{{ label.id }}">
+                                {{ label.name }}
+                                <button type="button" class="bulk label-delete delete" id="{{ action }}-{{ label.id }}">
+                                </button>
+                                <input style="display: none" name="{{ action }}-label" value="{{ label.id }}"
+                                       type="checkbox" id="checkbox-{{ action }}-{{ label.id }}">
+                            </span>
+                            {% endfor %}
+                        </div>
+                    {% endfor %}
+                {% endwith %}
+            </section>
+
+            <footer class="modal-card-foot field">
+                <!-- SAVE ASSIGNEE AND LABEL CHANGES TO TICKET. -->
+                <button class="button level-item is-success">
+                    Save changes
+                </button>
+            </footer>
+        </form>
+    </div>
+</div>

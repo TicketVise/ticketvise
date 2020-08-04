@@ -1,0 +1,14 @@
+<!--
+    Displays the course image.
+
+    Arguments:
+    - `course`: Course to display the image of.
+    - `id`: Id of the img element.
+-->
+{% load ticketvise_extras %}
+
+{% if course.image %}
+    <img id="{{ id }}" src="data:image/png;base64, {% get_base64_course_image course %}" alt="No image found.">
+{% else %}
+    <img src="" alt="No image found.">
+{% endif %}

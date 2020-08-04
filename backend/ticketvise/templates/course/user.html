@@ -1,0 +1,97 @@
+{% extends "navigation.html" %}
+
+{% block content %}
+    <div class="container max-w-3xl">
+        <form method="post">
+            {% csrf_token %}
+
+            <div class="bg-white shadow overflow-hidden sm:rounded-lg mt-4 mb-4">
+                <div class="px-4 py-5 border-b border-gray-200 sm:px-6 flex">
+                    <div class="flex-shrink-0 h-10 w-10 mr-4">
+                        <img class="h-10 w-10 rounded-full" src="{{ user.avatar_url }}" alt=""/>
+                    </div>
+                    <div>
+                        <h3 class="text-lg leading-6 font-medium text-gray-900">
+                            User Information
+                        </h3>
+                        <p class="mt-1 max-w-2xl text-sm leading-5 text-gray-500">
+                            Personal details and course related settings.
+                        </p>
+                    </div>
+                </div>
+                <div>
+                    <dl>
+                        <div class="bg-gray-50 px-4 py-3 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+                            <dt class="text-sm leading-5 font-medium text-gray-500">
+                                Full name
+                            </dt>
+                            <dd class="mt-1 text-sm leading-5 text-gray-900 sm:mt-0 sm:col-span-2">
+                                {{ user.get_full_name }}
+                            </dd>
+                        </div>
+                        <div class="bg-white px-4 py-3 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+                            <dt class="text-sm leading-5 font-medium text-gray-500">
+                                Email address
+                            </dt>
+                            <dd class="mt-1 text-sm leading-5 text-gray-900 sm:mt-0 sm:col-span-2">
+                                {{ user.email }}
+                            </dd>
+                        </div>
+                        <div class="bg-gray-50 px-4 py-3 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+                            <dt class="text-sm leading-5 font-medium text-gray-500">
+                                Username
+                            </dt>
+                            <dd class="mt-1 text-sm leading-5 text-gray-900 sm:mt-0 sm:col-span-2">
+                                @{{ user.username }}
+                            </dd>
+                        </div>
+                        <div class="bg-white px-4 py-3 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6 ">
+                            <dt class="text-sm leading-5 font-medium text-gray-500">
+                                Role
+                            </dt>
+                            <dd class="text-sm leading-5 text-gray-900 sm:mt-0 sm:col-span-2">
+                                <select name="role"
+                                        class="block appearance-none bg-white border border-gray-400 hover:border-gray-500 px-4 py-1 pr-8 rounded shadow-sm leading-tight focus:outline-none focus:shadow-outline">
+                                    {% for value, text in form.fields.role.choices %}
+                                        <option value="{{ value }}" {% if object.role == value %}
+                                                selected {% endif %}>
+                                            {{ text }}
+                                        </option>
+                                    {% endfor %}
+                                </select>
+                            </dd>
+                        </div>
+                    </dl>
+                </div>
+            </div>
+            <div class="bg-gray-50 py-3 sm:flex">
+                <span class="flex w-full rounded-md shadow-sm sm:ml-3 sm:w-auto">
+                    <button type="submit"
+                            class="inline-flex justify-center w-full rounded-md border border-transparent px-4 py-2 bg-green-200 text-green-600 text-base leading-6 font-medium text-white shadow-sm hover:bg-green-100 focus:outline-none focus:border-green-700 focus:shadow-outline-red transition ease-in-out duration-150 sm:text-sm sm:leading-5">
+                        Save
+                    </button>
+                </span>
+            </div>
+        </form>
+
+        <form action="{% url 'course_user_delete' course_id=course.id pk=user.id %}" method="post"
+              onsubmit="return confirm('Are you sure?')">
+            {% csrf_token %}
+
+            <div class="bg-white shadow overflow-hidden sm:rounded-lg mt-4 mb-4 px-4 py-5">
+                <h3 class="text-lg leading-6 font-medium text-gray-900">
+                    Remove user
+                </h3>
+                <p class="mt-1 max-w-2xl text-sm leading-5 text-gray-500">
+                    Remove a user from the course. The user will lose access to the course and will be unable to create
+                    new tickets or answer tickets.
+                </p>
+                <button type="submit"
+                        class="mt-4 inline-flex justify-center rounded-md border border-transparent px-4 py-2 bg-red-200 text-red-600 co text-base leading-6 font-medium text-white shadow-sm hover:bg-red-100 focus:outline-none focus:border-red-700 focus:shadow-outline-red transition ease-in-out duration-150 sm:text-sm sm:leading-5">
+                    Remove
+                </button>
+            </div>
+        </form>
+
+    </div>
+{% endblock content %}

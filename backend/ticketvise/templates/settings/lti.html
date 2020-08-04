@@ -1,0 +1,57 @@
+{% extends "settings/base.html" %}
+
+{% block settings-content %}
+    <!-- TABLE WITH USERS AND LTI KEYS. -->
+    <div class="table-container">
+        <table class="table is-hoverable is-fullwidth">
+            <thead>
+            <tr>
+                <th>Name</th>
+                <th>LTI Key</th>
+                <th>LTI Secret</th>
+                <th>XML Config URL</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+                <td>TicketVise</td>
+                <td>{{ key }}</td>
+                <!-- LTI SECRET. -->
+                <td style="display: block;">
+                    <span class="icon is-small" style="cursor: pointer;" onclick="show(this)">
+                        <i class="fa fa-eye" aria-hidden="true"></i>
+                    </span>
+                    &nbsp;
+                    ••••••••••••••••
+                </td>
+                <!-- XML CONFIG URL. -->
+                <td style="display: none">
+                    <span class="icon is-small" style="cursor: pointer;" onclick="hide(this)">
+                        <i class="fa fa-eye-slash" aria-hidden="true"></i>
+                    </span>
+                    &nbsp;
+                    {{ sercret }}
+                </td>
+                <td>{{ url }}</td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+{% endblock settings-content %}
+
+{% block javascript %}
+
+    <script>
+        let show = (icon) => {
+            icon.parentElement.style.display = 'none'
+            icon.parentElement.nextElementSibling.style.display = 'block'
+        }
+
+        let hide = (icon) => {
+            icon.parentElement.style.display = 'none'
+            icon.parentElement.previousElementSibling.style.display = 'block'
+        }
+    </script>
+
+{% endblock javascript %}

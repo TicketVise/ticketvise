@@ -1,0 +1,141 @@
+<!--
+    TICKET OVERVIEW PAGE FOR A COURSE.
+-->
+{% extends "navigation.html" %}
+{% load ticketvise_extras %}
+
+{% block content %}
+    <section class="p-6 flex flex-col flex-grow">
+        <div class="columns has-text-centered is-variable is-1">
+            <div class="column is-narrow">
+                <!-- BUTTON TO SORT TICKETS BY DATE ASCENDING/DESCENDING. -->
+                <button class="button" id="sort-button">
+                <span>
+                    Sort By Date <i class="fa fa-angle-down" id="sort-icon"></i>
+                </span>
+                </button>
+            </div>
+
+            <div class="column">
+                <div class="field has-addons" style="width: 100%;">
+                    <div class="control has-icons-left" style="width: 100%;">
+                        <!-- SEARCH FIELD. -->
+                        <input class="input" type="text" id="search" autocomplete="off"
+                                placeholder="{% if role != ROLE_STUDENT %}  Search on title, student or assignee
+                                            {% else %} Search on title
+                                            {% endif %}">
+                        <span class="icon is-medium is-left">
+                        <i class="fa fa-search"></i>
+                    </span>
+                    </div>
+                    <div class="control">
+                        <!-- RESET SEARCH INPUT. -->
+                        <div class="button" id="cancel-search">
+                            <i class="fa fa-times"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="column is-narrow has-text-centered">
+                <div class="columns is-variable is-1 is-flex" style="flex-wrap: wrap;">
+                    {% if role != ROLE_STUDENT %}
+                        <div class="column">
+                            <!-- BUTTON TO FILTER ON TICKETS ASSIGNED TO ME. -->
+                            <button class="button" style="background-color: #FF8C0C;" id="my-ticket-button">
+                            <span>
+                                <i id="my-ticket-icon"></i> My Tickets
+                            </span>
+                            </button>
+                        </div>
+                    {% endif %}
+
+                    <div class="column">
+                        <!-- BUTTON FOR OPENING MENU WITH FILTER OPTIONS. -->
+                        <button class="button " id="filter-button">
+                        <span>
+                            <i class="fa fa-filter"></i> Filters
+                        </span>
+                        </button>
+                    </div>
+
+                    {% if role != ROLE_STUDENT %}
+                        <div class="column" style="display: none;" id="edit-all">
+                            <!-- EDIT BUTTON FOR SELECTED TICKETS -->
+                            <div class="button is-primary is-outlined" id="edit-all-button" disabled>
+                            <span>
+                                <i class="fa fa-pencil"></i> Edit
+                            </span>
+                            </div>
+                        </div>
+
+                        <div class="column" style="display: none;" id="select-all">
+                            <!-- SELECT ALL BUTTON -->
+                            <div class="button is-info is-outlined" id="select-all-button">
+                            <span>
+                                <i class="fa fa-square-o" id="select-icon"></i> Select All
+                            </span>
+                            </div>
+                        </div>
+
+                        <div class="column">
+                            <!-- BULK EDIT BUTTON. -->
+                            <div class="button" id="bulk-edit">
+                            <span id="bulk-edit-text">
+                                <i class="fa fa-pencil-square-o" id="bulk-edit-icon"></i> Bulk Edit
+                            </span>
+                            </div>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- FILTER MENU. -->
+        <div id="filter-menu" class="box has-background-light filter-menu mb-2" style="flex-wrap: wrap; display: none;">
+            <button class="mr-4 button is-small is-primary" id="reset-filters">
+                <span>
+                    <i class="fa fa-refresh"></i> Clear
+                </span>
+            </button>
+            {% for label in labels %}
+                <div class="pretty p-icon p-round filter-label ml-3 mt-1">
+                    <input class="filter-checkbox" type="checkbox" name="label-checkbox" value="{{ label.id }}"
+                            autocomplete="off">
+
+                    <div class="state">
+                        <i class="filter-label-checkbox-icon icon fa fa-check"></i>
+                        <label class="label-checkbox tag is-light" id="label_check_box"
+                                style="background-color: {{ label.color }}; color:  {% get_label_text_color label %}">
+                            {{ label.name }}
+                        </label>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+
+        <!-- TICKET LIST BOARD. -->
+        <div id="ticket-overview" :title="1"></div>
+
+        <!-- ERROR MESSAGE FOR WHEN SOMETHING FAILS. -->
+        <div class="modal" id="error-message">
+            <div class="modal-background"></div>
+            <div class="modal-card">
+                <header class="modal-card-head">
+                    <p class="modal-card-title">Error</p>
+                    <button class="delete" aria-label="close" id="close-error"></button>
+                </header>
+                <section class="modal-card-body">
+                    Oops! Something went wrong. Please try again.
+                </section>
+                <footer class="modal-card-foot">
+                </footer>
+            </div>
+        </div>
+
+        {% if role != ROLE_STUDENT %}
+            <!-- BULK EDIT MENU. -->
+            {% include "ticket_overview/bulk-edit-menu.html" %}
+        {% endif %}
+    </section>
+{% endblock content %}

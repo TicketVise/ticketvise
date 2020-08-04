@@ -1,0 +1,21 @@
+{% extends "navigation.html" %}
+
+{% block content %}
+
+    {% include "utils/page_header.html" with title="Profile" subtitle="Your profile information" %}
+
+    <div class="section container">
+        <div class="columns">
+            {% include "profile/avatar.html" %}
+            {% include "profile/user_details.html" %}
+        </div>
+        <!-- INCLUDE NOTIFICATION SETTINGS. -->
+        {% include "profile/notification_settings.html" %}
+    </div>
+
+{% endblock content %}
+
+{% block javascript %}
+    {% load static %}
+    <script src="{% static 'js/../../assets/js/profile/profile.js' %}"></script>
+{% endblock javascript %}

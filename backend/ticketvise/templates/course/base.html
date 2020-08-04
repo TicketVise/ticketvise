@@ -1,0 +1,48 @@
+{% extends "navigation.html" %}
+{% load ticketvise_extras %}
+
+{% block content %}
+
+    <div class="container my-4">
+        <nav class="bg-gray-800 rounded shadow">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex items-center justify-between h-16">
+                    <div class="flex items-center">
+                        <div class="flex-shrink-0">
+                            <h3 class="text-lg leading-6 font-medium text-gray-100">
+                                {{ course.name }}
+                            </h3>
+                        </div>
+                        <div class="hidden md:block">
+                            <div class="ml-2 flex items-baseline">
+                                {% with request.resolver_match.view_name as view_name %}
+                                    <a href="{% url 'course_settings' course.id %}"
+                                       class="ml-4 px-3 py-2 rounded-md text-sm font-medium {% if view_name == 'course_settings' %} text-white bg-gray-900  {% else %} text-gray-300 hover:text-white hover:bg-gray-700 {% endif %} text-gray-300 hover:text-white hover:bg-gray-700 focus:outline-none focus:text-white focus:bg-gray-700">
+                                        Settings
+                                    </a>
+                                    <a href="{% url 'course_users' course.id %}"
+                                       class="ml-4 px-3 py-2 rounded-md text-sm font-medium {% if view_name == 'course_users' %} text-white bg-gray-900  {% else %} text-gray-300 hover:text-white hover:bg-gray-700 {% endif %} text-gray-300 hover:text-white hover:bg-gray-700 focus:outline-none focus:text-white focus:bg-gray-700">
+                                        Users
+                                    </a>
+                                    <a href="{% url 'course_labels' course.id %}"
+                                       class="ml-4 px-3 py-2 rounded-md text-sm font-medium {% if view_name == 'course_labels' %} text-white bg-gray-900  {% else %} text-gray-300 hover:text-white hover:bg-gray-700 {% endif %} text-gray-300 hover:text-white hover:bg-gray-700 focus:outline-none focus:text-white focus:bg-gray-700">
+                                        Labels
+                                    </a>
+                                    <a href="{% url 'course_statistics' course.id %}"
+                                       class="ml-4 px-3 py-2 rounded-md text-sm font-medium {% if view_name == 'course_statistics' %} text-white bg-gray-900  {% else %} text-gray-300 hover:text-white hover:bg-gray-700 {% endif %} text-gray-300 hover:text-white hover:bg-gray-700 focus:outline-none focus:text-white focus:bg-gray-700">
+                                        Statistics
+                                    </a>
+                                {% endwith %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </nav>
+    </div>
+
+    {% block course-content %}
+        if you see this, something is wrong!
+    {% endblock course-content %}
+
+{% endblock content %}

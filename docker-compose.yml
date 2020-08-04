@@ -1,0 +1,23 @@
+version: '3.7'
+
+services:
+  database:
+    hostname: database
+    image: postgres:12-alpine
+    ports:
+      - 5432:5432
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+    env_file:
+      - prod.env
+
+  web:
+    ports:
+      - 6000:6000
+    env_file:
+      - prod.env
+
+volumes:
+  static:
+  media:
+  postgres_data:

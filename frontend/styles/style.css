@@ -1,0 +1,494 @@
+.tag {
+    border: 1px solid rgba(0, 0, 0, 0.15);
+}
+
+/* Source: https://jqueryui.com/sortable/ */
+#sortable {
+    margin: 0;
+    padding: 0;
+    width: 60%;
+}
+
+.ui-sortable {
+    cursor: grab;
+}
+
+.ui-sortable-helper {
+    cursor: grabbing;
+}
+
+.table-row-label-others {
+    background-color: #efefef;
+}
+
+.full-height {
+    height: 99% !important;
+}
+
+.ticket-title {
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+}
+
+
+.ticket-column {
+    min-width: 340px !important;
+}
+
+.tickets-container {
+    border-style: solid;
+    border-color: #c9c9c9;
+    border-width: thin;
+    overflow-y: scroll;
+}
+
+.ticket {
+    padding: 15px;
+}
+
+.ticket-selected {
+    border-style: solid;
+    border-color: #FF6600;
+    border-width: thin;
+}
+
+.filter-checkbox:hover, .label-checkbox:hover, .filter-label-checkbox-icon {
+    cursor: pointer;
+}
+
+.edit-pencil:hover {
+    color: #FF6600;
+    cursor: pointer;
+}
+
+a.ticket-link {
+    text-decoration: inherit !important;
+    cursor: pointer;
+}
+a.ticket-link:hover {
+    text-decoration: underline !important;
+}
+
+.disable-link {
+    pointer-events: none;
+}
+
+.filter-menu {
+    border-style: solid;
+    border-color: #c9c9c9;
+    border-width: thin;
+}
+
+.modal-card-title {
+    flex-shrink: 1;
+}
+
+p {
+    word-break: break-word;
+}
+
+.horizontal-scroll {
+    overflow-x: scroll;
+    overflow-y: hidden;
+    -ms-overflow-style: none;
+}
+
+.horizontal-scroll::-webkit-scrollbar {
+    display: none;
+}
+
+.pretty.select-column .state label::before {
+    border-color: white !important;
+}
+
+.pretty.filter-label label::after, .pretty.filter-label .state label::before {
+    top: 3px;
+    left: -20px;
+}
+
+.pretty.p-icon.filter-label .state .icon {
+    top: 0;
+    left: -20px;
+}
+
+.pretty.filter-label .state label {
+    text-indent: 0%;
+    margin-left: 1px;
+    margin-right: 1px;
+}
+
+.reply {
+    max-width: 60%;
+    width: fit-content;
+    width: -moz-fit-content;
+    text-align: justify;
+    word-break: break-word;
+}
+
+.reply.reply--ta {
+    margin-left: auto;
+}
+
+/* CSS for the switch, source: https://www.w3schools.com/howto/howto_css_switch.asp */
+.switch {
+    position: relative;
+    display: inline-block;
+    width: 46px;
+    height: 20px;
+}
+
+.switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #ccc;
+    -webkit-transition: .4s;
+    transition: .4s;
+}
+
+.slider:before {
+    position: absolute;
+    content: "";
+    height: 16px;
+    width: 16px;
+    left: 2px;
+    bottom: 2px;
+    background-color: white;
+    -webkit-transition: .4s;
+    transition: .4s;
+}
+
+input:checked + .slider {
+    background-color: #5781A8;
+}
+
+input:focus + .slider {
+    box-shadow: 0 0 1px #5781A8;
+}
+
+input:checked + .slider:before {
+    -webkit-transform: translateX(26px);
+    -ms-transform: translateX(26px);
+    transform: translateX(26px);
+}
+
+/* Rounded sliders */
+.slider.round {
+    border-radius: 34px;
+}
+
+.slider.round:before {
+    border-radius: 50%;
+}
+
+/* End CSS for the switch. */
+
+/* CSS for the logo shown in the navbar */
+
+.logo-text {
+    font-size: 22px;
+    font-weight: 700;
+    font-family: 'Work Sans', sans-serif;
+}
+
+.logo-img {
+    margin-right: 8px;
+}
+
+.width-inherit {
+    width: inherit !important;
+}
+
+.login-logo {
+    transform: scale(3.5);
+    margin-bottom: 64px;
+}
+
+.login-form {
+    border: 2px solid #5781A8;
+    border-radius: 8px;
+}
+
+.flex-centered {
+    display: flex;
+    justify-content: center;
+}
+
+.flex-column {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.table.is-hoverable tbody tr:not(.is-selected):hover {
+    background-color: #f6f4f4;
+}
+
+.app-container {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+.main-section {
+    flex-grow: 2;
+    display: flex;
+    flex-direction: column;
+}
+
+.footer {
+    padding: 0;
+    border-top: 1px solid #e4e4e4;
+}
+
+.footer-links {
+    margin: 0 16px;
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+}
+
+.footer-links--item {
+    padding: 8px;
+}
+
+.flex-center {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.no-margin {
+    margin: 0 !important;
+}
+
+.no-top-margin {
+    margin-top: 0 !important;
+}
+
+.divider {
+    margin: 4px auto 0px;
+    /* width: 50%; */
+    color: black;
+    border-top: #00000011 .01rem solid;
+}
+
+.flex-spacer {
+    flex-grow: 2;
+}
+
+.header {
+    display: block;
+    position: relative;
+    overflow: hidden;
+}
+
+.headline.smaller {
+    margin: 2% !important;
+}
+
+.headline {
+    padding: 8rem 0;
+    z-index: 1;
+}
+
+.headline.smaller {
+    padding: 2% !important;
+}
+
+.main-section .columns.centered {
+    max-width: 1150px;
+    justify-content: center;
+    align-items: center;
+    margin: 0 auto 4rem;
+}
+
+.main-section .columns.margin-top--small {
+    margin-top: 2% !important;
+}
+
+.main-section .columns .column.extra-padding {
+    padding: 1.5rem;
+}
+
+.member-column {
+    margin: 0 auto 2.5rem !important;
+}
+
+.team-member {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    padding: 8px;
+    border-radius: 4px;
+}
+
+.negative-bottom-margin {
+    margin-bottom: -8px;
+}
+
+.subtitle-team {
+    margin-bottom: 0 !important;
+}
+
+.member-image {
+    min-width: 150px;
+    max-width: 150px;
+}
+
+.member-image img {
+    border-radius: 50%;
+}
+
+.member-content {
+    margin-left: 32px;
+    text-align: justify;
+}
+
+.row {
+    display: flex;
+    flex-wrap: wrap;
+    flex: 1 1 auto;
+}
+
+.col-4 {
+    flex: 0 0 33.3333333333%;
+    max-width: 33.3333333333%;
+}
+
+.container.center {
+    max-width: 800px;
+    padding: 16px;
+}
+
+.container h2.header {
+    margin-top: 48px;
+}
+
+.container .margin-bottom {
+    margin-bottom: 24px;
+}
+
+.box.outlined {
+    box-shadow: none;
+    border: 1px solid #00000015;
+}
+.tile.outlined {
+    box-shadow: none;
+}
+
+.card-clean {
+    box-shadow: none !important;
+    background-color: transparent;
+}
+
+.card-header-title {
+    position: absolute;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.308);
+    width: 100%;
+}
+
+.card-header-title a {
+    color: white;
+    text-decoration: none;
+}
+
+.card-header-title a:hover {
+    color: white;
+    text-decoration: none;
+}
+
+.card-header-actions {
+    position: absolute;
+    top: 0;
+    z-index: 1;
+    background: rgba(0, 0, 0, 0.308);
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    width: 100%;
+}
+
+.card-header-tag {
+    padding: .75rem 1rem;
+}
+
+.card-header-action a {
+    color: white;
+}
+
+.card-text {
+    color: #6A7F93;
+}
+
+.card-image--small {
+    width: 40%;
+}
+
+.ml-auto {
+    margin-left: auto !important;
+}
+
+.feature_showcase {
+    display: flex;
+    flex-direction: column;
+    padding: 1.5rem;
+}
+
+.feature_showcase .card-content {
+    padding: 1.5rem 0 0;
+}
+
+.typewriter {
+    font-family: Courier, monospace;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    height: 100%;
+}
+
+.typewriter-text {
+    display: inline-block;
+    overflow: hidden; /* Ensures the content is not revealed until the animation */
+    border-right: .15em solid orange; /* The typwriter cursor */
+    white-space: nowrap; /* Keeps the content on a single line */
+    margin: 0 auto 0 0; /* Gives that scrolling effect as the typing happens */
+    letter-spacing: .15em; /* Adjust as needed */
+    animation: typing 3.5s steps(40, end),
+    blink-caret .75s step-end infinite;
+}
+
+/* The typing effect */
+@keyframes typing {
+  from { width: 0 }
+  to { width: 100% }
+}
+
+/* The typewriter cursor effect */
+@keyframes blink-caret {
+  from, to { border-color: transparent }
+  50% { border-color: #ff6600; }
+}
+
+.navbar {
+    min-height: 4.25rem;
+}
+.media_course_name {
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    max-width: 150px;
+}

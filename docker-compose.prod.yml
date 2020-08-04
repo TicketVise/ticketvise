@@ -1,0 +1,61 @@
+version: '3.7'
+
+services:
+  database:
+    deploy:
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 5
+        window: 10s
+
+  web:
+    image: docker.pkg.github.com/ticketvise/ticketvise/backend:develop
+    command: >
+      sh -c "python manage.py wait_for_database &&
+             python manage.py migrate --no-input &&
+             python generate_database.py &&
+             gunicorn ticketvise.wsgi:application --bind 0.0.0.0:6000"
+    deploy:
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 5
+        window: 10s
+    volumes:
+      - media:/backend/ticketvise/media
+      - static:/backend/ticketvise/static
+
+  proxy:
+    image: docker.pkg.github.com/ticketvise/ticketvise/proxy:develop
+    deploy:
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 5
+        window: 10s
+    ports:
+      - 80:8080
+      - 443:8443
+    volumes:
+      - media:/home/media:ro
+      - static:/home/static:ro
+      - cert_conf:/etc/letsencrypt
+      - cert_www:/var/www/certbot
+
+  certbot:
+    image: certbot/certbot
+    deploy:
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 5
+        window: 10s
+    volumes:
+      - cert_conf:/etc/letsencrypt
+      - cert_www:/var/www/certbot
+    entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done;'"
+
+volumes:
+  cert_conf:
+  cert_www:

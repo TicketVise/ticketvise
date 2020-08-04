@@ -1,0 +1,66 @@
+name: CI/CD
+
+on:
+  push:
+    branches: [master, develop]
+  pull_request:
+    branches: [master, develop]
+
+jobs:
+
+  build-test-deploy:
+    name: Build, test and deploy
+    runs-on: ubuntu-latest
+    steps:
+
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Setup test environment
+        run: docker-compose up -d --build
+
+      - name: Test backend
+        run: docker-compose exec -T web sh -c "python manage.py wait_for_database && python manage.py test --parallel --failfast --no-input"
+
+      - name: Set up Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v1
+        with:
+          node-version: ${{ matrix.node-version }}
+
+      - name: Test and build frontend
+        run: |
+          npm ci
+          npm run build
+          npm test
+
+      - name: Build and push proxy Docker image to GitHub packages
+        uses: docker/build-push-action@v1
+        with:
+          username: ${{ github.actor }}
+          password: ${{ github.token }}
+          registry: docker.pkg.github.com
+          path: nginx
+          repository: ticketvise/ticketvise/proxy
+          build-push-action: true
+          tag_with_ref: true
+          tag_with_sha: true
+
+      - name: Build and push backend Docker image to GitHub packages
+        uses: docker/build-push-action@v1
+        with:
+          username: ${{ github.actor }}
+          password: ${{ github.token }}
+          registry: docker.pkg.github.com
+          repository: ticketvise/ticketvise/backend
+          build-push-action: true
+          tag_with_ref: true
+          tag_with_sha: true
+
+      - name: Deploy to Docker Swarm
+        uses: sagebind/docker-swarm-deploy-action@v2
+        if: github.event_name == 'push'
+        with:
+          remote_host: ${{ secrets.DOCKER_SSH_HOST }}
+          ssh_private_key: ${{ secrets.DOCKER_SSH_PRIVATE_KEY }}
+          ssh_public_key: ${{ secrets.DOCKER_SSH_PUBLIC_KEY }}
+          args: stack deploy --with-registry-auth -c docker-compose.yml -c docker-compose.prod.yml ticketvise
