@@ -20,4 +20,4 @@ class HomeView(LoginRequiredMixin, TemplateView):
     :var int error_code: The error code.
     :var str template_name: Name of the template to render.
     """
-    template_name = "courses.html"
+    template_name = "inboxs.html"

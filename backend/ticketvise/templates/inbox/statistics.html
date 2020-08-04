@@ -1,9 +1,9 @@
-{% extends "course/base.html" %}
+{% extends "inbox/base.html" %}
 {% load ticketvise_extras %}
 
-<!-- STATISTICS FOR COORDINATOR ABOUT COURSE AND ITS ASSISTANTS. -->
+<!-- STATISTICS FOR COORDINATOR ABOUT INBOX AND ITS ASSISTANTS. -->
 
-{% block course-content %}
+{% block inbox-content %}
 
     <div class="container">
 
@@ -19,7 +19,7 @@
                 <div class="flex items-baseline mt-1">
                     <h2 class="text-2xl font-medium">{{ current_week_pending }}</h2>
                     <span class="ml-2 text-sm flex-grow text-gray-600">from {{ last_week_pending }} last week</span>
-                    {% include "course/stat_increase_label.html" with value=pending_pct %}
+                    {% include "inbox/stat_increase_label.html" with value=pending_pct %}
                 </div>
             </div>
             <div class="flex-grow border-r-2 p-4">
@@ -29,7 +29,7 @@
                 <div class="flex items-baseline mt-1">
                     <h2 class="text-2xl font-medium">{{ current_week_assigned }}</h2>
                     <span class="ml-2 text-sm flex-grow text-gray-600">from {{ last_week_assigned }} last week</span>
-                    {% include "course/stat_increase_label.html" with value=assigned_pct %}
+                    {% include "inbox/stat_increase_label.html" with value=assigned_pct %}
                 </div>
             </div>
             <div class="flex-grow p-4 border-r-2">
@@ -39,7 +39,7 @@
                 <div class="flex items-baseline mt-1">
                     <h2 class="text-2xl font-medium">{{ current_week_answered }}</h2>
                     <span class="ml-2 text-sm flex-grow text-gray-600">from {{ last_week_answered }} last week</span>
-                    {% include "course/stat_increase_label.html" with value=answered_pct %}
+                    {% include "inbox/stat_increase_label.html" with value=answered_pct %}
                 </div>
             </div>
             <div class="flex-grow p-4">
@@ -49,7 +49,7 @@
                 <div class="flex items-baseline mt-1">
                     <h2 class="text-2xl font-medium">{{ current_week_closed }}</h2>
                     <span class="ml-2 text-sm flex-grow text-gray-600">from {{ last_week_closed }} last week</span>
-                    {% include "course/stat_increase_label.html" with value=closed_pct %}
+                    {% include "inbox/stat_increase_label.html" with value=closed_pct %}
                 </div>
             </div>
         </div>
@@ -89,4 +89,4 @@
         </div>
     </div>
 
-{% endblock course-content %}
+{% endblock inbox-content %}

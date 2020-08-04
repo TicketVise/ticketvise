@@ -1,7 +1,7 @@
 """
-Test Courses
+Test Inboxs
 -------------------------------
-This file tests the functionality of the courses/home page.
+This file tests the functionality of the inboxes/home page.
 """
 from urllib.parse import urlencode
 
@@ -9,10 +9,10 @@ from django.test import TestCase, Client
 from django.urls import reverse
 
 from ticketvise.models.user import User
-from ticketvise.tests.utils import create_course
+from ticketvise.tests.utils import create_inbox
 
 
-class CourseConfigureTestCase(TestCase):
+class InboxConfigureTestCase(TestCase):
     def setUp(self):
         """
         Set up the database for the tests.
@@ -27,38 +27,38 @@ class CourseConfigureTestCase(TestCase):
         self.coordinator = User.objects.create_user(username="coordinator", email="coordinator@ticketvise.com",
                                                     password="test12345", is_staff=False)
 
-    def test_courses_page_student_200(self):
+    def test_inboxs_page_student_200(self):
         """
-        Authorized users should see the courses page.
+        Authorized users should see the inboxes page.
         """
         self.client.force_login(self.student)
-        course = create_course("TestCourse", "TestCourse")
-        self.student.add_course(course, User.Roles.STUDENT)
-        response = self.client.get(reverse("courses"))
+        inbox = create_inbox("TestInbox", "TestInbox")
+        self.student.add_inbox(inbox, User.Roles.STUDENT)
+        response = self.client.get(reverse("inboxs"))
         self.assertEqual(response.status_code, 200)
 
-    def test_courses_page_assistant_200(self):
+    def test_inboxs_page_assistant_200(self):
         """
-        Authorized users should see the courses page.
+        Authorized users should see the inboxes page.
 
         :return: None.
         """
         self.client.force_login(self.assistant)
-        course = create_course("TestCourse", "TestCourse")
-        self.assistant.add_course(course, User.Roles.ASSISTANT)
-        response = self.client.get(reverse("courses"))
+        inbox = create_inbox("TestInbox", "TestInbox")
+        self.assistant.add_inbox(inbox, User.Roles.ASSISTANT)
+        response = self.client.get(reverse("inboxs"))
         self.assertEqual(response.status_code, 200)
 
-    def test_courses_page_coordinator_200(self):
+    def test_inboxs_page_coordinator_200(self):
         """
-        Authorized users should see the courses page.
+        Authorized users should see the inboxes page.
 
         :return: None.
         """
         self.client.login(username=self.coordinator.username, password="test12345")
-        course = create_course("TestCourse", "TestCourse")
-        self.coordinator.add_course(course, User.Roles.COORDINATOR)
-        response = self.client.get(reverse("courses"))
+        inbox = create_inbox("TestInbox", "TestInbox")
+        self.coordinator.add_inbox(inbox, User.Roles.COORDINATOR)
+        response = self.client.get(reverse("inboxs"))
         self.assertEqual(response.status_code, 200)
 
     def test_flip_bookmark(self):
@@ -68,27 +68,27 @@ class CourseConfigureTestCase(TestCase):
         :return: None
         """
         self.client.login(username=self.coordinator.username, password="test12345")
-        course = create_course("TestCourse", "TestCourse")
-        self.coordinator.add_course(course, User.Roles.COORDINATOR)
-        relation = self.coordinator.get_entry_by_course(course)
+        inbox = create_inbox("TestInbox", "TestInbox")
+        self.coordinator.add_inbox(inbox, User.Roles.COORDINATOR)
+        relation = self.coordinator.get_entry_by_inbox(inbox)
         self.assertFalse(relation.is_bookmarked)
 
         data = {
-            "course_id": course.id,
+            "inbox_id": inbox.id,
         }
 
         # Check if bookmarked can be flipped to true
-        response = self.client.post("/courses", urlencode(data), follow=True,
+        response = self.client.post("/inboxes", urlencode(data), follow=True,
                                     content_type="application/x-www-form-urlencoded")
-        self.assertTrue(response.redirect_chain, "/courses")
+        self.assertTrue(response.redirect_chain, "/inboxes")
 
-        relation = self.coordinator.get_entry_by_course(course)
+        relation = self.coordinator.get_entry_by_inbox(inbox)
         self.assertTrue(relation.is_bookmarked)
 
         # Check if bookrmarked can be flipped to false
-        response = self.client.post("/courses", urlencode(data), follow=True,
+        response = self.client.post("/inboxes", urlencode(data), follow=True,
                                     content_type="application/x-www-form-urlencoded")
-        self.assertTrue(response.redirect_chain, "/courses")
+        self.assertTrue(response.redirect_chain, "/inboxes")
 
-        relation = self.coordinator.get_entry_by_course(course)
+        relation = self.coordinator.get_entry_by_inbox(inbox)
         self.assertFalse(relation.is_bookmarked)

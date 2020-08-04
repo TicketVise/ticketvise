@@ -9,35 +9,27 @@ from django.contrib.auth.tokens import default_token_generator
 from django.template.defaultfilters import stringfilter
 from django.utils.http import urlsafe_base64_encode
 
-from ..utils import get_text_color, edit_course_image_to_base64
+from ..utils import get_text_color, edit_inbox_image_to_base64
 
 register = template.Library()
 
 
 @register.simple_tag
 def abs_value(value):
-    """
-    Crop and color filter the course image, return the base64-encoded image.
-
-    :param Course course: Course to filter the image from.
-
-    :return: The course image color filtered, cropped in base64.
-    :rtype: str
-    """
     return abs(value)
 
 
 @register.simple_tag
-def get_base64_course_image(course):
+def get_base64_inbox_image(inbox):
     """
-    Crop and color filter the course image, return the base64-encoded image.
+    Crop and color filter the inbox image, return the base64-encoded image.
 
-    :param Course course: Course to filter the image from.
+    :param Inbox inbox: Inbox to filter the image from.
 
-    :return: The course image color filtered, cropped in base64.
+    :return: The inbox image color filtered, cropped in base64.
     :rtype: str
     """
-    return edit_course_image_to_base64(course.image, course.color)
+    return edit_inbox_image_to_base64(inbox.image, inbox.color)
 
 
 @register.simple_tag
@@ -54,72 +46,72 @@ def get_label_text_color(label):
 
 
 @register.simple_tag
-def get_user_role(user, course):
+def get_user_role(user, inbox):
     """
     Get the role of a user.
 
     :param User user: The user.
-    :param Course course: The course.
+    :param Inbox inbox: The inbox.
 
-    :return: The role of the user in the course.
+    :return: The role of the user in the inbox.
     :rtype: User.Roles
     """
-    return user.get_role_by_course(course)
+    return user.get_role_by_inbox(inbox)
 
 
 @register.simple_tag
-def get_user_tickets_five(user, course):
+def get_user_tickets_five(user, inbox):
     """
-    Get tickets of this user of this course
+    Get tickets of this user of this inbox
 
     :param User user: The user.
-    :param Course course: The course.
+    :param Inbox inbox: The inbox.
 
-    :return: The tickets of the user in the course.
+    :return: The tickets of the user in the inbox.
     :rtype: <Queryset>
     """
-    return user.get_tickets_by_course(course)[:5]
+    return user.get_tickets_by_inbox(inbox)[:5]
 
 
 @register.simple_tag
-def user_is_assistant_or_coordinator(user, course):
+def user_is_assistant_or_coordinator(user, inbox):
     """
-    Check if a user is an assistant or coordinator for a course.
+    Check if a user is an assistant or coordinator for a inbox.
 
     :param User user: The user.
-    :param Course course: The course.
+    :param Inbox inbox: The inbox.
 
-    :return: If the user is assistant or coordinator in the course.
+    :return: If the user is assistant or coordinator in the inbox.
     :rtype: bool
     """
-    return user.is_assistant_or_coordinator(course)
+    return user.is_assistant_or_coordinator(inbox)
 
 
 @register.simple_tag
-def user_is_coordinator(user, course):
+def user_is_coordinator(user, inbox):
     """
     Check if a user is a coordinator.
 
     :param User user: The user.
-    :param Course course: The course.
+    :param Inbox inbox: The inbox.
 
-    :return: If the user is assistant or coordinator in the course.
+    :return: If the user is assistant or coordinator in the inbox.
     :rtype: bool
     """
-    return user.is_coordinator_for_course(course)
+    return user.is_coordinator_for_inbox(inbox)
 
 
 @register.simple_tag
-def user_has_bookmarked(user, course):
+def user_has_bookmarked(user, inbox):
     """
-    Check if the course is bookmarked by the user.
+    Check if the inbox is bookmarked by the user.
 
     :param User user: The user
-    :param Course course: The course.
+    :param Inbox inbox: The inbox.
     :return: is_bookmarked
     :rtype: bool
     """
-    return user.get_entry_by_course(course).is_bookmarked
+    return user.get_entry_by_inbox(inbox).is_bookmarked
 
 
 @register.filter()

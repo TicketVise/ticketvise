@@ -7,7 +7,7 @@ from random import choice
 from string import ascii_uppercase, ascii_lowercase, digits
 
 from ticketvise.models.comment import Comment
-from ticketvise.models.inbox import Course
+from ticketvise.models.inbox import Inbox
 from ticketvise.models.label import Label
 from ticketvise.models.ticket import Ticket
 from ticketvise.models.user import User
@@ -47,29 +47,29 @@ def random_color():
     return f"#{random_string(chars=digits)}"
 
 
-def create_course(name="", code="", color=""):
+def create_inbox(name="", code="", color=""):
     """
-    Create new course with random course code and color
+    Create new inbox with random inbox code and color
 
-    :param str name: Name of the course.
-    :param str code: Code of the course.
-    :param str color: Color of the course.
+    :param str name: Name of the inbox.
+    :param str code: Code of the inbox.
+    :param str color: Color of the inbox.
 
-    :return: Course.
-    :rtype: Course
+    :return: Inbox.
+    :rtype: Inbox
     """
     name = name or random_string()
     code = code or random_string()
     color = color or random_color()
 
-    return Course.objects.create(name=name, code=code, color=color)
+    return Inbox.objects.create(name=name, code=code, color=color)
 
 
-def create_label(course=None, name="", color="", is_form_label=True, is_active=True):
+def create_label(inbox=None, name="", color="", is_form_label=True, is_active=True):
     """
     Create a new label with random color for testing.
 
-    :param Course course: Associated course.
+    :param Inbox inbox: Associated inbox.
     :param str name: Name of the label.
     :param str color: Colorcode of the label.
     :param str scheduling_algorithm: Associated algorithm for scheduling.
@@ -80,18 +80,18 @@ def create_label(course=None, name="", color="", is_form_label=True, is_active=T
     :return: Label.
     :rtype: Label
     """
-    course = course or create_course()
+    inbox = inbox or create_inbox()
     name = name or random_string()
     color = color or random_color()
 
-    return Label.objects.create(course=course, name=name, color=color,
+    return Label.objects.create(inbox=inbox, name=name, color=color,
                                 is_form_label=is_form_label,
                                 is_active=is_active)
 
 
 def create_user(username="", password="", email="", first_name="", last_name=""):
     """
-    Create a new user with a role and a course in the database.
+    Create a new user with a role and a inbox in the database.
 
     :param str username: Username of the user.
     :param str password: Password of the user.
@@ -111,14 +111,14 @@ def create_user(username="", password="", email="", first_name="", last_name="")
 
     return user
 
-def create_ticket(author=None, assignee=None, course=None, title="",
+def create_ticket(author=None, assignee=None, inbox=None, title="",
                   status=Ticket.Status.PENDING, content="", labels=[]):
     """
     Create a ticket with random content for testing.
 
     :param User author: Author of ticket.
     :param User assignee: User assigned to ticket.
-    :param Course course: Associated course.
+    :param Inbox inbox: Associated inbox.
     :param str title: Title of ticket.
     :param str status: The status of the ticket.
 
@@ -126,11 +126,11 @@ def create_ticket(author=None, assignee=None, course=None, title="",
     :rtype: Ticket
     """
     author = author or create_user()
-    course = course or create_course()
+    inbox = inbox or create_inbox()
     title = title or random_string()
     content = content or random_string()
 
-    ticket = Ticket.objects.create(author=author, assignee=assignee, course=course,
+    ticket = Ticket.objects.create(author=author, assignee=assignee, inbox=inbox,
                                    title=title, content=content, status=status)
     for label in labels:
         ticket.labels.add(label)

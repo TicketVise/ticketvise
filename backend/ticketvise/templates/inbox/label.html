@@ -82,7 +82,7 @@
         </form>
 
         {% if label.id %}
-            <form action="{% url 'delete_course_label' course_id=label.course.id pk=label.id %}" method="post"
+            <form action="{% url 'delete_inbox_label' inbox_id=label.inbox.id pk=label.id %}" method="post"
                   onsubmit="return confirm('Are you sure?')">
                 {% csrf_token %}
 

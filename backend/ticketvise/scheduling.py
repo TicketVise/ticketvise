@@ -2,9 +2,9 @@
 Scheduling
 -------------------------------
 Schedules the ticket according to its labels or the scheduling policy of
-the course.
+the inbox.
 """
-from ticketvise.models.inbox import Course, SchedulingAlgorithm
+from ticketvise.models.inbox import Inbox, SchedulingAlgorithm
 from ticketvise.models.ticket import Ticket
 
 
@@ -13,25 +13,25 @@ def schedule_ticket(ticket: Ticket):
     Assign a :class:`Ticket` to the proper :class:`User`.
     To assign a ticket to the proper user, a scheduling algorithm is used that can be derived from the ticket.
     If the ticket has a label with a priority, then the ticket is scheduled by the scheduling algorithm of the label.
-    If the ticket has no label with a prioruty, then the ticket is scheduled by the scheduling algorithm of the course.
+    If the ticket has no label with a prioruty, then the ticket is scheduled by the scheduling algorithm of the inbox.
 
     :param Ticket ticket: The ticket to schedule.
 
     :return: None.
     """
-    schedule(ticket.course.scheduling_algorithm, ticket)
+    schedule(ticket.inbox.scheduling_algorithm, ticket)
 
 
-def schedule_by_course(course: Course):
+def schedule_by_inbox(inbox: Inbox):
     """
-    Gets the scheduling algorithm of a :class:`Course`.
+    Gets the scheduling algorithm of a :class:`Inbox`.
 
-    :param Course course: The course to get the scheduling algorithm of.
+    :param Inbox inbox: The inbox to get the scheduling algorithm of.
 
-    :return: The scheduling algorithm of the course.
+    :return: The scheduling algorithm of the inbox.
     :rtype: str
     """
-    return course.scheduling_algorithm
+    return inbox.scheduling_algorithm
 
 
 def schedule(scheduling_algorithm, ticket: Ticket):
@@ -41,7 +41,7 @@ def schedule(scheduling_algorithm, ticket: Ticket):
     :param str scheduling_algorithm: Scheduling algorithm to use.
     :param Ticket ticket: :class:`Ticket` to schedule.
     :param Label label: :class:`Label` that was used to schedule the ticket. Can be ``None``.
-    :param bool use_course_algorithm: Whether to use the :class:`Course` scheduling
+    :param bool use_inbox_algorithm: Whether to use the :class:`Inbox` scheduling
                                       algorithm or the :class:`Label` scheduling algorithm.
 
     :return: None.
@@ -61,21 +61,21 @@ def schedule(scheduling_algorithm, ticket: Ticket):
 def schedule_round_robin(ticket: Ticket):
     """
     Assign a ticket to the assistants in a round-robin fashion.
-    The round-robin scheduling is done globally for the course: each label contributes
-    to the round-robin parameter of the course.
+    The round-robin scheduling is done globally for the inbox: each label contributes
+    to the round-robin parameter of the inbox.
 
     :param Ticket ticket: :class:`Ticket` that needs to be scheduled.
     :param Label label: :class:`Label` that was used to schedule the ticket.
-    :param bool use_course_algorithm: Whether to use the :class:`Course` scheduling
+    :param bool use_inbox_algorithm: Whether to use the :class:`Inbox` scheduling
                                       algorithm or the :class:`Label` scheduling algorithm.
 
     :return: None.
     """
-    course = ticket.course
-    course_assistants = course.get_assistants_and_coordinators()
-    num_assistants = course_assistants.count()
-    new_assignee = course_assistants[course.round_robin_parameter % num_assistants]
-    course.round_robin_parameter_increase()
+    inbox = ticket.inbox
+    inbox_assistants = inbox.get_assistants_and_coordinators()
+    num_assistants = inbox_assistants.count()
+    new_assignee = inbox_assistants[inbox.round_robin_parameter % num_assistants]
+    inbox.round_robin_parameter_increase()
     ticket.assign_to(new_assignee)
 
 
@@ -87,14 +87,14 @@ def schedule_least_assigned_first(ticket: Ticket):
 
     :return: None.
     """
-    course = ticket.course
-    course_assistants = course.get_assistants_and_coordinators()
+    inbox = ticket.inbox
+    inbox_assistants = inbox.get_assistants_and_coordinators()
     min_assignee = None
     min_count = None
 
     # Find the assistant that is assigned to the least number of tickets.
-    for assistant in course_assistants:
-        assigned_count = course.tickets.filter(assignee=assistant).count()
+    for assistant in inbox_assistants:
+        assigned_count = inbox.tickets.filter(assignee=assistant).count()
 
         if min_assignee is None or assigned_count < min_count:
             min_assignee = assistant

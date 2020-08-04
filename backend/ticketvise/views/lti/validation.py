@@ -30,11 +30,11 @@ class LtiLaunchForm(forms.Form):
     custom_email = forms.EmailField()
     #: The profile picture of the user.
     custom_image_url = forms.URLField()
-    #: The name of the course of the user.
-    custom_course_name = forms.CharField()
-    #: The code of the course.
+    #: The name of the inbox of the user.
+    custom_inbox_name = forms.CharField()
+    #: The code of the inbox.
     context_label = forms.CharField()
-    #: The role of user in the course.
+    #: The role of user in the inbox.
     roles = forms.CharField()
 
     def __init__(self, *args, **kwargs):

@@ -1,11 +1,11 @@
 """
-Courses
+Inboxs
 -------------------------------
-Contains the view for the courses overview.
+Contains the view for the inboxes overview.
 
 **Table of contents**
 
-* :class:`CoursesView`
+* :class:`InboxesView`
 """
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.forms import ModelForm
@@ -13,45 +13,45 @@ from django.http import HttpResponseRedirect
 from django.urls import reverse
 from django.views.generic import TemplateView
 
-from ticketvise.models.inbox import Course
-from ticketvise.models.user import UserCourseRelationship
+from ticketvise.models.inbox import Inbox
+from ticketvise.models.user import UserInbox
 
 
-class BookmarkCourseForm(ModelForm):
+class BookmarkInboxForm(ModelForm):
     class Meta:
         """
         Define the model and fields.
 
-        :var UserCourseRelationship model: The model.
+        :var UserInbox model: The model.
         :var list fields: Fields defined to the model.
         """
 
-        model = UserCourseRelationship
+        model = UserInbox
         fields = ["is_bookmarked"]
 
 
-class CoursesView(LoginRequiredMixin, TemplateView):
+class InboxesView(LoginRequiredMixin, TemplateView):
     """
-    Display all the courses for a user.
+    Display all the inboxes for a user.
 
     :var str template_name: The name of the template to be rendered.
     :var User user: The user visiting the page.
-    :var QuerySet<:class: `Course`> courses: The courses to display.
-    :var int num_courses: The total number of courses.
+    :var QuerySet<:class: `Inbox`> inboxes: The inboxes to display.
+    :var int num_inboxs: The total number of inboxes.
     :var int tiles_per_row: The amount of tiles in a row.
     :var int num_tiles_needed: The amount of empty tiles to get formatting nice.
     """
 
-    template_name = "courses.html"
+    template_name = "inboxs.html"
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        # entries = UserCourseRelationship.objects.filter(user=self.user).order_by("-is_bookmarked").values("course")
-        # course_ids = list(map(lambda entry: entry["course"], entries))
-        context["courses"] = Course.objects.filter(user_relationship__user=self.request.user).order_by(
+        # entries = UserInbox.objects.filter(user=self.user).order_by("-is_bookmarked").values("inbox")
+        # inbox_ids = list(map(lambda entry: entry["inbox"], entries))
+        context["inboxes"] = Inbox.objects.filter(user_relationship__user=self.request.user).order_by(
             "-user_relationship__is_bookmarked")
         context['tiles_per_row'] = 3
-        context['num_tiles_needed'] = context['tiles_per_row'] - context["courses"].count() % context['tiles_per_row']
+        context['num_tiles_needed'] = context['tiles_per_row'] - context["inboxes"].count() % context['tiles_per_row']
         context['extra_tiles_list'] = list(range(context['num_tiles_needed']))
 
         return context
@@ -66,24 +66,24 @@ class CoursesView(LoginRequiredMixin, TemplateView):
     #
     #     :return: None.
     #     """
-    #     self.courses = request.user.courses.all()
-    #     self.num_courses = self.courses.count()
+    #     self.inboxes = request.user.inboxes.all()
+    #     self.num_inboxs = self.inboxes.count()
     #
     #     # The number of extra tiles needed to make sure that every row of tiles contains 3 tiles.
     #     self.tiles_per_row = 3
-    #     self.num_tiles_needed = self.tiles_per_row - self.num_courses % self.tiles_per_row
+    #     self.num_tiles_needed = self.tiles_per_row - self.num_inboxs % self.tiles_per_row
     #     self.extra_tiles_list = list(range(self.num_tiles_needed))
     #
     #     return super().dispatch(request, *args, **kwargs)
 
     def post(self, request):
-        if request.POST["course_id"]:
-            course = Course.objects.get(pk=request.POST["course_id"])
-            if not request.user.has_course(course):
-                raise ValueError(f"User is not assigned to or enrolled in course {course}")
+        if request.POST["inbox_id"]:
+            inbox = Inbox.objects.get(pk=request.POST["inbox_id"])
+            if not request.user.has_inbox(inbox):
+                raise ValueError(f"User is not assigned to or enrolled in inbox {inbox}")
 
-            relation = request.user.get_entry_by_course(course)
+            relation = request.user.get_entry_by_inbox(inbox)
             relation.is_bookmarked = not relation.is_bookmarked
             relation.save()
 
-        return HttpResponseRedirect(reverse("courses"))
+        return HttpResponseRedirect(reverse("inboxs"))

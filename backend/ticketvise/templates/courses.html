@@ -1,19 +1,19 @@
-<!-- THE WEBPAGE FOR THE COURSE OVERVIEW. -->
+<!-- THE WEBPAGE FOR THE INBOX OVERVIEW. -->
 
 {% extends "navigation.html" %}
 
 {% block content %}
 
     <!-- THE TITLE AND SUBTITLE OF THE PAGE. -->
-    {% include "utils/page_header.html" with title="Select your course" %}
+    {% include "utils/page_header.html" with title="Select your inbox" %}
 
     {% load ticketvise_extras %}
     <section class="section">
         <div class="container">
-            <!-- ADD A CARD FOR EVERY COURSE OF THE USER. -->
-            {% for course in courses %}
+            <!-- ADD A CARD FOR EVERY INBOX OF THE USER. -->
+            {% for inbox in inboxs %}
                 <!--GET THE ROLE OF THE USER-->
-                {% get_user_role user course as role %}
+                {% get_user_role user inbox as role %}
 
                 <!-- ADD A NEW ROW EVERY 3 CARDS. -->
                 {% if forloop.counter0|divisibleby:tiles_per_row %}
@@ -21,12 +21,12 @@
                 {% endif %}
             <div class="tile is-parent">
                 <div class="card tile is-child">
-                    <!-- COURSE IMAGE -->
+                    <!-- INBOX IMAGE -->
                     <div class="card-image">
                         <figure class="image is-4by3">
-                            <a href="{% url 'ticket_overview' course.id %}" class="card-header-icon"
+                            <a href="{% url 'ticket_overview' inbox.id %}" class="card-header-icon"
                                aria-label="more options">
-                                {% include "utils/course_image.html" %}
+                                {% include "utils/inbox_image.html" %}
                             </a>
                         </figure>
 
@@ -34,12 +34,12 @@
                              style="overflow: hidden; text-overflow: ellipsis;">
                             <!-- CARD NEW BOOKMARK ACTION-->
                             <div class="card-header-action is-size-5">
-                                <form name="bookmark_{{ course.id }}" id="bookmark" method="POST">
+                                <form name="bookmark_{{ inbox.id }}" id="bookmark" method="POST">
                                     {% csrf_token %}
-                                    <input type="hidden" name="course_id" value="{{ course.id }}">
+                                    <input type="hidden" name="inbox_id" value="{{ inbox.id }}">
                                     <a class="pl-0 card-footer-item" aria-label="more options"
-                                       onclick="document.forms['bookmark_{{ course.id }}'].submit()">
-                                        {% user_has_bookmarked user course as bookmarked %}
+                                       onclick="document.forms['bookmark_{{ inbox.id }}'].submit()">
+                                        {% user_has_bookmarked user inbox as bookmarked %}
                                         {% if bookmarked %}
                                             <i class="fa fa-bookmark" aria-hidden="true"></i>
                                         {% else %}
@@ -49,22 +49,22 @@
                                 </form>
                             </div>
 
-                            <!-- COURSE NAME. -->
-                            <a href="{% url 'ticket_overview' course.id %}">
-                                {{ course.name }}
+                            <!-- INBOX NAME. -->
+                            <a href="{% url 'ticket_overview' inbox.id %}">
+                                {{ inbox.name }}
                             </a>
                         </div>
 
                         <div class="card-header-actions">
-                            <!-- COURSE CODE -->
+                            <!-- INBOX CODE -->
                             <div class="card-header-tag">
-                                <span class="tag is-white has-text-info">{{ course.code }}</span>
+                                <span class="tag is-white has-text-info">{{ inbox.code }}</span>
                             </div>
 
-                            <!-- CARD COURSE CONFIGURE ACTION -->
+                            <!-- CARD INBOX CONFIGURE ACTION -->
                             {% if role != ROLE_STUDENT %}
                                 <div class="card-header-action is-size-5">
-                                    <a href="{% url 'course_settings' course.id %}" class="card-footer-item"
+                                    <a href="{% url 'inbox_settings' inbox.id %}" class="card-footer-item"
                                        aria-label="more options">
                                             <span class="icon mr-1 is-size-6">
                                                 <i class="fa fa-cog" aria-hidden="true"></i>
@@ -76,7 +76,7 @@
 
                             <!-- CARD NEW TICKET ACTION -->
                             <div class="card-header-action is-size-5">
-                                <a href="{% url 'new_ticket' course.id %}" class="card-footer-item"
+                                <a href="{% url 'new_ticket' inbox.id %}" class="card-footer-item"
                                    aria-label="more options">
                                             <span class="icon mr-1 is-size-6">
                                                 <i class="fa fa-plus" aria-hidden="true"></i>

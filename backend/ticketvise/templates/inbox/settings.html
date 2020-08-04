@@ -1,7 +1,7 @@
-{% extends "course/base.html" %}
+{% extends "inbox/base.html" %}
 {% load ticketvise_extras %}
 
-{% block course-content %}
+{% block inbox-content %}
     <div class="container my-4">
         <form method="post">
             {% csrf_token %}
@@ -9,10 +9,10 @@
             <div class="mb-4">
                 <div class="bg-gray-50 px-4 py-3 sm:gap-4 sm:px-6 border-b-2">
                     <h3 class="text-lg leading-6 font-medium text-gray-900">
-                        Course
+                        Inbox
                     </h3>
                     <p class="mt-1 max-w-2xl text-sm leading-5 text-gray-500">
-                        Manager course properties.
+                        Manager inbox properties.
                     </p>
                 </div>
                 <div class="bg-gray-50 px-4 py-3 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6 border-b-2">
@@ -61,7 +61,7 @@
                     <dd class="mt-1 text-sm leading-5 text-gray-900 sm:mt-0 sm:col-span-2 flex items-center">
                         <img class="object-contain h-32 w-32 overflow-hidden rounded border-dashed border-4 border-gray-400"
                              style="outline-offset: -6px"
-                             src="{{ course.image.url }}" id="course-image" alt="Course image">
+                             src="{{ inbox.image.url }}" id="inbox-image" alt="Inbox image">
                         <span class="hidden sm:block shadow-sm rounded-md">
                             <button type="button" id="image-button"
                                     class="ml-4 inline-flex items-center px-4 py-2 border border-gray-300 text-sm leading-5 font-medium rounded-md text-gray-700 bg-white hover:text-gray-500 focus:outline-none focus:shadow-outline-blue focus:border-blue-300 active:text-gray-800 active:bg-gray-50">
@@ -175,7 +175,7 @@
         </form>
 
     </div>
-{% endblock course-content %}
+{% endblock inbox-content %}
 
 {% block javascript %}
     <script>
@@ -184,7 +184,7 @@
 
             reader.onload = function (e) {
                 // get loaded data and render thumbnail.
-                document.getElementById("course-image").src = e.target.result;
+                document.getElementById("inbox-image").src = e.target.result;
             };
 
             // read the image file as a data URL.

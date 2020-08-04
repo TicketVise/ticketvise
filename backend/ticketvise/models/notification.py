@@ -39,7 +39,7 @@ class Notification(models.Model):
     def get_content(self):
         raise NotImplementedError
 
-    def get_course(self):
+    def get_inbox(self):
         raise NotImplementedError
 
 
@@ -55,7 +55,7 @@ class MentionNotification(Notification):
         """
         :return: The ticket url of the ticket connected.
         """
-        return reverse("ticket", args=(self.comment.ticket.course_id, self.comment.ticket.ticket_course_id))
+        return reverse("ticket", args=(self.comment.ticket.inbox_id, self.comment.ticket.ticket_inbox_id))
 
     def get_title(self):
         """
@@ -75,11 +75,11 @@ class MentionNotification(Notification):
         """
         return f"You have been mentioned by {self.comment.author.get_full_name()}"
 
-    def get_course(self):
+    def get_inbox(self):
         """
-        :return: URL of the course connected.
+        :return: URL of the inbox connected.
         """
-        return self.comment.ticket.course
+        return self.comment.ticket.inbox
 
     def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
         """
@@ -102,7 +102,7 @@ class CommentNotification(Notification):
         """
         :return: The ticket url of the notification.
         """
-        return reverse("ticket", args=(self.comment.ticket.course_id, self.comment.ticket.ticket_course_id))
+        return reverse("ticket", args=(self.comment.ticket.inbox_id, self.comment.ticket.ticket_inbox_id))
 
     def get_title(self):
         """
@@ -125,11 +125,11 @@ class CommentNotification(Notification):
 
         return f"{self.comment.author.get_full_name()} has posted a comment"
 
-    def get_course(self):
+    def get_inbox(self):
         """
-        :return: URL of the course connected.
+        :return: URL of the inbox connected.
         """
-        return self.comment.ticket.course
+        return self.comment.ticket.inbox
 
     def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
         """

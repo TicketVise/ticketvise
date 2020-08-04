@@ -1,13 +1,13 @@
 from django.test import TestCase, Client
 
 from ticketvise.models.user import User
-from ticketvise.tests.utils import create_label, create_course
+from ticketvise.tests.utils import create_label, create_inbox
 
 
-class CourseTestCase(TestCase):
+class InboxTestCase(TestCase):
     def setUp(self):
         """
-        Set up the database for the course related tests.
+        Set up the database for the inbox related tests.
         """
         self.client = Client()
         self.student = User.objects.create_user(
@@ -31,25 +31,25 @@ class CourseTestCase(TestCase):
         self.coordinator_2 = User.objects.create_user(
             username="coordinator2", email="coordinator2@ticketvise.com", password="test12345", is_staff=False)
 
-        self.course = create_course("course_1_name", "course_1_code")
-        self.course_2 = create_course("course_2_name", "course_2_code")
+        self.inbox = create_inbox("inbox_1_name", "inbox_1_code")
+        self.inbox_2 = create_inbox("inbox_2_name", "inbox_2_code")
 
-        self.student.add_course(self.course, User.Roles.STUDENT)
-        self.student.add_course(self.course_2, User.Roles.STUDENT)
-        self.assistant.add_course(self.course, User.Roles.ASSISTANT)
-        self.coordinator.add_course(self.course, User.Roles.COORDINATOR)
-        self.coordinator_2.add_course(self.course_2, User.Roles.COORDINATOR)
-        self.label = create_label(course=self.course)
-        self.label_2 = create_label(course=self.course_2)
+        self.student.add_inbox(self.inbox, User.Roles.STUDENT)
+        self.student.add_inbox(self.inbox_2, User.Roles.STUDENT)
+        self.assistant.add_inbox(self.inbox, User.Roles.ASSISTANT)
+        self.coordinator.add_inbox(self.inbox, User.Roles.COORDINATOR)
+        self.coordinator_2.add_inbox(self.inbox_2, User.Roles.COORDINATOR)
+        self.label = create_label(inbox=self.inbox)
+        self.label_2 = create_label(inbox=self.inbox_2)
 
         self.template_names = [
-            ("course_user", (self.course.id, self.student.id)),
-            ("course_users", (self.course.id,)),
-            ("course_labels", (self.course.id,)),
-            ("course_settings", (self.course.id,)),
-            ("create_course_label", (self.course.id,)),
-            ("course_statistics", (self.course.id,)),
-            ("edit_course_label", (self.course.id, self.label.id)),
-            ("delete_course_label", (self.course.id, self.label.id)),
-            ("course_user_delete", (self.course.id, self.student.id)),
+            ("inbox_user", (self.inbox.id, self.student.id)),
+            ("inbox_users", (self.inbox.id,)),
+            ("inbox_labels", (self.inbox.id,)),
+            ("inbox_settings", (self.inbox.id,)),
+            ("create_inbox_label", (self.inbox.id,)),
+            ("inbox_statistics", (self.inbox.id,)),
+            ("edit_inbox_label", (self.inbox.id, self.label.id)),
+            ("delete_inbox_label", (self.inbox.id, self.label.id)),
+            ("inbox_user_delete", (self.inbox.id, self.student.id)),
         ]

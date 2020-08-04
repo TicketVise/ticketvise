@@ -18,14 +18,14 @@ from django.urls import reverse
 from django.utils.decorators import method_decorator
 from django.views.generic import TemplateView
 
-from ticketvise.models.inbox import Course
+from ticketvise.models.inbox import Inbox
 from ticketvise.models.label import Label
 from ticketvise.models.ticket import Ticket
 from ticketvise.models.user import User
-from ticketvise.views.api.security import UserIsInCourseMixin
+from ticketvise.views.api.security import UserIsInInboxMixin
 
 
-class TicketOverview(UserIsInCourseMixin, TemplateView):
+class TicketOverview(UserIsInInboxMixin, TemplateView):
     """
     Page to show the overview of the tickets.
     """

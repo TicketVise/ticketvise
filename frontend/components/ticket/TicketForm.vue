@@ -73,7 +73,7 @@ export default {
 
       formData.append("content", content);
       formData.append("title", this.title);
-      formData.append("course", this.course_id);
+      formData.append("inbox", this.course_id);
 
       this.labels.forEach(label => formData.append("labels", label.id))
       this.files.forEach(file => formData.append("files", file))
@@ -87,7 +87,7 @@ export default {
             }
           }
       ).then(() => {
-        // window.location.href = "/courses/" + this.course_id + "/tickets";
+        // window.location.href = "/inboxes/" + this.course_id + "/tickets";
       }).catch(error => {
             this.errors = error.response.data
           }

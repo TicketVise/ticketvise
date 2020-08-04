@@ -9,10 +9,10 @@ os.environ.setdefault("DJANGO_SETTINGS_MODULE", "ticketvise.settings")
 django.setup()
 
 from ticketvise.models.comment import Comment  # noqa: E402
-from ticketvise.models.inbox import Course  # noqa: E402
+from ticketvise.models.inbox import Inbox  # noqa: E402
 from ticketvise.models.label import Label  # noqa: E402
 from ticketvise.models.ticket import Ticket  # noqa: E402
-from ticketvise.models.user import User, UserCourseRelationship  # noqa: E402
+from ticketvise.models.user import User, UserInbox  # noqa: E402
 from django.db import IntegrityError
 
 def generate_database():
@@ -95,79 +95,79 @@ def generate_database():
     )
 
     # Creating Courses
-    course_pse = Course.objects.create(
+    inbox_pse = Inbox.objects.create(
         code="5062STRE6Y", name="Project Software Engineering", color="#2ad43b", round_robin_parameter=4
     )
-    course_ip = Course.objects.create(code="5062BEST6Y", name="Inleiding Programmeren", color="#45b6fe")
-    course_ds = Course.objects.create(code="5061DAVI6Y", name="Datastructuren", color="#7cfc00")
+    inbox_ip = Inbox.objects.create(code="5062BEST6Y", name="Inleiding Programmeren", color="#45b6fe")
+    inbox_ds = Inbox.objects.create(code="5061DAVI6Y", name="Datastructuren", color="#7cfc00")
 
-    course_pt = Course.objects.create(code="5061DAVI5Y", name="Programmeertalen", color="#ff1717")
-    course_mp = Course.objects.create(code="5061GAVI5Y", name="Master's Project ", color="#30139c")
-    course_pmpse = Course.objects.create(
+    inbox_pt = Inbox.objects.create(code="5061DAVI5Y", name="Programmeertalen", color="#ff1717")
+    inbox_mp = Inbox.objects.create(code="5061GAVI5Y", name="Master's Project ", color="#30139c")
+    inbox_pmpse = Inbox.objects.create(
         code="5061VEVI5Y", name="Preparation Master's Project Software Engineering ", color="#138e9c"
     )
 
     # Creating Labels
-    label_ds_heaps = Label.objects.create(course=course_ds, name="Heaps", color="#ff0000", is_form_label=True)
-    label_ds_list = Label.objects.create(course=course_ds, name="Linked List", color="#0097ff", is_form_label=True)
-    label_ds_hash = Label.objects.create(course=course_ds, name="Hash Table", color="#0ec81d", is_form_label=True)
+    label_ds_heaps = Label.objects.create(inbox=inbox_ds, name="Heaps", color="#ff0000", is_form_label=True)
+    label_ds_list = Label.objects.create(inbox=inbox_ds, name="Linked List", color="#0097ff", is_form_label=True)
+    label_ds_hash = Label.objects.create(inbox=inbox_ds, name="Hash Table", color="#0ec81d", is_form_label=True)
     label_pse_swebok = Label.objects.create(
-        course=course_pse,
+        inbox=inbox_pse,
         name="SWEBOK",
         color="#ff0000",
     )
     label_pse_report = Label.objects.create(
-        course=course_pse,
+        inbox=inbox_pse,
         name="Individual Report",
         color="#29ff00",
         is_form_label=True,
     )
     label_pse_lecture = Label.objects.create(
-        course=course_pse,
+        inbox=inbox_pse,
         name="Lecture",
         color="#0090ff",
         is_form_label=True,
     )
-    label_pse_ejournal = Label.objects.create(course=course_pse, name="E-Journal", color="#fbf06d", is_form_label=True)
-    label_pse_laptop = Label.objects.create(course=course_pse, name="Laptop", color="#150a1a", is_form_label=True)
-    label_pse_assignment = Label.objects.create(course=course_pse, name="Assignment", color="#00ffcd", is_form_label=True)
-    label_ip_hotel = Label.objects.create(course=course_ip, name="Hotel", color="#00b5fe", is_form_label=True)
+    label_pse_ejournal = Label.objects.create(inbox=inbox_pse, name="E-Journal", color="#fbf06d", is_form_label=True)
+    label_pse_laptop = Label.objects.create(inbox=inbox_pse, name="Laptop", color="#150a1a", is_form_label=True)
+    label_pse_assignment = Label.objects.create(inbox=inbox_pse, name="Assignment", color="#00ffcd", is_form_label=True)
+    label_ip_hotel = Label.objects.create(inbox=inbox_ip, name="Hotel", color="#00b5fe", is_form_label=True)
     label_ip_quack = Label.objects.create(
-        course=course_ip,
+        inbox=inbox_ip,
         name="Dr. Quackerjack",
         color="#ff0000",
         is_form_label=True,
     )
 
-    # Creating user-course relationships
-    UserCourseRelationship.objects.create(user=user_admin, role=User.Roles.ASSISTANT)
-    UserCourseRelationship.objects.create(user=user_admin, role=User.Roles.STUDENT)
-    UserCourseRelationship.objects.create(user=user_ivan, role=User.Roles.STUDENT, course=course_ds)
-    UserCourseRelationship.objects.create(user=user_ivan, role=User.Roles.STUDENT, course=course_ip)
-    UserCourseRelationship.objects.create(user=user_ivan, role=User.Roles.STUDENT, course=course_pse)
-    UserCourseRelationship.objects.create(user=user_julian, role=User.Roles.STUDENT, course=course_pse)
-    UserCourseRelationship.objects.create(user=user_jelle, role=User.Roles.ASSISTANT, course=course_ds)
-    UserCourseRelationship.objects.create(user=user_jelle, role=User.Roles.ASSISTANT, course=course_ip)
-    UserCourseRelationship.objects.create(user=user_jelle, role=User.Roles.ASSISTANT, course=course_pse)
-    UserCourseRelationship.objects.create(user=user_ana, role=User.Roles.COORDINATOR, course=course_pse)
-    UserCourseRelationship.objects.create(user=user_ana, role=User.Roles.COORDINATOR, course=course_pt)
-    UserCourseRelationship.objects.create(user=user_ana, role=User.Roles.COORDINATOR, course=course_mp)
-    UserCourseRelationship.objects.create(user=user_ana, role=User.Roles.COORDINATOR, course=course_pmpse)
-    UserCourseRelationship.objects.create(user=user_bryan, role=User.Roles.ASSISTANT, course=course_ds)
-    UserCourseRelationship.objects.create(user=user_bryan, role=User.Roles.ASSISTANT, course=course_ip)
-    UserCourseRelationship.objects.create(user=user_bryan, role=User.Roles.STUDENT, course=course_pse)
-    UserCourseRelationship.objects.create(user=user_tom, role=User.Roles.ASSISTANT, course=course_pse)
-    UserCourseRelationship.objects.create(user=user_tom, role=User.Roles.ASSISTANT, course=course_ds)
-    UserCourseRelationship.objects.create(user=user_tom, role=User.Roles.ASSISTANT, course=course_ip)
-    UserCourseRelationship.objects.create(user=user_marco, role=User.Roles.ASSISTANT, course=course_pse)
-    UserCourseRelationship.objects.create(user=user_marco, role=User.Roles.ASSISTANT, course=course_ds)
-    UserCourseRelationship.objects.create(user=user_marco, role=User.Roles.ASSISTANT, course=course_ip)
+    # Creating user-inbox relationships
+    UserInbox.objects.create(user=user_admin, role=User.Roles.ASSISTANT)
+    UserInbox.objects.create(user=user_admin, role=User.Roles.STUDENT)
+    UserInbox.objects.create(user=user_ivan, role=User.Roles.STUDENT, inbox=inbox_ds)
+    UserInbox.objects.create(user=user_ivan, role=User.Roles.STUDENT, inbox=inbox_ip)
+    UserInbox.objects.create(user=user_ivan, role=User.Roles.STUDENT, inbox=inbox_pse)
+    UserInbox.objects.create(user=user_julian, role=User.Roles.STUDENT, inbox=inbox_pse)
+    UserInbox.objects.create(user=user_jelle, role=User.Roles.ASSISTANT, inbox=inbox_ds)
+    UserInbox.objects.create(user=user_jelle, role=User.Roles.ASSISTANT, inbox=inbox_ip)
+    UserInbox.objects.create(user=user_jelle, role=User.Roles.ASSISTANT, inbox=inbox_pse)
+    UserInbox.objects.create(user=user_ana, role=User.Roles.COORDINATOR, inbox=inbox_pse)
+    UserInbox.objects.create(user=user_ana, role=User.Roles.COORDINATOR, inbox=inbox_pt)
+    UserInbox.objects.create(user=user_ana, role=User.Roles.COORDINATOR, inbox=inbox_mp)
+    UserInbox.objects.create(user=user_ana, role=User.Roles.COORDINATOR, inbox=inbox_pmpse)
+    UserInbox.objects.create(user=user_bryan, role=User.Roles.ASSISTANT, inbox=inbox_ds)
+    UserInbox.objects.create(user=user_bryan, role=User.Roles.ASSISTANT, inbox=inbox_ip)
+    UserInbox.objects.create(user=user_bryan, role=User.Roles.STUDENT, inbox=inbox_pse)
+    UserInbox.objects.create(user=user_tom, role=User.Roles.ASSISTANT, inbox=inbox_pse)
+    UserInbox.objects.create(user=user_tom, role=User.Roles.ASSISTANT, inbox=inbox_ds)
+    UserInbox.objects.create(user=user_tom, role=User.Roles.ASSISTANT, inbox=inbox_ip)
+    UserInbox.objects.create(user=user_marco, role=User.Roles.ASSISTANT, inbox=inbox_pse)
+    UserInbox.objects.create(user=user_marco, role=User.Roles.ASSISTANT, inbox=inbox_ds)
+    UserInbox.objects.create(user=user_marco, role=User.Roles.ASSISTANT, inbox=inbox_ip)
 
     # Creating tickets
     ticket_10 = Ticket.objects.create(
         author=user_bryan,
         assignee=user_ana,
-        course=course_pse,
+        inbox=inbox_pse,
         title="What should the length of the individual report be?",
         content="I started working on the indivual report in the last few days. However, it\
     is not completely clear to me what the length of this report should be. Could anyone give me some further insight into\
@@ -182,7 +182,7 @@ def generate_database():
     ticket_11 = Ticket.objects.create(
         author=user_bryan,
         assignee=user_jelle,
-        course=course_pse,
+        inbox=inbox_pse,
         title="Do we have to read SWEBOK completely?",
         content="The book is very long and I think it is a dry read. Do we need to read the complete\
     book, or simply a part of the chapters?",
@@ -195,7 +195,7 @@ def generate_database():
 
     ticket_12 = Ticket.objects.create(
         author=user_ivan,
-        course=course_ip,
+        inbox=inbox_ip,
         title="Dr. Quackerjack gnome sort already works",
         content="The gnome sort function already completely works, whilst I have not changed a single\
     line in that function. Can I leave the function as it is, or do I need to rewrite it myself?",
@@ -205,7 +205,7 @@ def generate_database():
 
     ticket_13 = Ticket.objects.create(
         author=user_ivan,
-        course=course_ip,
+        inbox=inbox_ip,
         title="How many rooms does the hotel have?",
         content="I don't understand how many rooms the hotel should have..",
     )
@@ -213,7 +213,7 @@ def generate_database():
 
     ticket_14 = Ticket.objects.create(
         author=user_ivan,
-        course=course_ds,
+        inbox=inbox_ds,
         title="Do we need to make a singly linked list or a doubly linked list?",
         content="From the lecture I understood that getting the previous element in a doubly linked\
     list is in O(1) instead of O(n). However, the other functions may become slower cause I\
@@ -223,7 +223,7 @@ def generate_database():
 
     ticket_15 = Ticket.objects.create(
         author=user_ivan,
-        course=course_ds,
+        inbox=inbox_ds,
         title="What's the difference between a hash table and a linked list?",
         status=Ticket.Status.ANSWERED,
         content="Both seem to use a linked list..",
@@ -233,7 +233,7 @@ def generate_database():
 
     ticket_16 = Ticket.objects.create(
         author=user_ivan,
-        course=course_pse,
+        inbox=inbox_pse,
         assignee=user_ana,
         title="When is the next SWEBOK panel?",
         content="On Canvas the times do not indicate the group.",
@@ -243,7 +243,7 @@ def generate_database():
 
     ticket_17 = Ticket.objects.create(
         author=user_ivan,
-        course=course_pse,
+        inbox=inbox_pse,
         assignee=user_tom,
         title="E-Journal does not work",
         content="E-Journal does not work",
@@ -257,9 +257,9 @@ def generate_database():
     ticket_18 = Ticket.objects.create(
         author=user_bryan,
         assignee=user_marco,
-        course=course_pse,
-        title="Are there any assignments for this course?",
-        content="Are there any assignments for this course?",
+        inbox=inbox_pse,
+        title="Are there any assignments for this inbox?",
+        content="Are there any assignments for this inbox?",
     )
     ticket_18.date_created = timezone.now() - datetime.timedelta(days=4, hours=1)
     ticket_18.date_edited = timezone.now() - datetime.timedelta(days=4, hours=1)
@@ -270,7 +270,7 @@ def generate_database():
     ticket_19 = Ticket.objects.create(
         author=user_ivan,
         assignee=user_tom,
-        course=course_pse,
+        inbox=inbox_pse,
         title="My laptop broke.",
         content="I cannot help my team or make my report, help!",
     )
@@ -284,7 +284,7 @@ def generate_database():
     ticket_20 = Ticket.objects.create(
         author=user_ivan,
         assignee=user_tom,
-        course=course_pse,
+        inbox=inbox_pse,
         title="What should be the content of the demo?",
         content="What should be the content of the demo?",
     )
@@ -297,7 +297,7 @@ def generate_database():
     ticket_21 = Ticket.objects.create(
         author=user_ivan,
         assignee=user_jelle,
-        course=course_pse,
+        inbox=inbox_pse,
         title="Discord does not work on my laptop!",
         content="Discord does not work on my laptop!",
     )
@@ -310,9 +310,9 @@ def generate_database():
     ticket_22 = Ticket.objects.create(
         author=user_bryan,
         assignee=user_jelle,
-        course=course_pse,
-        title="Was eJournal founded during this course?",
-        content="Was eJournal founded during this course?",
+        inbox=inbox_pse,
+        title="Was eJournal founded during this inbox?",
+        content="Was eJournal founded during this inbox?",
     )
     ticket_22.date_created = timezone.now() - datetime.timedelta(days=1, hours=17)
     ticket_22.date_edited = timezone.now() - datetime.timedelta(days=1, hours=17)
@@ -322,7 +322,7 @@ def generate_database():
 
     ticket_23 = Ticket.objects.create(
         author=user_bryan,
-        course=course_pse,
+        inbox=inbox_pse,
         assignee=user_ana,
         title="Is there a lecture on the day of the demo?",
         content="Is there a lecture on the day of the demo? I want to make my report!",
@@ -336,7 +336,7 @@ def generate_database():
 
     ticket_24 = Ticket.objects.create(
         author=user_bryan,
-        course=course_pse,
+        inbox=inbox_pse,
         assignee=user_tom,
         title="Why are there no project proposals for eJournal?",
         content="Why are there no project proposals for eJournal?",
@@ -350,7 +350,7 @@ def generate_database():
 
     ticket_25 = Ticket.objects.create(
         author=user_bryan,
-        course=course_pse,
+        inbox=inbox_pse,
         assignee=user_jelle,
         title="Should the SWEBOK panel questions I answered in " + "eJournal be in my individual report?",
         content="Should the SWEBOK panel questions I answered in " + "eJournal be in my individual report?",
@@ -365,7 +365,7 @@ def generate_database():
 
     ticket_26 = Ticket.objects.create(
         author=user_ivan,
-        course=course_pse,
+        inbox=inbox_pse,
         assignee=user_ana,
         title="Is there a minimum grade for my individual report?",
         content="Is there a minimum grade for my individual report?",
@@ -379,7 +379,7 @@ def generate_database():
 
     ticket_27 = Ticket.objects.create(
         author=user_ivan,
-        course=course_pse,
+        inbox=inbox_pse,
         assignee=user_jelle,
         title="Where can I find the SWEBOK?",
         content="Where can I find the SWEBOK?",
@@ -392,7 +392,7 @@ def generate_database():
 
     ticket_28 = Ticket.objects.create(
         author=user_bryan,
-        course=course_pse,
+        inbox=inbox_pse,
         assignee=user_jelle,
         title="Do we have to make any smaller assignments?",
         content="Do we have to make any smaller assignments?",
@@ -405,7 +405,7 @@ def generate_database():
 
     ticket_29 = Ticket.objects.create(
         author=user_bryan,
-        course=course_pse,
+        inbox=inbox_pse,
         assignee=user_marco,
         title="Which parts of SWEBOK do we have to read?",
         content="Which parts of SWEBOK do we have to read?",
@@ -418,7 +418,7 @@ def generate_database():
 
     ticket_30 = Ticket.objects.create(
         author=user_bryan,
-        course=course_pse,
+        inbox=inbox_pse,
         assignee=user_ana,
         title="Should we write the individual report in the passive form?",
         content="Should we write the individual report in the passive form?",
@@ -431,7 +431,7 @@ def generate_database():
     ticket_30.save()
 
     ticket_31 = Ticket.objects.create(
-        author=user_bryan, course=course_pse, title="How long should the demo be?", content="How long should the demo be?",
+        author=user_bryan, inbox=inbox_pse, title="How long should the demo be?", content="How long should the demo be?",
     )
     ticket_31.add_label(label_pse_assignment)
     ticket_31.status = Ticket.Status.PENDING
@@ -441,7 +441,7 @@ def generate_database():
 
     ticket_32 = Ticket.objects.create(
         author=user_ivan,
-        course=course_pse,
+        inbox=inbox_pse,
         title="Should I mention the testing coverage in my report?",
         content="Should I mention the testing coverage in my report?",
     )
@@ -454,7 +454,7 @@ def generate_database():
 
     ticket_33 = Ticket.objects.create(
         author=user_julian,
-        course=course_pse,
+        inbox=inbox_pse,
         assignee=user_ana,
         title="I found a security leak in eJournal!",
         content="They are susceptible to DDoSing, do you guys have the contact\
@@ -468,7 +468,7 @@ def generate_database():
 
     ticket_34 = Ticket.objects.create(
         author=user_ivan,
-        course=course_pse,
+        inbox=inbox_pse,
         assignee=user_ana,
         title="The SWEBOK panel dates do not specify the group",
         content="The SWEBOK panel dates do not specify the group",
@@ -481,10 +481,10 @@ def generate_database():
 
     ticket_35 = Ticket.objects.create(
         author=user_julian,
-        course=course_pse,
+        inbox=inbox_pse,
         assignee=user_ana,
         title="Are the lectures mandatory?",
-        content="I have to join a lecture of an extracurricular " + "course I am taking at the same time.",
+        content="I have to join a lecture of an extracurricular " + "inbox I am taking at the same time.",
     )
     ticket_35.add_label(label_pse_lecture)
     ticket_35.status = Ticket.Status.CLOSED
@@ -495,7 +495,7 @@ def generate_database():
     ticket_36 = Ticket.objects.create(
         author=user_bryan,
         assignee=user_ana,
-        course=course_pse,
+        inbox=inbox_pse,
         title="Are the SWEBOK panels related to the book or the papers?",
         content="Are the SWEBOK panels related to the book or the papers?",
     )
@@ -553,7 +553,7 @@ def generate_database():
     add_date_to_comment(comment_19, datetime.timedelta(hours=13))
 
     comment_20 = Comment.objects.create(
-        author=user_tom, ticket=ticket_20, is_reply=True, content="All the killer features, of course.",
+        author=user_tom, ticket=ticket_20, is_reply=True, content="All the killer features, of inbox.",
     )
     add_date_to_comment(comment_20, datetime.timedelta(days=9, hours=2))
 
