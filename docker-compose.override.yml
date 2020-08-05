@@ -12,6 +12,8 @@ services:
              python manage.py runserver 0.0.0.0:6000"
     volumes:
       - ./backend:/backend
+    env_file:
+      - dev.env
 
   proxy:
     image: ticketvise/ticketvise/proxy:latest
@@ -23,3 +25,6 @@ services:
       - ./backend/ticketvise/media:/home/media:ro
       - ./backend/ticketvise/static:/home/static:ro
 
+  database:
+    env_file:
+      - dev.env
