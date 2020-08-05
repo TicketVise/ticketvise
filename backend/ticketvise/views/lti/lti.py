@@ -49,7 +49,7 @@ class LtiView(RedirectView):
         form = LtiLaunchForm(self.request.POST, request=self.request)
 
         if not form.is_valid():
-            raise PermissionDenied
+            raise PermissionDenied(form.errors.items())
 
         user_id = form.cleaned_data["user_id"]
         first_name, last_name = form.cleaned_data["custom_user_full_name"].split(" ", 1)
