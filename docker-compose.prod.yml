@@ -33,6 +33,8 @@ services:
       - DJANGO_SECRET=${DJANGO_SECRET}
       - EMAIL_PASSWORD=${EMAIL_PASSWORD}
       - SQL_ENGINE=django.db.backends.postgresql_psycopg2
+      - SQL_DATABASE=ticketvise
+      - SQL_HOST=database
       - SQL_USER=${SQL_USER}
       - SQL_PASSWORD=${SQL_PASSWORD}
       - LTI_KEY=${LTI_KEY}
