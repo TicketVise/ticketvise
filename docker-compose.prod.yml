@@ -9,9 +9,9 @@ services:
         max_attempts: 5
         window: 10s
     environment:
-      POSTGRES_DB=ticketvise
-      POSTGRES_USER=${SQL_USER}
-      POSTGRES_PASSWORD=${SQL_PASSWORD}
+      - POSTGRES_DB=ticketvise
+      - POSTGRES_USER=${SQL_USER}
+      - POSTGRES_PASSWORD=${SQL_PASSWORD}
 
   web:
     image: docker.pkg.github.com/ticketvise/ticketvise/backend:develop
@@ -30,12 +30,15 @@ services:
       - media:/backend/ticketvise/media
       - static:/backend/ticketvise/static
     environment:
-      DJANGO_SECRET=${DJANGO_SECRET}
-      EMAIL_PASSWORD=${EMAIL_PASSWORD}
-      SQL_USER=${SQL_USER}
-      SQL_PASSWORD=${SQL_PASSWORD}
-      LTI_KEY=${LTI_KEY}
-      LTI_SECRET=${LTI_SECRET}
+      - DJANGO_SECRET=${DJANGO_SECRET}
+      - EMAIL_PASSWORD=${EMAIL_PASSWORD}
+      - SQL_ENGINE=django.db.backends.postgresql_psycopg2
+      - SQL_DATABASE=ticketvise
+      - SQL_HOST=database
+      - SQL_USER=${SQL_USER}
+      - SQL_PASSWORD=${SQL_PASSWORD}
+      - LTI_KEY=${LTI_KEY}
+      - LTI_SECRET=${LTI_SECRET}
 
   proxy:
     image: docker.pkg.github.com/ticketvise/ticketvise/proxy:develop
