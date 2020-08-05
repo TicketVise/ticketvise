@@ -13,7 +13,6 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         """Handle the command"""
         print('Waiting for database...')
-        print(settings.DATABASES)
         db_conn = None
         while not db_conn:
             try:
