@@ -92,8 +92,6 @@ class LtiLaunchForm(forms.Form):
 
     def clean_oauth_signature(self):
         oauth_request = Request(self.request.build_absolute_uri(), self.request.method, self.request.POST)
-        print(self.request.build_absolute_uri())
-        print(self.request.method)
         oauth_request.signature = self.cleaned_data["oauth_signature"]
         oauth_request.params = [(k, v) for k, v in self.request.POST.items() if k != "oauth_signature"]
 
