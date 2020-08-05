@@ -16,7 +16,7 @@ services:
       - DJANGO_SECRET=Welkom01
       - EMAIL_PASSWORD=Welkom01
       - SQL_USER=ticketvise
-      - SQL_PASSWORD=Welkom012
+      - SQL_PASSWORD=Welkom01
       - LTI_KEY=LtiKey01
       - LTI_SECRET=LtiSecret01
 
