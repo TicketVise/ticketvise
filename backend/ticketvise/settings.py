@@ -120,9 +120,9 @@ LTI_XML_CONFIG_URL = LTI_HOST + "/lti/config.xml"
 DATABASES = {
     "default": {
         "ENGINE": os.environ.get("SQL_ENGINE", "django.db.backends.sqlite3"),
-        "NAME": os.environ.get("POSTGRES_DB", 'ticketvise.sqlite3'),
-        "USER": os.environ.get("POSTGRES_USER", "ticketvise"),
-        "PASSWORD": os.environ.get("POSTGRES_PASSWORD", "Welkom01"),
+        "NAME": os.environ.get("SQL_DATABASE", 'ticketvise.sqlite3'),
+        "USER": os.environ.get("SQL_USER", "ticketvise"),
+        "PASSWORD": os.environ.get("SQL_PASSWORD", "Welkom01"),
         "HOST": os.environ.get("SQL_HOST", "localhost"),
         "PORT": os.environ.get("SQL_PORT", "5432"),
     }

@@ -59,8 +59,14 @@ jobs:
       - name: Deploy to Docker Swarm
         uses: sagebind/docker-swarm-deploy-action@v2
         if: github.event_name == 'push'
+        env:
+          DJANGO_SECRET: ${{ secrets.DJANGO_SECRET }}
+          SQL_USER: ${{ secrets.SQL_USER }}
+          SQL_PASSWORD: ${{ secrets.SQL_PASSWORD }}
+          LTI_KEY: ${{ secrets.LTI_KEY }}
+          LTI_SECRET: ${{ secrets.LTI_SECRET }}
         with:
           remote_host: ${{ secrets.DOCKER_SSH_HOST }}
           ssh_private_key: ${{ secrets.DOCKER_SSH_PRIVATE_KEY }}
           ssh_public_key: ${{ secrets.DOCKER_SSH_PUBLIC_KEY }}
-          args: stack deploy --with-registry-auth -c docker-compose.yml -c docker-compose.prod.yml ticketvise
+          args: stack deploy -c docker-compose.yml -c docker-compose.prod.yml ticketvise
