@@ -14,7 +14,6 @@ class LtiLaunchForm(forms.Form):
     """
 
     oauth_consumer_key = forms.CharField()
-    oauth_token = forms.CharField()
     oauth_nonce = forms.CharField()
     oauth_timestamp = forms.IntegerField()
     oauth_signature_method = forms.CharField()

@@ -39,7 +39,6 @@ class LtiTestCase(TestCase):
         initial_data = {
             "oauth_consumer_key": settings.LTI_KEY,
             "oauth_signature_method": "HMAC-SHA1",
-            "oauth_token": "token",
             "oauth_nonce": "nonce",
             "oauth_timestamp": str(math.floor(time.time())),
             "oauth_version": "1.0"
