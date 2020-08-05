@@ -4,6 +4,8 @@ from django.db import connection
 from django.db.utils import OperationalError
 from django.core.management.base import BaseCommand
 
+from ticketvise import settings
+
 
 class Command(BaseCommand):
     """Django command that waits for database to be available"""
@@ -11,6 +13,7 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         """Handle the command"""
         print('Waiting for database...')
+        print(settings.DATABASES)
         db_conn = None
         while not db_conn:
             try:
