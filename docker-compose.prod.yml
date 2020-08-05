@@ -30,6 +30,7 @@ services:
       - media:/backend/ticketvise/media
       - static:/backend/ticketvise/static
     environment:
+      - DEBUG=False
       - DJANGO_SECRET=${DJANGO_SECRET}
       - EMAIL_PASSWORD=${EMAIL_PASSWORD}
       - SQL_USER=${SQL_USER}

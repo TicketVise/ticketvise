@@ -41,7 +41,6 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "django.contrib.humanize",
     "django_celery_results",
-    "django_probes",
 ]
 
 #: Middleware used for Django.
