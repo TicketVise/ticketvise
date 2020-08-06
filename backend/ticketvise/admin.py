@@ -12,7 +12,7 @@ from ticketvise.models.inbox import Inbox
 from ticketvise.models.label import Label
 from ticketvise.models.notification import Notification, MentionNotification
 from ticketvise.models.ticket import Ticket, TicketStatusChangedNotification
-from ticketvise.models.user import User
+from ticketvise.models.user import User, UserInbox
 
 
 class InboxInlineAdmin(admin.TabularInline):
@@ -38,6 +38,7 @@ class CustomUserAdmin(UserAdmin):
 # Register all models in the admin panel.
 admin.site.register(User, CustomUserAdmin)
 admin.site.register(Inbox)
+admin.site.register(UserInbox)
 admin.site.register(Label)
 admin.site.register(Ticket)
 admin.site.register(Comment)
