@@ -1,17 +1,3 @@
-"""
-LTI
--------------------------------
-This view handles the LTI request we get from the LMS.
-We check the fields and if the message is valid,
-we handle the user and based on the role and existance
-of a course it preforms different actions.
-
-**Table of contents**
-
-* :class:`LtiLaunchForm`
-* :class:`LtiView`
-"""
-
 from django.contrib.auth import login
 from django.contrib.auth.hashers import make_password
 from django.core.exceptions import PermissionDenied
@@ -29,22 +15,22 @@ from ticketvise.views.lti.validation import LtiLaunchForm
 @method_decorator(csrf_exempt, name="dispatch")
 class LtiView(RedirectView):
     """
-    Grab data from the LTI form and the redirect.
+    Implementation of the LTI launch. The form authenticates a user based on its data from the LMS. If the user is
+    not present in the database a new one is created and will be associated with the course from where the launch was
+    initiated from. The implementation also assigns the correct role to the user based on the course and LMS role.
     """
 
     query_string = True
 
     def get_redirect_url(self, *args, **kwargs):
         """
-        Handle the LTI request.
+        Handles the LTI launch request.
 
         :param list args: Additional list arguments.
         :param dict kwargs: Additional keyword arguments.
 
         :return: The url to redirect the user.
         :rtype: str or None
-
-        :raises Http404: When accessing the wrong page.
         """
         form = LtiLaunchForm(self.request.POST, request=self.request)
 
