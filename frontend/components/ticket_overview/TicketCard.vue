@@ -1,7 +1,7 @@
 <template>
   <card class="p-2" outlined v-bind:class="{ 'py-1': small }">
     <span class="text-xs text-gray-500 float-right">
-      #{{ ticket.ticket_course_id }}
+      #{{ ticket.ticket_inbox_id }}
     </span>
     <h3 v-if="!small" class="text-xs text-gray-500">{{ date }}</h3>
     <a :href="link" class="font-medium text-gray-900 hover:underline">
@@ -37,7 +37,7 @@ export default {
       return moment(this.ticket.date_edited).calendar()
     },
     link: function() {
-      return window.location.href + '/' + this.ticket.ticket_course_id
+      return window.location.href + '/' + this.ticket.ticket_inbox_id
     },
     full_name: function() {
       return this.ticket.author.first_name + ' ' + this.ticket.author.last_name

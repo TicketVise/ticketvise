@@ -62,7 +62,7 @@
                     const ticket = item.original;
 
                     return `<div class="flex items-center space-x-3">
-                                <span class="font-bold">${ticket.ticket_course_id}</span>
+                                <span class="font-bold">${ticket.ticket_inbox_id}</span>
                                 <span class="text-sm block truncate ml-1">${ticket.title}</span>
                             </div>`
                 },
@@ -73,7 +73,7 @@
                         return
                     }
 
-                    axios.get("/api/courses/" + ticket.course + "/tickets", {
+                    axios.get("/api/inboxes/" + ticket.inbox + "/tickets", {
                         params: {
                             q: text
                         }
@@ -85,7 +85,7 @@
                     return JSON.stringify(ticket)
                 },
                 selectTemplate: function (item) {
-                    return "#" + item.original.ticket_course_id;
+                    return "#" + item.original.ticket_inbox_id;
                 }
             }
 

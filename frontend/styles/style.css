@@ -485,7 +485,7 @@ input:checked + .slider:before {
 .navbar {
     min-height: 4.25rem;
 }
-.media_course_name {
+.media_inbox_name {
     overflow: hidden;
     display: -webkit-box;
     -webkit-line-clamp: 3;

@@ -56,14 +56,14 @@ export default {
       files: [],
       title: "",
       labels: [],
-      course_labels: null,
-      course_id: window.location.pathname.split('/')[2],
+      inbox_labels: null,
+      inbox_id: window.location.pathname.split('/')[2],
       errors: []
     }
   },
   mounted() {
-    axios.get("/api/courses/" + this.course_id + "/labels").then(response => {
-      this.course_labels = response.data;
+    axios.get("/api/inboxes/" + this.inbox_id + "/labels").then(response => {
+      this.inbox_labels = response.data;
     });
   },
   methods: {
@@ -73,7 +73,7 @@ export default {
 
       formData.append("content", content);
       formData.append("title", this.title);
-      formData.append("inbox", this.course_id);
+      formData.append("inbox", this.inbox_id);
 
       this.labels.forEach(label => formData.append("labels", label.id))
       this.files.forEach(file => formData.append("files", file))
@@ -87,7 +87,7 @@ export default {
             }
           }
       ).then(() => {
-        // window.location.href = "/inboxes/" + this.course_id + "/tickets";
+        // window.location.href = "/inboxes/" + this.inbox_id + "/tickets";
       }).catch(error => {
             this.errors = error.response.data
           }
@@ -110,12 +110,12 @@ export default {
   ,
   computed: {
     unused_labels: function () {
-      if (!this.course_labels) {
+      if (!this.inbox_labels) {
         return []
       }
 
       const label_ids = this.labels.map(label => label.id)
-      return this.course_labels.filter(label => !label_ids.includes(label.id))
+      return this.inbox_labels.filter(label => !label_ids.includes(label.id))
     }
   }
 

@@ -25,13 +25,13 @@
         data() {
             return {
                 value: null,
-                course_labels: null,
+                inbox_labels: null,
                 labels: []
             }
         },
         mounted() {
-            axios.get("/api/courses/" + this.ticket.course + "/labels").then(response => {
-                this.course_labels = response.data;
+            axios.get("/api/inboxes/" + this.ticket.inbox + "/labels").then(response => {
+                this.inbox_labels = response.data;
             });
         },
         methods: {
@@ -76,13 +76,13 @@
         },
         computed: {
             unused_labels: function () {
-                if (!this.course_labels) {
+                if (!this.inbox_labels) {
                     return []
                 }
 
                 const ticket_label_ids = this.ticket.labels.map(label => label.id)
 
-                return this.course_labels.filter(label => !ticket_label_ids.includes(label.id))
+                return this.inbox_labels.filter(label => !ticket_label_ids.includes(label.id))
             }
         }
     }
