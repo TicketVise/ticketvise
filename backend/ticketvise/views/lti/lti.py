@@ -16,8 +16,8 @@ from ticketvise.views.lti.validation import LtiLaunchForm
 class LtiView(RedirectView):
     """
     Implementation of the LTI launch. The form authenticates a user based on its data from the LMS. If the user is
-    not present in the database a new one is created and will be associated with the course from where the launch was
-    initiated from. The implementation also assigns the correct role to the user based on the course and LMS role.
+    not present in the database a new one is created and will be associated with the inbox from where the launch was
+    initiated from. The implementation also assigns the correct role to the user based on the inbox and LMS role.
     """
 
     query_string = True
@@ -63,13 +63,13 @@ class LtiView(RedirectView):
             user.save()
 
         user_roles = [role.split("/")[-1].lower() for role in form.cleaned_data["roles"].split(",")]
-        course_code = form.cleaned_data["context_label"]
-        course = Inbox.objects.filter(code=course_code).first()
+        inbox_code = form.cleaned_data["context_label"]
+        inbox = Inbox.objects.filter(code=inbox_code).first()
 
-        if course is None:
+        if inbox is None:
             if "instructor" in user_roles:
-                course_name = form.cleaned_data["custom_course_name"]
-                course = Inbox.objects.create(code=course_code, name=course_name)
+                inbox_name = form.cleaned_data["custom_inbox_name"]
+                inbox = Inbox.objects.create(code=inbox_code, name=inbox_name)
             else:
                 raise Http404("Course does not have a ticket system (yet). Please contact your instructor.")
 
@@ -81,17 +81,17 @@ class LtiView(RedirectView):
         if any("teachingassistant" in s for s in user_roles):
             user_role = User.Roles.ASSISTANT
 
-        relation = UserInbox.objects.filter(user=user, course=course).first()
+        relation = UserInbox.objects.filter(user=user, inbox=inbox).first()
 
         if relation is None:
-            UserInbox.objects.create(user=user, course=course, role=user_role)
+            UserInbox.objects.create(user=user, inbox=inbox, role=user_role)
         elif relation.role != user_role:
             relation.role = user_role
             relation.save()
 
         login(self.request, user)
 
-        if user.has_role_in_course(course, User.Roles.STUDENT):
-            return reverse("new_ticket", args=[course.id])
+        if user.has_role_in_inbox(inbox, User.Roles.STUDENT):
+            return reverse("new_ticket", args=[inbox.id])
 
-        return reverse("ticket_overview", args=[course.id])
+        return reverse("ticket_overview", args=[inbox.id])
