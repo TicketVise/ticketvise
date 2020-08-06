@@ -16,7 +16,7 @@ from ticketvise.models.notification import Notification
 
 class Ticket(models.Model):
     """
-    This model represents a ticket. Each ticket is associated with a single :class:`Course` and
+    This model represents a ticket. Each ticket is associated with a single :class:`Inbox` and
     can have multiple :class:`Label` s.
 
     :reverse relations: * **comments** -- Set of :class:`Comment` s that were posted on the ticket.
@@ -28,15 +28,15 @@ class Ticket(models.Model):
     author = models.ForeignKey("User", models.CASCADE, related_name=_("author"))
     #: The :class:`User` to whom the ticket is assigned. Nullable and optional.
     assignee = models.ForeignKey("User", models.CASCADE, blank=True, null=True, related_name=_("assignee"))
-    #: The :class:`Course` that the ticket is associated with.
-    course = models.ForeignKey("Course", models.CASCADE, related_name="tickets")
+    #: The :class:`Inbox` that the ticket is associated with.
+    inbox = models.ForeignKey("ticketvise.Inbox", models.CASCADE, related_name="tickets")
     #: The title of the ticket.
     title = models.CharField(max_length=100)
-    #: Ticket ID for the course it is part of. Used in URLs and references.
-    ticket_course_id = models.PositiveIntegerField()
+    #: Ticket ID for the inbox it is part of. Used in URLs and references.
+    ticket_inbox_id = models.PositiveIntegerField()
 
     class Meta:
-        unique_together = ("ticket_course_id", "course")
+        unique_together = ("ticket_inbox_id", "inbox")
 
     class Status(models.TextChoices):
         """
@@ -101,15 +101,15 @@ class Ticket(models.Model):
         Override the Django ``save`` method to send a :class:`TicketStatusChangedNotification`
         to the ticket's assignee or to all assistants an coordinators if the ticket has no
         assignee. Also send an email to the student that submitted the ticket if the status has changed to assigned
-        or closed. Only send the change to assigned email if show assignee is enabled for the course.
+        or closed. Only send the change to assigned email if show assignee is enabled for the inbox.
         """
         old_status = None
 
         if self.id:
             old_status = Ticket.objects.get(pk=self.id).get_status()
         else:
-            # + 1 so the ticket_course_id starts at 1 instead of 0.
-            self.ticket_course_id = Ticket.objects.filter(course=self.course).count() + 1
+            # + 1 so the ticket_inbox_id starts at 1 instead of 0.
+            self.ticket_inbox_id = Ticket.objects.filter(inbox=self.inbox).count() + 1
 
         super().save(force_insert, force_update, using, update_fields)
 
@@ -122,7 +122,7 @@ class Ticket(models.Model):
             )
             message.save()
         else:
-            for receiver in self.course.get_assistants_and_coordinators():
+            for receiver in self.inbox.get_assistants_and_coordinators():
                 message = TicketStatusChangedNotification(
                     receiver=receiver, read=False, ticket=self, old_status=old_status, new_status=self.get_status()
                 )
@@ -130,11 +130,11 @@ class Ticket(models.Model):
                 message.save()
 
         if self.author.notification_ticket_status_change_mail:
-            if not (self.status == Ticket.Status.ASSIGNED and not self.course.visibility_assignee):
+            if not (self.status == Ticket.Status.ASSIGNED and not self.inbox.visibility_assignee):
                 mail_vars = {"ticket": self}
 
                 send_email(
-                    "Status change for ticket #%s" % self.ticket_course_id,
+                    "Status change for ticket #%s" % self.ticket_inbox_id,
                     self.author.email,
                     "ticket_status_change",
                     mail_vars,
@@ -180,7 +180,7 @@ class TicketStatusChangedNotification(Notification):
         """
         :return: The ticket url of the notification.
         """
-        return reverse("ticket", args=(self.ticket.course_id, self.ticket.ticket_course_id))
+        return reverse("ticket", args=(self.ticket.inbox_id, self.ticket.ticket_inbox_id))
 
     def get_title(self):
         """
@@ -203,11 +203,11 @@ class TicketStatusChangedNotification(Notification):
 
         return "A new ticket has been opened"
 
-    def get_course(self):
+    def get_inbox(self):
         """
-        :return: URL of the course connected.
+        :return: URL of the inbox connected.
         """
-        return self.ticket.course
+        return self.ticket.inbox
 
     def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
         """

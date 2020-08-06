@@ -1,13 +1,13 @@
 from django.urls import reverse
 
-from ticketvise.models.course import Course
-from ticketvise.tests.course.utils import CourseTestCase
+from ticketvise.models.inbox import Inbox
+from ticketvise.tests.inbox.utils import InboxTestCase
 
 
-class SettingsTestCase(CourseTestCase):
-    def test_edit_course_as_coordinator(self):
+class SettingsTestCase(InboxTestCase):
+    def test_edit_inbox_as_coordinator(self):
         """
-        Test to verify a coordinator is able to edit a course.
+        Test to verify a coordinator is able to edit a inbox.
         """
         self.client.force_login(self.coordinator)
 
@@ -21,13 +21,13 @@ class SettingsTestCase(CourseTestCase):
             "scheduling_algorithm": "manual"
         }
 
-        response = self.client.post(reverse("course_settings", args=(self.course.id,)), data, follow=True)
+        response = self.client.post(reverse("inbox_settings", args=(self.inbox.id,)), data, follow=True)
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(Course.objects.get(pk=self.course.id).name, data["name"])
+        self.assertEqual(Inbox.objects.get(pk=self.inbox.id).name, data["name"])
 
-    def test_edit_course_as_invalid_coordinator(self):
+    def test_edit_inbox_as_invalid_coordinator(self):
         """
-        Test to verify a coordinator from another course is unable to edit a course.
+        Test to verify a coordinator from another inbox is unable to edit a inbox.
         """
         self.client.force_login(self.coordinator_2)
 
@@ -41,13 +41,13 @@ class SettingsTestCase(CourseTestCase):
             "scheduling_algorithm": "manual"
         }
 
-        response = self.client.post(reverse("course_settings", args=(self.course.id,)), data, follow=True)
+        response = self.client.post(reverse("inbox_settings", args=(self.inbox.id,)), data, follow=True)
         self.assertEqual(response.status_code, 403)
-        self.assertNotEqual(Course.objects.get(pk=self.course.id).name, data["name"])
+        self.assertNotEqual(Inbox.objects.get(pk=self.inbox.id).name, data["name"])
 
-    def test_edit_course_as_assistant(self):
+    def test_edit_inbox_as_assistant(self):
         """
-        Test to verify a assistant is unable to edit a course.
+        Test to verify a assistant is unable to edit a inbox.
         """
         self.client.force_login(self.assistant)
 
@@ -61,13 +61,13 @@ class SettingsTestCase(CourseTestCase):
             "scheduling_algorithm": "manual"
         }
 
-        response = self.client.post(reverse("course_settings", args=(self.course.id,)), data, follow=True)
+        response = self.client.post(reverse("inbox_settings", args=(self.inbox.id,)), data, follow=True)
         self.assertEqual(response.status_code, 403)
-        self.assertNotEqual(Course.objects.get(pk=self.course.id).name, data["name"])
+        self.assertNotEqual(Inbox.objects.get(pk=self.inbox.id).name, data["name"])
 
-    def test_edit_course_as_student(self):
+    def test_edit_inbox_as_student(self):
         """
-        Test to verify a student is unable to edit a course.
+        Test to verify a student is unable to edit a inbox.
         """
         self.client.force_login(self.student)
 
@@ -81,6 +81,6 @@ class SettingsTestCase(CourseTestCase):
             "scheduling_algorithm": "manual"
         }
 
-        response = self.client.post(reverse("course_settings", args=(self.course.id,)), data, follow=True)
+        response = self.client.post(reverse("inbox_settings", args=(self.inbox.id,)), data, follow=True)
         self.assertEqual(response.status_code, 403)
-        self.assertNotEqual(Course.objects.get(pk=self.course.id).name, data["name"])
+        self.assertNotEqual(Inbox.objects.get(pk=self.inbox.id).name, data["name"])

@@ -12,20 +12,20 @@ from PIL import ImageColor, Image
 
 from .models.ticket import Ticket
 from .models.user import User
-from .settings import DEFAULT_AVATAR_PATH, DEFAULT_COURSE_IMAGE_PATH
+from .settings import DEFAULT_AVATAR_PATH, DEFAULT_INBOX_IMAGE_PATH
 
 
-def edit_course_image_to_base64(image_path, color):
+def edit_inbox_image_to_base64(image_path, color):
     """
-    Edit the course image and encode it in base64.
+    Edit the inbox image and encode it in base64.
 
     :param image_path: Path to the image
     :param color: Color to apply to the color filter
 
     :return: Base64-encoded image.
     """
-    if not path.exists(f"ticketvise/{image_path}") or image_path == DEFAULT_COURSE_IMAGE_PATH:
-        image = Image.open(f"ticketvise{DEFAULT_COURSE_IMAGE_PATH}")
+    if not path.exists(f"ticketvise/{image_path}") or image_path == DEFAULT_INBOX_IMAGE_PATH:
+        image = Image.open(f"ticketvise{DEFAULT_INBOX_IMAGE_PATH}")
     else:
         image = Image.open(f"ticketvise/{image_path}")
 
@@ -45,12 +45,12 @@ def apply_color_filter(image, color, alpha=0.6):
 
     :return: Color filterd image
     """
-    course_array = np.array(image)
-    course_array = course_array[:, :, :3]
-    color_array = np.zeros_like(course_array)
+    inbox_array = np.array(image)
+    inbox_array = inbox_array[:, :, :3]
+    color_array = np.zeros_like(inbox_array)
     color_array[:, :] = hex_to_rgb(color)
 
-    final_array = (1 - alpha) * color_array + alpha * course_array
+    final_array = (1 - alpha) * color_array + alpha * inbox_array
     final_array = final_array.astype(np.int8)
 
     return Image.fromarray(final_array.astype(np.uint8))

@@ -1,10 +1,10 @@
 from django.urls import reverse
 
 from ticketvise.models.label import Label
-from ticketvise.tests.course.utils import CourseTestCase
+from ticketvise.tests.inbox.utils import InboxTestCase
 
 
-class LabelsTest(CourseTestCase):
+class LabelsTest(InboxTestCase):
 
     def test_delete_label_as_coordinator(self):
         """
@@ -12,7 +12,7 @@ class LabelsTest(CourseTestCase):
         """
         self.client.force_login(self.coordinator)
 
-        response = self.client.post(reverse("delete_course_label", args=(self.label.course.id, self.label.id)),
+        response = self.client.post(reverse("delete_inbox_label", args=(self.label.inbox.id, self.label.id)),
                                     follow=True)
         self.assertEqual(response.status_code, 200)
         self.assertFalse(Label.objects.filter(pk=self.label.id).exists())
@@ -23,7 +23,7 @@ class LabelsTest(CourseTestCase):
         """
         self.client.force_login(self.assistant)
 
-        response = self.client.post(reverse("delete_course_label", args=(self.label.course.id, self.label.id)),
+        response = self.client.post(reverse("delete_inbox_label", args=(self.label.inbox.id, self.label.id)),
                                     follow=True)
         self.assertEqual(response.status_code, 403)
         self.assertTrue(Label.objects.filter(pk=self.label.id).exists())
@@ -34,18 +34,18 @@ class LabelsTest(CourseTestCase):
         """
         self.client.force_login(self.student)
 
-        response = self.client.post(reverse("delete_course_label", args=(self.label.course.id, self.label.id)),
+        response = self.client.post(reverse("delete_inbox_label", args=(self.label.inbox.id, self.label.id)),
                                     follow=True)
         self.assertEqual(response.status_code, 403)
         self.assertTrue(Label.objects.filter(pk=self.label.id).exists())
 
     def test_delete_label_as_invalid_coordinator(self):
         """
-        Test to verify a coordinator from another course is unable to delete a label.
+        Test to verify a coordinator from another inbox is unable to delete a label.
         """
         self.client.force_login(self.coordinator_2)
 
-        response = self.client.post(reverse("delete_course_label", args=(self.label.course.id, self.label.id)),
+        response = self.client.post(reverse("delete_inbox_label", args=(self.label.inbox.id, self.label.id)),
                                     follow=True)
         self.assertEqual(response.status_code, 403)
         self.assertTrue(Label.objects.filter(pk=self.label.id).exists())
@@ -63,7 +63,7 @@ class LabelsTest(CourseTestCase):
             "is_active": "on"
         }
 
-        response = self.client.post(reverse("create_course_label", args=(self.course.id,)), data, follow=True)
+        response = self.client.post(reverse("create_inbox_label", args=(self.inbox.id,)), data, follow=True)
         self.assertEqual(response.status_code, 200)
         self.assertTrue(Label.objects.filter(name=data["name"]).exists())
 
@@ -80,7 +80,7 @@ class LabelsTest(CourseTestCase):
             "active": "yes"
         }
 
-        response = self.client.post(reverse("create_course_label", args=(self.course.id,)), data, follow=True)
+        response = self.client.post(reverse("create_inbox_label", args=(self.inbox.id,)), data, follow=True)
         self.assertEqual(response.status_code, 403)
         self.assertFalse(Label.objects.filter(name=data["name"]).exists())
 
@@ -97,7 +97,7 @@ class LabelsTest(CourseTestCase):
             "active": "yes"
         }
 
-        response = self.client.post(reverse("create_course_label", args=(self.course.id,)), data, follow=True)
+        response = self.client.post(reverse("create_inbox_label", args=(self.inbox.id,)), data, follow=True)
         self.assertEqual(response.status_code, 403)
         self.assertFalse(Label.objects.filter(name=data["name"]).exists())
 
@@ -114,7 +114,7 @@ class LabelsTest(CourseTestCase):
             "active": "yes"
         }
 
-        self.client.post(reverse("create_course_label", args=(self.course.id,)), data, follow=True)
+        self.client.post(reverse("create_inbox_label", args=(self.inbox.id,)), data, follow=True)
         self.assertFalse(Label.objects.filter(name=data["name"]).exists())
 
     def test_edit_label_as_coordinator(self):
@@ -130,14 +130,14 @@ class LabelsTest(CourseTestCase):
             "active": "yes"
         }
 
-        response = self.client.post(reverse("edit_course_label", args=(self.course.id, self.label.id)), data,
+        response = self.client.post(reverse("edit_inbox_label", args=(self.inbox.id, self.label.id)), data,
                                     follow=True)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(Label.objects.get(pk=self.label.id).name, data["name"])
 
     def test_edit_label_as_invalid_coordinator(self):
         """
-        Test to verify a coordinator form another course is unable to edit a label.
+        Test to verify a coordinator form another inbox is unable to edit a label.
         """
         self.client.force_login(self.coordinator_2)
 
@@ -148,7 +148,7 @@ class LabelsTest(CourseTestCase):
             "active": "yes"
         }
 
-        response = self.client.post(reverse("edit_course_label", args=(self.course.id, self.label.id)), data,
+        response = self.client.post(reverse("edit_inbox_label", args=(self.inbox.id, self.label.id)), data,
                                     follow=True)
         self.assertEqual(response.status_code, 403)
         self.assertNotEqual(Label.objects.get(pk=self.label.id).name, data["name"])
@@ -166,7 +166,7 @@ class LabelsTest(CourseTestCase):
             "active": "yes"
         }
 
-        response = self.client.post(reverse("edit_course_label", args=(self.course.id, self.label.id)), data,
+        response = self.client.post(reverse("edit_inbox_label", args=(self.inbox.id, self.label.id)), data,
                                     follow=True)
         self.assertEqual(response.status_code, 403)
         self.assertNotEqual(Label.objects.get(pk=self.label.id).name, data["name"])
@@ -184,7 +184,7 @@ class LabelsTest(CourseTestCase):
             "active": "yes"
         }
 
-        response = self.client.post(reverse("edit_course_label", args=(self.course.id, self.label.id)), data,
+        response = self.client.post(reverse("edit_inbox_label", args=(self.inbox.id, self.label.id)), data,
                                     follow=True)
         self.assertEqual(response.status_code, 403)
         self.assertNotEqual(Label.objects.get(pk=self.label.id).name, data["name"])

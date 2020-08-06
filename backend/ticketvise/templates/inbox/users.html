@@ -1,13 +1,13 @@
-{% extends "course/base.html" %}
+{% extends "inbox/base.html" %}
 
 {% load ticketvise_extras %}
 
-{% block course-content %}
+{% block inbox-content %}
 
     <div class="container">
 
         <form>
-            {% include "course/search_bar.html" %}
+            {% include "inbox/search_bar.html" %}
         </form>
 
         <div class="flex flex-col pt-4 pb-4">
@@ -62,10 +62,10 @@
                                     {% endif %}
                                 </td>
                                 <td class="px-6 py-4 whitespace-no-wrap border-b border-gray-200 text-sm leading-5 text-gray-500">
-                                    {% get_user_role user course %}
+                                    {% get_user_role user inbox %}
                                 </td>
                                 <td class="px-6 py-4 whitespace-no-wrap text-right border-b border-gray-200 text-sm leading-5 font-medium">
-                                    <a href="{% url 'course_user' course.id user.id %}"
+                                    <a href="{% url 'inbox_user' inbox.id user.id %}"
                                        class="text-indigo-600 hover:text-indigo-900">Edit</a>
                                 </td>
                             </tr>
@@ -150,5 +150,5 @@
 
     </div>
 
-{% endblock course-content %}
+{% endblock inbox-content %}
 

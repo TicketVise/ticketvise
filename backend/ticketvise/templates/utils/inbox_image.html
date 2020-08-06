@@ -1,0 +1,14 @@
+<!--
+    Displays the inbox image.
+
+    Arguments:
+    - `inbox`: Inbox to display the image of.
+    - `id`: Id of the img element.
+-->
+{% load ticketvise_extras %}
+
+{% if inbox.image %}
+    <img id="{{ id }}" src="data:image/png;base64, {% get_base64_inbox_image inbox %}" alt="No image found.">
+{% else %}
+    <img src="" alt="No image found.">
+{% endif %}

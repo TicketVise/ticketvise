@@ -1,12 +1,12 @@
 from django.urls import reverse
 
-from ticketvise.tests.course.utils import CourseTestCase
+from ticketvise.tests.inbox.utils import InboxTestCase
 
 
-class BaseTestCase(CourseTestCase):
-    def test_course_assistant_403(self):
+class BaseTestCase(InboxTestCase):
+    def test_inbox_assistant_403(self):
         """
-        Test to verify that a assistant is unable to access course related pages. Pages should return a HTTP 403
+        Test to verify that a assistant is unable to access inbox related pages. Pages should return a HTTP 403
         status code when a assistant tries to access a page.
         """
         self.client.force_login(self.assistant)
@@ -15,9 +15,9 @@ class BaseTestCase(CourseTestCase):
             response = self.client.get(reverse(template_name, args=args), follow=True)
             self.assertEqual(response.status_code, 403)
 
-    def test_course_coordinator_200(self):
+    def test_inbox_coordinator_200(self):
         """
-        Test to verify that a coordinator is able to access course related pages. Pages should return a HTTP 200
+        Test to verify that a coordinator is able to access inbox related pages. Pages should return a HTTP 200
         status code when a coordinator tries to access a page.
         """
         self.client.force_login(self.coordinator)
@@ -26,9 +26,9 @@ class BaseTestCase(CourseTestCase):
             response = self.client.get(reverse(template_name, args=args), follow=True)
             self.assertEqual(response.status_code, 200)
 
-    def test_course_student_403(self):
+    def test_inbox_student_403(self):
         """
-        Test to verify that a student is unable to access course related pages. Pages should return a HTTP 403
+        Test to verify that a student is unable to access inbox related pages. Pages should return a HTTP 403
         status code when a student tries to access a page.
         """
         self.client.force_login(self.student)
@@ -37,7 +37,7 @@ class BaseTestCase(CourseTestCase):
             response = self.client.get(reverse(template_name, args=args), follow=True)
             self.assertEqual(response.status_code, 403)
 
-    def test_course_anonymous_redirect_login(self):
+    def test_inbox_anonymous_redirect_login(self):
         """
         A not logged in user should be redirected to the login page with a referral.
         """
@@ -47,10 +47,10 @@ class BaseTestCase(CourseTestCase):
             self.assertRedirects(response, '/login/?next=' + url, status_code=302,
                                  target_status_code=200, fetch_redirect_response=True)
 
-    def test_coordinator_not_in_course(self):
+    def test_coordinator_not_in_inbox(self):
         """
-        Test to verify that a coordinator which is not associated with the course is unable to access course related
-        pages. Pages should return a HTTP 403 status code when a coordinator from a other course tries to access a page.
+        Test to verify that a coordinator which is not associated with the inbox is unable to access inbox related
+        pages. Pages should return a HTTP 403 status code when a coordinator from a other inbox tries to access a page.
         """
         self.client.force_login(self.coordinator_2)
 

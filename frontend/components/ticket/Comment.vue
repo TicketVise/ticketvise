@@ -51,7 +51,7 @@
                 const matches = content.match(/\B(#\d+\b)(?!;)/g)
                 if (matches) {
                     for (const match of matches) {
-                        const url = `/courses/${this.ticket.course}/tickets/${match.substring(1)}`
+                        const url = `/inboxes/${this.ticket.inbox}/tickets/${match.substring(1)}`
                         content = content.replace(match, `[${match}](${url})`)
                     }
                 }

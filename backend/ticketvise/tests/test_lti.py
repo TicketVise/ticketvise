@@ -26,7 +26,7 @@ class LtiTestCase(TestCase):
             "context_id": "2734dde21bed2288f65c7513a78f1653415da235",
             "context_label": "Test_code",
             "context_title": "Testcurses",
-            "custom_course_name": "100",
+            "custom_inbox_name": "100",
             "custom_email": "test@ticketvise.com",
             "custom_image_url": "https://uvadlo-tes.instructure.com/images/messages/avatar-50.png",
             "custom_user_full_name": "Test persoon",
@@ -111,9 +111,9 @@ class LtiTestCase(TestCase):
                                     content_type="application/x-www-form-urlencoded")
         self.assertEqual(response.status_code, 403)
 
-    def test_lti_no_course(self):
+    def test_lti_no_inbox(self):
         """
-        Launch LTI without active course.
+        Launch LTI without active inbox.
 
         :return: None.
         """
@@ -133,7 +133,7 @@ class LtiTestCase(TestCase):
         """
         signed_data = self.sign_data("POST", "/lti", self.data)
 
-        # Create course.
+        # Create inbox.
         response1 = self.client.post("/lti", signed_data, follow=True,
                                      content_type="application/x-www-form-urlencoded")
 
@@ -154,7 +154,7 @@ class LtiTestCase(TestCase):
 
         :return: None.
         """
-        # Create course.
+        # Create inbox.
         self.data["roles"] = "instructor"
         signed_data = self.sign_data("POST", "/lti", self.data)
 

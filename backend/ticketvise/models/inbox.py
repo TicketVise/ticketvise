@@ -1,24 +1,22 @@
 """
-Course
+Inbox
 -------------------------------
-Contains all entity sets for the course database.
+Contains all entity sets for the inbox database.
 
 **Table of contents**
-* :class:`Course`
+* :class:`Inbox`
 """
 from django.db import models
-from django.db.models import Q
-from django.utils.translation import gettext_lazy as _
 
-from ticketvise.models.user import UserCourseRelationship, User
+from ticketvise.models.user import UserInbox, User
 from ticketvise.models.validators import validate_hex_color
-from ticketvise.settings import COURSE_IMAGE_DIRECTORY, DEFAULT_COURSE_IMAGE_PATH
+from ticketvise.settings import INBOX_IMAGE_DIRECTORY, DEFAULT_INBOX_IMAGE_PATH
 
 
 class SchedulingAlgorithm(models.TextChoices):
     """
     Choices for the ``scheduling_algorithm`` field of :class:`Label` and
-    :class:`Course`.
+    :class:`Inbox`.
     """
 
     #: Schedules tickets in a round-robin fashion.
@@ -29,27 +27,27 @@ class SchedulingAlgorithm(models.TextChoices):
     MANUAL = ("manual", "Manual")
 
 
-class Course(models.Model):
+class Inbox(models.Model):
     """
-    This model represents a course. Different users can be part of the same course,
-    and each user can have multiple courses. Each user-course relationship has
+    This model represents a ticket inbox. Different users can be part of the same inbox,
+    and each user can have multiple inboxes. Each user-inbox relationship has
     a role associated with it.
 
-    :reverse relations: * **labels** -- Set of :class:`Label` s belonging to this course.
-                        * **tickets** -- Set of :class:`Ticket` s belonging to the course.
-                        * **user_relationship** -- Set of :class:`UserCourseRelationship` s belonging to the course.
-                        * **users** -- Set of :class:`User` s belonging to the course.
+    :reverse relations: * **labels** -- Set of :class:`Label` s belonging to this inbox.
+                        * **tickets** -- Set of :class:`Ticket` s belonging to the inbox.
+                        * **user_relationship** -- Set of :class:`UserInbox` s belonging to the inbox.
+                        * **users** -- Set of :class:`User` s belonging to the inbox.
     """
 
-    #: Course code, must be unique for every course.
-    code = models.CharField(_("Course Code"), max_length=50, unique=True)
-    #: Course name, maximum length of 100 characters.
-    name = models.CharField(_("Course Name"), max_length=100)
-    #: Course color, must be a valid hex color.
+    #: Inbox code, must be unique for every inbox.
+    code = models.CharField(max_length=50, unique=True)
+    #: Inbox name, maximum length of 100 characters.
+    name = models.CharField(max_length=100)
+    #: Inbox color, must be a valid hex color.
     color = models.CharField(max_length=7, validators=[validate_hex_color])
-    #: Course image, shown to users. This image has the course color applied to it.
-    image = models.ImageField(upload_to=COURSE_IMAGE_DIRECTORY, default=DEFAULT_COURSE_IMAGE_PATH)
-    #: Scheduling algorithm for the course, used to schedule tickets.
+    #: Inbox image, shown to users. This image has the inbox color applied to it.
+    image = models.ImageField(upload_to=INBOX_IMAGE_DIRECTORY, default=DEFAULT_INBOX_IMAGE_PATH)
+    #: Scheduling algorithm for the inbox, used to schedule tickets.
     #: Must be one of the choices in :class:`SchedulingAlgorithms`.
     #: Defaults to :attr:`SchedulingAlgorithms.MANUAL`.
     scheduling_algorithm = models.CharField(choices=SchedulingAlgorithm.choices, max_length=255,
@@ -57,24 +55,24 @@ class Course(models.Model):
     #: Parameter used for round-robin scheduling. Defaults to ``0``.
     round_robin_parameter = models.PositiveIntegerField(default=0)
     #: Indicates if students can see assignees of tickets. Defaults to ``False``.
-    visibility_assignee = models.BooleanField(_("Show assignee on student ticket overview"), default=False)
+    visibility_assignee = models.BooleanField(default=False)
     #: Close all answered tickets after set amount of weeks. Defaults to ``0``.
     close_answered_weeks = models.PositiveIntegerField(default=0)
     #: Alert coordinator of unanswered tickets after set amount of days. Defaults to ``0``.
     alert_coordinator_unanswered_days = models.PositiveIntegerField(default=0)
     #: Indicates if the instance is active or not. Defaults to ``True``.
-    is_active = models.BooleanField(_("Is active"), default=True)
+    is_active = models.BooleanField(default=True)
 
     def round_robin_parameter_increase(self):
         """
-        Increase the round robin parameter and save the course.
+        Increase the round robin parameter and save the inbox.
         """
         self.round_robin_parameter += 1
         self.save()
 
     def get_users_by_role(self, role):
         """
-        Get the users in the course that have the role.
+        Get the users in the inbox that have the role.
 
         :param str role: The role that the users must have, must be one of the choices in :class:`User.Roles`.
 
@@ -82,15 +80,15 @@ class Course(models.Model):
         :rtype: QuerySet<:class:`User`>
         """
 
-        return User.objects.filter(course_relationship__course=self, course_relationship__role=role)
+        return User.objects.filter(inbox_relationship__inbox=self, inbox_relationship__role=role)
 
     def get_assistants_and_coordinators(self):
         """
-        :return: All assistants and coordinators in the course.
+        :return: All assistants and coordinators in the inbox.
         :rtype: QuerySet<:class:`User`>
         """
         roles = [User.Roles.ASSISTANT, User.Roles.COORDINATOR]
-        return User.objects.filter(course_relationship__course=self, course_relationship__role__in=roles)
+        return User.objects.filter(inbox_relationship__inbox=self, inbox_relationship__role__in=roles)
 
     def get_tickets_by_assignee(self, assignee, status=None):
         """

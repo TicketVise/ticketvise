@@ -1,36 +1,36 @@
 from django.contrib.auth.mixins import AccessMixin
 from django.shortcuts import get_object_or_404
 
-from ticketvise.models.course import Course
+from ticketvise.models.inbox import Inbox
 from ticketvise.models.label import Label
 from ticketvise.models.ticket import Ticket
-from ticketvise.models.user import UserCourseRelationship
+from ticketvise.models.user import UserInbox
 
 
-class CourseCoordinatorRequiredMixin(AccessMixin):
+class InboxCoordinatorRequiredMixin(AccessMixin):
     """
-    Mixin to verify that the user accessing the view is the course coordinator.
+    Mixin to verify that the user accessing the view is the inbox coordinator.
     """
-    course_key = "pk"
+    inbox_key = "pk"
 
     def dispatch(self, request, *args, **kwargs):
         if not request.user.is_authenticated:
             return self.handle_no_permission()
 
-        course_id = kwargs.get(self.course_key)
-        if not course_id:
+        inbox_id = kwargs.get(self.inbox_key)
+        if not inbox_id:
             return self.handle_no_permission()
 
-        course = get_object_or_404(Course, pk=course_id)
-        if not request.user.is_coordinator_for_course(course):
+        inbox = get_object_or_404(Inbox, pk=inbox_id)
+        if not request.user.is_coordinator_for_inbox(inbox):
             return self.handle_no_permission()
 
         return super().dispatch(request, *args, **kwargs)
 
 
-class CourseStaffRequiredMixin(AccessMixin):
+class InboxStaffRequiredMixin(AccessMixin):
     """
-    Mixin to verify that the user accessing the view is staff of the course.
+    Mixin to verify that the user accessing the view is staff of the inbox.
     """
     ticket_key = "pk"
 
@@ -43,8 +43,8 @@ class CourseStaffRequiredMixin(AccessMixin):
             return self.handle_no_permission()
         ticket = get_object_or_404(Ticket, pk=ticket_id)
 
-        course = get_object_or_404(Course, pk=ticket.course.id)
-        if not request.user.is_assistant_or_coordinator(course):
+        inbox = get_object_or_404(Inbox, pk=ticket.inbox.id)
+        if not request.user.is_assistant_or_coordinator(inbox):
             return self.handle_no_permission()
 
         return super().dispatch(request, *args, **kwargs)
@@ -52,7 +52,7 @@ class CourseStaffRequiredMixin(AccessMixin):
 
 class LabelCoordinatorRequiredMixin(AccessMixin):
     """
-    Mixin to verify that the user accessing the view is the coordinator of the course in which the label exists.
+    Mixin to verify that the user accessing the view is the coordinator of the inbox in which the label exists.
     """
     label_key = "pk"
 
@@ -65,7 +65,7 @@ class LabelCoordinatorRequiredMixin(AccessMixin):
             return self.handle_no_permission()
 
         label = get_object_or_404(Label, pk=label_id)
-        if not request.user.is_coordinator_for_course(label.course):
+        if not request.user.is_coordinator_for_inbox(label.inbox):
             return self.handle_no_permission()
 
         return super().dispatch(request, *args, **kwargs)
@@ -73,11 +73,11 @@ class LabelCoordinatorRequiredMixin(AccessMixin):
 
 class UserCoordinatorRequiredMixin(AccessMixin):
     """
-    Mixin to verify that the user accessing the view is the coordinator of the course in which the targeted user is
+    Mixin to verify that the user accessing the view is the coordinator of the inbox in which the targeted user is
     associated with.
     """
     user_key = "pk"
-    course_key = "course_id"
+    inbox_key = "inbox_id"
 
     def dispatch(self, request, *args, **kwargs):
         if not request.user.is_authenticated:
@@ -87,12 +87,12 @@ class UserCoordinatorRequiredMixin(AccessMixin):
         if not user_id:
             return self.handle_no_permission()
 
-        course_id = kwargs.get(self.course_key)
-        if not course_id:
+        inbox_id = kwargs.get(self.inbox_key)
+        if not inbox_id:
             return self.handle_no_permission()
 
-        user_course = get_object_or_404(UserCourseRelationship, user__id=user_id, course__id=course_id)
-        if not request.user.is_coordinator_for_course(user_course.course):
+        user_inbox = get_object_or_404(UserInbox, user__id=user_id, inbox__id=inbox_id)
+        if not request.user.is_coordinator_for_inbox(user_inbox.inbox):
             return self.handle_no_permission()
 
         return super().dispatch(request, *args, **kwargs)

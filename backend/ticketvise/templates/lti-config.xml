@@ -17,9 +17,9 @@
         <lticm:property name="username">$User.username</lticm:property>
         <lticm:property name="email">$Person.email.primary</lticm:property>
         <lticm:property name="image_url">$User.image</lticm:property>
-        <lticm:property name="course_id">$Canvas.course.id</lticm:property>
-        <lticm:property name="course_name">$Canvas.course.name</lticm:property>
-        <lticm:property name="course_start">$Canvas.course.startAt</lticm:property>
+        <lticm:property name="inbox_id">$Canvas.inbox.id</lticm:property>
+        <lticm:property name="inbox_name">$Canvas.inbox.name</lticm:property>
+        <lticm:property name="inbox_start">$Canvas.inbox.startAt</lticm:property>
     </blti:custom>
     <blti:extensions platform="canvas.instructure.com">
         <lticm:property name="privacy_level">anonymous</lticm:property>

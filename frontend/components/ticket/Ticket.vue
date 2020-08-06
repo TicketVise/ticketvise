@@ -2,7 +2,7 @@
     <div class="container mx-auto my-3">
         <div class="flex flex-col-reverse lg:flex-row lg:space-x-3 mx-3">
             <div v-if="is_staff" class="flex flex-col w-full lg:min-w-1/4 lg:w-1/4 space-y-3">
-                <author-card class="hidden lg:block" :author="ticket.author" :course_id="ticket.course"/>
+                <author-card class="hidden lg:block" :author="ticket.author" :inbox_id="ticket.inbox"/>
                 <card outlined>
                     <edit-label :ticket="ticket" class="p-3 border-b border-gray-400"/>
                     <edit-assignee :ticket="ticket" :staff="staff" class="p-3 border-b border-gray-400"/>
@@ -32,7 +32,7 @@
                                   class="px-2 mr-1 py-1 px-1 inline-flex leading-5 font-semibold rounded-full bg-gray-300 text-gray-800">
                                 Closed
                             </span>
-                            #{{ticket.ticket_course_id}} - {{ ticket.title }}
+                            #{{ticket.ticket_inbox_id}} - {{ ticket.title }}
                         </h1>
                         <div>
                             <chip class="mr-1" v-for="label in ticket.labels" :key="label.id"
@@ -131,7 +131,7 @@
                 axios.get("/api/me").then(response => {
                     this.user = response.data;
 
-                    axios.get("/api/courses/" + this.ticket.course + "/users/" + this.user.id + "/roles").then(response => {
+                    axios.get("/api/inboxes/" + this.ticket.inbox + "/users/" + this.user.id + "/roles").then(response => {
                         this.role = response.data;
 
                         if (this.isStaff()) {
@@ -139,7 +139,7 @@
                                 this.comments = response.data;
                             });
 
-                            axios.get("/api/courses/" + this.ticket.course + "/staff").then(response => {
+                            axios.get("/api/inboxes/" + this.ticket.inbox + "/staff").then(response => {
                                 this.staff = response.data;
                             });
                         }

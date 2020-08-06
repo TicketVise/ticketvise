@@ -15,35 +15,35 @@ from ticketvise.tasks import update_tickets, alert_unanswered_tickets
 #     def setUp(self):
 #         """
 #         Setup for each of these tests.
-#         We create a course and student and coordinator with which we create tickets to test with.
+#         We create a inbox and student and coordinator with which we create tickets to test with.
 #
 #         :return: None.
 #         """
 #         self.client = Client()
 #
-#         self.course = create_course()
-#         self.course.close_answered_weeks = 2
-#         self.course.alert_coordinator_unanswered_days = 3
-#         self.course.save()
+#         self.inbox = create_inbox()
+#         self.inbox.close_answered_weeks = 2
+#         self.inbox.alert_coordinator_unanswered_days = 3
+#         self.inbox.save()
 #
 #         self.student = User.objects.create_user(
 #             username="student", email="root@ticketvise.com", password="test12345", is_staff=False,
 #         )
 #         self.student.set_password("test12345")
 #         self.student.save()
-#         self.student.add_course(self.course)
+#         self.student.add_inbox(self.inbox)
 #
-#         self.coordinator = create_user_with_course(
+#         self.coordinator = create_user_with_inbox(
 #             "coordinator",
 #             email="root2@ticketvise.com",
 #             password="test12345",
-#             course=self.course,
+#             inbox=self.inbox,
 #             role=User.Roles.COORDINATOR,
 #         )
 #
-#         self.ticket = create_ticket(self.student, self.student, self.course, "question", content="question")
+#         self.ticket = create_ticket(self.student, self.student, self.inbox, "question", content="question")
 #
-#         self.ticket2 = create_ticket(self.student, self.student, self.course, "question", content="question")
+#         self.ticket2 = create_ticket(self.student, self.student, self.inbox, "question", content="question")
 #
 #     def test_update_old_answered_tickets_older(self):
 #         """

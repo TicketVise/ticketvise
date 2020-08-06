@@ -1,11 +1,11 @@
-{% extends "course/base.html" %}
+{% extends "inbox/base.html" %}
 
-{% block course-content %}
+{% block inbox-content %}
 
     <div class="container">
         <form>
-            {% url 'create_course_label' course.id as add_url %}
-            {% include "course/search_bar.html" with add_url=add_url %}
+            {% url 'create_inbox_label' inbox.id as add_url %}
+            {% include "inbox/search_bar.html" with add_url=add_url %}
         </form>
 
         <div class="flex flex-col pt-4 pb-4">
@@ -64,7 +64,7 @@
                                     {% endif %}
                                 </td>
                                 <td class="px-6 py-4 whitespace-no-wrap text-right border-b border-gray-200 text-sm leading-5 font-medium">
-                                    <a href="{% url 'edit_course_label' course.id label.id %}"
+                                    <a href="{% url 'edit_inbox_label' inbox.id label.id %}"
                                        class="text-indigo-600 hover:text-indigo-900">Edit</a>
                                 </td>
                             </tr>
@@ -147,4 +147,4 @@
         </div>
     </div>
 
-{% endblock course-content %}
+{% endblock inbox-content %}

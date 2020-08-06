@@ -13,12 +13,12 @@ from django.urls import path, re_path
 #: Contains the url paths for the website.
 from django.views.generic import RedirectView
 
-from ticketvise.views.course.labels import CourseLabelsView, CreateCourseLabelView, EditCourseLabelView, \
-    DeleteCourseLabelView
-from ticketvise.views.course.settings import CourseSettingsView
-from ticketvise.views.course.statistics import CourseStatisticsView
-from ticketvise.views.course.users import CourseUserDeleteView, CourseUserView, CourseUsersView
-from ticketvise.views.courses import CoursesView
+from ticketvise.views.inbox.labels import InboxLabelsView, CreateInboxLabelView, EditInboxLabelView, \
+    DeleteInboxLabelView
+from ticketvise.views.inbox.settings import InboxSettingsView
+from ticketvise.views.inbox.statistics import InboxStatisticsView
+from ticketvise.views.inbox.users import InboxUserDeleteView, InboxUserView, InboxUsersView
+from ticketvise.views.inboxes import InboxesView
 from ticketvise.views.error import ErrorHandler
 from ticketvise.views.home import HomeView
 from ticketvise.views.lti.config import LtiConfigView
@@ -36,20 +36,20 @@ urlpatterns = [
     path("lti/config.xml", LtiConfigView.as_view()),
     path("settings/lti", LtiSettingsView.as_view(), name="settings_lti"),
     path("", HomeView.as_view()),
-    path("courses/<int:course_id>/tickets/<int:ticket_course_id>", TicketView.as_view(), name="ticket"),
-    path("courses/<int:course_id>/tickets/new", TicketFormView.as_view(), name="new_ticket"),
-    path("courses/<int:course_id>/users/<int:pk>/delete", CourseUserDeleteView.as_view(), name="course_user_delete"),
-    path("courses/<int:course_id>/users/<int:pk>", CourseUserView.as_view(), name="course_user"),
-    path("courses/<int:pk>/users", CourseUsersView.as_view(), name="course_users"),
-    path("courses/<int:pk>/labels", CourseLabelsView.as_view(), name="course_labels"),
-    path("courses/<int:pk>/settings", CourseSettingsView.as_view(), name="course_settings"),
-    path("courses/<int:pk>/statistics", CourseStatisticsView.as_view(), name="course_statistics"),
-    path("courses/<int:pk>/labels/new", CreateCourseLabelView.as_view(), name="create_course_label"),
-    path("courses/<int:course_id>/labels/<int:pk>", EditCourseLabelView.as_view(),  name="edit_course_label"),
-    path("courses/<int:course_id>/labels/<int:pk>/delete", DeleteCourseLabelView.as_view(), name="delete_course_label"),
-    path("courses/<int:course_id>/tickets", TicketOverview.as_view(), name="ticket_overview"),
+    path("inboxes/<int:inbox_id>/tickets/<int:ticket_inbox_id>", TicketView.as_view(), name="ticket"),
+    path("inboxes/<int:inbox_id>/tickets/new", TicketFormView.as_view(), name="new_ticket"),
+    path("inboxes/<int:inbox_id>/users/<int:pk>/delete", InboxUserDeleteView.as_view(), name="inbox_user_delete"),
+    path("inboxes/<int:inbox_id>/users/<int:pk>", InboxUserView.as_view(), name="inbox_user"),
+    path("inboxes/<int:pk>/users", InboxUsersView.as_view(), name="inbox_users"),
+    path("inboxes/<int:pk>/labels", InboxLabelsView.as_view(), name="inbox_labels"),
+    path("inboxes/<int:pk>/settings", InboxSettingsView.as_view(), name="inbox_settings"),
+    path("inboxes/<int:pk>/statistics", InboxStatisticsView.as_view(), name="inbox_statistics"),
+    path("inboxes/<int:pk>/labels/new", CreateInboxLabelView.as_view(), name="create_inbox_label"),
+    path("inboxes/<int:inbox_id>/labels/<int:pk>", EditInboxLabelView.as_view(),  name="edit_inbox_label"),
+    path("inboxes/<int:inbox_id>/labels/<int:pk>/delete", DeleteInboxLabelView.as_view(), name="delete_inbox_label"),
+    path("inboxes/<int:inbox_id>/tickets", TicketOverview.as_view(), name="ticket_overview"),
     path("profile", ProfileView.as_view(), name="profile"),
-    path("courses", CoursesView.as_view(), name="courses"),
+    path("inboxes", InboxesView.as_view(), name="inboxes"),
     path("notifications", NotificationsView.as_view(), name="notifications"),
     path("error/<int:error_code>", ErrorHandler.as_view(), name="error"),
     path(

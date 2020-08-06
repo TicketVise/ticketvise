@@ -39,12 +39,12 @@
         </tr>
     </table>
 
-    <!-- TICKET INFO, SHOW THE COURSE AND THE LABELS. -->
+    <!-- TICKET INFO, SHOW THE INBOX AND THE LABELS. -->
     <table class="bg_white" role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%">
         <tr style="border-bottom: 1px solid rgba(0,0,0,.05);">
             <td valign="middle" width="80%" style="text-align:left; padding: 0 2.5em;">
                 <div class="text">
-                    <p><strong>Course:</strong> {{ course }}</p>
+                    <p><strong>Inbox:</strong> {{ inbox }}</p>
                     <p><strong>Labels:</strong>
                         <!-- PRINT ALL LABELS FOR THE TICKET, IF ANY. -->
                         {% if labels.all %}
@@ -78,7 +78,7 @@
                cellpadding="0" border="0" width="100%" style="margin: auto;">
             <tr>
                 <td valign="middle" style="text-align:center; padding: 1em 2.5em;">
-                    <p><a href="https://ticketvise.com/courses/{{ course.id }}/tickets/{{ ticket_course_id }}"
+                    <p><a href="https://ticketvise.com/inboxes/{{ inbox.id }}/tickets/{{ ticket_inbox_id }}"
                           class="btn btn-primary">Click to view</a></p>
                 </td>
             </tr>

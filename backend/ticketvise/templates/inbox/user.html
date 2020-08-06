@@ -15,7 +15,7 @@
                             User Information
                         </h3>
                         <p class="mt-1 max-w-2xl text-sm leading-5 text-gray-500">
-                            Personal details and course related settings.
+                            Personal details and inbox related settings.
                         </p>
                     </div>
                 </div>
@@ -74,7 +74,7 @@
             </div>
         </form>
 
-        <form action="{% url 'course_user_delete' course_id=course.id pk=user.id %}" method="post"
+        <form action="{% url 'inbox_user_delete' inbox_id=inbox.id pk=user.id %}" method="post"
               onsubmit="return confirm('Are you sure?')">
             {% csrf_token %}
 
@@ -83,7 +83,7 @@
                     Remove user
                 </h3>
                 <p class="mt-1 max-w-2xl text-sm leading-5 text-gray-500">
-                    Remove a user from the course. The user will lose access to the course and will be unable to create
+                    Remove a user from the inbox. The user will lose access to the inbox and will be unable to create
                     new tickets or answer tickets.
                 </p>
                 <button type="submit"

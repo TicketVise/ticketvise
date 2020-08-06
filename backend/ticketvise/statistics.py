@@ -24,73 +24,73 @@ def calculate_timedelta_hours(time):
     return round(time.total_seconds() / 3600, 1) or 0.1 if time.total_seconds() else 0.0
 
 
-def get_amount_all_tickets(course):
+def get_amount_all_tickets(inbox):
     """
-    Get the amount of tickets in a course.
+    Get the amount of tickets in a inbox.
 
-    :param Course course: The course where to search for tickets.
+    :param Inbox inbox: The inbox where to search for tickets.
 
-    :return: The amount of tickets in the course.
+    :return: The amount of tickets in the inbox.
     :rtype: int
     """
-    return Ticket.objects.filter(course=course).count()
+    return Ticket.objects.filter(inbox=inbox).count()
 
 
-def get_amount_type(course, status):
+def get_amount_type(inbox, status):
     """
-    Get the amount of tickets in a course with a given status.
+    Get the amount of tickets in a inbox with a given status.
 
-    :param Course course: The course where to search for tickets.
+    :param Inbox inbox: The inbox where to search for tickets.
     :param Ticket.Status status: The status which a ticket has to have to be counted.
 
-    :return: The amount of tickets with the given status in a course.
+    :return: The amount of tickets with the given status in a inbox.
     :rtype: int
     """
-    return Ticket.objects.filter(course=course, status=status).count()
+    return Ticket.objects.filter(inbox=inbox, status=status).count()
 
 
-def get_amount_ticket_label(course, label):
+def get_amount_ticket_label(inbox, label):
     """
-    Get the amount of tickets in a course with a label.
+    Get the amount of tickets in a inbox with a label.
 
-    :param Course course: The course where to search for tickets.
+    :param Inbox inbox: The inbox where to search for tickets.
     :param Label label: The label which a ticket has to have to be counted.
 
-    :return: The amount of tickets with the given label in a course.
+    :return: The amount of tickets with the given label in a inbox.
     :rtype: int
     """
-    return Ticket.objects.filter(course=course, labels=label).count()
+    return Ticket.objects.filter(inbox=inbox, labels=label).count()
 
 
-def get_amount_labels(course):
+def get_amount_labels(inbox):
     """
-    Get the amount of tickets for every label in a course.
+    Get the amount of tickets for every label in a inbox.
 
-    :param Course course: The course where to search for tickets and labels.
+    :param Inbox inbox: The inbox where to search for tickets and labels.
 
     :return: A ditctionary where a label is mapped to the amount of tickets
-             with the given label in a course.
+             with the given label in a inbox.
     :rtype: list
     """
     result_list = []
 
-    for label in Label.objects.filter(course=course):
-        result_list.append([label, get_amount_ticket_label(course, label)])
+    for label in Label.objects.filter(inbox=inbox):
+        result_list.append([label, get_amount_ticket_label(inbox, label)])
 
     return result_list
 
 
-def get_popular_labels(course):
+def get_popular_labels(inbox):
     """
     Get a list of tuples with the names of the top 5 most
     popular labels and the number of times they were used.
 
-    :param Course course: The course of which we need the 5 most popular tickets.
+    :param Inbox inbox: The inbox of which we need the 5 most popular tickets.
 
     :return: A list of 5 tuples with the label and the number of use cases.
     :rtype: list
     """
-    return sorted(get_amount_labels(course), reverse=True, key=lambda x: x[1])[:5]
+    return sorted(get_amount_labels(inbox), reverse=True, key=lambda x: x[1])[:5]
 
 
 def get_response_time_ticket(ticket):
@@ -103,7 +103,7 @@ def get_response_time_ticket(ticket):
     :rtype: timedelta
     """
     ticket_date_created = ticket.date_created
-    teachers = ticket.course.get_assistants_and_coordinators()
+    teachers = ticket.inbox.get_assistants_and_coordinators()
     comments = ticket.comments.all().filter(ticket=ticket, author__in=teachers, is_reply=True).order_by("date_created")
 
     if comments.count() == 0:
@@ -114,17 +114,17 @@ def get_response_time_ticket(ticket):
     return ticket_date_first_response - ticket_date_created
 
 
-def get_average_response_time_ta(course, ta):
+def get_average_response_time_ta(inbox, ta):
     """
-    Get the average response time of a TA in a course.
+    Get the average response time of a TA in a inbox.
 
-    :param Course course: The course where to search.
+    :param Inbox inbox: The inbox where to search.
     :param User ta: The TA of which the response time is queried.
 
-    :return: The average response time of a TA in a course on the tickets.
+    :return: The average response time of a TA in a inbox on the tickets.
     :rtype: timedelta
     """
-    tickets = Ticket.objects.filter(course=course, assignee=ta, comments__author=ta, comments__is_reply=True).distinct()
+    tickets = Ticket.objects.filter(inbox=inbox, assignee=ta, comments__author=ta, comments__is_reply=True).distinct()
 
     if not tickets.count():
         return timedelta(0)
@@ -132,44 +132,44 @@ def get_average_response_time_ta(course, ta):
     return sum([get_response_time_ticket(ticket) for ticket in tickets], timedelta(0)) / tickets.count()
 
 
-# def get_average_response_time_all_ta_2(course):
-#     return Ticket.objects.filter(course=course, comments__is_reply=True) \
+# def get_average_response_time_all_ta_2(inbox):
+#     return Ticket.objects.filter(inbox=inbox, comments__is_reply=True) \
 #         .annotate(response_time=F('date_created') - F('comments__date_created')) \
 #         .aggregate(avg_response_time=Avg('response_time')) \
 #         .values('assignee') \
 #         .orderby('response_time')
 
 
-def get_average_response_time_all_ta(course):
+def get_average_response_time_all_ta(inbox):
     """
-    Get the average response times of all TAs in a course.
+    Get the average response times of all TAs in a inbox.
 
-    :param Course course: The course where to search.
+    :param Inbox inbox: The inbox where to search.
 
-    :return: The average response times of all TAs in a course on the tickets.
+    :return: The average response times of all TAs in a inbox on the tickets.
     :rtype: list
     """
 
     result_list = []
-    tas = course.get_assistants_and_coordinators()
+    tas = inbox.get_assistants_and_coordinators()
 
     for ta in tas:
-        result_list.append([ta, calculate_timedelta_hours(get_average_response_time_ta(course, ta))])
+        result_list.append([ta, calculate_timedelta_hours(get_average_response_time_ta(inbox, ta))])
 
     return result_list
 
 
-def get_average_response_time(course):
+def get_average_response_time(inbox):
     """
-    Get the average response time in a course.
+    Get the average response time in a inbox.
 
-    :param Course course: The course where to search.
+    :param Inbox inbox: The inbox where to search.
 
-    :return: The average response time in a course on the tickets.
+    :return: The average response time in a inbox on the tickets.
     :rtype: float
     """
-    teachers = course.get_assistants_and_coordinators()
-    tickets = Ticket.objects.filter(course=course, comments__author__in=teachers, comments__is_reply=True)
+    teachers = inbox.get_assistants_and_coordinators()
+    tickets = Ticket.objects.filter(inbox=inbox, comments__author__in=teachers, comments__is_reply=True)
 
     if tickets.count() == 0:
         return 0
@@ -181,18 +181,18 @@ def get_average_response_time(course):
     return calculate_timedelta_hours(average_response_time)
 
 
-def get_amount_ticket_assigned_answered_closed(course):
+def get_amount_ticket_assigned_answered_closed(inbox):
     """
     Get the amount of assigned, amount of answered and amount of closed for each TA.
 
-    :param Course course: The course where to search.
+    :param Inbox inbox: The inbox where to search.
 
     :return: The amount of tickets which were assigned to a TA for all TAs.
     :rtype: list
     """
-    assigned_list = get_amount_type_all_assistants(course, Ticket.Status.ASSIGNED)
-    answered_list = get_amount_type_all_assistants(course, Ticket.Status.ANSWERED)
-    closed_list = get_amount_type_all_assistants(course, Ticket.Status.CLOSED)
+    assigned_list = get_amount_type_all_assistants(inbox, Ticket.Status.ASSIGNED)
+    answered_list = get_amount_type_all_assistants(inbox, Ticket.Status.ANSWERED)
+    closed_list = get_amount_type_all_assistants(inbox, Ticket.Status.CLOSED)
 
     return [
         [ta, assigned, answered, closed]
@@ -200,93 +200,93 @@ def get_amount_ticket_assigned_answered_closed(course):
     ]
 
 
-def get_amount_type_student(course, status, student):
+def get_amount_type_student(inbox, status, student):
     """
-    Get the amount of tickets from a student in a course with a given status.
+    Get the amount of tickets from a student in a inbox with a given status.
 
-    :param Course course: The course where to search for tickets.
+    :param Inbox inbox: The inbox where to search for tickets.
     :param Ticket.Status status: The status which a ticket has to have to be counted.
     :param User assistant: The assistant of which we want the amount of tickets with a given status.
 
-    :return: The amount of tickets with the given status in a course.
+    :return: The amount of tickets with the given status in a inbox.
     :rtype: int
     """
-    return Ticket.objects.filter(course=course, status=status, author=student).count()
+    return Ticket.objects.filter(inbox=inbox, status=status, author=student).count()
 
 
-def get_amount_student_ticket_label(course, student, label):
+def get_amount_student_ticket_label(inbox, student, label):
     """
-    Get the amount of tickets from a student in a course with a label.
+    Get the amount of tickets from a student in a inbox with a label.
 
-    :param Course course: The course where to search for tickets.
+    :param Inbox inbox: The inbox where to search for tickets.
     :param User student: The student of which we need the label amount.
     :param Label label: The label which a ticket has to have to be counted.
 
-    :return: The amount of tickets with the given label in a course.
+    :return: The amount of tickets with the given label in a inbox.
     :rtype: int
     """
-    return Ticket.objects.filter(author=student, course=course, labels=label).count()
+    return Ticket.objects.filter(author=student, inbox=inbox, labels=label).count()
 
 
-def get_amount_student_labels(course, student):
+def get_amount_student_labels(inbox, student):
     """
-    Get the amount of tickets for every label in a course.
+    Get the amount of tickets for every label in a inbox.
 
-    :param Course course: The course where to search for tickets and labels.
+    :param Inbox inbox: The inbox where to search for tickets and labels.
     :param User student: The student of which we need the label amounts.
 
     :return: A ditctionary where a label is mapped to the amount of tickets
-             with the given label in a course for a student.
+             with the given label in a inbox for a student.
     :rtype: list
     """
     result_list = []
 
-    for label in Label.objects.filter(course=course):
-        result_list.append([label, get_amount_student_ticket_label(course, student, label)])
+    for label in Label.objects.filter(inbox=inbox):
+        result_list.append([label, get_amount_student_ticket_label(inbox, student, label)])
 
     return result_list
 
 
-def get_popular_used_labels(course, student):
+def get_popular_used_labels(inbox, student):
     """
     Get a list of tuples with the names of the top 5 most
     popular labels and the number of times they were used.
 
-    :param Course course: The course of which we need the 5 most popular tickets.
+    :param Inbox inbox: The inbox of which we need the 5 most popular tickets.
     :param User student: The student of which we need the 5 most popular tickets.
 
     :return: A list of tuples with the label and the number of use cases.
     :rtype: list
     """
-    return sorted(get_amount_student_labels(course, student), reverse=True, key=lambda x: x[1])[:5]
+    return sorted(get_amount_student_labels(inbox, student), reverse=True, key=lambda x: x[1])[:5]
 
 
-def get_amount_tickets_days(course, student):
+def get_amount_tickets_days(inbox, student):
     """
     Get a list of tuples with the amount of tickets were created for each day.
 
-    :param Course course: The course of which we need the tickets.
+    :param Inbox inbox: The inbox of which we need the tickets.
     :param User student: The student by which the tickets are created.
 
     :return: A list of tuples with the amount of tickets and the day.
     :rtype: list
     """
     return (
-        course.get_tickets_by_author(student).values_list("date_created__date").annotate(amount=Count("date_created"))
+        inbox.get_tickets_by_author(student).values_list("date_created__date").annotate(amount=Count("date_created"))
     )
 
 
-def average_response_time_of_tickets(course, student):
+def average_response_time_of_tickets(inbox, student):
     """
     Get the average response time over all of the student's tickets.
 
-    :param Course course: The course of which we need the tickets.
+    :param Inbox inbox: The inbox of which we need the tickets.
     :param User student: The student by which the tickets are created.
 
     :return: Average response time over all of the student's tickets.
     :rtype: float
     """
-    student_tickets = course.get_tickets_by_author(student)
+    student_tickets = inbox.get_tickets_by_author(student)
 
     if student_tickets.count() == 0:
         average_response_time = timedelta(0)
@@ -299,20 +299,20 @@ def average_response_time_of_tickets(course, student):
     return calculate_timedelta_hours(average_response_time)
 
 
-def get_ticket_responders_data(course, student):
+def get_ticket_responders_data(inbox, student):
     """
     Convert the mapping from responders to respond count to table data for
     the front-end.
 
-    :param Course course: Course to get the data from.
+    :param Inbox inbox: Inbox to get the data from.
     :param User student: Student to get the tickets from.
 
     :return: Data formatted for front-end.
     :rtype: list
     """
     data = []
-    tickets = course.get_tickets_by_author(student)
-    teachers = course.get_assistants_and_coordinators()
+    tickets = inbox.get_tickets_by_author(student)
+    teachers = inbox.get_assistants_and_coordinators()
     raw_data = get_ticket_responders(tickets, teachers)
 
     for teacher, value in raw_data.items():
@@ -357,36 +357,36 @@ def get_ticket_responders(tickets, teachers):
     return teachers_to_amount
 
 
-def get_amount_type_assistant(course, status, assistant):
+def get_amount_type_assistant(inbox, status, assistant):
     """
-    Get the amount of tickets of an asistant in a course with a given status.
+    Get the amount of tickets of an asistant in a inbox with a given status.
 
-    :param Course course: The course where to search for tickets.
+    :param Inbox inbox: The inbox where to search for tickets.
     :param Ticket.Status status: The status which a ticket has to have to be counted.
     :param User assistant: The assistant of which we want the amount of tickets with a given status.
 
-    :return: The amount of tickets with the given status in a course.
+    :return: The amount of tickets with the given status in a inbox.
     :rtype: int
     """
-    return Ticket.objects.filter(course=course, status=status, assignee=assistant).count()
+    return Ticket.objects.filter(inbox=inbox, status=status, assignee=assistant).count()
 
 
-def get_amount_type_all_assistants(course, status):
+def get_amount_type_all_assistants(inbox, status):
     """
     Get the amount of tickets which were assigned to a TA for all TAs.
 
-    :param Course course: The course where to search.
+    :param Inbox inbox: The inbox where to search.
     :param Ticket.Status status: The status of the ticket.
 
     :return: The amount of tickets which were assigned to a TA for all TAs.
     :rtype: list
     """
-    assistants = course.get_assistants_and_coordinators()
+    assistants = inbox.get_assistants_and_coordinators()
 
-    return [[assistant, get_amount_type_assistant(course, status, assistant)] for assistant in assistants]
+    return [[assistant, get_amount_type_assistant(inbox, status, assistant)] for assistant in assistants]
 
 
-def get_last_5_processed_tickets_ta(course, assistant):
+def get_last_5_processed_tickets_ta(inbox, assistant):
     """
     Get the 5 most recently processed tickets of a given TA.
 
@@ -394,14 +394,14 @@ def get_last_5_processed_tickets_ta(course, assistant):
     replied to it multiple times, so we need to remove the duplicates using:
     https://www.w3schools.com/python/python_howto_remove_duplicates.asp
 
-    :param Course course: The course where to search.
+    :param Inbox inbox: The inbox where to search.
     :param User assistant: The assistant of which we want to get the 5 most recently processed tickets.
 
     :return: The 5 most recently processed tickets of a given TA.
     :rtype: list
     """
-    answered_tickets = course.get_tickets_by_assignee(assistant, status=Ticket.Status.ANSWERED)
-    closed_tickets = course.get_tickets_by_assignee(assistant, status=Ticket.Status.CLOSED)
+    answered_tickets = inbox.get_tickets_by_assignee(assistant, status=Ticket.Status.ANSWERED)
+    closed_tickets = inbox.get_tickets_by_assignee(assistant, status=Ticket.Status.CLOSED)
     processed_tickets = answered_tickets | closed_tickets
 
     ticket_dicts = (
@@ -426,17 +426,17 @@ def response_time_tickets(tickets):
     return [calculate_timedelta_hours(get_response_time_ticket(ticket)) for ticket in tickets]
 
 
-def get_amount_responses_days(course, assistant):
+def get_amount_responses_days(inbox, assistant):
     """
     Get the amount of tickets responded to per day.
 
-    :param Course course: The course of which we need the tickets.
+    :param Inbox inbox: The inbox of which we need the tickets.
     :param User assistant: The assistant that responed to tickets.
 
     :return: A list of tickets responded to per day.
     :rtype: list
     """
-    mapping = get_ticket_responders(course.tickets.all(), [assistant])
+    mapping = get_ticket_responders(inbox.tickets.all(), [assistant])
 
     if assistant in mapping.keys():
         comments_by_date = (

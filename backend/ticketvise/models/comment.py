@@ -66,7 +66,7 @@ class Comment(models.Model):
                 mail_vars = {"ticket": self.ticket, "comment": self}
 
                 send_email(
-                    "Mention in ticket #%s" % self.ticket.ticket_course_id, receiver.email, "ticket_mention", mail_vars
+                    "Mention in ticket #%s" % self.ticket.ticket_inbox_id, receiver.email, "ticket_mention", mail_vars
                 )
 
         if self.is_reply:
@@ -87,7 +87,7 @@ class Comment(models.Model):
             message = CommentNotification(receiver=self.ticket.assignee, comment=self)
             message.save()
         else:
-            for receiver in self.ticket.course.get_assistants_and_coordinators():
+            for receiver in self.ticket.inbox.get_assistants_and_coordinators():
                 message = CommentNotification(receiver=receiver, comment=self)
                 message.save()
 
