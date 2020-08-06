@@ -95,10 +95,10 @@ class LtiLaunchForm(forms.Form):
         oauth_request.signature = self.cleaned_data["oauth_signature"]
         oauth_request.params = [(k, v) for k, v in self.request.POST.items() if k != "oauth_signature"]
 
-        print(self.request.build_absolute_uri())
-
         if not oauth.verify_hmac_sha1(oauth_request, settings.LTI_SECRET):
-            raise ValidationError("Invalid signature")
+            raise ValidationError("Invalid signature, URL: {}, method: {}".format(
+                self.request.build_absolute_uri(),
+                self.request.method))
 
         return self.cleaned_data["oauth_signature"]
 
