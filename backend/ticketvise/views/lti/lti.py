@@ -7,8 +7,8 @@ from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
 from django.views.generic import RedirectView
 
-from ticketvise.models.course import Course
-from ticketvise.models.user import User, UserCourseRelationship
+from ticketvise.models.inbox import Inbox
+from ticketvise.models.user import User, UserInbox
 from ticketvise.views.lti.validation import LtiLaunchForm
 
 
@@ -64,12 +64,12 @@ class LtiView(RedirectView):
 
         user_roles = [role.split("/")[-1].lower() for role in form.cleaned_data["roles"].split(",")]
         course_code = form.cleaned_data["context_label"]
-        course = Course.objects.filter(code=course_code).first()
+        course = Inbox.objects.filter(code=course_code).first()
 
         if course is None:
             if "instructor" in user_roles:
                 course_name = form.cleaned_data["custom_course_name"]
-                course = Course.objects.create(code=course_code, name=course_name)
+                course = Inbox.objects.create(code=course_code, name=course_name)
             else:
                 raise Http404("Course does not have a ticket system (yet). Please contact your instructor.")
 
@@ -81,10 +81,10 @@ class LtiView(RedirectView):
         if any("teachingassistant" in s for s in user_roles):
             user_role = User.Roles.ASSISTANT
 
-        relation = UserCourseRelationship.objects.filter(user=user, course=course).first()
+        relation = UserInbox.objects.filter(user=user, course=course).first()
 
         if relation is None:
-            UserCourseRelationship.objects.create(user=user, course=course, role=user_role)
+            UserInbox.objects.create(user=user, course=course, role=user_role)
         elif relation.role != user_role:
             relation.role = user_role
             relation.save()
