@@ -10,11 +10,11 @@ from ticketvise import settings
 
 class LtiLaunchForm(forms.Form):
     """
-    Specifies the fields and valid requirements of the form for an LtiLaunch.
+    Specifies the fields and valid requirements of the form for an LTI launch.
     """
 
+    #: OAuth related parameters
     oauth_consumer_key = forms.CharField()
-    oauth_token = forms.CharField()
     oauth_nonce = forms.CharField()
     oauth_timestamp = forms.IntegerField()
     oauth_signature_method = forms.CharField()
@@ -43,12 +43,8 @@ class LtiLaunchForm(forms.Form):
 
     def clean_oauth_consumer_key(self):
         """
-        Check whether there is a consumer key and whether it is the right key.
-
-        :return: The identity key of the consumer.
-        :rtype: str
-
-        :raises ValidationError: When the key is invalid.
+        Cleans and validates the OAuth consumer key. The check ensures the correct key is used. This key is agreed upon
+        by both parties; the LTI consumer en LTI provider.
         """
         oauth_consumer_key = self.cleaned_data["oauth_consumer_key"]
 
@@ -59,13 +55,7 @@ class LtiLaunchForm(forms.Form):
 
     def clean_oauth_timestamp(self):
         """
-        Check whether the request is not older than 5 minutes.
-        Otherwise, the link has expired.
-
-        :return: Timestamp of the request.
-        :rtype: int
-
-        :raises ValidationError: When authentication expired.
+        Cleans and validates the OAuth timestamp. The check ensures that the request is not older than 5 minutes.
         """
         oauth_timestamp = self.cleaned_data["oauth_timestamp"]
         timeout_duration = 5 * 60
@@ -76,6 +66,10 @@ class LtiLaunchForm(forms.Form):
         return oauth_timestamp
 
     def clean_oauth_signature_method(self):
+        """
+        Cleans and validates the signature hashing method. Currently only HMAC-SHA1 is supported, which is widely
+        supported and used by LTI providers.
+        """
         oauth_signature_method = self.cleaned_data["oauth_signature_method"]
 
         if oauth_signature_method != "HMAC-SHA1":
@@ -84,6 +78,9 @@ class LtiLaunchForm(forms.Form):
         return oauth_signature_method
 
     def clean_oauth_version(self):
+        """
+        Cleans and validates the OAuth version. Since LTI 1.0 supports only OAuth 1.0, this is the only valid version.
+        """
         oauth_version = self.cleaned_data["oauth_version"]
 
         if oauth_version != 1.0:
@@ -92,20 +89,19 @@ class LtiLaunchForm(forms.Form):
         return oauth_version
 
     def clean_oauth_signature(self):
+        """
+        Cleans and validates the 'oauth signature'. The signature is verified by calculating the hash (using the
+        algorithm specified in 'oauth_signature_method') of the URL, METHOD and BODY. After the calculation the
+        signature is compared with the 'oauth_signature' to check if they match. When the signatures match we can
+        assure that the request is from a authorized entity.
+        """
         oauth_request = Request(self.request.build_absolute_uri(), self.request.method, self.request.POST)
         oauth_request.signature = self.cleaned_data["oauth_signature"]
         oauth_request.params = [(k, v) for k, v in self.request.POST.items() if k != "oauth_signature"]
 
         if not oauth.verify_hmac_sha1(oauth_request, settings.LTI_SECRET):
-            raise ValidationError("Invalid signature")
+            raise ValidationError("Invalid signature, URL: {}, method: {}".format(
+                self.request.build_absolute_uri(),
+                self.request.method))
 
         return self.cleaned_data["oauth_signature"]
-
-    def is_valid(self):
-        """
-        Check whether the form is valid.
-
-        :return: Whether the form is valid.
-        :rtype: bool
-        """
-        return super().is_valid()

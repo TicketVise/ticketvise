@@ -8,14 +8,14 @@ services:
       - 5432:5432
     volumes:
       - postgres_data:/var/lib/postgresql/data/
-    env_file:
-      - prod.env
 
   web:
     ports:
       - 6000:6000
-    env_file:
-      - prod.env
+    environment:
+      - SQL_ENGINE=django.db.backends.postgresql_psycopg2
+      - SQL_DATABASE=ticketvise
+      - SQL_HOST=database
 
 volumes:
   static:

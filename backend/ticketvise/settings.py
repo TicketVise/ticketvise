@@ -41,7 +41,6 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "django.contrib.humanize",
     "django_celery_results",
-    "django_probes",
 ]
 
 #: Middleware used for Django.
@@ -108,6 +107,10 @@ AUTHENTICATION_BACKENDS = [
     "django.contrib.auth.backends.ModelBackend",
 ]
 
+# PROXY
+USE_X_FORWARDED_HOST = True
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+
 #: LTI settings
 #: ~~~~~~~~~~~~
 
@@ -120,9 +123,9 @@ LTI_XML_CONFIG_URL = LTI_HOST + "/lti/config.xml"
 DATABASES = {
     "default": {
         "ENGINE": os.environ.get("SQL_ENGINE", "django.db.backends.sqlite3"),
-        "NAME": os.environ.get("POSTGRES_DB", 'ticketvise.sqlite3'),
-        "USER": os.environ.get("POSTGRES_USER", "ticketvise"),
-        "PASSWORD": os.environ.get("POSTGRES_PASSWORD", "Welkom01"),
+        "NAME": os.environ.get("SQL_DATABASE", 'ticketvise.sqlite3'),
+        "USER": os.environ.get("SQL_USER", "ticketvise"),
+        "PASSWORD": os.environ.get("SQL_PASSWORD", "Welkom01"),
         "HOST": os.environ.get("SQL_HOST", "localhost"),
         "PORT": os.environ.get("SQL_PORT", "5432"),
     }
@@ -228,3 +231,17 @@ CELERY_TASK_SERIALIZER = "json"
 CELERY_RESULT_SERIALIZER = "json"
 
 PAGE_SIZE = 25
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+        },
+    },
+    'root': {
+        'handlers': ['console'],
+        'level': 'WARNING',
+    },
+}
