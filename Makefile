@@ -19,7 +19,7 @@ build:
 	npm run watch
 
 build-demo: clean build
-	python3 ./backend/generate_database.py
+	python3 ./backend/manage.py generate_database
 
 build-docker:
 	docker-compose up -d --build
