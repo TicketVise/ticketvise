@@ -13,7 +13,7 @@ from ticketvise.models.comment import Comment
 from ticketvise.models.inbox import Inbox
 from ticketvise.models.label import Label
 from ticketvise.models.ticket import Ticket
-from ticketvise.models.user import User
+from ticketvise.models.user import User, Role
 
 
 class TicketTestCase(TestCase):
@@ -27,20 +27,20 @@ class TicketTestCase(TestCase):
         self.inbox = Inbox.objects.create(name="TestInbox", code="TestCode", color="#FF6600")
         self.student = User.objects.create(username="student", password="test12345", email="student@ticketvise.com")
         self.student.add_inbox(self.inbox)
-        self.student.set_role_for_inbox(self.inbox, User.Roles.STUDENT)
+        self.student.set_role_for_inbox(self.inbox, Role.GUEST)
         self.student2 = User.objects.create(username="student2", password="test12345", email="student2@ticketvise.com")
         self.student2.add_inbox(self.inbox)
-        self.student2.set_role_for_inbox(self.inbox, User.Roles.STUDENT)
+        self.student2.set_role_for_inbox(self.inbox, Role.GUEST)
         self.assistant = User.objects.create(username="assistant", password="test67891",
                                              email="assistant@ticketvise.com")
         self.assistant.add_inbox(self.inbox)
-        self.assistant.set_role_for_inbox(self.inbox, User.Roles.ASSISTANT)
+        self.assistant.set_role_for_inbox(self.inbox, Role.AGENT)
         self.assistant2 = User.objects.create(username="assistant2", password="test67891",
                                               email="assistant2@ticketvise.com")
         self.assistant3 = User.objects.create(username="assistant3", password="test67891",
                                               email="assistant3@ticketvise.com")
         self.assistant3.add_inbox(self.inbox)
-        self.assistant3.set_role_for_inbox(self.inbox, User.Roles.ASSISTANT)
+        self.assistant3.set_role_for_inbox(self.inbox, Role.AGENT)
         self.label = Label.objects.create(name="TestLabel", inbox=self.inbox)
 
         self.ticket = Ticket.objects.create(author=self.student, assignee=self.assistant, title="TestTicket",

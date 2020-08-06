@@ -12,15 +12,25 @@ from django.contrib.auth.validators import UnicodeUsernameValidator
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
+from ticketvise import settings
 from ticketvise.models.ticket import Ticket
 from ticketvise.settings import DEFAULT_AVATAR_PATH
 
+
+class Role(models.TextChoices):
+    """
+    Choices for the :attr:`Role` field.
+    """
+
+    GUEST = "GUEST", _(settings.ROLE_GUEST_DISPLAY_NAME)
+    AGENT = "AGENT", _(settings.ROLE_AGENT_DISPLAY_NAME)
+    MANAGER = "MANAGER", _(settings.ROLE_MANAGER_DISPLAY_NAME)
 
 class User(AbstractUser):
     """
     This model represents a user. A user can have different inboxes and has one
     role associated with each inbox. The roles can be found in the
-    :class:`User.Roles` class. Users also have various notification settings.
+    :class:`Role` class. Users also have various notification settings.
 
     :reverse relations: * **comments** -- Set of :class:`Comment` s written by the user.
                         * **inbox_relationship** -- Set of :class:`UserInbox` s belonging to the user.
@@ -29,22 +39,7 @@ class User(AbstractUser):
 
     #: The user id for authentication using LTI. Maximum length of 150 characters. Nullable.
     lti_id = models.CharField(max_length=150, verbose_name="LTI user ID", null=True)
-    #: Username of the user, must be unique. Maximum length of 150 characters.
-    username = models.CharField(
-        error_messages={"unique": "A user with that username already exists."},
-        help_text="Required. 150 characters or fewer. Letters, digits and @/./+/-/_ only.",
-        max_length=150,
-        unique=True,
-        validators=[UnicodeUsernameValidator()],
-        verbose_name="username",
-    )
-    #: First name of the user, maximum length of 30 characters.
-    first_name = models.CharField(max_length=30, verbose_name="first name")
-    #: Last name of the user, maximum length of 30 characters.
-    last_name = models.CharField(max_length=150, verbose_name="last name")
     #: Email address of the user, must be unique.
-    email = models.EmailField(unique=True, max_length=254, verbose_name="email address")
-    #: The :class:`Inbox` s that the user is enrolled in or that the user assists.
     inboxes = models.ManyToManyField("ticketvise.Inbox", through="ticketvise.UserInbox", related_name="users")
     #: URL to the avatar picture of the user. Defaults to :const:`ticketvise.settings.DEFAULT_AVATAR_PATH`.
     avatar_url = models.URLField(default=DEFAULT_AVATAR_PATH)
@@ -58,81 +53,20 @@ class User(AbstractUser):
         to="auth.Group",
         verbose_name="groups",
     )
-    #: Django permissions that the user has. Unused.
-    user_permissions = models.ManyToManyField(
-        blank=True,
-        help_text="Specific permissions for this user.",
-        related_name="user_set",
-        related_query_name="user",
-        to="auth.Permission",
-        verbose_name="user permissions",
-    )
-    #: If the user can access the admin panel. Defaults to ``False``.
-    is_staff = models.BooleanField(
-        default=False,
-        help_text="Designates whether the user can log into this " + "admin site.",
-        verbose_name="staff status",
-    )
-    #: If the user can access the admin panel. Defaults to ``False``.
-    is_superuser = models.BooleanField(
-        default=False,
-        help_text="Designates that this user has all permissions " + "without explicitly assigning them.",
-        verbose_name="superuser status",
-    )
-    #: Indicates if the instance is active or not. Defaults to ``True``.
-    is_active = models.BooleanField(
-        default=True,
-        help_text="Designates whether this user should be treated as "
-                  + "active. Unselect this instead of deleting accounts.",
-        verbose_name="active",
-    )
-    #: Notification setting. If ``True```, the user receives an email after being mentioned.
-    #: Defaults to ``True``.
     notification_mention_mail = models.BooleanField(_("Receive mail mention"), default=True)
-    #: Notification setting. If ``True```, the user receives an in-app notification after being mentioned.
-    #: Defaults to ``True``.
     notification_mention_app = models.BooleanField(_("Receive in-app mention notification"), default=True)
-    #: Notification setting. If ``True```, the user receives an email when a ticket's status has changed.
-    #: Defaults to ``True``.
     notification_ticket_status_change_mail = models.BooleanField(
         _("Receive mail after ticket status change"), default=True
     )
-    #: Notification setting. If ``True```, the user receives an in-app notification when
-    #: a ticket's status has changed. Defaults to ``True``.
     notification_ticket_status_change_app = models.BooleanField(
         _("Receive in-app ticket status change notification"), default=True
     )
-    #: Notification setting. If ``True```, the user receives an email when a new ticket is created.
-    #: Defaults to ``True``.
     notification_new_ticket_mail = models.BooleanField(_("Receive mail after new_ticket"), default=True)
-    #: Notification setting. If ``True```, the user receives an in-app notification when a new ticket is created.
-    #: Defaults to ``True``.
     notification_new_ticket_app = models.BooleanField(_("Receive in-app new_ticket notification"), default=True)
-    #: Notification setting. If ``True```, the user receives an email when a comment is posted
-    #: on a ticket. Defaults to ``True``.
     notification_comment_mail = models.BooleanField(_("Receive mail after comment"), default=True)
-    #: Notification setting. If ``True```, the user receives an in-app notification when a comment is posted
-    #: on a ticket. Defaults to ``True``.
     notification_comment_app = models.BooleanField(_("Receive in-app comment notification"), default=True)
 
-    USERNAME_FIELD = "username"
-    EMAIL_FIELD = "email"
     REQUIRED_FIELDS = ["email", "first_name", "last_name"]
-
-    class Meta:
-        app_label = "ticketvise"
-
-    class Roles(models.TextChoices):
-        """
-        Choices for the :attr:`User.roles` field.
-        """
-
-        #: Students can create new tickets and view only their own tickets.
-        STUDENT = "Student", _("Student")
-        #: Assistants can comment on, reply to and manage tickets.
-        ASSISTANT = "Assistant", _("Assistant")
-        #: Coordinators can manage the inbox and see its statistics.
-        COORDINATOR = "Coordinator", _("Coordinator")
 
     def get_entry_by_inbox(self, inbox):
         """
@@ -152,10 +86,10 @@ class User(AbstractUser):
 
         :param Inbox inbox: Inbox to check the role for.
 
-        :return: ``True`` if the user has the :attr:`User.Roles.COORDINATOR` role, ``False`` otherwise.
+        :return: ``True`` if the user has the :attr:`Role.MANAGER` role, ``False`` otherwise.
         :rtype: bool
         """
-        return self.has_role_in_inbox(inbox, User.Roles.COORDINATOR)
+        return self.has_role_in_inbox(inbox, Role.MANAGER)
 
     def get_role_by_inbox(self, inbox):
         """
@@ -172,7 +106,7 @@ class User(AbstractUser):
         """
         Filters :class:`UserInbox` s by role and returns the resulting set.
 
-        :param str role: The role to filter by. Must be one of the choices in :class:`User.Roles`.
+        :param str role: The role to filter by. Must be one of the choices in :class:`Role`.
 
         :return: All user-inbox relationship with the role.
         :rtype: QuerySet<:class:`UserInboxrelationship`>
@@ -183,7 +117,7 @@ class User(AbstractUser):
         """
         Gets a queryset of all inboxes where the user has the role.
 
-        :param str role: The role to get inboxes from. Must be one of the choices in :class:`User.Roles`.
+        :param str role: The role to get inboxes from. Must be one of the choices in :class:`Role`.
 
         :return: Inboxs where the user has the role.
         :rtype: QuerySet<:class:`Inbox`>
@@ -203,7 +137,7 @@ class User(AbstractUser):
         """
         Checks if the user is enrolled in or assigned to the inbox.
 
-        :param Inbox inbox: The inbox to check. Must be one of the choices in :class:`User.Roles`.
+        :param Inbox inbox: The inbox to check. Must be one of the choices in :class:`Role`.
 
         :return: ``True`` if the user is enrolled in or assigned to the inbox, ``False`` otherwise.
         :rtype: bool
@@ -215,7 +149,7 @@ class User(AbstractUser):
         Checks if the user has the role in the inbox.
 
         :param Inbox inbox: The inbox to check.
-        :param str role: The role to check. Must be one of the choices in :class:`User.Roles`.
+        :param str role: The role to check. Must be one of the choices in :class:`Role`.
 
         :return: ``True`` if the user has the role in the inbox, ``False`` otherwise.
         :rtype: bool
@@ -237,8 +171,8 @@ class User(AbstractUser):
         if not self.has_inbox(inbox):
             return
 
-        return self.has_role_in_inbox(inbox, User.Roles.ASSISTANT) or self.has_role_in_inbox(
-            inbox, User.Roles.COORDINATOR
+        return self.has_role_in_inbox(inbox, Role.AGENT) or self.has_role_in_inbox(
+            inbox, Role.MANAGER
         )
 
     def is_assistant_or_coordinator_in_a_inbox(self):
@@ -249,16 +183,16 @@ class User(AbstractUser):
         :rtype: bool
         """
         return UserInbox.objects.filter(
-            user=self, role__in=[User.Roles.ASSISTANT, User.Roles.COORDINATOR]
+            user=self, role__in=[Role.AGENT, Role.MANAGER]
         ).exists()
 
-    def add_inbox(self, inbox, role=Roles.STUDENT, bookmarked=False):
+    def add_inbox(self, inbox, role=Role.GUEST, bookmarked=False):
         """
         Add a inbox to the user, with an optional role.
 
         :param Inbox inbox: Inbox to add
-        :param str role: The role to add to the user. Must be one of the choices in :class:`User.Roles`.
-                         Defaults to :attr:`User.Roles.STUDENT`.
+        :param str role: The role to add to the user. Must be one of the choices in :class:`Role`.
+                         Defaults to :attr:`Role.GUEST`.
 
         :raises ValueError: If the user is already associated with the inbox.
         """
@@ -273,7 +207,7 @@ class User(AbstractUser):
         Set the role for the user in a specific inbox.
 
         :param Inbox inbox: The inbox to set the role for.
-        :param str role: The role to add to the user. Must be one of the choices in :class:`User.Roles`.
+        :param str role: The role to add to the user. Must be one of the choices in :class:`Role`.
 
         :raises ValueError: If the user isn't associated with the inbox yet.
         """
@@ -294,8 +228,8 @@ class UserInbox(models.Model):
     user = models.ForeignKey(User, related_name="inbox_relationship", on_delete=models.CASCADE)
     inbox = models.ForeignKey("ticketvise.Inbox", related_name="user_relationship", on_delete=models.CASCADE)
     #: Role that the user has in the inbox. Maximum length of 40 characters.
-    #: Must be one of the choices in the :class:`User.Roles` class. Defaults to :attr:`User.Roles.STUDENT`.
-    role = models.CharField(max_length=40, choices=User.Roles.choices, default=User.Roles.STUDENT)
+    #: Must be one of the choices in the :class:`Role` class. Defaults to :attr:`Role.GUEST`.
+    role = models.CharField(max_length=40, choices=Role.choices, default=Role.GUEST)
     is_bookmarked = models.BooleanField(default=False,
                                         help_text="Designates if the inbox is bookmarked by the user",
                                         verbose_name="bookmarked",

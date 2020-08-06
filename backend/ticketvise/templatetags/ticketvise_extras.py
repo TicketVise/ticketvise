@@ -54,7 +54,7 @@ def get_user_role(user, inbox):
     :param Inbox inbox: The inbox.
 
     :return: The role of the user in the inbox.
-    :rtype: User.Roles
+    :rtype: Role
     """
     return user.get_role_by_inbox(inbox)
 

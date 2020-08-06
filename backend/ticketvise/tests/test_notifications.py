@@ -13,7 +13,7 @@ from ticketvise.models.comment import Comment
 from ticketvise.models.inbox import Inbox
 from ticketvise.models.notification import Notification, MentionNotification, CommentNotification
 from ticketvise.models.ticket import Ticket, TicketStatusChangedNotification
-from ticketvise.models.user import User
+from ticketvise.models.user import User, Role
 
 
 class NotificationsTestCase(TestCase):
@@ -37,14 +37,14 @@ class NotificationsTestCase(TestCase):
         self.ta = User.objects.create_user(
             username="admin", email="admin@ticketvise.com", password="test67891", is_staff=True
         )
-        self.ta.add_inbox(self.inbox, User.Roles.ASSISTANT)
+        self.ta.add_inbox(self.inbox, Role.AGENT)
         self.ta.set_password("test67891")
         self.ta.save()
 
         self.ta2 = User.objects.create_user(
             username="admin2", email="admin2@ticketvise.com", password="test67891", is_staff=True
         )
-        self.ta2.add_inbox(self.inbox, User.Roles.ASSISTANT)
+        self.ta2.add_inbox(self.inbox, Role.AGENT)
         self.ta2.set_password("test67891")
         self.ta2.save()
 

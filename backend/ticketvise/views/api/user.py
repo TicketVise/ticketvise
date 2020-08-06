@@ -23,8 +23,12 @@ class UserRoleApiView(UserIsInboxStaffMixin, View):
         inbox = get_object_or_404(Inbox, pk=inbox_id)
 
         role = user.get_role_by_inbox(inbox)
+        data = {
+            "key": role,
+            "label": role.label
+        }
 
-        return JsonResponse(role, safe=False)
+        return JsonResponse(data, safe=False)
 
 
 class CurrentUserApiView(LoginRequiredMixin, RetrieveAPIView):

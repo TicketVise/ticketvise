@@ -8,7 +8,7 @@ Contains all entity sets for the inbox database.
 """
 from django.db import models
 
-from ticketvise.models.user import UserInbox, User
+from ticketvise.models.user import UserInbox, User, Role
 from ticketvise.models.validators import validate_hex_color
 from ticketvise.settings import INBOX_IMAGE_DIRECTORY, DEFAULT_INBOX_IMAGE_PATH
 
@@ -74,7 +74,7 @@ class Inbox(models.Model):
         """
         Get the users in the inbox that have the role.
 
-        :param str role: The role that the users must have, must be one of the choices in :class:`User.Roles`.
+        :param str role: The role that the users must have, must be one of the choices in :class:`Role`.
 
         :return: The users that have the role.
         :rtype: QuerySet<:class:`User`>
@@ -87,7 +87,7 @@ class Inbox(models.Model):
         :return: All assistants and coordinators in the inbox.
         :rtype: QuerySet<:class:`User`>
         """
-        roles = [User.Roles.ASSISTANT, User.Roles.COORDINATOR]
+        roles = [Role.AGENT, Role.MANAGER]
         return User.objects.filter(inbox_relationship__inbox=self, inbox_relationship__role__in=roles)
 
     def get_tickets_by_assignee(self, assignee, status=None):

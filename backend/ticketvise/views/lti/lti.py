@@ -8,7 +8,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.views.generic import RedirectView
 
 from ticketvise.models.inbox import Inbox
-from ticketvise.models.user import User, UserInbox
+from ticketvise.models.user import User, UserInbox, Role
 from ticketvise.views.lti.validation import LtiLaunchForm
 
 
@@ -73,13 +73,13 @@ class LtiView(RedirectView):
             else:
                 raise Http404("Course does not have a ticket system (yet). Please contact your instructor.")
 
-        user_role = User.Roles.STUDENT
+        user_role = Role.GUEST
 
         if any("instructor" in s for s in user_roles):
-            user_role = User.Roles.COORDINATOR
+            user_role = Role.MANAGER
 
         if any("teachingassistant" in s for s in user_roles):
-            user_role = User.Roles.ASSISTANT
+            user_role = Role.AGENT
 
         relation = UserInbox.objects.filter(user=user, inbox=inbox).first()
 
@@ -91,7 +91,7 @@ class LtiView(RedirectView):
 
         login(self.request, user)
 
-        if user.has_role_in_inbox(inbox, User.Roles.STUDENT):
+        if user.has_role_in_inbox(inbox, Role.GUEST):
             return reverse("new_ticket", args=[inbox.id])
 
         return reverse("ticket_overview", args=[inbox.id])
