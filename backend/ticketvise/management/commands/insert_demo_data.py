@@ -149,8 +149,8 @@ class Command(BaseCommand):
         )
 
         # Creating user-inbox relationships
-        UserInbox.objects.create(user=user_admin, role=User.Roles.ASSISTANT)
-        UserInbox.objects.create(user=user_admin, role=User.Roles.STUDENT)
+        # UserInbox.objects.create(user=user_admin, role=User.Roles.ASSISTANT)
+        # UserInbox.objects.create(user=user_admin, role=User.Roles.STUDENT)
         UserInbox.objects.create(user=user_ivan, role=User.Roles.STUDENT, inbox=inbox_ds)
         UserInbox.objects.create(user=user_ivan, role=User.Roles.STUDENT, inbox=inbox_ip)
         UserInbox.objects.create(user=user_ivan, role=User.Roles.STUDENT, inbox=inbox_pse)
