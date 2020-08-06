@@ -69,4 +69,4 @@ jobs:
           remote_host: ${{ secrets.DOCKER_SSH_HOST }}
           ssh_private_key: ${{ secrets.DOCKER_SSH_PRIVATE_KEY }}
           ssh_public_key: ${{ secrets.DOCKER_SSH_PUBLIC_KEY }}
-          args: stack deploy -c docker-compose.yml -c docker-compose.prod.yml ticketvise
+          args: stack deploy --with-registry-auth -c docker-compose.yml -c docker-compose.prod.yml ticketvise
