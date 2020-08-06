@@ -47,34 +47,12 @@ class InboxesView(LoginRequiredMixin, TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
-        Inbox.objects.filter(user_relationship__user=self.request.user)
-
         context["inboxes"] = Inbox.objects.filter(user_relationship__user=self.request.user).order_by("-user_relationship__is_bookmarked")
         context['tiles_per_row'] = 3
         context['num_tiles_needed'] = context['tiles_per_row'] - context["inboxes"].count() % context['tiles_per_row']
         context['extra_tiles_list'] = list(range(context['num_tiles_needed']))
 
         return context
-    #
-    # def dispatch(self, request, *args, **kwargs):
-    #     """
-    #     Set the variables to display content from the database on the webpage.
-    #
-    #     :param HttpRequest request: The request.
-    #     :param list args: Additional list arguments.
-    #     :param dict kwargs: Additional keyword arguments.
-    #
-    #     :return: None.
-    #     """
-    #     self.inboxes = request.user.inboxes.all()
-    #     self.num_inboxes = self.inboxes.count()
-    #
-    #     # The number of extra tiles needed to make sure that every row of tiles contains 3 tiles.
-    #     self.tiles_per_row = 3
-    #     self.num_tiles_needed = self.tiles_per_row - self.num_inboxes % self.tiles_per_row
-    #     self.extra_tiles_list = list(range(self.num_tiles_needed))
-    #
-    #     return super().dispatch(request, *args, **kwargs)
 
     def post(self, request):
         if request.POST["inbox_id"]:
