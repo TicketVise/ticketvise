@@ -17,12 +17,12 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         """Handle the command"""
         try:
-            self.generate_database()
+            self.insert_data()
             print("Succefully populated database with demo data!")
         except IntegrityError as e:
             print("Database seems already populated with demo data, IntegrityError: ", e)
 
-    def generate_database(self):
+    def insert_data(self):
         # Creating users, default password = "admin193"
         password = "pbkdf2_sha256$180000$6zy2oz9vnxsr$eTQBZxgVxG7ldORL63+OcqJbzLcUhbdCkAW7NdqsOxE="
         user_admin = User.objects.create(
