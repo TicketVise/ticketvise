@@ -25,7 +25,7 @@ from ticketvise.models.ticket import Ticket, TicketAttachment
 from ticketvise.models.user import User, UserInbox
 from ticketvise.views.api import AUTOCOMPLETE_MAX_ENTRIES
 from ticketvise.views.api.security import UserHasAccessToTicketMixin, UserIsInboxStaffMixin, UserIsInInboxMixin
-from ticketvise.views.api.user import UserSerializer
+from ticketvise.views.api.user import UserSerializer, RoleSerializer
 
 
 class LabelSerializer(ModelSerializer):
@@ -94,7 +94,8 @@ class TicketWithParticipantsSerializer(TicketSerializer):
     attachments = TicketAttachmentSerializer(many=True, read_only=True)
 
     def get_role(self, obj):
-        return UserInbox.objects.get(user=obj.author, inbox=obj.inbox).role
+        role = UserInbox.objects.get(user=obj.author, inbox=obj.inbox).role
+        return RoleSerializer(role).data
 
     def get_participants(self, obj):
         participants = list(User.objects.filter(comments__ticket=obj).distinct())

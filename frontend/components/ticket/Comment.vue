@@ -12,7 +12,7 @@
                     </span>
                     <span class="text-xs flex-grow ml-1">· {{ natural_time }}</span>
                     <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-gray-200 text-gray-800">
-                        {{comment.role}}
+                        {{comment.role.label}}
                     </span>
                 </div>
                 <viewer class="px-2" :initialValue="content"></viewer>
