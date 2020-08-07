@@ -168,7 +168,7 @@
         },
         methods: {
             isStaff: function () {
-                return this.role === 'Assistant' || this.role === 'Coordinator'
+                return this.role && (this.role.key === 'AGENT' || this.role.key === 'MANAGER')
             },
             onReplyPost: function () {
                 axios.get("/api" + window.location.pathname + "/replies").then(response => {

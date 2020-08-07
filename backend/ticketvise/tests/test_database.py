@@ -7,7 +7,7 @@ from django.core.exceptions import ValidationError
 from django.test import TestCase
 
 from ticketvise.models.ticket import Ticket
-from ticketvise.models.user import User
+from ticketvise.models.user import User, Role
 from ticketvise.models.validators import validate_hex_color
 from ticketvise.tests.utils import create_user, create_inbox, random_string
 
@@ -25,7 +25,7 @@ class DatabaseTestCase(TestCase):
         """
         self.user = create_user()
         self.inbox = create_inbox()
-        self.role = User.Roles.ASSISTANT
+        self.role = Role.AGENT
 
     def test_validate_hex_color(self):
         """
@@ -61,8 +61,8 @@ class DatabaseTestCase(TestCase):
         self.assertTrue(self.user.has_inbox(student_inbox))
 
         # Check default roles
-        self.assertTrue(self.user.has_role_in_inbox(self.inbox, User.Roles.STUDENT))
-        self.assertTrue(self.user.has_role_in_inbox(student_inbox, User.Roles.STUDENT))
+        self.assertTrue(self.user.has_role_in_inbox(self.inbox, Role.GUEST))
+        self.assertTrue(self.user.has_role_in_inbox(student_inbox, Role.GUEST))
 
         # Check new roles
         self.user.set_role_for_inbox(self.inbox, self.role)

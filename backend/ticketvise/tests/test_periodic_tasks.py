@@ -38,7 +38,7 @@ from ticketvise.tasks import update_tickets, alert_unanswered_tickets
 #             email="root2@ticketvise.com",
 #             password="test12345",
 #             inbox=self.inbox,
-#             role=User.Roles.COORDINATOR,
+#             role=Role.MANAGER,
 #         )
 #
 #         self.ticket = create_ticket(self.student, self.student, self.inbox, "question", content="question")

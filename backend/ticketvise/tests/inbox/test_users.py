@@ -1,15 +1,16 @@
 from django.urls import reverse
 
-from ticketvise.models.user import UserInbox
+from ticketvise.models.user import UserInbox, Role
 from ticketvise.tests.inbox.utils import InboxTestCase
 
 
 class UsersTest(InboxTestCase):
     data = {
-        "role": "Coordinator",
+        "role": Role.MANAGER,
     }
 
     def edit_user(self):
+
         return self.client.post(reverse("inbox_user", args=(self.inbox.id, self.student.id)), self.data, follow=True)
 
     def test_edit_user_as_coordinator(self):

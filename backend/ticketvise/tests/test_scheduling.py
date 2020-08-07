@@ -7,7 +7,7 @@ from django.test import TestCase, Client
 
 from ticketvise.models.inbox import SchedulingAlgorithm
 from ticketvise.models.ticket import Ticket
-from ticketvise.models.user import User, UserInbox
+from ticketvise.models.user import User, UserInbox, Role
 from ticketvise.scheduling import schedule_ticket
 from ticketvise.tests.utils import create_inbox
 
@@ -25,16 +25,16 @@ class TicketTestCase(TestCase):
         self.inbox.save()
 
         self.student = User.objects.create(username="student", email="student@test.com")
-        UserInbox.objects.create(user=self.student, inbox=self.inbox, role=User.Roles.STUDENT)
+        UserInbox.objects.create(user=self.student, inbox=self.inbox, role=Role.GUEST)
 
         self.assistant1 = User.objects.create(username="assistant1", email="assistant1@test.com")
-        UserInbox.objects.create(user=self.assistant1, inbox=self.inbox, role=User.Roles.ASSISTANT)
+        UserInbox.objects.create(user=self.assistant1, inbox=self.inbox, role=Role.AGENT)
 
         self.assistant2 = User.objects.create(username="assistant2", email="assistant2@test.com")
-        UserInbox.objects.create(user=self.assistant2, inbox=self.inbox, role=User.Roles.ASSISTANT)
+        UserInbox.objects.create(user=self.assistant2, inbox=self.inbox, role=Role.AGENT)
 
         self.assistant3 = User.objects.create(username="assistant3", email="assistant3@test.com")
-        UserInbox.objects.create(user=self.assistant3, inbox=self.inbox, role=User.Roles.ASSISTANT)
+        UserInbox.objects.create(user=self.assistant3, inbox=self.inbox, role=Role.AGENT)
 
         self.assistants = [self.assistant1, self.assistant2, self.assistant3]
 

@@ -1,6 +1,6 @@
 from django.test import TestCase, Client
 
-from ticketvise.models.user import User
+from ticketvise.models.user import User, Role
 from ticketvise.tests.utils import create_label, create_inbox
 
 
@@ -34,11 +34,11 @@ class InboxTestCase(TestCase):
         self.inbox = create_inbox("inbox_1_name", "inbox_1_code")
         self.inbox_2 = create_inbox("inbox_2_name", "inbox_2_code")
 
-        self.student.add_inbox(self.inbox, User.Roles.STUDENT)
-        self.student.add_inbox(self.inbox_2, User.Roles.STUDENT)
-        self.assistant.add_inbox(self.inbox, User.Roles.ASSISTANT)
-        self.coordinator.add_inbox(self.inbox, User.Roles.COORDINATOR)
-        self.coordinator_2.add_inbox(self.inbox_2, User.Roles.COORDINATOR)
+        self.student.add_inbox(self.inbox, Role.GUEST)
+        self.student.add_inbox(self.inbox_2, Role.GUEST)
+        self.assistant.add_inbox(self.inbox, Role.AGENT)
+        self.coordinator.add_inbox(self.inbox, Role.MANAGER)
+        self.coordinator_2.add_inbox(self.inbox_2, Role.MANAGER)
         self.label = create_label(inbox=self.inbox)
         self.label_2 = create_label(inbox=self.inbox_2)
 

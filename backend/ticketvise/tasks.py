@@ -11,7 +11,7 @@ from django.utils import timezone
 from .email import send_email
 from .models.inbox import Inbox
 from .models.ticket import Ticket
-from .models.user import User
+from .models.user import Role
 
 
 @periodic_task(run_every=crontab(minute=0, hour=0))
@@ -47,7 +47,7 @@ def alert_unanswered_tickets():
             )
 
             for ticket in tickets:
-                for coordinator in ticket.inbox.get_users_by_role(User.Roles.COORDINATOR):
+                for coordinator in ticket.inbox.get_users_by_role(Role.MANAGER):
                     mail_vars = {"ticket": ticket}
 
                     send_email(

@@ -6,7 +6,7 @@ This file tests the API endpoints of the website.
 
 from django.test import TestCase, Client
 
-from ticketvise.models.user import User
+from ticketvise.models.user import User, Role
 from ticketvise.tests.utils import create_inbox, create_ticket
 
 
@@ -22,22 +22,22 @@ class ApiTestCase(TestCase):
         self.inbox2 = create_inbox("coures2", "c2")
         self.ta1 = User.objects.create(username="ta1", email="ta1@test.nl", password="ta1")
         self.ta1.add_inbox(self.inbox1)
-        self.ta1.set_role_for_inbox(self.inbox1, User.Roles.ASSISTANT)
+        self.ta1.set_role_for_inbox(self.inbox1, Role.AGENT)
         self.ta2 = User.objects.create(username="ta2", email="ta2@test.nl", password="ta2")
         self.ta2.add_inbox(self.inbox1)
-        self.ta2.set_role_for_inbox(self.inbox1, User.Roles.ASSISTANT)
+        self.ta2.set_role_for_inbox(self.inbox1, Role.AGENT)
         self.ta3 = User.objects.create(username="ta3", email="ta3@test.nl", password="ta3")
         self.ta3.add_inbox(self.inbox1)
-        self.ta3.set_role_for_inbox(self.inbox1, User.Roles.COORDINATOR)
+        self.ta3.set_role_for_inbox(self.inbox1, Role.MANAGER)
         self.ta4 = User.objects.create(username="ta4", email="ta4@test.nl", password="ta4")
         self.ta4.add_inbox(self.inbox2)
-        self.ta4.set_role_for_inbox(self.inbox2, User.Roles.COORDINATOR)
+        self.ta4.set_role_for_inbox(self.inbox2, Role.MANAGER)
         self.ta5 = User.objects.create(username="ta5", email="ta5@test.nl", password="ta5")
         self.ta5.add_inbox(self.inbox2)
-        self.ta5.set_role_for_inbox(self.inbox2, User.Roles.ASSISTANT)
+        self.ta5.set_role_for_inbox(self.inbox2, Role.AGENT)
         self.student1 = User.objects.create(username="s1", password="s1")
         self.student1.add_inbox(self.inbox1)
-        self.student1.set_role_for_inbox(self.inbox1, User.Roles.STUDENT)
+        self.student1.set_role_for_inbox(self.inbox1, Role.GUEST)
 
         self.ticket1 = create_ticket(author=self.student1, assignee=self.ta5, inbox=self.inbox2)
         self.ticket2 = create_ticket(author=self.student1, assignee=self.ta4, inbox=self.inbox2)

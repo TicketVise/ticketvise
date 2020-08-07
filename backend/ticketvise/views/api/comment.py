@@ -6,9 +6,9 @@ from rest_framework.serializers import ModelSerializer
 from ticketvise.models.comment import Comment
 from ticketvise.models.inbox import Inbox
 from ticketvise.models.ticket import Ticket
-from ticketvise.models.user import UserInbox
+from ticketvise.models.user import UserInbox, Role
 from ticketvise.views.api.security import UserHasAccessToTicketMixin, UserIsInboxStaffMixin
-from ticketvise.views.api.user import UserSerializer
+from ticketvise.views.api.user import UserSerializer, RoleSerializer
 
 
 class CommentSerializer(ModelSerializer):
@@ -16,7 +16,8 @@ class CommentSerializer(ModelSerializer):
     role = serializers.SerializerMethodField()
 
     def get_role(self, obj):
-        return UserInbox.objects.get(user=obj.author, inbox=obj.ticket.inbox).role
+        role = UserInbox.objects.get(user=obj.author, inbox=obj.ticket.inbox).role
+        return RoleSerializer(role).data
 
     class Meta:
         model = Comment

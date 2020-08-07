@@ -1,14 +1,14 @@
 import datetime
 
 from django.core.management import BaseCommand
-from django.db import IntegrityError
+from django.db import IntegrityError, transaction
 from django.utils import timezone
 
 from ticketvise.models.comment import Comment
 from ticketvise.models.inbox import Inbox
 from ticketvise.models.label import Label
 from ticketvise.models.ticket import Ticket
-from ticketvise.models.user import User, UserInbox
+from ticketvise.models.user import User, UserInbox, Role
 
 
 class Command(BaseCommand):
@@ -22,6 +22,7 @@ class Command(BaseCommand):
         except IntegrityError as e:
             print("Database seems already populated with demo data, IntegrityError: ", e)
 
+    @transaction.atomic
     def insert_data(self):
         # Creating users, default password = "admin193"
         password = "pbkdf2_sha256$180000$6zy2oz9vnxsr$eTQBZxgVxG7ldORL63+OcqJbzLcUhbdCkAW7NdqsOxE="
@@ -149,28 +150,28 @@ class Command(BaseCommand):
         )
 
         # Creating user-inbox relationships
-        # UserInbox.objects.create(user=user_admin, role=User.Roles.ASSISTANT)
-        # UserInbox.objects.create(user=user_admin, role=User.Roles.STUDENT)
-        UserInbox.objects.create(user=user_ivan, role=User.Roles.STUDENT, inbox=inbox_ds)
-        UserInbox.objects.create(user=user_ivan, role=User.Roles.STUDENT, inbox=inbox_ip)
-        UserInbox.objects.create(user=user_ivan, role=User.Roles.STUDENT, inbox=inbox_pse)
-        UserInbox.objects.create(user=user_julian, role=User.Roles.STUDENT, inbox=inbox_pse)
-        UserInbox.objects.create(user=user_jelle, role=User.Roles.ASSISTANT, inbox=inbox_ds)
-        UserInbox.objects.create(user=user_jelle, role=User.Roles.ASSISTANT, inbox=inbox_ip)
-        UserInbox.objects.create(user=user_jelle, role=User.Roles.ASSISTANT, inbox=inbox_pse)
-        UserInbox.objects.create(user=user_ana, role=User.Roles.COORDINATOR, inbox=inbox_pse)
-        UserInbox.objects.create(user=user_ana, role=User.Roles.COORDINATOR, inbox=inbox_pt)
-        UserInbox.objects.create(user=user_ana, role=User.Roles.COORDINATOR, inbox=inbox_mp)
-        UserInbox.objects.create(user=user_ana, role=User.Roles.COORDINATOR, inbox=inbox_pmpse)
-        UserInbox.objects.create(user=user_bryan, role=User.Roles.ASSISTANT, inbox=inbox_ds)
-        UserInbox.objects.create(user=user_bryan, role=User.Roles.ASSISTANT, inbox=inbox_ip)
-        UserInbox.objects.create(user=user_bryan, role=User.Roles.STUDENT, inbox=inbox_pse)
-        UserInbox.objects.create(user=user_tom, role=User.Roles.ASSISTANT, inbox=inbox_pse)
-        UserInbox.objects.create(user=user_tom, role=User.Roles.ASSISTANT, inbox=inbox_ds)
-        UserInbox.objects.create(user=user_tom, role=User.Roles.ASSISTANT, inbox=inbox_ip)
-        UserInbox.objects.create(user=user_marco, role=User.Roles.ASSISTANT, inbox=inbox_pse)
-        UserInbox.objects.create(user=user_marco, role=User.Roles.ASSISTANT, inbox=inbox_ds)
-        UserInbox.objects.create(user=user_marco, role=User.Roles.ASSISTANT, inbox=inbox_ip)
+        # UserInbox.objects.create(user=user_admin, role=Role.AGENT)
+        # UserInbox.objects.create(user=user_admin, role=Role.GUEST)
+        UserInbox.objects.create(user=user_ivan, role=Role.GUEST, inbox=inbox_ds)
+        UserInbox.objects.create(user=user_ivan, role=Role.GUEST, inbox=inbox_ip)
+        UserInbox.objects.create(user=user_ivan, role=Role.GUEST, inbox=inbox_pse)
+        UserInbox.objects.create(user=user_julian, role=Role.GUEST, inbox=inbox_pse)
+        UserInbox.objects.create(user=user_jelle, role=Role.AGENT, inbox=inbox_ds)
+        UserInbox.objects.create(user=user_jelle, role=Role.AGENT, inbox=inbox_ip)
+        UserInbox.objects.create(user=user_jelle, role=Role.AGENT, inbox=inbox_pse)
+        UserInbox.objects.create(user=user_ana, role=Role.MANAGER, inbox=inbox_pse)
+        UserInbox.objects.create(user=user_ana, role=Role.MANAGER, inbox=inbox_pt)
+        UserInbox.objects.create(user=user_ana, role=Role.MANAGER, inbox=inbox_mp)
+        UserInbox.objects.create(user=user_ana, role=Role.MANAGER, inbox=inbox_pmpse)
+        UserInbox.objects.create(user=user_bryan, role=Role.AGENT, inbox=inbox_ds)
+        UserInbox.objects.create(user=user_bryan, role=Role.AGENT, inbox=inbox_ip)
+        UserInbox.objects.create(user=user_bryan, role=Role.GUEST, inbox=inbox_pse)
+        UserInbox.objects.create(user=user_tom, role=Role.AGENT, inbox=inbox_pse)
+        UserInbox.objects.create(user=user_tom, role=Role.AGENT, inbox=inbox_ds)
+        UserInbox.objects.create(user=user_tom, role=Role.AGENT, inbox=inbox_ip)
+        UserInbox.objects.create(user=user_marco, role=Role.AGENT, inbox=inbox_pse)
+        UserInbox.objects.create(user=user_marco, role=Role.AGENT, inbox=inbox_ds)
+        UserInbox.objects.create(user=user_marco, role=Role.AGENT, inbox=inbox_ip)
 
         # Creating tickets
         ticket_10 = Ticket.objects.create(

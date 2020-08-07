@@ -5,7 +5,7 @@ from django.views.generic import TemplateView
 
 from ticketvise.models.inbox import Inbox
 from ticketvise.models.ticket import Ticket
-from ticketvise.models.user import UserInbox, User
+from ticketvise.models.user import UserInbox, User, Role
 from ticketvise.statistics import get_average_response_time
 from ticketvise.views.inbox.base import InboxCoordinatorRequiredMixin
 
@@ -21,7 +21,7 @@ class InboxStatisticsView(InboxCoordinatorRequiredMixin, TemplateView):
         context['inbox'] = inbox
         context['total_tickets'] = Ticket.objects.filter(inbox=inbox).count()
         context['total_students'] = UserInbox.objects.filter(inbox=inbox,
-                                                             role=User.Roles.STUDENT).count()
+                                                             role=Role.GUEST).count()
         context['avg_response_time'] = get_average_response_time(inbox)
 
         now = datetime.now()

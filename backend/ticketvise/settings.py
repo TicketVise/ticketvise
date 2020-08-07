@@ -245,3 +245,7 @@ LOGGING = {
         'level': 'WARNING',
     },
 }
+
+ROLE_GUEST_DISPLAY_NAME = os.getenv("ROLE_GUEST_DISPLAY_NAME", "Student")
+ROLE_AGENT_DISPLAY_NAME = os.getenv("ROLE_AGENT_DISPLAY_NAME", "Teaching Assistant")
+ROLE_MANAGER_DISPLAY_NAME = os.getenv("ROLE_MANAGER_DISPLAY_NAME", "Coordinator")
