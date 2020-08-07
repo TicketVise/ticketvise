@@ -6,7 +6,6 @@ Used to send an email to a user.
 from django.template.loader import render_to_string
 from django.utils.html import strip_tags
 from django.conf import settings
-from celery.decorators import task
 from django.core.mail import send_mail
 
 
@@ -34,7 +33,6 @@ def send_email(subject, to, template, context):
     return False
 
 
-@task
 def mail_sender(subject, plain_message, from_email, to, html_message):
     """
     This function sends an email to a user through a Celery task using a specified template.

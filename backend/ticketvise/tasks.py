@@ -3,8 +3,6 @@ Tasks
 -------------------------------
 Periodic tsks for changing ticket statuses and sending emails.
 """
-from celery.schedules import crontab
-from celery.task import periodic_task
 from django.db.models import Q
 from django.utils import timezone
 
@@ -14,7 +12,6 @@ from .models.ticket import Ticket
 from .models.user import Role
 
 
-@periodic_task(run_every=crontab(minute=0, hour=0))
 def update_tickets():
     """
     Update the status of all answered tickets older than the amount of days
@@ -30,7 +27,6 @@ def update_tickets():
             tickets.update(status=Ticket.Status.CLOSED)
 
 
-@periodic_task(run_every=crontab(minute=0, hour=0))
 def alert_unanswered_tickets():
     """
     Send an email for tickets that have not been answered for a set amount of
