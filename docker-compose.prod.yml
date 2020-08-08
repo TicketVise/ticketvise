@@ -16,7 +16,8 @@ services:
   web:
     image: docker.pkg.github.com/ticketvise/ticketvise/backend:develop
     command: >
-      sh -c "python manage.py wait_for_database &&
+      sh -c "env > /etc/environment && cron &&
+             python manage.py wait_for_database &&
              python manage.py migrate --no-input &&
              python manage.py insert_demo_data &&
              gunicorn ticketvise.wsgi:application --bind 0.0.0.0:6000"
