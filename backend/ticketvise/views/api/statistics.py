@@ -48,3 +48,13 @@ class InboxAverageAgentResponseTimeStatisticsApiView(UserIsInboxStaffMixin, APIV
 
         return JsonResponse(list(tickets), safe=False)
 
+
+class InboxAverageTimeToCloseStatisticsApiView(UserIsInboxStaffMixin, APIView):
+
+    def get(self, request, inbox_id):
+        inbox = get_object_or_404(Inbox, pk=inbox_id)
+
+        first_comment = Comment.objects.filter(ticket=OuterRef('pk')).order_by("-date_created")
+
+
+        return JsonResponse(list([]), safe=False)

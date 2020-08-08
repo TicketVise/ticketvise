@@ -9,7 +9,7 @@ from string import ascii_uppercase, ascii_lowercase, digits
 from ticketvise.models.comment import Comment
 from ticketvise.models.inbox import Inbox
 from ticketvise.models.label import Label
-from ticketvise.models.ticket import Ticket
+from ticketvise.models.ticket import Ticket, Status
 from ticketvise.models.user import User
 
 
@@ -112,7 +112,7 @@ def create_user(username="", password="", email="", first_name="", last_name="")
     return user
 
 def create_ticket(author=None, assignee=None, inbox=None, title="",
-                  status=Ticket.Status.PENDING, content="", labels=[]):
+                  status=Status.PENDING, content="", labels=[]):
     """
     Create a ticket with random content for testing.
 

@@ -1,6 +1,6 @@
 from django.test import TestCase
 
-from ticketvise.models.ticket import Ticket
+from ticketvise.models.ticket import Ticket, Status
 from ticketvise.models.user import User, Role
 from ticketvise.settings import DEFAULT_AVATAR_PATH
 from ticketvise.utils import add_global_context
@@ -23,8 +23,8 @@ class UtilsTestCase(TestCase):
             "ROLE_STUDENT": Role.GUEST,
             "ROLE_ASSISTANT": Role.AGENT,
             "ROLE_COORDINATOR": Role.MANAGER,
-            "STATUS_PENDING": Ticket.Status.PENDING,
-            "STATUS_ASSIGNED": Ticket.Status.ASSIGNED,
-            "STATUS_ANSWERED": Ticket.Status.ANSWERED,
-            "STATUS_CLOSED": Ticket.Status.CLOSED
+            "STATUS_PENDING": Status.PENDING,
+            "STATUS_ASSIGNED": Status.ASSIGNED,
+            "STATUS_ANSWERED": Status.ANSWERED,
+            "STATUS_CLOSED": Status.CLOSED
         })
