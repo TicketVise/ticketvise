@@ -1,7 +1,7 @@
 <template>
   <div>
     <div class="flex-wrap md:flex mb-2">
-      <search-bar v-on:input="get_tickets" class="flex-grow px-2"></search-bar>
+      <search-bar v-model="search" v-on:input="get_tickets" class="flex-grow px-2"></search-bar>
       <submit-button v-if="!showPersonal" class="bg-orange-400 px-2 m-2 md:m-0" text="My Tickets" @click="showPersonal = !showPersonal; get_tickets()"></submit-button>
       <submit-button v-if="showPersonal" class="bg-orange-500 px-2 m-2 md:m-0" text="My Tickets" @click="showPersonal = !showPersonal; get_tickets()"></submit-button>
     </div>
@@ -34,25 +34,22 @@ export default {
   data: () => ({
     colors: ['#e76f51', '#e9c46a', '#2a9d8f', '#264653'],
     tickets: [],
+    search: null,
     debounce_search: null,
     showPersonal: false
   }),
   methods: {
-    get_tickets(search) {
-      console.log("get")
+    get_tickets() {
       window.axios.get(`/api${window.location.pathname}`, {
         params: {
           columns: true,
-          q: search,
+          q: this.search,
           show_personal: this.showPersonal
         }
       }).then(response => {
         this.tickets = response.data
       })
     },
-    search_tickets(search) {
-      this.debounce_search(search)
-    }
   },
   created() {
     this.get_tickets()
