@@ -1,9 +1,9 @@
 <template>
-  <div>
-    <card class="flex" outlined>
-      <i class="fa fa-search cursor-pointer p-1"></i>
-      <input class="flex-grow m-2" v-model="search" placeholder="Search" @keyup="emitValue">
-    </card>
+  <div class="shadow flex border border-gray-300 rounded-md overflow-hidden mr-2">
+    <input class="flex-grow w-full p-2 mx-1" v-model="search" placeholder="Search" @keyup="emitValue">
+    <button class="bg-white w-auto flex justify-end items-center text-gray-600 p-2 hover:text-gray-500" @click="emitValue">
+      <i class="fa fa-search"></i>
+    </button>
   </div>
 </template>
 
