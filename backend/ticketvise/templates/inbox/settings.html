@@ -3,7 +3,7 @@
 
 {% block inbox-content %}
     <div class="container my-4">
-        <form method="post">
+        <form method="post" enctype="multipart/form-data">
             {% csrf_token %}
 
             <div class="mb-4">
