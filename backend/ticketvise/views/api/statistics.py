@@ -1,9 +1,10 @@
-from django.db.models import F, Avg, Count
-from django.db.models.functions import TruncDate, TruncMonth, TruncYear
+from django.db.models import F, Count, Window, OuterRef, Subquery, Avg
+from django.db.models.functions import TruncDate, TruncMonth, TruncYear, RowNumber
 from django.http import JsonResponse
 from rest_framework.generics import get_object_or_404
 from rest_framework.views import APIView
 
+from ticketvise.models.comment import Comment
 from ticketvise.models.inbox import Inbox
 from ticketvise.models.ticket import Ticket
 from ticketvise.views.api.security import UserIsInboxStaffMixin
@@ -15,7 +16,7 @@ class InboxTicketsPerDateTypeStatisticsApiView(UserIsInboxStaffMixin, APIView):
         inbox = get_object_or_404(Inbox, pk=inbox_id)
 
         truncate = TruncDate
-        date_type = request.GET["type"]
+        date_type = request.GET.get("type")
         if date_type == "month":
             truncate = TruncMonth
         elif date_type == "year":
@@ -32,13 +33,18 @@ class InboxTicketsPerDateTypeStatisticsApiView(UserIsInboxStaffMixin, APIView):
 
 class InboxAverageAgentResponseTimeStatisticsApiView(UserIsInboxStaffMixin, APIView):
 
-    def get(self, request, format=None):
-        inbox = get_object_or_404(Inbox, pk=self.kwargs.get("inbox_id"))
+    def get(self, request, inbox_id):
+        inbox = get_object_or_404(Inbox, pk=inbox_id)
 
-        avg_response_times = Ticket.objects.filter(inbox=inbox, comments__is_reply=True) \
-            .annotate(response_time=F('date_created') - F('comments__date_created')) \
-            .aggregate(avg_response_time=Avg('response_time')) \
-            .values('assignee') \
-            .orderby('response_time')
+        first_comment = Comment.objects.filter(ticket=OuterRef('pk')).order_by("-date_created")
 
-        return JsonResponse(avg_response_times)
+        tickets = Ticket.objects.filter(inbox=inbox)\
+            .annotate(first_comment_created=Subquery(first_comment.values("date_created")[:1]))\
+            .annotate(first_comment_author=Subquery(first_comment.values("author")[:1]))\
+            .filter(first_comment_author__isnull=False)\
+            .annotate(response_time=F('date_created') - F('first_comment_created'))\
+            .values("first_comment_author")\
+            .annotate(avg_response_time=Avg("response_time"))
+
+        return JsonResponse(list(tickets), safe=False)
+
