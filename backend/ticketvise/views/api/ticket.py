@@ -61,6 +61,7 @@ class CreateTicketSerializer(ModelSerializer):
     """
     Allows data to be converted into Python datatypes for the ticket.
     """
+
     # files = serializers.ListField(child=serializers.FileField(max_length=100000,
     #                                                                 allow_empty_file=False,
     #                                                                 use_url=False))
@@ -244,7 +245,3 @@ class TicketCreateApiView(UserIsInInboxMixin, CreateAPIView):
 
         for file in self.request.FILES.getlist('files'):
             TicketAttachment(ticket=ticket, file=file).save()
-
-
-
-
