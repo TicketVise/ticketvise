@@ -21,7 +21,8 @@ from rest_framework.views import APIView
 
 from ticketvise.models.inbox import Inbox
 from ticketvise.models.label import Label
-from ticketvise.models.ticket import Ticket, TicketAttachment
+from ticketvise.models.ticket import Ticket, TicketAttachment, TicketEvent, Status, TicketStatusEvent, \
+    TicketAssigneeEvent, TicketLabelEvent, TicketTitleEvent
 from ticketvise.models.user import User, UserInbox
 from ticketvise.views.api import AUTOCOMPLETE_MAX_ENTRIES
 from ticketvise.views.api.security import UserHasAccessToTicketMixin, UserIsInboxStaffMixin, UserIsInInboxMixin
@@ -166,7 +167,7 @@ class InboxTicketsApiView(UserIsInInboxMixin, APIView):
             {
                 "label": status.label,
                 "tickets": TicketSerializer(query_set.filter(status=status), many=True).data
-            } for status in Ticket.Status
+            } for status in Status
         ]
 
         return JsonResponse(data=columns, safe=False)
@@ -239,6 +240,58 @@ class TicketCreateApiView(UserIsInInboxMixin, CreateAPIView):
         for file in self.request.FILES.getlist('files'):
             TicketAttachment(ticket=ticket, file=file).save()
 
+
+class TicketStatusEventSerializer(ModelSerializer):
+    class Meta:
+        model = TicketStatusEvent
+        fields = ["ticket", "initiator", "date_created", "status"]
+
+
+class TicketAssigneeEventSerializer(ModelSerializer):
+    class Meta:
+        model = TicketAssigneeEvent
+        fields = ["ticket", "initiator", "date_created", "assignee"]
+
+
+class TicketLabelEventSerializer(ModelSerializer):
+    class Meta:
+        model = TicketLabelEvent
+        fields = ["ticket", "initiator", "date_created", "label", "is_added"]
+
+
+class TicketTitleEventSerializer(ModelSerializer):
+    class Meta:
+        model = TicketTitleEvent
+        fields = ["ticket", "initiator", "date_created", "old_title", "new_title"]
+
+
+class TicketEventSerializer(ModelSerializer):
+
+    def to_representation(self, instance):
+        if isinstance(instance, TicketStatusEvent):
+            return TicketStatusEventSerializer(instance=instance).data
+        elif isinstance(instance, TicketAssigneeEvent):
+            return TicketAssigneeEventSerializer(instance=instance).data
+        elif isinstance(instance, TicketLabelEvent):
+            return TicketLabelEventSerializer(instance=instance).data
+        elif isinstance(instance, TicketTitleEvent):
+            return TicketTitleEventSerializer(instance=instance).data
+
+        return super().to_representation(instance)
+
+    class Meta:
+        model = TicketEvent
+        fields = "__all__"
+
+
+class TicketEventsApiView(UserHasAccessToTicketMixin, ListAPIView):
+    serializer_class = TicketEventSerializer
+
+    def get_queryset(self):
+        inbox = get_object_or_404(Inbox, pk=self.kwargs["inbox_id"])
+        ticket = get_object_or_404(Ticket, inbox=inbox, ticket_inbox_id=self.kwargs["ticket_inbox_id"])
+
+        return TicketEvent.objects.filter(ticket=ticket).select_subclasses()
 
 
 
