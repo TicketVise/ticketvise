@@ -10,9 +10,12 @@ Contains all entity sets for the ticket database and TicketStatusChangedNotifica
 from django.db import models
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
+from model_utils.managers import InheritanceManager
 
 from ticketvise.email import send_email
 from ticketvise.models.notification import Notification
+from django_currentuser.middleware import (
+    get_current_user, get_current_authenticated_user)
 
 
 class Status(models.TextChoices):
@@ -104,28 +107,55 @@ class Ticket(models.Model):
         assignee. Also send an email to the student that submitted the ticket if the status has changed to assigned
         or closed. Only send the change to assigned email if show assignee is enabled for the inbox.
         """
+        old_ticket = None
         old_status = None
 
         if self.id:
-            old_status = Ticket.objects.get(pk=self.id).get_status()
+            old_ticket = Ticket.objects.get(pk=self.id)
         else:
             # + 1 so the ticket_inbox_id starts at 1 instead of 0.
             self.ticket_inbox_id = Ticket.objects.filter(inbox=self.inbox).count() + 1
 
         super().save(force_insert, force_update, using, update_fields)
 
+        if old_ticket:
+            if old_ticket.status != self.status:
+                TicketStatusEvent.objects.create(ticket=self, initiator=get_current_authenticated_user())
+
+            if old_ticket.title != self.title:
+                TicketTitleEvent.objects.create(ticket=self, old_title=old_ticket.title, new_title=self.title,
+                                                initiator=get_current_authenticated_user())
+
+            if old_ticket.assignee != self.assignee:
+                TicketAssigneeEvent.objects.create(ticket=self, assignee=self.assignee,
+                                                   initiator=get_current_authenticated_user())
+
+            for new_label in [label for label in self.labels.all() if label not in old_ticket.labels.all()]:
+                TicketLabelEvent.objects.create(ticket=self, label=new_label, is_added=True,
+                                                initiator=get_current_authenticated_user())
+
+            for deleted_label in [label for label in old_ticket.labels.all() if label not in self.labels.all()]:
+                TicketLabelEvent.objects.create(ticket=self, label=deleted_label, is_added=True,
+                                                initiator=get_current_authenticated_user())
+
         if old_status == self.get_status():
             return
 
+        old_status = None
+        if old_ticket:
+            old_status = old_ticket.status
+
         if self.assignee:
             message = TicketStatusChangedNotification(
-                receiver=self.assignee, read=False, ticket=self, old_status=old_status, new_status=self.get_status()
+                receiver=self.assignee, read=False, ticket=self, old_status=old_status,
+                new_status=self.get_status()
             )
             message.save()
         else:
             for receiver in self.inbox.get_assistants_and_coordinators():
                 message = TicketStatusChangedNotification(
-                    receiver=receiver, read=False, ticket=self, old_status=old_status, new_status=self.get_status()
+                    receiver=receiver, read=False, ticket=self, old_status=old_status,
+                    new_status=self.get_status()
                 )
 
                 message.save()
@@ -220,8 +250,9 @@ class TicketStatusChangedNotification(Notification):
 
 
 class TicketEvent(models.Model):
+    objects = InheritanceManager()
     ticket = models.ForeignKey(Ticket, on_delete=models.CASCADE)
-    initiator = models.ForeignKey("User", models.CASCADE)
+    initiator = models.ForeignKey("User", models.CASCADE, null=True)
     date_created = models.DateTimeField(auto_now_add=True)
 
 

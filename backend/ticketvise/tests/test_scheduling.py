@@ -56,6 +56,7 @@ class TicketTestCase(TestCase):
 
         :return: None.
         """
+        self.client.force_login(self.assistant3)
         self.inbox.scheduling_algorithm = SchedulingAlgorithm.MANUAL
         self.inbox.save()
 
