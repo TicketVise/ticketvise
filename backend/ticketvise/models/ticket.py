@@ -8,14 +8,17 @@ Contains all entity sets for the ticket database and TicketStatusChangedNotifica
 * :class:`TicketStatuscChangedNotification`
 """
 from django.db import models
+from django.db.models.signals import m2m_changed
+from django.dispatch import receiver
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
+from django_currentuser.middleware import (
+    get_current_authenticated_user)
 from model_utils.managers import InheritanceManager
 
 from ticketvise.email import send_email
+from ticketvise.models.label import Label
 from ticketvise.models.notification import Notification
-from django_currentuser.middleware import (
-    get_current_user, get_current_authenticated_user)
 
 
 class Status(models.TextChoices):
@@ -64,7 +67,7 @@ class Ticket(models.Model):
     #: The content inside the ticket.
     content = models.TextField()
     #: The :class:`Label` s associated with the ticket. Optional.
-    labels = models.ManyToManyField("Label", blank=True, related_name="tickets")
+    labels = models.ManyToManyField("Label", blank=True, related_name="tickets", through="TicketLabel")
     #: Indicates if the instance is active or not. Defaults to ``True``.
     is_active = models.BooleanField(_("Is active"), default=True)
 
@@ -109,9 +112,11 @@ class Ticket(models.Model):
         """
         old_ticket = None
         old_status = None
+        old_labels = None
 
         if self.id:
             old_ticket = Ticket.objects.get(pk=self.id)
+            old_labels = old_ticket.labels.all()
         else:
             # + 1 so the ticket_inbox_id starts at 1 instead of 0.
             self.ticket_inbox_id = Ticket.objects.filter(inbox=self.inbox).count() + 1
@@ -120,7 +125,8 @@ class Ticket(models.Model):
 
         if old_ticket:
             if old_ticket.status != self.status:
-                TicketStatusEvent.objects.create(ticket=self, initiator=get_current_authenticated_user())
+                TicketStatusEvent.objects.create(ticket=self, initiator=get_current_authenticated_user(),
+                                                 status=self.status)
 
             if old_ticket.title != self.title:
                 TicketTitleEvent.objects.create(ticket=self, old_title=old_ticket.title, new_title=self.title,
@@ -129,14 +135,6 @@ class Ticket(models.Model):
             if old_ticket.assignee != self.assignee:
                 TicketAssigneeEvent.objects.create(ticket=self, assignee=self.assignee,
                                                    initiator=get_current_authenticated_user())
-
-            for new_label in [label for label in self.labels.all() if label not in old_ticket.labels.all()]:
-                TicketLabelEvent.objects.create(ticket=self, label=new_label, is_added=True,
-                                                initiator=get_current_authenticated_user())
-
-            for deleted_label in [label for label in old_ticket.labels.all() if label not in self.labels.all()]:
-                TicketLabelEvent.objects.create(ticket=self, label=deleted_label, is_added=True,
-                                                initiator=get_current_authenticated_user())
 
         if old_status == self.get_status():
             return
@@ -188,6 +186,36 @@ class Ticket(models.Model):
 
     def __str__(self):
         return self.title
+
+
+class TicketLabel(models.Model):
+    ticket = models.ForeignKey(Ticket, on_delete=models.CASCADE)
+    label = models.ForeignKey(Label, on_delete=models.CASCADE)
+    date_created = models.DateTimeField(_("Date created"), auto_now_add=True)
+    date_edited = models.DateTimeField(_("Date edited"), auto_now=True, blank=True, null=True)
+
+    def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
+        super().save(force_insert, force_update, using, update_fields)
+
+        TicketLabelEvent.objects.create(ticket=self.ticket, label=self.label, is_added=True,
+                                        initiator=get_current_authenticated_user())
+
+    def delete(self, using=None, keep_parents=False):
+        TicketLabelEvent.objects.create(ticket=self.ticket, label=self.label, is_added=False,
+                                        initiator=get_current_authenticated_user())
+
+        return super().delete(using, keep_parents)
+
+
+@receiver(m2m_changed, sender=Ticket.labels.through)
+def labels_changed_handler(sender, **kwargs):
+    test = 1
+    test = 2
+    print(sender)
+    pass
+
+
+# m2m_changed.connect(labels_changed_handler, sender=Ticket.labels.through)
 
 
 class TicketAttachment(models.Model):
@@ -257,7 +285,7 @@ class TicketEvent(models.Model):
 
 
 class TicketStatusEvent(TicketEvent):
-    status = models.CharField(max_length=8, choices=Status.choices)
+    status = models.CharField(max_length=8, choices=Status.choices, blank=False)
 
 
 class TicketAssigneeEvent(TicketEvent):

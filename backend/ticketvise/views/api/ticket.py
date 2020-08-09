@@ -242,30 +242,40 @@ class TicketCreateApiView(UserIsInInboxMixin, CreateAPIView):
 
 
 class TicketStatusEventSerializer(ModelSerializer):
+    initiator = UserSerializer(read_only=True)
+
     class Meta:
         model = TicketStatusEvent
         fields = ["ticket", "initiator", "date_created", "status"]
 
 
 class TicketAssigneeEventSerializer(ModelSerializer):
+    initiator = UserSerializer(read_only=True)
+    assignee = UserSerializer(read_only=True)
+
     class Meta:
         model = TicketAssigneeEvent
         fields = ["ticket", "initiator", "date_created", "assignee"]
 
 
 class TicketLabelEventSerializer(ModelSerializer):
+    initiator = UserSerializer(read_only=True)
+
     class Meta:
         model = TicketLabelEvent
         fields = ["ticket", "initiator", "date_created", "label", "is_added"]
 
 
 class TicketTitleEventSerializer(ModelSerializer):
+    initiator = UserSerializer(read_only=True)
+
     class Meta:
         model = TicketTitleEvent
         fields = ["ticket", "initiator", "date_created", "old_title", "new_title"]
 
 
 class TicketEventSerializer(ModelSerializer):
+    initiator = UserSerializer(read_only=True)
 
     def to_representation(self, instance):
         if isinstance(instance, TicketStatusEvent):
