@@ -7,7 +7,7 @@ from django.template.loader import render_to_string
 from django.utils.html import strip_tags
 from django.conf import settings
 from django.core.mail import send_mail
-
+from aiosmtpd.controller import Controller
 
 def send_email(subject, to, template, context):
     """
@@ -46,3 +46,27 @@ def mail_sender(subject, plain_message, from_email, to, html_message):
     :return: None.
     """
     send_mail(subject, plain_message, from_email, to, html_message=html_message)
+
+
+class SmtpServer:
+    async def handle_RCPT(self, server, session, envelope, address, rcpt_options):
+        if not address.endswith('@example.com'):
+            return '550 not relaying to that domain'
+        envelope.rcpt_tos.append(address)
+
+        return '250 OK'
+
+    async def handle_DATA(self, server, session, envelope):
+        async def handle_DATA(self, server, session, envelope):
+            peer = session.peer
+            mail_from = envelope.mail_from
+            rcpt_tos = envelope.rcpt_tos
+            data = envelope.content  # type: bytes
+
+            return '250 OK'
+
+    def start(self):
+        controller = Controller(self, port=settings.SMTP_INBOUND_PORT)
+        controller.start()
+        print("SMTP server started on port {}".format(settings.SMTP_INBOUND_PORT))
+

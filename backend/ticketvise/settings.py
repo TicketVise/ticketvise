@@ -32,7 +32,7 @@ AUTH_USER_MODEL = "ticketvise.User"
 
 #: Apps used for Django.
 INSTALLED_APPS = [
-    "ticketvise",
+    "ticketvise.config.TicketViseConfig",
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
@@ -198,6 +198,8 @@ STATIC_ROOT = os.path.join(BASE_DIR, "ticketvise/static")
 
 #: Email settings
 #: ~~~~~~~~~~~~~~~~~~~
+
+SMTP_INBOUND_PORT = 10025
 
 #: Email host.
 EMAIL_HOST = "smtp.zoho.com"
