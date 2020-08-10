@@ -4,10 +4,12 @@
       <search-bar v-model="search" v-on:input="get_tickets" class="flex-grow px-2"></search-bar>
 
       <!--MY TICKETS-->
-      <submit-button v-if="!showPersonal" class="bg-orange-400 px-2 m-2 md:m-0" text="My Tickets"
-                     @click="showPersonal = !showPersonal; get_tickets()"></submit-button>
-      <submit-button v-if="showPersonal" class="bg-orange-500 px-2 m-2 md:m-0" text="My Tickets"
-                     @click="showPersonal = !showPersonal; get_tickets()"></submit-button>
+      <div v-if="is_staff">
+        <submit-button v-if="!showPersonal" class="bg-orange-400 px-2 m-2 md:m-0" text="My Tickets"
+                       @click="showPersonal = !showPersonal; get_tickets()"></submit-button>
+        <submit-button v-if="showPersonal" class="bg-orange-500 px-2 m-2 md:m-0" text="My Tickets"
+                       @click="showPersonal = !showPersonal; get_tickets()"></submit-button>
+      </div>
 
       <!--FILTER LABELS-->
       <div>
@@ -17,7 +19,8 @@
             <a class="fa fa-close" @click="deleteEvent(index)"></a>
           </chip>
         </div>
-        <label-dropdown v-model="label" :values="unused_labels" v-on:input="labels.push(label); get_tickets()" class="mx-2"/>
+        <label-dropdown v-model="label" :values="unused_labels" v-on:input="labels.push(label); get_tickets()"
+                        class="mx-2"/>
       </div>
 
     </div>
@@ -59,7 +62,9 @@ export default {
     labels: [],
     label: null,
     inbox_labels: [],
-    inbox_id: window.location.pathname.split('/')[2]
+    inbox_id: window.location.pathname.split('/')[2],
+    is_staff: false,
+    user: null
   }),
   methods: {
     get_tickets() {
@@ -87,6 +92,15 @@ export default {
     this.get_tickets()
     axios.get("/api/inboxes/" + this.inbox_id + "/labels").then(response => {
       this.inbox_labels = response.data;
+
+      axios.get("/api/me").then(response => {
+        this.user = response.data
+
+        axios.get("/api/inboxes/" + this.inbox_id + "/users/" + this.user.id + "/roles").then(response => {
+
+          this.is_staff = response.data && (response.data.key === 'AGENT' || response.data.key === 'MANAGER')
+        })
+      })
     });
   },
   computed: {
