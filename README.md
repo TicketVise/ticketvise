@@ -92,7 +92,7 @@ date. Documentation for the Python code can be found on our [docs](https://docs.
 functions and HTML markup have also been documented, but this is only visible in the source code available
 on Gitlab.
 
-## Depployment
+## Deployment
 ### Generate SSL certificates
 ```shell script
 docker run -it --rm --name certbot -p 80:80 \
@@ -107,4 +107,17 @@ docker run -it --rm --name certbot -p 80:80 \
 ### Deploy to Docker Stack
 ```shell script
 docker stack deploy -c docker-compose.yml -c docker-compose.prod.yml ticketvise
+```
+
+## Troubleshooting
+#### Cronjobs
+
+Access the docker container running the backend image. You can find the container id by running `docker ps`.
+```shell script
+docker exec -it <backend_container_id> bash
+```
+
+View the cronjob logs.
+```shell script
+cat /var/log/cron.log
 ```

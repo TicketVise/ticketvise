@@ -12,13 +12,13 @@ from ticketvise.models.user import User, UserInbox, Role
 
 
 class Command(BaseCommand):
-    """Django command that waits for database to be available"""
+    """Django command that insert demo data into the database."""
 
     def handle(self, *args, **options):
         """Handle the command"""
         try:
             self.insert_data()
-            print("Succefully populated database with demo data!")
+            print("Successfully populated database with demo data!")
         except IntegrityError as e:
             print("Database seems already populated with demo data, IntegrityError: ", e)
 
