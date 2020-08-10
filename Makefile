@@ -13,13 +13,17 @@ clean:
 	rm ./backend/ticketvise/static/*.map || true
 
 build:
-	python3 ./backend/manage.py makemigrations ticketvise
-	python3 ./backend/manage.py migrate
-	python3 ./backend/manage.py collectstatic --no-input
+	cd ./backend/ && python3 manage.py makemigrations ticketvise
+	cd ./backend/ && python3 manage.py migrate
+	cd ./backend/ && python3 manage.py collectstatic --no-input
 	npm run watch
 
-build-demo: clean build
-	python3 ./backend/manage.py insert_demo_data
+build-demo: clean
+	cd ./backend/ && python3 manage.py makemigrations ticketvise
+	cd ./backend/ && python3 manage.py migrate
+	cd ./backend/ && python3 manage.py collectstatic --no-input
+	cd ./backend/ && python3 manage.py insert_demo_data
+	npm run watch
 
 build-docker:
 	docker-compose up -d --build

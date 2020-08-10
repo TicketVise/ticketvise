@@ -61,6 +61,7 @@ class CreateTicketSerializer(ModelSerializer):
     """
     Allows data to be converted into Python datatypes for the ticket.
     """
+
     # files = serializers.ListField(child=serializers.FileField(max_length=100000,
     #                                                                 allow_empty_file=False,
     #                                                                 use_url=False))
@@ -139,14 +140,20 @@ class InboxTicketsApiView(UserIsInInboxMixin, APIView):
         q = request.GET.get("q", "")
         size = int(request.GET.get("size", AUTOCOMPLETE_MAX_ENTRIES))
         columns = bool(request.GET.get("columns", False))
+        show_personal = str(request.GET.get("show_personal", False)) == "true"
+        labels = list(map(int, request.GET.getlist("labels[]", [])))
 
         inbox = get_object_or_404(Inbox, pk=inbox_id)
         tickets = Ticket.objects.filter(inbox=inbox, title__icontains=q) | Ticket.objects.filter(
-            inbox=inbox, ticket_inbox_id__icontains=q,
-        )
+            inbox=inbox, ticket_inbox_id__icontains=q)
 
         if not request.user.is_assistant_or_coordinator(inbox):
             tickets = tickets.filter(author=request.user)
+        elif show_personal:
+            tickets = tickets.filter(assignee=request.user) | tickets.filter(author=request.user)
+
+        if labels:
+            tickets = tickets.filter(labels__id__in=labels).distinct()
 
         if columns:
             return self.get_column_tickets(inbox, tickets)
@@ -238,7 +245,3 @@ class TicketCreateApiView(UserIsInInboxMixin, CreateAPIView):
 
         for file in self.request.FILES.getlist('files'):
             TicketAttachment(ticket=ticket, file=file).save()
-
-
-
-
