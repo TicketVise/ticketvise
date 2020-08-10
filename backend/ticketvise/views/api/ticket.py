@@ -150,7 +150,7 @@ class InboxTicketsApiView(UserIsInInboxMixin, APIView):
         if not request.user.is_assistant_or_coordinator(inbox):
             tickets = tickets.filter(author=request.user)
         elif show_personal:
-            tickets = tickets.filter(assignee=request.user)
+            tickets = tickets.filter(assignee=request.user) | tickets.filter(author=request.user)
 
         if labels:
             tickets = tickets.filter(labels__id__in=labels).distinct()
