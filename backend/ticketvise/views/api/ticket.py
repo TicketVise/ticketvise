@@ -11,7 +11,6 @@ Contains classes for the API interface to dynamically load models using AJAX.
 * :class:`InboxTicketView`
 """
 from django.core.exceptions import ValidationError
-from django.core.files.base import ContentFile
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
 from rest_framework import serializers
@@ -62,6 +61,7 @@ class CreateTicketSerializer(ModelSerializer):
     """
     Allows data to be converted into Python datatypes for the ticket.
     """
+
     # files = serializers.ListField(child=serializers.FileField(max_length=100000,
     #                                                                 allow_empty_file=False,
     #                                                                 use_url=False))
@@ -202,6 +202,8 @@ class TicketUpdateAssignee(UserIsInboxStaffMixin, UpdateAPIView):
 
 
 class TicketLabelSerializer(ModelSerializer):
+    labels = serializers.PrimaryKeyRelatedField(many=True, queryset=Label.objects.all())
+
     class Meta:
         model = Ticket
         fields = ["labels"]
@@ -302,6 +304,3 @@ class TicketEventsApiView(UserHasAccessToTicketMixin, ListAPIView):
         ticket = get_object_or_404(Ticket, inbox=inbox, ticket_inbox_id=self.kwargs["ticket_inbox_id"])
 
         return TicketEvent.objects.filter(ticket=ticket).select_subclasses()
-
-
-
