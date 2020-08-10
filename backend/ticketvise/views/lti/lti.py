@@ -68,7 +68,7 @@ class LtiView(RedirectView):
 
         if inbox is None:
             if "instructor" in user_roles:
-                inbox_name = form.cleaned_data["custom_inbox_name"]
+                inbox_name = form.cleaned_data["custom_course_name"]
                 inbox = Inbox.objects.create(code=inbox_code, name=inbox_name)
             else:
                 raise Http404("Course does not have a ticket system (yet). Please contact your instructor.")
