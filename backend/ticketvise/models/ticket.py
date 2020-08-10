@@ -208,11 +208,16 @@ class TicketLabel(models.Model):
 
 
 @receiver(m2m_changed, sender=Ticket.labels.through)
-def labels_changed_handler(sender, **kwargs):
-    test = 1
-    test = 2
-    print(sender)
-    pass
+def labels_changed_handler(sender, action, instance, model, **kwargs):
+    ticket = instance
+    label = model
+
+    if action == "post_add":
+        TicketLabelEvent.objects.create(ticket=ticket, label=label, is_added=True,
+                                        initiator=get_current_authenticated_user())
+    elif action == "post_delete":
+        TicketLabelEvent.objects.create(ticket=ticket, label=label, is_added=False,
+                                        initiator=get_current_authenticated_user())
 
 
 # m2m_changed.connect(labels_changed_handler, sender=Ticket.labels.through)
