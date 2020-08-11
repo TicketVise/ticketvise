@@ -6,7 +6,7 @@ from rest_framework.views import APIView
 
 from ticketvise.models.comment import Comment
 from ticketvise.models.inbox import Inbox
-from ticketvise.models.ticket import Ticket
+from ticketvise.models.ticket import Ticket, TicketStatusEvent, Status
 from ticketvise.views.api.security import UserIsInboxStaffMixin
 
 
@@ -46,7 +46,7 @@ class InboxAverageAgentResponseTimeStatisticsApiView(UserIsInboxStaffMixin, APIV
             .values("first_comment_author")\
             .annotate(avg_response_time=Avg("response_time"))
 
-        return JsonResponse(list(tickets), safe=False)
+        return JsonResponse(tickets, safe=False)
 
 
 class InboxAverageTimeToCloseStatisticsApiView(UserIsInboxStaffMixin, APIView):
@@ -54,7 +54,13 @@ class InboxAverageTimeToCloseStatisticsApiView(UserIsInboxStaffMixin, APIView):
     def get(self, request, inbox_id):
         inbox = get_object_or_404(Inbox, pk=inbox_id)
 
-        first_comment = Comment.objects.filter(ticket=OuterRef('pk')).order_by("-date_created")
+        first_close_event = TicketStatusEvent.objects.filter(ticket=OuterRef('pk'),
+                                                             status=Status.CLOSED).order_by("-date_created")
 
+        data = Ticket.objects.filter(inbox=inbox)\
+            .annotate(first_close_event_created=Subquery(first_close_event.values("date_created")[:1]))\
+            .filter(first_close_event_created__isnull=False)\
+            .annotate(time_to_close=F('date_created') - F('first_close_event_created'))\
+            .aggregate(avg_time_to_close=Avg("time_to_close"))
 
-        return JsonResponse(list([]), safe=False)
+        return JsonResponse(data, safe=False)
