@@ -6,7 +6,7 @@ This file tests the scheduling algorithms to divide the workload amond TAs.
 from django.test import TestCase, Client
 
 from ticketvise.models.inbox import SchedulingAlgorithm
-from ticketvise.models.ticket import Ticket
+from ticketvise.models.ticket import Ticket, TicketLabel
 from ticketvise.models.user import User, UserInbox, Role
 from ticketvise.scheduling import schedule_ticket
 from ticketvise.tests.utils import create_inbox
@@ -87,7 +87,7 @@ class TicketTestCase(TestCase):
 
         for i in range(schedule_amount):
             for assistant in self.assistants:
-                self.ticket4.labels.clear()
+                TicketLabel.objects.filter(ticket=self.ticket4).delete()
                 self.ticket4.save()
 
                 schedule_ticket(self.ticket4)

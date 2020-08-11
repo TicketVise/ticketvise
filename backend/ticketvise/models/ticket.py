@@ -112,11 +112,9 @@ class Ticket(models.Model):
         """
         old_ticket = None
         old_status = None
-        old_labels = None
 
         if self.id:
             old_ticket = Ticket.objects.get(pk=self.id)
-            old_labels = old_ticket.labels.all()
         else:
             # + 1 so the ticket_inbox_id starts at 1 instead of 0.
             self.ticket_inbox_id = Ticket.objects.filter(inbox=self.inbox).count() + 1
@@ -197,8 +195,9 @@ class TicketLabel(models.Model):
     def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
         super().save(force_insert, force_update, using, update_fields)
 
-        TicketLabelEvent.objects.create(ticket=self.ticket, label=self.label, is_added=True,
-                                        initiator=get_current_authenticated_user())
+        if not self.id:
+            TicketLabelEvent.objects.create(ticket=self.ticket, label=self.label, is_added=True,
+                                            initiator=get_current_authenticated_user())
 
     def delete(self, using=None, keep_parents=False):
         TicketLabelEvent.objects.create(ticket=self.ticket, label=self.label, is_added=False,
@@ -210,17 +209,16 @@ class TicketLabel(models.Model):
 @receiver(m2m_changed, sender=Ticket.labels.through)
 def labels_changed_handler(sender, action, instance, model, **kwargs):
     ticket = instance
-    label = model
+    labels = Label.objects.filter(id__in=kwargs["pk_set"])
 
     if action == "post_add":
-        TicketLabelEvent.objects.create(ticket=ticket, label=label, is_added=True,
-                                        initiator=get_current_authenticated_user())
-    elif action == "post_delete":
-        TicketLabelEvent.objects.create(ticket=ticket, label=label, is_added=False,
-                                        initiator=get_current_authenticated_user())
-
-
-# m2m_changed.connect(labels_changed_handler, sender=Ticket.labels.through)
+        for label in labels:
+            TicketLabelEvent.objects.create(ticket=ticket, label=label, is_added=True,
+                                            initiator=get_current_authenticated_user())
+    elif action == "post_remove":
+        for label in labels:
+            TicketLabelEvent.objects.create(ticket=ticket, label=label, is_added=False,
+                                            initiator=get_current_authenticated_user())
 
 
 class TicketAttachment(models.Model):

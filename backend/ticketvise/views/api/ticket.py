@@ -61,10 +61,8 @@ class CreateTicketSerializer(ModelSerializer):
     """
     Allows data to be converted into Python datatypes for the ticket.
     """
+    labels = serializers.PrimaryKeyRelatedField(many=True, queryset=Label.objects.all())
 
-    # files = serializers.ListField(child=serializers.FileField(max_length=100000,
-    #                                                                 allow_empty_file=False,
-    #                                                                 use_url=False))
 
     class Meta:
         """
@@ -262,6 +260,7 @@ class TicketAssigneeEventSerializer(ModelSerializer):
 
 class TicketLabelEventSerializer(ModelSerializer):
     initiator = UserSerializer(read_only=True)
+    label = LabelSerializer(read_only=True)
 
     class Meta:
         model = TicketLabelEvent

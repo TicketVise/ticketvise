@@ -48,9 +48,9 @@ class TicketFormTestAPI(APITestCase, TicketTestCase):
 
         url = f"/api/inboxes/{self.inbox.id}/tickets/new"
         data = {
-            "title": "TestTicket",
-            "content": "TestTicket",
             "inbox": self.inbox.id,
+            "content": "TestTicket",
+            "title": "TestTicket",
             "labels": [self.label.id]
         }
 
