@@ -32,26 +32,16 @@
         <label-dropdown v-bind:value="labels" :values="unused_labels" v-on:input="addLabel"/>
       </div>
 
+
       <div class="mb-3">
         <h4 class="font-semibold text-gray-800 m-2">Share with</h4>
         <error v-for="error in this.errors.shared_with" :key="error" :message="error"></error>
         <error v-for="error in this.errors.username" :key="error" :message="error"></error>
+        <edit-share-with v-model="shared_with" class="mb-2" :inbox_id="inbox_id"></edit-share-with>
 
-        <div class="ml-2">
-          <chip class="m-1" v-for="(user, index) in shared_with" :key="user.id">
-            {{ user.first_name }} {{ user.last_name }}
-            <a class="fa fa-close" @click="removeSharedWith(index)"></a>
-          </chip>
-          <card class="my-2 md:w-1/5" outlined>
-            <input class="m-1" v-model="username" placeholder="Username">
-          </card>
-          <submit-button v-on:click.native="username.length ? getUsername(username) : {}" class="bg-green-200"
-                         text="Add"></submit-button>
-        </div>
+        <submit-button v-on:click.native="submit" text="Submit"></submit-button>
+
       </div>
-
-      <submit-button v-on:click.native="submit" text="Submit"></submit-button>
-
     </card>
   </div>
 </template>
@@ -65,10 +55,11 @@ import {Editor} from "@toast-ui/vue-editor";
 import FileUpload from "../elements/FileUpload";
 import SubmitButton from "../elements/buttons/SubmitButton";
 import Error from "../elements/message/Error";
+import EditShareWith from "./EditShareWith";
 
 export default {
   name: "Form",
-  components: {Error, SubmitButton, FileUpload, EditLabel, LabelDropdown, Editor, Chip},
+  components: {EditShareWith, Error, SubmitButton, FileUpload, EditLabel, LabelDropdown, Editor, Chip},
   data() {
     return {
       files: [],
@@ -78,7 +69,6 @@ export default {
       inbox_id: window.location.pathname.split('/')[2],
       errors: [],
       shared_with: [],
-      username: ""
     }
   },
   mounted() {
@@ -123,24 +113,6 @@ export default {
     removeLabel: function (index) {
       this.labels.splice(index, 1);
     },
-    removeSharedWith: function (index) {
-      this.shared_with.splice(index, 1);
-    },
-    getUsername(username) {
-      axios.get("/api/inboxes/" + this.inbox_id + "/users/" + username).then(response => {
-        this.errors = []
-        // Check if user exists in array
-        let index = this.shared_with.findIndex(user => user.id===response.data.id)
-        if (index === -1) {
-          this.shared_with.push(response.data)
-        }
-        this.username = ""
-      }).catch(error => {
-            this.errors = error.response.data
-          }
-      )
-
-    }
   },
   computed: {
     unused_labels: function () {
