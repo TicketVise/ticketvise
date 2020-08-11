@@ -11,7 +11,6 @@ Contains classes for the API interface to dynamically load models using AJAX.
 * :class:`InboxTicketView`
 """
 from django.core.exceptions import ValidationError
-from django.core.files.base import ContentFile
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
 from rest_framework import serializers
@@ -24,7 +23,8 @@ from ticketvise.models.label import Label
 from ticketvise.models.ticket import Ticket, TicketAttachment
 from ticketvise.models.user import User, UserInbox
 from ticketvise.views.api import AUTOCOMPLETE_MAX_ENTRIES
-from ticketvise.views.api.security import UserHasAccessToTicketMixin, UserIsInboxStaffMixin, UserIsInInboxMixin
+from ticketvise.views.api.security import UserHasAccessToTicketMixin, UserIsInboxStaffMixin, UserIsInInboxMixin, \
+    UserIsTicketAuthorOrInboxStaffMixin
 from ticketvise.views.api.user import UserSerializer, RoleSerializer
 
 
@@ -241,3 +241,18 @@ class TicketCreateApiView(UserIsInInboxMixin, CreateAPIView):
 
         for file in self.request.FILES.getlist('files'):
             TicketAttachment(ticket=ticket, file=file).save()
+
+
+class TicketSharedWithSerializer(ModelSerializer):
+    class Meta:
+        model = Ticket
+        fields = ["shared_with"]
+
+
+class TicketSharedAPIView(UserIsTicketAuthorOrInboxStaffMixin, RetrieveAPIView):
+    serializer_class = TicketSharedWithSerializer
+
+    def get_object(self):
+        inbox = get_object_or_404(Inbox, pk=self.kwargs["inbox_id"])
+
+        return Ticket.objects.get(inbox=inbox, ticket_inbox_id=self.kwargs["ticket_inbox_id"])

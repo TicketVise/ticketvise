@@ -37,11 +37,11 @@
         <h4 class="font-semibold text-gray-800 m-2">Share with</h4>
         <error v-for="error in this.errors.shared_with" :key="error" :message="error"></error>
         <error v-for="error in this.errors.username" :key="error" :message="error"></error>
-        <edit-share-with v-model="shared_with" class="mb-2" :inbox_id="inbox_id"></edit-share-with>
-
-        <submit-button v-on:click.native="submit" text="Submit"></submit-button>
-
+        <edit-share-with v-model="shared_with" class="mb-2 w-1/5" :inbox_id="inbox_id"></edit-share-with>
       </div>
+      <submit-button v-on:click.native="submit" text="Submit"></submit-button>
+
+
     </card>
   </div>
 </template>

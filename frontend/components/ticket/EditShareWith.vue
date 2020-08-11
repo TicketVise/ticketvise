@@ -4,7 +4,7 @@
       {{ user.first_name }} {{ user.last_name }}
       <a class="fa fa-close" @click="removeSharedWith(index)"></a>
     </chip>
-    <card class="my-2 md:w-1/5" outlined>
+    <card class="my-2" outlined>
       <input class="m-1" v-model="username" placeholder="Username">
     </card>
     <submit-button v-on:click.native="username.length ? getUsername(username) : {}" class="bg-green-200"
