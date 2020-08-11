@@ -54,7 +54,7 @@ class TicketSerializer(ModelSerializer):
         model = Ticket
         #: Tells the serializer to use these fields from the :class:`Ticket` model.
         fields = ["id", "inbox", "title", "ticket_inbox_id", "author", "content", "date_created", "status", "labels",
-                  "assignee"]
+                  "assignee", "shared_with"]
 
 
 class CreateTicketSerializer(ModelSerializer):
@@ -62,9 +62,7 @@ class CreateTicketSerializer(ModelSerializer):
     Allows data to be converted into Python datatypes for the ticket.
     """
 
-    # files = serializers.ListField(child=serializers.FileField(max_length=100000,
-    #                                                                 allow_empty_file=False,
-    #                                                                 use_url=False))
+    shared_with = UserSerializer(many=True, read_only=True)
 
     class Meta:
         """
@@ -77,7 +75,7 @@ class CreateTicketSerializer(ModelSerializer):
         #: Tells the serializer to use the :class:`Ticket` model.
         model = Ticket
         #: Tells the serializer to use these fields from the :class:`Ticket` model.
-        fields = ["inbox", "title", "content", "labels"]
+        fields = ["inbox", "title", "content", "labels", "shared_with"]
 
 
 class TicketAttachmentSerializer(ModelSerializer):

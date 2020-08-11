@@ -1,5 +1,5 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.http import JsonResponse
+from django.http import JsonResponse, Http404
 from django.shortcuts import get_object_or_404
 from django.views import View
 from rest_framework import serializers
@@ -8,7 +8,7 @@ from rest_framework.serializers import ModelSerializer
 
 from ticketvise.models.inbox import Inbox
 from ticketvise.models.user import User, Role
-from ticketvise.views.api.security import UserIsInboxStaffMixin
+from ticketvise.views.api.security import UserIsInboxStaffMixin, UserIsInInboxMixin
 
 
 class UserSerializer(ModelSerializer):
@@ -27,6 +27,24 @@ class UserRoleApiView(UserIsInboxStaffMixin, View):
         data = RoleSerializer(role).data
 
         return JsonResponse(data, safe=False)
+
+
+class UserGetFromUsernameApiView(UserIsInInboxMixin, RetrieveAPIView):
+    serializer_class = UserSerializer
+
+    def get_object(self):
+        inbox = get_object_or_404(Inbox, pk=self.kwargs["inbox_id"])
+        user = get_object_or_404(User, username=self.kwargs["username"])
+
+        if not user.has_inbox(inbox):
+            self.handle_exception(Http404)
+
+        return user
+
+    def handle_exception(self, exc):
+        if isinstance(exc, Http404):
+            return JsonResponse({"username": ["Username not found within this course"]}, status=404)
+        return super().handle_exception(exc)
 
 
 class CurrentUserApiView(LoginRequiredMixin, RetrieveAPIView):
