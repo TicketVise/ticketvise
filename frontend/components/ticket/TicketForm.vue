@@ -37,10 +37,14 @@
         <error v-for="error in this.errors.username" :key="error" :message="error"></error>
 
         <div class="ml-2">
+          <chip class="m-1" v-for="(user, index) in shared_with" :key="user.id">
+            {{ user.first_name }} {{ user.last_name }}
+            <a class="fa fa-close" @click="removeSharedWith(index)"></a>
+          </chip>
           <card class="my-2 md:w-1/5" outlined>
             <input class="m-1" v-model="username" placeholder="Username">
           </card>
-          <submit-button v-on:click.native="username.length ? get_username(username) : {}" class="bg-green-200"
+          <submit-button v-on:click.native="username.length ? getUsername(username) : {}" class="bg-green-200"
                          text="Add"></submit-button>
         </div>
       </div>
@@ -118,14 +122,23 @@ export default {
     removeLabel: function (index) {
       this.labels.splice(index, 1);
     },
-    get_username(username) {
+    removeSharedWith: function (index) {
+      this.shared_with.splice(index, 1);
+    },
+    getUsername(username) {
       axios.get("/api/inboxes/" + this.inbox_id + "/users/" + username).then(response => {
         this.errors = []
-        this.shared_with.push(response.data)
+        // Check if user exists in array
+        let index = this.shared_with.findIndex(user => user.id===response.data.id)
+        if (index === -1) {
+          this.shared_with.push(response.data)
+        }
+        this.username = ""
       }).catch(error => {
             this.errors = error.response.data
           }
       )
+
     }
   },
   computed: {
