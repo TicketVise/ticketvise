@@ -34,6 +34,7 @@
 
       <div class="mb-3">
         <h4 class="font-semibold text-gray-800 m-2">Share with</h4>
+        <error v-for="error in this.errors.shared_with" :key="error" :message="error"></error>
         <error v-for="error in this.errors.username" :key="error" :message="error"></error>
 
         <div class="ml-2">
@@ -96,7 +97,7 @@ export default {
 
       this.labels.forEach(label => formData.append("labels", label.id))
       this.files.forEach(file => formData.append("files", file))
-      this.shared_with.forEach(shared_with => formData.append("shared_with", shared_with))
+      this.shared_with.forEach(shared_with => formData.append("shared_with", shared_with.id))
 
       axios.defaults.xsrfCookieName = 'csrftoken';
       axios.defaults.xsrfHeaderName = "X-CSRFTOKEN";
@@ -107,7 +108,7 @@ export default {
             }
           }
       ).then(() => {
-        window.location.href = "/inboxes/" + this.inbox_id + "/tickets";
+        // window.location.href = "/inboxes/" + this.inbox_id + "/tickets";
       }).catch(error => {
             this.errors = error.response.data
           }

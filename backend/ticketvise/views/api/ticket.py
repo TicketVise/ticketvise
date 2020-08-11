@@ -62,8 +62,6 @@ class CreateTicketSerializer(ModelSerializer):
     Allows data to be converted into Python datatypes for the ticket.
     """
 
-    shared_with = UserSerializer(many=True, read_only=True)
-
     class Meta:
         """
         Define the model and fields.
