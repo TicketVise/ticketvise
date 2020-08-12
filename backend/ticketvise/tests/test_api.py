@@ -38,6 +38,10 @@ class ApiTestCase(TestCase):
         self.student1 = User.objects.create(username="s1", password="s1")
         self.student1.add_inbox(self.inbox1)
         self.student1.set_role_for_inbox(self.inbox1, Role.GUEST)
+        self.student2 = User.objects.create(username="s2", password="s2")
+        self.student2.add_inbox(self.inbox1)
+        self.student2.set_role_for_inbox(self.inbox1, Role.GUEST)
+        self.student3 = User.objects.create(username="s3", password="s3")
 
         self.ticket1 = create_ticket(author=self.student1, assignee=self.ta5, inbox=self.inbox2)
         self.ticket2 = create_ticket(author=self.student1, assignee=self.ta4, inbox=self.inbox2)
@@ -79,3 +83,40 @@ class ApiTestCase(TestCase):
         self.assertNotContains(response, self.ticket1.title)
         self.assertNotContains(response, self.ticket2.title)
         self.assertNotContains(response, self.ticket3.title)
+
+    def test_get_user_username(self):
+        """
+        Test get username by valid user
+        :return: None
+        """
+        self.client.force_login(self.student1)
+        response = self.client.get(f"/api/inboxes/{self.inbox1.id}/users/{self.student2.username}", follow=True)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.data["id"], self.student2.id)
+
+    def test_get_user_username_unauthorized(self):
+        """
+        Test get username by unauthorized user
+        :return: None
+        """
+        self.client.force_login(self.ta4)
+        response = self.client.get(f"/api/inboxes/{self.inbox1.id}/users/{self.student2.username}", follow=True)
+        self.assertEqual(response.status_code, 403)
+
+    def test_get_user_unknown_username(self):
+        """
+        Test get unknown username by valid user
+        :return: None
+        """
+        self.client.force_login(self.ta1)
+        response = self.client.get(f"/api/inboxes/{self.inbox1.id}/users/unknown", follow=True)
+        self.assertEqual(response.status_code, 404)
+
+    def test_get_user_username_not_in_inbox(self):
+        """
+        Test get username not in inbox by valid user
+        :return: None
+        """
+        self.client.force_login(self.ta4)
+        response = self.client.get(f"/api/inboxes/{self.inbox2.id}/users/{self.student1}", follow=True)
+        self.assertEqual(response.status_code, 404)

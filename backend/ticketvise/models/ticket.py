@@ -48,6 +48,8 @@ class Ticket(models.Model):
 
     #: The :class:`User` who created the ticket.
     author = models.ForeignKey("User", models.CASCADE, related_name=_("author"))
+    #: The :class:`User` who the ticket is shared with.
+    shared_with = models.ManyToManyField("User", blank=True, related_name=_("participants"))
     #: The :class:`User` to whom the ticket is assigned. Nullable and optional.
     assignee = models.ForeignKey("User", models.CASCADE, blank=True, null=True, related_name=_("assignee"))
     #: The :class:`Inbox` that the ticket is associated with.

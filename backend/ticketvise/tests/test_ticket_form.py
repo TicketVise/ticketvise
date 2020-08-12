@@ -48,10 +48,11 @@ class TicketFormTestAPI(APITestCase, TicketTestCase):
 
         url = f"/api/inboxes/{self.inbox.id}/tickets/new"
         data = {
-            "inbox": self.inbox.id,
-            "content": "TestTicket",
             "title": "TestTicket",
-            "labels": [self.label.id]
+            "content": "TestTicket",
+            "inbox": self.inbox.id,
+            "labels": [self.label.id],
+            "shared_with": []
         }
 
         response = self.client.post(url, data, format='json', follow=True)
@@ -73,3 +74,35 @@ class TicketFormTestAPI(APITestCase, TicketTestCase):
 
         response = self.client.post(url, data, format='json', follow=True)
         self.assertEqual(response.status_code, 201)
+
+    def test_create_ticket_shared(self):
+        self.client.force_login(self.student)
+
+        url = f"/api/inboxes/{self.inbox.id}/tickets/new"
+        data = {
+            "title": "TestTicket",
+            "content": "TestTicket",
+            "inbox": self.inbox.id,
+            "labels": [self.label.id],
+            "shared_with": [self.student2.id]
+        }
+
+        response = self.client.post(url, data, format='json', follow=True)
+        self.assertEqual(response.status_code, 201)
+        self.assertEqual(response.data, data)
+
+    def test_create_ticket_shared_assistant(self):
+        self.client.force_login(self.student)
+
+        url = f"/api/inboxes/{self.inbox.id}/tickets/new"
+        data = {
+            "title": "TestTicket",
+            "content": "TestTicket",
+            "inbox": self.inbox.id,
+            "labels": [self.label.id],
+            "shared_with": [self.assistant.id]
+        }
+
+        response = self.client.post(url, data, format='json', follow=True)
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.data, {"shared_with": ["This ticket cannot be shared with one of these users"]})

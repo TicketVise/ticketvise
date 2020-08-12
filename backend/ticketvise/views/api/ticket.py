@@ -14,7 +14,7 @@ from django.core.exceptions import ValidationError
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
 from rest_framework import serializers
-from rest_framework.generics import UpdateAPIView, ListAPIView, RetrieveAPIView, CreateAPIView
+from rest_framework.generics import UpdateAPIView, ListAPIView, RetrieveAPIView, CreateAPIView, RetrieveUpdateAPIView
 from rest_framework.serializers import ModelSerializer
 from rest_framework.views import APIView
 
@@ -24,7 +24,8 @@ from ticketvise.models.ticket import Ticket, TicketAttachment, TicketEvent, Stat
     TicketAssigneeEvent, TicketLabelEvent, TicketTitleEvent
 from ticketvise.models.user import User, UserInbox
 from ticketvise.views.api import AUTOCOMPLETE_MAX_ENTRIES
-from ticketvise.views.api.security import UserHasAccessToTicketMixin, UserIsInboxStaffMixin, UserIsInInboxMixin
+from ticketvise.views.api.security import UserHasAccessToTicketMixin, UserIsInboxStaffMixin, UserIsInInboxMixin, \
+    UserIsTicketAuthorOrInboxStaffMixin
 from ticketvise.views.api.user import UserSerializer, RoleSerializer
 
 
@@ -54,7 +55,7 @@ class TicketSerializer(ModelSerializer):
         model = Ticket
         #: Tells the serializer to use these fields from the :class:`Ticket` model.
         fields = ["id", "inbox", "title", "ticket_inbox_id", "author", "content", "date_created", "status", "labels",
-                  "assignee"]
+                  "assignee", "shared_with"]
 
 
 class CreateTicketSerializer(ModelSerializer):
@@ -75,7 +76,14 @@ class CreateTicketSerializer(ModelSerializer):
         #: Tells the serializer to use the :class:`Ticket` model.
         model = Ticket
         #: Tells the serializer to use these fields from the :class:`Ticket` model.
-        fields = ["inbox", "title", "content", "labels"]
+        fields = ["inbox", "title", "content", "labels", "shared_with"]
+
+    def validate_shared_with(self, shared_with):
+        inbox = get_object_or_404(Inbox, pk=int(self.get_initial()["inbox"]))
+        for user in shared_with:
+            if not user.has_inbox(inbox) or user.is_assistant_or_coordinator(inbox):
+                raise ValidationError("This ticket cannot be shared with one of these users")
+        return shared_with
 
 
 class TicketAttachmentSerializer(ModelSerializer):
@@ -99,6 +107,9 @@ class TicketWithParticipantsSerializer(TicketSerializer):
     def get_participants(self, obj):
         participants = list(User.objects.filter(comments__ticket=obj).distinct())
         participants.append(obj.author)
+        for user in obj.shared_with.all():
+            if user not in participants:
+                participants.append(user)
 
         return UserSerializer(participants, many=True).data
 
@@ -138,14 +149,20 @@ class InboxTicketsApiView(UserIsInInboxMixin, APIView):
         q = request.GET.get("q", "")
         size = int(request.GET.get("size", AUTOCOMPLETE_MAX_ENTRIES))
         columns = bool(request.GET.get("columns", False))
+        show_personal = str(request.GET.get("show_personal", False)) == "true"
+        labels = list(map(int, request.GET.getlist("labels[]", [])))
 
         inbox = get_object_or_404(Inbox, pk=inbox_id)
         tickets = Ticket.objects.filter(inbox=inbox, title__icontains=q) | Ticket.objects.filter(
-            inbox=inbox, ticket_inbox_id__icontains=q,
-        )
+            inbox=inbox, ticket_inbox_id__icontains=q)
 
         if not request.user.is_assistant_or_coordinator(inbox):
-            tickets = tickets.filter(author=request.user)
+            tickets = tickets.filter(author=request.user) | tickets.filter(shared_with__id__icontains=request.user.id)
+        elif show_personal:
+            tickets = tickets.filter(assignee=request.user) | tickets.filter(author=request.user)
+
+        if labels:
+            tickets = tickets.filter(labels__id__in=labels).distinct()
 
         if columns:
             return self.get_column_tickets(inbox, tickets)
@@ -241,6 +258,27 @@ class TicketCreateApiView(UserIsInInboxMixin, CreateAPIView):
             TicketAttachment(ticket=ticket, file=file).save()
 
 
+class TicketSharedWithRetrieveSerializer(ModelSerializer):
+    shared_with = UserSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = Ticket
+        fields = ["shared_with"]
+
+    def validate_shared_with(self, shared_with):
+        inbox = self.instance.inbox
+        for user in shared_with:
+            if not user.has_inbox(inbox) or user.is_assistant_or_coordinator(inbox):
+                raise ValidationError("This ticket cannot be shared with one of these users")
+        return shared_with
+
+
+class TicketSharedWithUpdateSerializer(ModelSerializer):
+    class Meta:
+        model = Ticket
+        fields = ["shared_with"]
+
+
 class TicketStatusEventSerializer(ModelSerializer):
     initiator = UserSerializer(read_only=True)
 
@@ -303,3 +341,15 @@ class TicketEventsApiView(UserHasAccessToTicketMixin, ListAPIView):
         ticket = get_object_or_404(Ticket, inbox=inbox, ticket_inbox_id=self.kwargs["ticket_inbox_id"])
 
         return TicketEvent.objects.filter(ticket=ticket).select_subclasses()
+
+class TicketSharedAPIView(UserIsTicketAuthorOrInboxStaffMixin, RetrieveUpdateAPIView):
+    def get_object(self):
+        inbox = get_object_or_404(Inbox, pk=self.kwargs["inbox_id"])
+
+        return Ticket.objects.get(inbox=inbox, ticket_inbox_id=self.kwargs["ticket_inbox_id"])
+
+    def get_serializer_class(self):
+        if self.request.method == "PUT":
+            return TicketSharedWithUpdateSerializer
+
+        return TicketSharedWithRetrieveSerializer
