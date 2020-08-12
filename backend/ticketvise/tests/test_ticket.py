@@ -14,6 +14,7 @@ from ticketvise.models.inbox import Inbox
 from ticketvise.models.label import Label
 from ticketvise.models.ticket import Ticket
 from ticketvise.models.user import User, Role
+from ticketvise.views.api.user import UserSerializer
 
 
 class TicketTestCase(TestCase):
@@ -588,3 +589,41 @@ class TicketTestApi(APITestCase, TicketTestCase):
 
         ticket = Ticket.objects.get(pk=self.ticket.id)
         self.assertFalse(ticket.shared_with.all())
+
+    def test_get_shared_with_as_author(self):
+        """
+        Test to verify a author cannot change shared_with
+        """
+        self.client.force_login(self.student)
+
+        response = self.client.get(f"/api/inboxes/{self.inbox.id}/tickets/{self.ticket2.ticket_inbox_id}/shared")
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual((response.data["shared_with"][0]), UserSerializer(self.student2).data)
+
+    def test_get_shared_with_as_shared_with(self):
+        """
+        Test to verify a shared_with cannot change shared_with
+        """
+        self.client.force_login(self.student2)
+        response = self.client.get(f"/api/inboxes/{self.inbox.id}/tickets/{self.ticket2.ticket_inbox_id}/shared")
+
+        self.assertEqual(response.status_code, 403)
+
+    def test_get_shared_with_as_ta_in_inbox(self):
+        """
+        Test to verify an assistant of the inbox can change shared_with
+        """
+        self.client.force_login(self.assistant)
+
+        response = self.client.get(f"/api/inboxes/{self.inbox.id}/tickets/{self.ticket2.ticket_inbox_id}/shared")
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual((response.data["shared_with"][0]), UserSerializer(self.student2).data)
+
+    def test_get_shared_with_as_ta_not_in_inbox(self):
+        """
+        Test to verify an assistant not in the inbox cannot change shared_with
+        """
+        self.client.force_login(self.assistant2)
+        response = self.client.get(f"/api/inboxes/{self.inbox.id}/tickets/{self.ticket2.ticket_inbox_id}/shared")
+
+        self.assertEqual(response.status_code, 403)
