@@ -105,7 +105,8 @@ class TicketWithParticipantsSerializer(TicketSerializer):
         participants = list(User.objects.filter(comments__ticket=obj).distinct())
         participants.append(obj.author)
         for user in obj.shared_with.all():
-            participants.append(user)
+            if user not in participants:
+                participants.append(user)
 
         return UserSerializer(participants, many=True).data
 
