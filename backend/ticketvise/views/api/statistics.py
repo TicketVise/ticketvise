@@ -20,7 +20,7 @@ class InboxTicketsPerDateTypeStatisticsApiView(UserIsInboxStaffMixin, APIView):
         inbox = get_object_or_404(Inbox, pk=inbox_id)
 
         truncate = TruncDate
-        date_type = request.GET.get("type")
+        date_type = request.GET.get("date_type")
         if date_type == "month":
             truncate = TruncMonth
         elif date_type == "year":
