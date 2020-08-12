@@ -17,6 +17,12 @@ class UserSerializer(ModelSerializer):
         fields = ["first_name", "last_name", "email", "username", "avatar_url", "id"]
 
 
+class UserUsernameSerializer(ModelSerializer):
+    class Meta:
+        model = User
+        fields = ["first_name", "last_name", "username", "avatar_url", "id"]
+
+
 class UsersRolesApiView(UserIsInboxStaffMixin, View):
 
     def get(self, request, user_id, inbox_id):
@@ -41,7 +47,7 @@ class UserRoleApiView(UserIsInInboxMixin, View):
 
 
 class UserGetFromUsernameApiView(UserIsInInboxMixin, RetrieveAPIView):
-    serializer_class = UserSerializer
+    serializer_class = UserUsernameSerializer
 
     def get_object(self):
         inbox = get_object_or_404(Inbox, pk=self.kwargs["inbox_id"])
