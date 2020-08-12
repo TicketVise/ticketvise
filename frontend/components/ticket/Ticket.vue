@@ -141,9 +141,6 @@ export default {
       axios.get("/api/me").then(response => {
         this.user = response.data;
 
-        axios.get("/api" + window.location.pathname + "/shared").then(response => {
-          this.shared_with = response.data.shared_with;
-
           axios.get("/api/inboxes/" + this.ticket.inbox + "/role").then(response => {
             this.role = response.data;
 
@@ -157,12 +154,17 @@ export default {
               });
             }
           })
-        });
       });
     });
     axios.get("/api" + window.location.pathname + "/replies").then(response => {
       this.replies = response.data;
     });
+
+    if (this.is_staff || this.ticket.author.id === this.user.id) {
+      axios.get("/api" + window.location.pathname + "/shared").then(response => {
+        this.shared_with = response.data.shared_with;
+      });
+    }
   },
   computed: {
     date: function () {

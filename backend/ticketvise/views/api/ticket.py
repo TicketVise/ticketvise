@@ -144,7 +144,7 @@ class InboxTicketsApiView(UserIsInInboxMixin, APIView):
             inbox=inbox, ticket_inbox_id__icontains=q)
 
         if not request.user.is_assistant_or_coordinator(inbox):
-            tickets = tickets.filter(author=request.user)
+            tickets = tickets.filter(author=request.user) | tickets.filter(shared_with__id__icontains=request.user.id)
         elif show_personal:
             tickets = tickets.filter(assignee=request.user) | tickets.filter(author=request.user)
 
