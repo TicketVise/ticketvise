@@ -37,14 +37,12 @@
         methods: {
             submit(label) {
                 this.value = label
-                let formData = new FormData();
                 this.labels = [this.value.id];
 
                 let dictionary = this.ticket.labels;
                 for (let key in dictionary) {
                     this.labels.push(dictionary[key].id)
                 }
-                formData.append("labels", this.labels);
 
                 axios.defaults.xsrfCookieName = 'csrftoken';
                 axios.defaults.xsrfHeaderName = "X-CSRFTOKEN";

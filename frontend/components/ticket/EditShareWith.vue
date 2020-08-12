@@ -1,14 +1,19 @@
 <template>
-  <div class="ml-2">
-    <chip class="m-1" v-for="(user, index) in shared_with" :key="user.id">
-      {{ user.first_name }} {{ user.last_name }}
-      <a class="fa fa-close" @click="removeSharedWith(index)"></a>
-    </chip>
-    <card class="my-2" outlined>
-      <input class="m-1" v-model="username" placeholder="Username">
-    </card>
-    <submit-button v-on:click.native="username.length ? getUsername(username) : {}" class="bg-green-200"
-                   text="Add"></submit-button>
+  <div>
+    <h4 class="font-semibold text-gray-800 m-2">Share with</h4>
+    <error v-for="error in this.errors.shared_with" :key="error" :message="error"></error>
+    <error v-for="error in this.errors.username" :key="error" :message="error"></error>
+    <div class="ml-2">
+      <chip class="m-1" v-for="(user, index) in shared_with" :key="user.id">
+        {{ user.first_name }} {{ user.last_name }}
+        <a class="fa fa-close" @click="removeSharedWith(index)"></a>
+      </chip>
+      <card class="my-2" outlined>
+        <input class="m-1" v-model="username" placeholder="Username">
+      </card>
+      <submit-button v-on:click.native="username.length ? getUsername(username) : {}" class="bg-green-200"
+                     text="Add"></submit-button>
+    </div>
   </div>
 </template>
 
@@ -19,11 +24,10 @@ import axios from "axios";
 export default {
   name: "EditShareWith",
   components: {SubmitButton},
-  props: ["inbox_id"],
+  props: ["inbox_id", "shared_with", "errors"],
   data() {
     return {
       username: "",
-      shared_with: []
     }
   },
   methods: {

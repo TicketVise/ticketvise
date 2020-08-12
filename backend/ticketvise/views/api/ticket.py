@@ -14,7 +14,7 @@ from django.core.exceptions import ValidationError
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
 from rest_framework import serializers
-from rest_framework.generics import UpdateAPIView, ListAPIView, RetrieveAPIView, CreateAPIView
+from rest_framework.generics import UpdateAPIView, ListAPIView, RetrieveAPIView, CreateAPIView, RetrieveUpdateAPIView
 from rest_framework.serializers import ModelSerializer
 from rest_framework.views import APIView
 
@@ -243,16 +243,19 @@ class TicketCreateApiView(UserIsInInboxMixin, CreateAPIView):
             TicketAttachment(ticket=ticket, file=file).save()
 
 
-class TicketSharedWithSerializer(ModelSerializer):
+class TicketSharedWithRetrieveSerializer(ModelSerializer):
+    shared_with = UserSerializer(many=True, read_only=True)
+
     class Meta:
         model = Ticket
         fields = ["shared_with"]
 
 
-class TicketSharedAPIView(UserIsTicketAuthorOrInboxStaffMixin, RetrieveAPIView):
-    serializer_class = TicketSharedWithSerializer
+class TicketSharedAPIView(UserIsTicketAuthorOrInboxStaffMixin, RetrieveUpdateAPIView):
+    serializer_class = TicketSharedWithRetrieveSerializer
 
     def get_object(self):
         inbox = get_object_or_404(Inbox, pk=self.kwargs["inbox_id"])
 
         return Ticket.objects.get(inbox=inbox, ticket_inbox_id=self.kwargs["ticket_inbox_id"])
+

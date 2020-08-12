@@ -47,7 +47,7 @@ class UserGetFromUsernameApiView(UserIsInInboxMixin, RetrieveAPIView):
         inbox = get_object_or_404(Inbox, pk=self.kwargs["inbox_id"])
         user = get_object_or_404(User, username=self.kwargs["username"])
 
-        if not user.has_inbox(inbox):
+        if not user.has_inbox(inbox) or user.is_assistant_or_coordinator(inbox):
             self.handle_exception(Http404)
 
         return user

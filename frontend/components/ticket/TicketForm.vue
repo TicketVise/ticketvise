@@ -32,13 +32,10 @@
         <label-dropdown v-bind:value="labels" :values="unused_labels" v-on:input="addLabel"/>
       </div>
 
-
       <div class="mb-3">
-        <h4 class="font-semibold text-gray-800 m-2">Share with</h4>
-        <error v-for="error in this.errors.shared_with" :key="error" :message="error"></error>
-        <error v-for="error in this.errors.username" :key="error" :message="error"></error>
         <edit-share-with v-model="shared_with" class="mb-2 w-1/5" :inbox_id="inbox_id"></edit-share-with>
       </div>
+
       <submit-button v-on:click.native="submit" text="Submit"></submit-button>
 
 
@@ -98,7 +95,7 @@ export default {
             }
           }
       ).then(() => {
-        // window.location.href = "/inboxes/" + this.inbox_id + "/tickets";
+        window.location.href = "/inboxes/" + this.inbox_id + "/tickets";
       }).catch(error => {
             this.errors = error.response.data
           }

@@ -54,8 +54,8 @@
             </div>
           </div>
           <div class="flex-shrink w-1/6" v-if="canShare">
-            <edit-share-with v-model="shared_with" class="mb-2" :inbox_id="ticket.inbox"
-                             v-on:change="updateSharedWith"></edit-share-with>
+            <edit-share-with :shared_with="shared_with" :errors="errors" class="mb-2" :inbox_id="ticket.inbox"
+                             v-on:input="updateSharedWith"></edit-share-with>
           </div>
         </div>
 
@@ -130,7 +130,8 @@ export default {
       activeTab: "external",
       user: null,
       role: null,
-      shared_with: []
+      shared_with: [],
+      errors: [],
     }
   },
   mounted() {
@@ -141,7 +142,7 @@ export default {
         this.user = response.data;
 
         axios.get("/api" + window.location.pathname + "/shared").then(response => {
-          this.shared_with = response.data;
+          this.shared_with = response.data.shared_with;
 
           axios.get("/api/inboxes/" + this.ticket.inbox + "/role").then(response => {
             this.role = response.data;
@@ -217,7 +218,10 @@ export default {
       let formData = new FormData()
       this.shared_with.forEach(shared_with => formData.append("shared_with", shared_with.id))
 
-      axios.put("/api/inboxes/" + window.location.pathname + "/share", formData).then(response => {
+      axios.defaults.xsrfCookieName = 'csrftoken';
+      axios.defaults.xsrfHeaderName = "X-CSRFTOKEN";
+
+      axios.put("/api" + window.location.pathname + "/shared", formData).then(response => {
 
       }).catch(error => {
             this.errors = error.response.data
