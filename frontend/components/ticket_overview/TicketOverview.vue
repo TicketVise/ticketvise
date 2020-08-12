@@ -96,7 +96,7 @@ export default {
       axios.get("/api/me").then(response => {
         this.user = response.data
 
-        axios.get("/api/inboxes/" + this.inbox_id + "/users/" + this.user.id + "/roles").then(response => {
+          axios.get("/api/inboxes/" + this.ticket.inbox + "/role").then(response => {
 
           this.is_staff = response.data && (response.data.key === 'AGENT' || response.data.key === 'MANAGER')
         })

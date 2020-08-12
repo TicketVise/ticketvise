@@ -14,6 +14,7 @@ from ticketvise.models.inbox import Inbox
 from ticketvise.models.label import Label
 from ticketvise.models.ticket import Ticket
 from ticketvise.models.user import User, Role
+from ticketvise.views.api.user import UserSerializer
 
 
 class TicketTestCase(TestCase):
@@ -31,6 +32,9 @@ class TicketTestCase(TestCase):
         self.student2 = User.objects.create(username="student2", password="test12345", email="student2@ticketvise.com")
         self.student2.add_inbox(self.inbox)
         self.student2.set_role_for_inbox(self.inbox, Role.GUEST)
+        self.student3 = User.objects.create(username="student3", password="test12345", email="student2@ticketvise.com")
+        self.student3.add_inbox(self.inbox)
+        self.student3.set_role_for_inbox(self.inbox, Role.GUEST)
         self.assistant = User.objects.create(username="assistant", password="test67891",
                                              email="assistant@ticketvise.com")
         self.assistant.add_inbox(self.inbox)
@@ -45,6 +49,9 @@ class TicketTestCase(TestCase):
 
         self.ticket = Ticket.objects.create(author=self.student, assignee=self.assistant, title="TestTicket",
                                             content="TestContent", inbox=self.inbox)
+        self.ticket2 = Ticket.objects.create(author=self.student, assignee=self.assistant, title="TestTicket",
+                                             content="TestContent", inbox=self.inbox)
+        self.ticket2.shared_with.set([self.student2])
 
     def test_ticket_page_200(self):
         """
@@ -108,6 +115,15 @@ class TicketTestApi(APITestCase, TicketTestCase):
         response = self.client.get(f"/api/inboxes/{self.inbox.id}/tickets/{self.ticket.ticket_inbox_id}", follow=True)
         self.assertEqual(response.status_code, 200)
 
+    def test_get_ticket_as_shared_with(self):
+        """
+        Test to verify an author can get the ticket
+        """
+        self.client.force_login(self.student2)
+
+        response = self.client.get(f"/api/inboxes/{self.inbox.id}/tickets/{self.ticket2.ticket_inbox_id}", follow=True)
+        self.assertEqual(response.status_code, 200)
+
     def test_get_ticket_as_ta_in_inbox(self):
         """
         Test to verify an assistant of the inbox can get the ticket
@@ -133,6 +149,16 @@ class TicketTestApi(APITestCase, TicketTestCase):
         self.client.force_login(self.student2)
 
         response = self.client.get(f"/api/inboxes/{self.inbox.id}/tickets/{self.ticket.ticket_inbox_id}/comments",
+                                   follow=True)
+        self.assertEqual(response.status_code, 403)
+
+    def test_get_comment_as_shared_with(self):
+        """
+        Test to verify a student cannot get comments
+        """
+        self.client.force_login(self.student2)
+
+        response = self.client.get(f"/api/inboxes/{self.inbox.id}/tickets/{self.ticket2.ticket_inbox_id}/comments",
                                    follow=True)
         self.assertEqual(response.status_code, 403)
 
@@ -178,6 +204,21 @@ class TicketTestApi(APITestCase, TicketTestCase):
 
         response = self.client.post(
             f"/api/inboxes/{self.inbox.id}/tickets/{self.ticket.ticket_inbox_id}/comments/post", data,
+            follow=True)
+        self.assertEqual(response.status_code, 403)
+
+    def test_post_comment_as_shared_with(self):
+        """
+        Test to verify a student cannot get comments
+        """
+        self.client.force_login(self.student2)
+
+        data = {
+            "content": "Testcontent"
+        }
+
+        response = self.client.post(
+            f"/api/inboxes/{self.inbox.id}/tickets/{self.ticket2.ticket_inbox_id}/comments/post", data,
             follow=True)
         self.assertEqual(response.status_code, 403)
 
@@ -229,11 +270,21 @@ class TicketTestApi(APITestCase, TicketTestCase):
         """
         Test to verify a student cannot get replies
         """
-        self.client.force_login(self.student2)
+        self.client.force_login(self.student3)
 
         response = self.client.get(f"/api/inboxes/{self.inbox.id}/tickets/{self.ticket.ticket_inbox_id}/replies",
                                    follow=True)
         self.assertEqual(response.status_code, 403)
+
+    def test_get_replies_as_shared_with(self):
+        """
+        Test to verify a shared_with cannot get replies
+        """
+        self.client.force_login(self.student2)
+
+        response = self.client.get(f"/api/inboxes/{self.inbox.id}/tickets/{self.ticket2.ticket_inbox_id}/replies",
+                                   follow=True)
+        self.assertEqual(response.status_code, 200)
 
     def test_get_replies_as_author(self):
         """
@@ -279,6 +330,23 @@ class TicketTestApi(APITestCase, TicketTestCase):
             f"/api/inboxes/{self.inbox.id}/tickets/{self.ticket.ticket_inbox_id}/replies/post", data,
             follow=True)
         self.assertEqual(response.status_code, 403)
+
+    def test_post_replies_as_shared_with(self):
+        """
+        Test to verify a shared_with can get replies
+        """
+        self.client.force_login(self.student2)
+        count = Comment.objects.count()
+
+        data = {
+            "content": "Testcontent"
+        }
+
+        response = self.client.post(
+            f"/api/inboxes/{self.inbox.id}/tickets/{self.ticket2.ticket_inbox_id}/replies/post", data,
+            follow=True)
+        self.assertEqual(response.status_code, 201)
+        self.assertNotEqual(Comment.objects.count(), count)
 
     def test_post_replies_as_author(self):
         """
@@ -469,3 +537,93 @@ class TicketTestApi(APITestCase, TicketTestCase):
 
         ticket = Ticket.objects.get(pk=self.ticket.id)
         self.assertNotEqual(ticket.assignee, self.assistant3)
+
+    def test_put_shared_with_as_author(self):
+        """
+        Test to verify a author cannot change shared_with
+        """
+        self.client.force_login(self.student)
+
+        response = self.client.put(f"/api/inboxes/{self.inbox.id}/tickets/{self.ticket.ticket_inbox_id}/shared",
+                                   data={"shared_with": [self.student3.id]}, content_type="application/json")
+        self.assertEqual(response.status_code, 200)
+
+        ticket = Ticket.objects.get(pk=self.ticket.id)
+        self.assertEqual(ticket.shared_with.all()[0], self.student3)
+
+    def test_put_shared_with_as_shared_with(self):
+        """
+        Test to verify a shared_with cannot change shared_with
+        """
+        self.client.force_login(self.student2)
+
+        response = self.client.put(f"/api/inboxes/{self.inbox.id}/tickets/{self.ticket2.ticket_inbox_id}/shared",
+                                   data={"shared_with": [self.student3.id]}, content_type="application/json")
+        self.assertEqual(response.status_code, 403)
+
+        ticket = Ticket.objects.get(pk=self.ticket.id)
+        self.assertFalse(ticket.shared_with.all())
+
+    def test_put_shared_with_as_ta_in_inbox(self):
+        """
+        Test to verify an assistant of the inbox can change shared_with
+        """
+        self.client.force_login(self.assistant)
+
+        response = self.client.put(f"/api/inboxes/{self.inbox.id}/tickets/{self.ticket.ticket_inbox_id}/shared",
+                                   data={"shared_with": [self.student3.id]}, content_type="application/json")
+        self.assertEqual(response.status_code, 200)
+
+        ticket = Ticket.objects.get(pk=self.ticket.id)
+        self.assertEqual(ticket.shared_with.all()[0], self.student3)
+
+    def test_put_shared_with_as_ta_not_in_inbox(self):
+        """
+        Test to verify an assistant not in the inbox cannot change shared_with
+        """
+        self.client.force_login(self.assistant2)
+
+        response = self.client.put(f"/api/inboxes/{self.inbox.id}/tickets/{self.ticket.ticket_inbox_id}/shared",
+                                   data={"shared_with": [self.student3.id]}, content_type="application/json")
+        self.assertEqual(response.status_code, 403)
+
+        ticket = Ticket.objects.get(pk=self.ticket.id)
+        self.assertFalse(ticket.shared_with.all())
+
+    def test_get_shared_with_as_author(self):
+        """
+        Test to verify a author cannot change shared_with
+        """
+        self.client.force_login(self.student)
+
+        response = self.client.get(f"/api/inboxes/{self.inbox.id}/tickets/{self.ticket2.ticket_inbox_id}/shared")
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual((response.data["shared_with"][0]), UserSerializer(self.student2).data)
+
+    def test_get_shared_with_as_shared_with(self):
+        """
+        Test to verify a shared_with cannot change shared_with
+        """
+        self.client.force_login(self.student2)
+        response = self.client.get(f"/api/inboxes/{self.inbox.id}/tickets/{self.ticket2.ticket_inbox_id}/shared")
+
+        self.assertEqual(response.status_code, 403)
+
+    def test_get_shared_with_as_ta_in_inbox(self):
+        """
+        Test to verify an assistant of the inbox can change shared_with
+        """
+        self.client.force_login(self.assistant)
+
+        response = self.client.get(f"/api/inboxes/{self.inbox.id}/tickets/{self.ticket2.ticket_inbox_id}/shared")
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual((response.data["shared_with"][0]), UserSerializer(self.student2).data)
+
+    def test_get_shared_with_as_ta_not_in_inbox(self):
+        """
+        Test to verify an assistant not in the inbox cannot change shared_with
+        """
+        self.client.force_login(self.assistant2)
+        response = self.client.get(f"/api/inboxes/{self.inbox.id}/tickets/{self.ticket2.ticket_inbox_id}/shared")
+
+        self.assertEqual(response.status_code, 403)

@@ -29,7 +29,7 @@ build-docker:
 	docker-compose up -d --build
 
 test:
-	docker-compose exec -T web python manage.py test tests/ --parallel --failfast --no-input
+	docker-compose exec -T web python manage.py test ticketvise/tests/ --parallel --failfast --no-input
 	npm test
 
 lint:
