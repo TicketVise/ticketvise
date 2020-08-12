@@ -199,7 +199,7 @@ STATIC_ROOT = os.path.join(BASE_DIR, "ticketvise/static")
 #: Email settings
 #: ~~~~~~~~~~~~~~~~~~~
 
-SMTP_INBOUND_PORT = 10025
+SMTP_INBOUND_PORT = 1337
 
 #: Email host.
 EMAIL_HOST = "smtp.zoho.com"
