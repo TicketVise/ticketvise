@@ -43,6 +43,10 @@
               </div>
               <span class="text-sm text-gray-600">{{ date }}</span>
             </div>
+            <div class="flex-shrink w-1/6" v-if="canShare">
+              <edit-share-with :shared_with="shared_with" :errors="errors" class="mb-2" :inbox_id="ticket.inbox"
+                               v-on:input="updateSharedWith"></edit-share-with>
+            </div>
             <div v-if="is_staff">
                         <span v-if="ticket.status !== 'CLSD'" class="sm:ml-3 shadow-sm rounded-md">
                             <button type="button" @click="closeTicket"
@@ -53,10 +57,7 @@
                         </span>
             </div>
           </div>
-          <div class="flex-shrink w-1/6" v-if="canShare">
-            <edit-share-with :shared_with="shared_with" :errors="errors" class="mb-2" :inbox_id="ticket.inbox"
-                             v-on:input="updateSharedWith"></edit-share-with>
-          </div>
+
         </div>
 
         <ul class="flex border-b w-full mb-2">
@@ -141,30 +142,30 @@ export default {
       axios.get("/api/me").then(response => {
         this.user = response.data;
 
-          axios.get("/api/inboxes/" + this.ticket.inbox + "/role").then(response => {
-            this.role = response.data;
+        axios.get("/api/inboxes/" + this.ticket.inbox + "/role").then(response => {
+          this.role = response.data;
 
-            if (this.isStaff()) {
-              axios.get("/api" + window.location.pathname + "/comments").then(response => {
-                this.comments = response.data;
-              });
+          if (this.isStaff()) {
+            axios.get("/api" + window.location.pathname + "/comments").then(response => {
+              this.comments = response.data;
+            });
 
-              axios.get("/api/inboxes/" + this.ticket.inbox + "/staff").then(response => {
-                this.staff = response.data;
-              });
-            }
-          })
+            axios.get("/api/inboxes/" + this.ticket.inbox + "/staff").then(response => {
+              this.staff = response.data;
+            });
+          }
+          if (this.isStaff() || this.ticket.author.id === this.user.id) {
+            axios.get("/api" + window.location.pathname + "/shared").then(response => {
+              this.shared_with = response.data.shared_with;
+            });
+          }
+        })
       });
     });
     axios.get("/api" + window.location.pathname + "/replies").then(response => {
       this.replies = response.data;
     });
 
-    if (this.is_staff || this.ticket.author.id === this.user.id) {
-      axios.get("/api" + window.location.pathname + "/shared").then(response => {
-        this.shared_with = response.data.shared_with;
-      });
-    }
   },
   computed: {
     date: function () {
