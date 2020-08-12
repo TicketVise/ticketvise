@@ -64,7 +64,6 @@ class CreateTicketSerializer(ModelSerializer):
     """
     labels = serializers.PrimaryKeyRelatedField(many=True, queryset=Label.objects.all())
 
-
     class Meta:
         """
         Define the model and fields.
