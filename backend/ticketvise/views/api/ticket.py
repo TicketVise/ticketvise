@@ -251,11 +251,27 @@ class TicketSharedWithRetrieveSerializer(ModelSerializer):
         fields = ["shared_with"]
 
 
-class TicketSharedAPIView(UserIsTicketAuthorOrInboxStaffMixin, RetrieveUpdateAPIView):
-    serializer_class = TicketSharedWithRetrieveSerializer
+class TicketSharedWithUpdateSerializer(ModelSerializer):
+    class Meta:
+        model = Ticket
+        fields = ["shared_with"]
 
+    def validate_shared_with(self, shared_with):
+        inbox = self.instance.inbox
+        for user in shared_with:
+            if not user.has_inbox(inbox) or user.is_assistant_or_coordinator(inbox):
+                raise ValidationError("This ticket cannot be shared with one of these users")
+        return shared_with
+
+
+class TicketSharedAPIView(UserIsTicketAuthorOrInboxStaffMixin, RetrieveUpdateAPIView):
     def get_object(self):
         inbox = get_object_or_404(Inbox, pk=self.kwargs["inbox_id"])
 
         return Ticket.objects.get(inbox=inbox, ticket_inbox_id=self.kwargs["ticket_inbox_id"])
 
+    def get_serializer_class(self):
+        if self.request.method == "PUT":
+            return TicketSharedWithUpdateSerializer
+
+        return TicketSharedWithRetrieveSerializer

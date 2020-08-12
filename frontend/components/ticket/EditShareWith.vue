@@ -33,6 +33,7 @@ export default {
   methods: {
     removeSharedWith: function (index) {
       this.shared_with.splice(index, 1);
+      this.$emit("input", this.shared_with)
     },
     getUsername(username) {
       axios.get("/api/inboxes/" + this.inbox_id + "/users/" + username).then(response => {
