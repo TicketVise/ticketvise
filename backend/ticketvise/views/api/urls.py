@@ -8,10 +8,10 @@ from ticketvise.views.api.statistics import InboxTicketsPerDateTypeStatisticsApi
     LabelsCountStatisticsApiView
 from ticketvise.views.api.ticket import TicketApiView, TicketUpdateAssignee, \
     TicketStatusUpdateApiView, \
-    RecentTicketApiView, InboxTicketsApiView, TicketLabelApiView, TicketCreateApiView, TicketSharedAPIView
-from ticketvise.views.api.user import UserRoleApiView, CurrentUserApiView, UserGetFromUsernameApiView, UserRoleByIdApiView
-    RecentTicketApiView, InboxTicketsApiView, TicketLabelApiView, TicketCreateApiView, TicketEventsApiView
-from ticketvise.views.api.user import UserRoleApiView, CurrentUserApiView
+    RecentTicketApiView, InboxTicketsApiView, TicketLabelApiView, TicketCreateApiView, TicketSharedAPIView, \
+    TicketEventsApiView
+from ticketvise.views.api.user import UserRoleApiView, CurrentUserApiView, UserRoleByIdApiView, \
+    UserGetFromUsernameApiView
 
 urlpatterns = [
     path("inboxes/<int:inbox_id>/tickets", InboxTicketsApiView.as_view()),
