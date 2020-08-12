@@ -4,7 +4,8 @@ from ticketvise.views.api.comment import TicketCommentsApiView, CreateCommentApi
     TicketRepliesApiView
 from ticketvise.views.api.inbox import InboxStaffApiView, InboxLabelsApiView
 from ticketvise.views.api.statistics import InboxTicketsPerDateTypeStatisticsApiView, \
-    InboxAverageAgentResponseTimeStatisticsApiView, InboxAverageTimeToCloseStatisticsApiView
+    InboxAverageAgentResponseTimeStatisticsApiView, InboxAverageTimeToCloseStatisticsApiView, \
+    LabelsCountStatisticsApiView
 from ticketvise.views.api.ticket import TicketApiView, TicketUpdateAssignee, \
     TicketStatusUpdateApiView, \
     RecentTicketApiView, InboxTicketsApiView, TicketLabelApiView, TicketCreateApiView, TicketEventsApiView
@@ -29,5 +30,6 @@ urlpatterns = [
     path("inboxes/<int:inbox_id>/statistics/tickets/count", InboxTicketsPerDateTypeStatisticsApiView.as_view()),
     path("inboxes/<int:inbox_id>/statistics/response/avg", InboxAverageAgentResponseTimeStatisticsApiView.as_view()),
     path("inboxes/<int:inbox_id>/statistics/close/avg", InboxAverageTimeToCloseStatisticsApiView.as_view()),
+    path("inboxes/<int:inbox_id>/statistics/labels/count", LabelsCountStatisticsApiView.as_view()),
     path("me", CurrentUserApiView.as_view()),
 ]

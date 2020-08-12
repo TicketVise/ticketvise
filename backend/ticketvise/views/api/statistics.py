@@ -1,13 +1,17 @@
 from django.db.models import F, Count, Window, OuterRef, Subquery, Avg
-from django.db.models.functions import TruncDate, TruncMonth, TruncYear, RowNumber
+from django.db.models.functions import TruncDate, TruncMonth, TruncYear, RowNumber, TruncHour
 from django.http import JsonResponse
+from rest_framework import serializers
 from rest_framework.generics import get_object_or_404
+from rest_framework.serializers import ModelSerializer
 from rest_framework.views import APIView
 
 from ticketvise.models.comment import Comment
 from ticketvise.models.inbox import Inbox
+from ticketvise.models.label import Label
 from ticketvise.models.ticket import Ticket, TicketStatusEvent, Status
 from ticketvise.views.api.security import UserIsInboxStaffMixin
+from ticketvise.views.api.ticket import LabelSerializer
 
 
 class InboxTicketsPerDateTypeStatisticsApiView(UserIsInboxStaffMixin, APIView):
@@ -21,6 +25,8 @@ class InboxTicketsPerDateTypeStatisticsApiView(UserIsInboxStaffMixin, APIView):
             truncate = TruncMonth
         elif date_type == "year":
             truncate = TruncYear
+        elif date_type == "hour":
+            truncate = TruncHour
 
         counts = Ticket.objects.filter(inbox=inbox) \
             .annotate(date=truncate('date_created')) \
@@ -64,3 +70,20 @@ class InboxAverageTimeToCloseStatisticsApiView(UserIsInboxStaffMixin, APIView):
             .aggregate(avg_time_to_close=Avg("time_to_close"))
 
         return JsonResponse(data, safe=False)
+
+
+class LabelWithCountSerializer(ModelSerializer):
+    count = serializers.IntegerField(read_only=True)
+
+    class Meta:
+        model = Label
+        fields = LabelSerializer.Meta.fields + ["count"]
+
+
+class LabelsCountStatisticsApiView(UserIsInboxStaffMixin, APIView):
+
+    def get(self, request, inbox_id):
+        inbox = get_object_or_404(Inbox, pk=inbox_id)
+        labels = Label.objects.filter(inbox=inbox).annotate(count=Count("tickets")).order_by("-count")
+
+        return JsonResponse(LabelWithCountSerializer(labels, many=True).data, safe=False)
