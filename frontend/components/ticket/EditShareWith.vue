@@ -2,7 +2,7 @@
   <div>
     <h4 class="font-semibold text-gray-800 m-2">Share with</h4>
     <error v-for="error in this.errors.shared_with" :key="error" :message="error"></error>
-    <error v-for="error in this.errors.username" :key="error" :message="error"></error>
+    <error v-for="error in this.usernameErrors.username" :key="error" :message="error"></error>
     <div class="ml-2">
       <chip class="m-1" v-for="(user, index) in shared_with" :key="user.id">
         {{ user.first_name }} {{ user.last_name }}
@@ -28,6 +28,7 @@ export default {
   data() {
     return {
       username: "",
+      usernameErrors: []
     }
   },
   methods: {
@@ -37,7 +38,7 @@ export default {
     },
     getUsername(username) {
       axios.get("/api/inboxes/" + this.inbox_id + "/users/" + username).then(response => {
-        this.errors = []
+        this.usernameErrors = []
         // Check if user exists in array
         let index = this.shared_with.findIndex(user => user.id === response.data.id)
         if (index === -1) {
@@ -47,7 +48,7 @@ export default {
         }
         this.username = ""
       }).catch(error => {
-            this.errors = error.response.data
+            this.usernameErrors = error.response.data
           }
       )
 
