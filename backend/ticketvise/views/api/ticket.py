@@ -75,6 +75,13 @@ class CreateTicketSerializer(ModelSerializer):
         #: Tells the serializer to use these fields from the :class:`Ticket` model.
         fields = ["inbox", "title", "content", "labels", "shared_with"]
 
+    def validate_shared_with(self, shared_with):
+        inbox = get_object_or_404(Inbox, pk=int(self.get_initial()["inbox"]))
+        for user in shared_with:
+            if not user.has_inbox(inbox) or user.is_assistant_or_coordinator(inbox):
+                raise ValidationError("This ticket cannot be shared with one of these users")
+        return shared_with
+
 
 class TicketAttachmentSerializer(ModelSerializer):
     class Meta:

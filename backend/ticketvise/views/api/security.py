@@ -82,7 +82,7 @@ class UserHasAccessToTicketMixin(AccessMixin):
 
         ticket = get_object_or_404(Ticket, inbox_id=inbox_id, ticket_inbox_id=ticket_inbox_id)
         if not (request.user.id == ticket.author.id or request.user.is_assistant_or_coordinator(
-                ticket.inbox) or ticket.shared_with.filter(pk=request.user.id).exists):
+                ticket.inbox) or ticket.shared_with.filter(pk=request.user.id).exists()):
             return self.handle_no_permission()
 
         return super().dispatch(request, *args, **kwargs)
