@@ -23,7 +23,7 @@ class UserUsernameSerializer(ModelSerializer):
         fields = ["first_name", "last_name", "username", "avatar_url", "id"]
 
 
-class UsersRolesApiView(UserIsInboxStaffMixin, View):
+class UserRoleByIdApiView(UserIsInboxStaffMixin, View):
 
     def get(self, request, user_id, inbox_id):
         user = get_object_or_404(User, pk=user_id)
