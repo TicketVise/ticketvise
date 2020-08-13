@@ -12,28 +12,36 @@ from django.conf import settings
 from aiosmtpd.controller import Controller
 from email_reply_parser import EmailReplyParser
 
-
-def send_ticket_assigned_mails(ticket, to):
+def send_ticket_shared_mail(ticket, to):
     send_mail_template(
-        f"#{ticket.ticket_inbox_id} - Status has been changed",
+        f"#{ticket.ticket_inbox_id} - A ticket has been shared with you",
         to.email,
-        "ticket_status_change",
+        "ticket_shared",
         {"X-Ticket-Id": ticket.id},
         {"ticket": ticket}
     )
 
-def send_mention_mail(comment, to):
+def send_ticket_assigned_mail(ticket, to):
+    send_mail_template(
+        f"#{ticket.ticket_inbox_id} - A ticket has been assigned to you",
+        to.email,
+        "ticket_assigned",
+        {"X-Ticket-Id": ticket.id},
+        {"ticket": ticket}
+    )
+
+def send_mentioned_mail(comment, to):
     send_mail_template(
         f"#{comment.ticket.ticket_inbox_id} - You have been mentioned by {comment.author.get_full_name()} ",
         to.email,
-        "ticket_status_change",
-        {"X-Ticket-Id": ticket.id},
-        {"ticket": ticket}
+        "ticket_mention",
+        {"X-Ticket-Id": comment.ticket.id},
+        {"ticket": comment.ticket}
     )
 
 def send_ticket_status_changed_mail(ticket, to):
     send_mail_template(
-        f"#{ticket.ticket_inbox_id} - Status has been changed",
+        f"#{ticket.ticket_inbox_id} - Status has been changed to {ticket.status}",
         to.email,
         "ticket_status_change",
         {"X-Ticket-Id": ticket.id},
@@ -43,18 +51,19 @@ def send_ticket_status_changed_mail(ticket, to):
 
 def send_ticket_new_reply_mail(ticket, comment, to):
     send_mail_template(
-        f"#{ticket.ticket_inbox_id} - Status has been changed",
+        f"#{ticket.ticket_inbox_id} - {comment.author.get_full_name()} has send a reply",
         to.email,
-        "ticket_status_change",
+        "ticket_reply",
         {"X-Ticket-Id": ticket.id},
         {"ticket": ticket}
     )
 
 def send_ticket_reminder_email(ticket, to):
+    alert_days = ticket.course.alert_coordinator_unanswered_days
     send_mail_template(
-        f"#{ticket.ticket_inbox_id} - Status has been changed",
+        f"#{ticket.ticket_inbox_id} - Ticket has been unanswered for {alert_days} days",
         to.email,
-        "ticket_status_change",
+        "ticket_reminder",
         {"X-Ticket-Id": ticket.id},
         {"ticket": ticket}
     )
@@ -77,7 +86,6 @@ def send_mail_template(subject, to, template, headers, context):
         plain_message = strip_tags(html_message)
         from_email = settings.GLOBAL_SETTINGS["email_address"]
 
-        mail_sender.delay(subject, plain_message, from_email, [to], html_message)
 
 
 class SmtpServer:
