@@ -9,11 +9,58 @@ from email.parser import BytesParser
 from django.template.loader import render_to_string
 from django.utils.html import strip_tags
 from django.conf import settings
-from django.core.mail import send_mail
 from aiosmtpd.controller import Controller
 from email_reply_parser import EmailReplyParser
 
-def send_email(subject, to, template, context):
+
+def send_ticket_assigned_mails(ticket, to):
+    send_mail_template(
+        f"#{ticket.ticket_inbox_id} - Status has been changed",
+        to.email,
+        "ticket_status_change",
+        {"X-Ticket-Id": ticket.id},
+        {"ticket": ticket}
+    )
+
+def send_mention_mail(comment, to):
+    send_mail_template(
+        f"#{comment.ticket.ticket_inbox_id} - You have been mentioned by {comment.author.get_full_name()} ",
+        to.email,
+        "ticket_status_change",
+        {"X-Ticket-Id": ticket.id},
+        {"ticket": ticket}
+    )
+
+def send_ticket_status_changed_mail(ticket, to):
+    send_mail_template(
+        f"#{ticket.ticket_inbox_id} - Status has been changed",
+        to.email,
+        "ticket_status_change",
+        {"X-Ticket-Id": ticket.id},
+        {"ticket": ticket}
+    )
+
+
+def send_ticket_new_reply_mail(ticket, comment, to):
+    send_mail_template(
+        f"#{ticket.ticket_inbox_id} - Status has been changed",
+        to.email,
+        "ticket_status_change",
+        {"X-Ticket-Id": ticket.id},
+        {"ticket": ticket}
+    )
+
+def send_ticket_reminder_email(ticket, to):
+    send_mail_template(
+        f"#{ticket.ticket_inbox_id} - Status has been changed",
+        to.email,
+        "ticket_status_change",
+        {"X-Ticket-Id": ticket.id},
+        {"ticket": ticket}
+    )
+
+
+def send_mail_template(subject, to, template, headers, context):
     """
     This function sends an email to a user using a specified template.
 
@@ -31,25 +78,6 @@ def send_email(subject, to, template, context):
         from_email = settings.GLOBAL_SETTINGS["email_address"]
 
         mail_sender.delay(subject, plain_message, from_email, [to], html_message)
-
-        return True
-
-    return False
-
-
-def mail_sender(subject, plain_message, from_email, to, html_message):
-    """
-    This function sends an email to a user through a Celery task using a specified template.
-
-    :param str subject: Subject of the email.
-    :param str plain_message: The plain version of the message.
-    :param str from_email: The sender of the email.
-    :param str to: The recipient of the email.
-    :param str html_message: The html version of the message.
-
-    :return: None.
-    """
-    send_mail(subject, plain_message, from_email, to, html_message=html_message)
 
 
 class SmtpServer:
@@ -81,4 +109,3 @@ class SmtpServer:
 
     def stop(self):
         self.controller.stop()
-

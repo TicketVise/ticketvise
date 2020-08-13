@@ -12,7 +12,7 @@ import re
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
-from ticketvise.email import send_email
+from ticketvise.email import send_email, send_mention_mail
 from ticketvise.models.notification import MentionNotification, CommentNotification
 from ticketvise.models.user import User
 
@@ -63,11 +63,7 @@ class Comment(models.Model):
             message.save()
 
             if self.author.notification_mention_mail:
-                mail_vars = {"ticket": self.ticket, "comment": self}
-
-                send_email(
-                    "Mention in ticket #%s" % self.ticket.ticket_inbox_id, receiver.email, "ticket_mention", mail_vars
-                )
+                send_mention_mail(self, receiver)
 
         if self.is_reply:
             if self.ticket.status == "CLSD":

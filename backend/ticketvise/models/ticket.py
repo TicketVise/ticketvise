@@ -11,7 +11,7 @@ from django.db import models
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
 
-from ticketvise.email import send_email
+from ticketvise.email import send_ticket_status_changed_mail
 from ticketvise.models.notification import Notification
 
 class Ticket(models.Model):
@@ -131,14 +131,7 @@ class Ticket(models.Model):
 
         if self.author.notification_ticket_status_change_mail:
             if not (self.status == Ticket.Status.ASSIGNED and not self.inbox.visibility_assignee):
-                mail_vars = {"ticket": self}
-
-                send_email(
-                    "Status change for ticket #%s" % self.ticket_inbox_id,
-                    self.author.email,
-                    "ticket_status_change",
-                    mail_vars,
-                )
+                send_ticket_status_changed_mail(self, self.author)
 
     def get_status(self):
         """
