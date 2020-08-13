@@ -3,12 +3,15 @@ Email
 -------------------------------
 Used to send an email to a user.
 """
+from email import policy
+from email.parser import BytesParser
+
 from django.template.loader import render_to_string
 from django.utils.html import strip_tags
 from django.conf import settings
 from django.core.mail import send_mail
 from aiosmtpd.controller import Controller
-import email
+from email_reply_parser import EmailReplyParser
 
 def send_email(subject, to, template, context):
     """
@@ -51,27 +54,6 @@ def mail_sender(subject, plain_message, from_email, to, html_message):
 
 class SmtpServer:
 
-    def get_body(self, message):
-        msg = email.message_from_bytes(message)
-        msg_subject = msg["Subject"]
-        if subject in msg_subject:
-            body = ""
-            if msg.is_multipart():
-                for part in msg.walk():
-                    type = part.get_content_type()
-                    disp = str(part.get('Content-Disposition'))
-                    # look for plain text parts, but skip attachments
-                    if type == 'text/plain' and 'attachment' not in disp:
-                        charset = part.get_content_charset()
-                        # decode the base64 unicode bytestring into plain text
-                        body = part.get_payload(decode=True).decode(encoding=charset, errors="ignore")
-                        # if we've found the plain/text part, stop looping thru the parts
-                        break
-            else:
-                # not multipart - i.e. plain text, no attachments
-                charset = msg.get_content_charset()
-                body = msg.get_payload(decode=True).decode(encoding=charset, errors="ignore")
-            messages.append({'num': num, 'body': body})
     async def handle_RCPT(self, server, session, envelope, address, rcpt_options):
         # if not address.endswith('@example.com'):
         #     return '550 not relaying to that domain'
@@ -83,9 +65,12 @@ class SmtpServer:
         peer = session.peer
         mail_from = envelope.mail_from
         rcpt_tos = envelope.rcpt_tos
-        data = envelope.content  # type: bytes
 
-        message = email.message_from_bytes(envelope.content)
+        message = BytesParser(policy=policy.default).parsebytes(envelope.content)
+        body = message.get_body(('plain',))
+        if body:
+            content = body.get_content()
+            reply = EmailReplyParser.parse_reply(content)
 
         return '250 OK'
 
