@@ -1,4 +1,4 @@
-from django.db.models import F, Count, Window, OuterRef, Subquery, Avg
+from django.db.models import F, Count, Window, OuterRef, Subquery, Avg, ForeignKey, CASCADE
 from django.db.models.functions import TruncDate, TruncMonth, TruncYear, RowNumber, TruncHour
 from django.http import JsonResponse
 from rest_framework import serializers
@@ -10,8 +10,10 @@ from ticketvise.models.comment import Comment
 from ticketvise.models.inbox import Inbox
 from ticketvise.models.label import Label
 from ticketvise.models.ticket import Ticket, TicketStatusEvent, Status
+from ticketvise.models.user import User
 from ticketvise.views.api.security import UserIsInboxStaffMixin
 from ticketvise.views.api.ticket import LabelSerializer
+from ticketvise.views.api.user import UserSerializer
 
 
 class InboxTicketsPerDateTypeStatisticsApiView(UserIsInboxStaffMixin, APIView):
@@ -37,22 +39,33 @@ class InboxTicketsPerDateTypeStatisticsApiView(UserIsInboxStaffMixin, APIView):
         return JsonResponse(list(counts), safe=False)
 
 
+class InboxAverageAgentResponseTimeSerializer(ModelSerializer):
+    avg_response_time = serializers.DurationField(read_only=True, )
+
+    class Meta:
+        model = User
+        fields = UserSerializer.Meta.fields + ["avg_response_time"]
+
+
 class InboxAverageAgentResponseTimeStatisticsApiView(UserIsInboxStaffMixin, APIView):
 
     def get(self, request, inbox_id):
         inbox = get_object_or_404(Inbox, pk=inbox_id)
 
-        first_comment = Comment.objects.filter(ticket=OuterRef('pk')).order_by("-date_created")
+        recent_comment_ids = Comment.objects.filter(ticket__inbox=inbox, author=OuterRef(OuterRef("pk")))\
+                                .order_by("ticket", "-date_created")\
+                                .distinct("ticket")\
+                                .values("id")
 
-        tickets = Ticket.objects.filter(inbox=inbox)\
-            .annotate(first_comment_created=Subquery(first_comment.values("date_created")[:1]))\
-            .annotate(first_comment_author=Subquery(first_comment.values("author")[:1]))\
-            .filter(first_comment_author__isnull=False)\
-            .annotate(response_time=F('date_created') - F('first_comment_created'))\
-            .values("first_comment_author")\
-            .annotate(avg_response_time=Avg("response_time"))
+        avg_response_time = Comment.objects.filter(id__in=Subquery(recent_comment_ids))\
+                    .annotate(response_time=F('date_created') - F('ticket__date_created'))\
+                    .values("author")\
+                    .annotate(avg_response_time=Avg("response_time"))\
 
-        return JsonResponse(tickets, safe=False)
+        users = User.objects.filter(inbox_relationship__inbox=inbox)\
+                    .annotate(avg_response_time=Subquery(avg_response_time.values("avg_response_time")))
+
+        return JsonResponse(InboxAverageAgentResponseTimeSerializer(users, many=True).data, safe=False)
 
 
 class InboxAverageTimeToCloseStatisticsApiView(UserIsInboxStaffMixin, APIView):
