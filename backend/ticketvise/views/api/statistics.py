@@ -1,5 +1,6 @@
 from django.db.models import F, Count, Window, OuterRef, Subquery, Avg, ForeignKey, CASCADE
-from django.db.models.functions import TruncDate, TruncMonth, TruncYear, RowNumber, TruncHour
+from django.db.models.functions import TruncDate, TruncMonth, TruncYear, RowNumber, TruncHour, TruncQuarter, TruncWeek, \
+    TruncDay
 from django.http import JsonResponse
 from rest_framework import serializers
 from rest_framework.generics import get_object_or_404
@@ -18,23 +19,27 @@ from ticketvise.views.api.user import UserSerializer
 
 class InboxTicketsPerDateTypeStatisticsApiView(UserIsInboxStaffMixin, APIView):
 
+    truncaters = [TruncYear, TruncQuarter, TruncMonth, TruncWeek, TruncWeek, TruncDay, TruncHour, TruncDate]
+
+    def get_truncate(self, request):
+        date_type = request.GET.get("date_type")
+
+        for truncate in self.truncaters:
+            if truncate.kind == date_type:
+                return truncate
+
+        return TruncDate
+
     def get(self, request, inbox_id):
         inbox = get_object_or_404(Inbox, pk=inbox_id)
 
-        truncate = TruncDate
-        date_type = request.GET.get("date_type")
-        if date_type == "month":
-            truncate = TruncMonth
-        elif date_type == "year":
-            truncate = TruncYear
-        elif date_type == "hour":
-            truncate = TruncHour
+        truncate = self.get_truncate(request)
 
         counts = Ticket.objects.filter(inbox=inbox) \
             .annotate(date=truncate('date_created')) \
             .values('date') \
             .annotate(**{'total': Count('date')}) \
-            .order_by('date')
+            .order_by("date")
 
         return JsonResponse(list(counts), safe=False)
 

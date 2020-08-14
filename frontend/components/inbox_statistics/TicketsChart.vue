@@ -8,13 +8,14 @@
 <script>
 import LineChart from "./LineChart";
 import axios from "axios";
+import moment from "moment";
 
 export default {
   components: {LineChart},
   props: {
     type: {
       type: String,
-      default: "day"
+      default: "date"
     }
   },
   data: () => ({
@@ -48,7 +49,13 @@ export default {
       }
     });
     this.data = {
-      labels: response.data.map(item => item.date),
+      labels: response.data.map(item => {
+        if (this.type === "hour"){
+          return moment(item.date).hour()
+        }
+
+        return item.date
+      }),
       datasets: [
         {
           fill: false,
@@ -59,7 +66,7 @@ export default {
         }
       ]
     }
-  }
+  },
 }
 </script>
 
