@@ -5,7 +5,7 @@
         <tickets-chart/>
       </div>
       <div class="w-1/2">
-        <tickets-chart/>
+        <tickets-chart type="hour"/>
       </div>
     </div>
     <div class="flex">
@@ -13,7 +13,7 @@
         <agent-response-time-chart/>
       </div>
       <div class="w-1/2">
-        <tickets-chart/>
+        <labels-chart/>
       </div>
     </div>
   </div>
@@ -22,9 +22,10 @@
 <script>
 import TicketsChart from "./TicketsChart";
 import AgentResponseTimeChart from "./AgentResponseTimeChart";
+import LabelsChart from "./LabelsChart";
 
 export default {
-  components: {AgentResponseTimeChart, TicketsChart},
+  components: {LabelsChart, AgentResponseTimeChart, TicketsChart},
 }
 </script>
 

@@ -59,10 +59,3 @@ class InboxStatisticsView(InboxCoordinatorRequiredMixin, TemplateView):
 
 def calculate_increase(current_week, last_week):
     return round(current_week / last_week, 2) * 100 if last_week else 0
-
-# def get_average_response_time_all_ta(inbox):
-#     return Ticket.objects.filter(inbox=inbox, comments__is_reply=True) \
-#         .annotate(response_time=F('date_created') - F('comments__date_created')) \
-#         .aggregate(avg_response_time=Avg('response_time')) \
-#         .values('assignee') \
-#         .orderby('response_time')
