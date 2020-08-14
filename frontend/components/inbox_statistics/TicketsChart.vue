@@ -21,12 +21,30 @@ export default {
     data: null,
     options: {
       responsive: true,
-      maintainAspectRatio: false
+      maintainAspectRatio: false,
+      tooltips: {
+        mode: 'nearest',
+        intersect: false,
+      },
+      hover: {
+        mode: 'nearest',
+        intersect: true
+      },
+      scales: {
+        xAxes: [{
+          display: true,
+          scaleLabel: {
+            display: true,
+            labelString: 'Minutes'
+          }
+        }],
+      }
     }
   }),
   async mounted() {
     const response = await axios.get("/api" + window.location.pathname + "/tickets/count", {
-      params: {        "date_type": this.type
+      params: {
+        "date_type": this.type
       }
     });
     this.data = {
@@ -35,7 +53,8 @@ export default {
         {
           fill: false,
           label: "Tickets",
-          backgroundColor: '#f87979',
+          backgroundColor: '#ed8936',
+          borderColor: '#fbd38d',
           data: response.data.map(item => item.total)
         }
       ]
