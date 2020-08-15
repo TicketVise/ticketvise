@@ -15,7 +15,10 @@ window.axios = require('axios')
  * Import vue into our appliction.
  */
 import Vue from 'vue'
+window.Vue = Vue
 Vue.config.productionTip = false
+
+import 'alpinejs'
 
 /**
  * Load every vue single file components.

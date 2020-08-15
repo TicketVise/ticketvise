@@ -17,22 +17,22 @@
           <div class="p-3 flex w-full">
             <div class="flex flex-col flex-grow items-start space-y-1">
               <h1 class="flex font-bold text-xl text-gray-800 items-center">
-                            <span v-if="ticket.status === 'PNDG'"
-                                  class="px-2 mr-1 py-1 px-1 inline-flex leading-5 font-semibold rounded-full bg-red-200 text-red-700">
-                                Pending
-                            </span>
+                <span v-if="ticket.status === 'PNDG'"
+                      class="mr-1 py-1 px-1 inline-flex leading-5 font-semibold rounded-full bg-red-200 text-red-700">
+                    Pending
+                </span>
                 <span v-if="ticket.status === 'ASGD'"
-                      class="px-2 mr-1 py-1 px-1 inline-flex leading-5 font-semibold rounded-full bg-orange-100 text-orange-700">
-                                Assigned
-                            </span>
+                      class="mr-1 py-1 px-1 inline-flex leading-5 font-semibold rounded-full bg-orange-100 text-orange-700">
+                    Assigned
+                </span>
                 <span v-if="ticket.status === 'ANSD'"
-                      class="px-2 mr-1 py-1 px-1 inline-flex leading-5 font-semibold rounded-full bg-green-200 text-green-700">
-                                Answered
-                            </span>
+                      class="mr-1 py-1 px-1 inline-flex leading-5 font-semibold rounded-full bg-green-200 text-green-700">
+                    Answered
+                </span>
                 <span v-if="ticket.status === 'CLSD'"
-                      class="px-2 mr-1 py-1 px-1 inline-flex leading-5 font-semibold rounded-full bg-gray-300 text-gray-800">
-                                Closed
-                            </span>
+                      class="mr-1 py-1 px-1 inline-flex leading-5 font-semibold rounded-full bg-gray-300 text-gray-800">
+                    Closed
+                </span>
                 #{{ ticket.ticket_inbox_id }} - {{ ticket.title }}
               </h1>
               <div>

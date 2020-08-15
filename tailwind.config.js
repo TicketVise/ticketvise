@@ -11,10 +11,15 @@ module.exports = {
                 'tv-blue-darker': '#061732',
                 'tv-orange': '#FF6600',
                 'tv-pink': '#FF1F4F',
+            },
+            fontSize: {
+                '2xs': '.625rem'
             }
         },
         minWidth: {
             '0': '0',
+            '3': '0.75rem',
+            '4': '1rem',
             '1/4': '25%',
             '1/2': '50%',
             '3/4': '75%',

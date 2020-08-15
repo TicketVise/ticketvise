@@ -31,3 +31,11 @@ class TicketOverview(UserIsInInboxMixin, TemplateView):
     """
 
     template_name = "ticket_overview/ticket-overview.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        context["inbox"] = Inbox.objects.get(pk=kwargs["inbox_id"])
+        context["coordinator"] = Inbox.get_coordinator(context["inbox"])
+
+        return context

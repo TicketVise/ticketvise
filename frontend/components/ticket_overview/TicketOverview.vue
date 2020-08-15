@@ -1,42 +1,34 @@
 <template>
   <div>
-    <div class="flex-wrap md:flex mb-2">
-      <search-bar v-model="search" v-on:input="get_tickets" class="flex-grow px-2"></search-bar>
+    <div class="flex flex-col md:grid md:grid-cols-5 md:gap-2 p-4 space-y-2 md:space-y-0">
+      <search-bar v-model="search" v-on:input="get_tickets" class="flex-grow px-2 md:col-span-3"></search-bar>
 
       <!--MY TICKETS-->
-      <div v-if="is_staff">
-        <submit-button v-if="!showPersonal" class="bg-orange-400 px-2 m-2 md:m-0" text="My Tickets"
-                       @click="showPersonal = !showPersonal; get_tickets()"></submit-button>
-        <submit-button v-if="showPersonal" class="bg-orange-500 px-2 m-2 md:m-0" text="My Tickets"
-                       @click="showPersonal = !showPersonal; get_tickets()"></submit-button>
-      </div>
-
-      <!--FILTER LABELS-->
-      <div>
-        <div class="flex flex-wrap mb-2">
-          <chip class="m-1" v-for="(label, index) in labels" :key="label.id" :background="label.color">
-            {{ label.name }}
-            <a class="fa fa-close" @click="deleteEvent(index)"></a>
-          </chip>
+      <div class="flex space-x-2 md:col-span-2 items-center">
+        <!--FILTER LABELS-->
+        <div class="flex-grow">
+          <label-dropdown v-model="label" :values="inbox_labels" v-on:update="updateLabels" />
         </div>
-        <label-dropdown v-model="label" :values="unused_labels" v-on:input="labels.push(label); get_tickets()"
-                        class="mx-2"/>
+
+        <submit-button
+          v-if="is_staff"
+          class="bg-orange-400 text-white px-2 md:m-0"
+          :class="{ 'bg-orange-500': showPersonal }"
+          text="My Tickets"
+          @click="showPersonal = !showPersonal; get_tickets()"
+        ></submit-button>
       </div>
-
     </div>
-    <div class="sm:flex-wrap md:flex md:space-x-6 flex-grow min-h-screen">
-      <!-- Banner -->
 
-      <!-- Sorteren -->
-
+    <div class="w-full flex md:space-x-4 flex-grow min-h-screen overflow-x-scroll px-4 mb-2 space-x-2">
       <!-- Columns -->
       <ticket-column
-          v-for="(column, i) in tickets"
-          :key="column.label"
-          :title="column.label"
-          :color="colors[i]"
-          :ticket-list="column.tickets"
-          class="m-2 md:m-0"
+        v-for="(column, i) in tickets"
+        :key="column.label"
+        :title="column.label"
+        :color="colors[i]"
+        class="min-w-3/4 sm:min-w-1/2 lg:min-w-0"
+        :ticket-list="column.tickets"
       />
     </div>
   </div>
@@ -52,7 +44,6 @@ import axios from "axios";
 
 export default {
   components: {EditLabel, EditAssignee, TicketColumn, SubmitButton, SearchBar},
-  props: ['title'],
   data: () => ({
     colors: ['#e76f51', '#e9c46a', '#2a9d8f', '#264653'],
     tickets: [],
@@ -63,7 +54,7 @@ export default {
     label: null,
     inbox_labels: [],
     inbox_id: window.location.pathname.split('/')[2],
-    is_staff: false,
+    is_staff: true,
     user: null
   }),
   methods: {
@@ -82,11 +73,16 @@ export default {
         this.tickets = response.data
       })
     },
-    deleteEvent: function (index) {
-      this.labels.splice(index, 1);
+    deleteEvent(index) {
+      this.labels.splice(index, 1)
 
       this.get_tickets()
     },
+    updateLabels(items) {
+      this.labels = items
+
+      this.get_tickets()
+    }
   },
   created() {
     this.get_tickets()
@@ -96,8 +92,7 @@ export default {
       axios.get("/api/me").then(response => {
         this.user = response.data
 
-          axios.get("/api/inboxes/" + this.ticket.inbox + "/role").then(response => {
-
+        axios.get("/api/inboxes/" + this.inbox_id + "/role").then(response => {
           this.is_staff = response.data && (response.data.key === 'AGENT' || response.data.key === 'MANAGER')
         })
       })

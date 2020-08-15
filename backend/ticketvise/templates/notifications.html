@@ -135,17 +135,4 @@
             </nav>
         </div>
     </div>
-
-    <!-- RETAIN SCROLL POSITION FOR FLIPPING READ -->
-    <script>
-        $(document).ready(function () {
-            $(window).on('beforeunload', function () {
-                sessionStorage.scrollTop = $(window).scrollTop();
-            });
-
-            if (sessionStorage.scrollTop) {
-                $(window).scrollTop(sessionStorage.scrollTop);
-            }
-        });
-    </script>
 {% endblock content %}
