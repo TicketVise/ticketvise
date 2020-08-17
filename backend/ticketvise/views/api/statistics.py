@@ -1,6 +1,6 @@
 from django.db.models import F, Count, Window, OuterRef, Subquery, Avg, ForeignKey, CASCADE
 from django.db.models.functions import TruncDate, TruncMonth, TruncYear, RowNumber, TruncHour, TruncQuarter, TruncWeek, \
-    TruncDay
+    TruncDay, ExtractHour
 from django.http import JsonResponse
 from rest_framework import serializers
 from rest_framework.generics import get_object_or_404
@@ -19,29 +19,49 @@ from ticketvise.views.api.user import UserSerializer
 
 class InboxTicketsPerDateTypeStatisticsApiView(UserIsInboxStaffMixin, APIView):
 
-    truncaters = [TruncYear, TruncQuarter, TruncMonth, TruncWeek, TruncWeek, TruncDay, TruncHour, TruncDate]
+    truncaters = [TruncYear, TruncMonth, TruncWeek, TruncDate]
+    extracters = [ExtractHour]
 
-    def get_truncate(self, request):
+    def get_date_modifier(self, request):
         date_type = request.GET.get("date_type")
 
         for truncate in self.truncaters:
             if truncate.kind == date_type:
                 return truncate
 
+        for extract in self.extracters:
+            if extract.lookup_name == date_type:
+                return extract
+
         return TruncDate
+
+    def fill_gaps(self, request, results):
+        date_type = request.GET.get("date_type")
+
+        if date_type == "hour":
+            return [
+                {
+                    "date": hour,
+                    "total": next((result["total"] for result in results if result["date"] == hour), 0)
+                } for hour in range(24)
+            ]
+
+        return list(results)
 
     def get(self, request, inbox_id):
         inbox = get_object_or_404(Inbox, pk=inbox_id)
 
-        truncate = self.get_truncate(request)
+        date_modifier = self.get_date_modifier(request)
 
         counts = Ticket.objects.filter(inbox=inbox) \
-            .annotate(date=truncate('date_created')) \
+            .annotate(date=date_modifier('date_created')) \
             .values('date') \
             .annotate(**{'total': Count('date')}) \
             .order_by("date")
 
-        return JsonResponse(list(counts), safe=False)
+        results = self.fill_gaps(request, counts)
+
+        return JsonResponse(results, safe=False)
 
 
 class InboxAverageAgentResponseTimeSerializer(ModelSerializer):

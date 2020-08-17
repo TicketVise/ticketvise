@@ -32,12 +32,11 @@ export default {
         intersect: true
       },
       scales: {
-        xAxes: [{
+        yAxes: [{
           display: true,
-          scaleLabel: {
-            display: true,
-            labelString: 'Minutes'
-          }
+          ticks: {
+            stepSize: 1,
+          },
         }],
       }
     }
@@ -49,13 +48,7 @@ export default {
       }
     });
     this.data = {
-      labels: response.data.map(item => {
-        if (this.type === "hour"){
-          return moment(item.date).hour()
-        }
-
-        return item.date
-      }),
+      labels: response.data.map(item => item.date),
       datasets: [
         {
           fill: false,
