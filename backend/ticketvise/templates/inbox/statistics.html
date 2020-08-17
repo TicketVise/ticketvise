@@ -19,7 +19,10 @@
                 <div class="flex items-baseline mt-1">
                     <h2 class="text-2xl font-medium">{{ current_week_pending }}</h2>
                     <span class="ml-2 text-sm flex-grow text-gray-600">from {{ last_week_pending }} last week</span>
-                    {% include "inbox/stat_increase_label.html" with value=pending_pct %}
+                    {% if last_week_pending != 0 %}
+                        {% include "inbox/stat_increase_label.html" with value=pending_pct %}
+
+                    {% endif %}
                 </div>
             </div>
             <div class="flex-grow border-r p-4">
@@ -29,7 +32,10 @@
                 <div class="flex items-baseline mt-1">
                     <h2 class="text-2xl font-medium">{{ current_week_assigned }}</h2>
                     <span class="ml-2 text-sm flex-grow text-gray-600">from {{ last_week_assigned }} last week</span>
-                    {% include "inbox/stat_increase_label.html" with value=assigned_pct %}
+                    {% if last_week_assigned != 0 %}
+                        {% include "inbox/stat_increase_label.html" with value=assigned_pct %}
+
+                    {% endif %}
                 </div>
             </div>
             <div class="flex-grow p-4 border-r">
@@ -39,7 +45,10 @@
                 <div class="flex items-baseline mt-1">
                     <h2 class="text-2xl font-medium">{{ current_week_answered }}</h2>
                     <span class="ml-2 text-sm flex-grow text-gray-600">from {{ last_week_answered }} last week</span>
-                    {% include "inbox/stat_increase_label.html" with value=answered_pct %}
+                    {% if last_week_answered != 0 %}
+                        {% include "inbox/stat_increase_label.html" with value=answered_pct %}
+
+                    {% endif %}
                 </div>
             </div>
             <div class="flex-grow p-4">
@@ -49,7 +58,9 @@
                 <div class="flex items-baseline mt-1">
                     <h2 class="text-2xl font-medium">{{ current_week_closed }}</h2>
                     <span class="ml-2 text-sm flex-grow text-gray-600">from {{ last_week_closed }} last week</span>
-                    {% include "inbox/stat_increase_label.html" with value=closed_pct %}
+                    {% if last_week_closed != 0 %}
+                        {% include "inbox/stat_increase_label.html" with value=closed_pct %}
+                    {% endif %}
                 </div>
             </div>
         </div>
@@ -65,7 +76,7 @@
                 </h3>
                 <div class="flex items-baseline mt-1">
                     <h2 class="text-2xl font-medium">{{ total_tickets }}</h2>
-                    <span class="ml-2 text-sm flex-grow text-gray-600">from 320 last week</span>
+                    <span class="ml-2 text-sm flex-grow text-gray-600">from {{ last_week_total_tickets }} last week</span>
                 </div>
             </div>
 
