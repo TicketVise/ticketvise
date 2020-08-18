@@ -4,7 +4,7 @@ Urls
 TicketVise URL configuration, which configures the URL paths for the website.
 """
 from django.conf import settings
-from django.conf.urls import include
+from django.conf.urls import include, url
 from django.conf.urls.static import static
 from django.contrib import admin
 from django.contrib.auth import views as auth_views
@@ -58,8 +58,13 @@ urlpatterns = [
           html_email_template_name="registration/password_reset_html_email.html"),
     ),
     path("", include("django.contrib.auth.urls")),
+
+
     re_path(r"^api/", include("ticketvise.views.api.urls"))
     ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
+if settings.DEBUG:
+    urlpatterns.append(url(r'^template_preview/', include('template_preview.urls')))
 
 # Handle all the error pages.
 for code in [400, 403, 404]:

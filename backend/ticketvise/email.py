@@ -87,8 +87,11 @@ def send_mail_template(subject, to, template, headers, context):
         from_email = settings.GLOBAL_SETTINGS["email_address"]
 
 
-
 class SmtpServer:
+
+    def __init__(self) -> None:
+        self.controller = Controller(self, hostname="127.0.0.1", port=settings.SMTP_INBOUND_PORT)
+        super().__init__()
 
     async def handle_RCPT(self, server, session, envelope, address, rcpt_options):
         # if not address.endswith('@example.com'):
@@ -111,9 +114,17 @@ class SmtpServer:
         return '250 OK'
 
     def start(self):
-        self.controller = Controller(self, hostname="127.0.0.1", port=settings.SMTP_INBOUND_PORT)
-        self.controller.start()
-        print("SMTP server started on port {}".format(settings.SMTP_INBOUND_PORT))
+        try:
+            self.controller.stop()
+        except:
+            pass
+
+        try:
+            self.controller.start()
+            print("SMTP server started on port {}".format(settings.SMTP_INBOUND_PORT))
+        except:
+            pass
+
 
     def stop(self):
         self.controller.stop()

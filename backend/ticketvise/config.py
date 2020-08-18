@@ -5,8 +5,9 @@ from ticketvise.email import SmtpServer
 
 class TicketViseConfig(AppConfig):
     name = "ticketvise"
+    smtp_server = SmtpServer()
 
     def ready(self):
-        SmtpServer().start()
+        self.smtp_server.start()
 
 
