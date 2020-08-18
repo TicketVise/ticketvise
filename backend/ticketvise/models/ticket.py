@@ -117,6 +117,7 @@ class Ticket(models.Model):
 
         if self.id:
             old_ticket = Ticket.objects.get(pk=self.id)
+            old_status = old_ticket.status
         else:
             # + 1 so the ticket_inbox_id starts at 1 instead of 0.
             self.ticket_inbox_id = Ticket.objects.filter(inbox=self.inbox).count() + 1
@@ -126,7 +127,7 @@ class Ticket(models.Model):
         if old_ticket:
             if old_ticket.status != self.status:
                 TicketStatusEvent.objects.create(ticket=self, initiator=get_current_authenticated_user(),
-                                                 status=self.status)
+                                                 old_status=old_status, new_status=self.status)
 
             if old_ticket.title != self.title:
                 TicketTitleEvent.objects.create(ticket=self, old_title=old_ticket.title, new_title=self.title,
@@ -138,10 +139,6 @@ class Ticket(models.Model):
 
         if old_status == self.get_status():
             return
-
-        old_status = None
-        if old_ticket:
-            old_status = old_ticket.status
 
         if self.assignee:
             message = TicketStatusChangedNotification(
@@ -290,7 +287,8 @@ class TicketEvent(models.Model):
 
 
 class TicketStatusEvent(TicketEvent):
-    status = models.CharField(max_length=8, choices=Status.choices, blank=False)
+    old_status = models.CharField(max_length=8, choices=Status.choices, null=True)
+    new_status = models.CharField(max_length=8, choices=Status.choices, null=False)
 
 
 class TicketAssigneeEvent(TicketEvent):
