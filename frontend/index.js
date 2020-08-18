@@ -2,6 +2,7 @@ import $ from 'jquery';
 import 'jquery-ui';
 import 'jquery-ui/ui/widgets/sortable';
 import 'jquery-ui/ui/disable-selection';
+import './email';
 
 window.jQuery = $;
 window.$ = $;
