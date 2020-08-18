@@ -404,4 +404,8 @@ class TicketTestApi(APITestCase, TicketTestCase):
         self.ticket.delete_label(self.label)
         self.assertEqual(old_labels_count, Ticket.objects.get(pk=self.ticket.pk).labels.count())
 
+    def test_empty_status(self):
+        self.ticket.status = "Test"
+        with self.assertRaises(NotImplementedError):
+            self.ticket.get_status()
 
