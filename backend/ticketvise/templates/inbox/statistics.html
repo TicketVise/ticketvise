@@ -21,7 +21,6 @@
                     <span class="ml-2 text-sm flex-grow text-gray-600">from {{ last_week_pending }} last week</span>
                     {% if last_week_pending != 0 %}
                         {% include "inbox/stat_increase_label.html" with value=pending_pct %}
-
                     {% endif %}
                 </div>
             </div>
@@ -34,7 +33,6 @@
                     <span class="ml-2 text-sm flex-grow text-gray-600">from {{ last_week_assigned }} last week</span>
                     {% if last_week_assigned != 0 %}
                         {% include "inbox/stat_increase_label.html" with value=assigned_pct %}
-
                     {% endif %}
                 </div>
             </div>
