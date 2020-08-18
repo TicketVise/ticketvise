@@ -94,3 +94,9 @@ class TicketTestCase(TestCase):
 
         self.assertEqual(self.inbox.round_robin_parameter,
                          schedule_amount * len(self.assistants))
+
+    def test_not_implemented_algorithm(self):
+        self.inbox.scheduling_algorithm = "Test"
+        with self.assertRaises(NotImplementedError):
+            schedule_ticket(self.ticket1)
+
