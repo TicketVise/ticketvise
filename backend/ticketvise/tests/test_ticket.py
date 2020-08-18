@@ -394,6 +394,52 @@ class TicketTestApi(APITestCase, TicketTestCase):
             f"/api/inboxes/{self.inbox.id}/tickets/{self.ticket.ticket_inbox_id}/replies/post", data, follow=True)
         self.assertEqual(response.status_code, 403)
 
+    def test_reopen_ticket_pending_student(self):
+        """
+        Test to verify an closed ticket will be reopened with status pending if no assignee.
+        """
+        self.client.force_login(self.student)
+        self.ticket.status = self.ticket.status.CLOSED
+        self.ticket.assignee = None
+        self.ticket.save()
+
+        count = Comment.objects.count()
+
+        data = {
+            "content": "Testcontent"
+        }
+
+        response = self.client.post(
+            f"/api/inboxes/{self.inbox.id}/tickets/{self.ticket.ticket_inbox_id}/replies/post", data, follow=True)
+        self.assertEqual(response.status_code, 201)
+        self.assertNotEqual(Comment.objects.count(), count)
+
+        ticket = Ticket.objects.get(pk=self.ticket.pk)
+        self.assertTrue(ticket.status == self.ticket.status.PENDING)
+
+    def test_reopen_ticket_assigned_student(self):
+        """
+        Test to verify an closed ticket will be reopened with status assigned if assigned.
+        """
+        self.client.force_login(self.student)
+        self.ticket.status = self.ticket.status.CLOSED
+        self.ticket.assignee = self.assistant
+        self.ticket.save()
+
+        count = Comment.objects.count()
+
+        data = {
+            "content": "Testcontent"
+        }
+
+        response = self.client.post(
+            f"/api/inboxes/{self.inbox.id}/tickets/{self.ticket.ticket_inbox_id}/replies/post", data, follow=True)
+        self.assertEqual(response.status_code, 201)
+        self.assertNotEqual(Comment.objects.count(), count)
+
+        ticket = Ticket.objects.get(pk=self.ticket.pk)
+        self.assertTrue(ticket.status == self.ticket.status.ASSIGNED)
+
     def test_get_staff_as_student(self):
         """
         Test to verify a student cannot get staff

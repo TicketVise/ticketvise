@@ -70,13 +70,13 @@ class Comment(models.Model):
                 )
 
         if self.is_reply:
-            if self.ticket.status == "CLSD":
+            if self.author.is_assistant_or_coordinator(self.ticket.inbox):
+                self.ticket.status = "ANSD"
+            elif self.ticket.status == "CLSD":
                 if self.ticket.assignee:
                     self.ticket.status = "ASGD"
                 else:
                     self.ticket.status = "PNDG"
-            elif self.author.is_assistant_or_coordinator(self.ticket.inbox):
-                self.ticket.status = "ANSD"
 
             self.ticket.save()
 
