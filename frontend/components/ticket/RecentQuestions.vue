@@ -1,14 +1,5 @@
 <template>
     <card outlined>
-        <div class="flex items-center border-b border-gray-400 p-3">
-            <avatar :source="author.avatar_url" class="h-16 w-16"></avatar>
-            <div class="px-4">
-                <div class="font-semibold text-gray-800 mb-1">{{ author.first_name }} {{ author.last_name }}</div>
-                <span v-if="role" class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-gray-200 text-gray-800">
-                    {{role.label}}
-                </span>
-            </div>
-        </div>
         <div class="p-3">
             <h4 class="font-semibold text-gray-800 mb-2">Recent questions</h4>
             <ul class="list-none">

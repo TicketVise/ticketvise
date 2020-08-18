@@ -1,9 +1,9 @@
 <template>
   <div>
-    <h4 class="font-semibold text-gray-800 m-2">Share with</h4>
+    <h4 class="font-semibold text-gray-800">Share with</h4>
     <error v-for="error in this.errors.shared_with" :key="error" :message="error"></error>
     <error v-for="error in this.usernameErrors.username" :key="error" :message="error"></error>
-    <div class="ml-2">
+    <div class="">
       <chip class="m-1" v-for="(user, index) in shared_with" :key="user.id">
         {{ user.first_name }} {{ user.last_name }}
         <a class="fa fa-close" @click="removeSharedWith(index)"></a>

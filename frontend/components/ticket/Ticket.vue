@@ -1,7 +1,28 @@
 <template>
-  <div class="container mx-auto my-3">
-    <div class="flex flex-col-reverse lg:flex-row lg:space-x-3 mx-3">
-      <div v-if="is_staff" class="flex flex-col w-full lg:min-w-1/4 lg:w-1/4 space-y-3">
+  <div v-if="ticket" class="h-full">
+    <div class="h-full flex">
+      <div class="h-full w-screen max-w-sm bg-gray-200">
+        <!-- <author-card class="hidden lg:block" :author="ticket.author" :inbox_id="ticket.inbox"/> -->
+        <!-- Ticket Author -->
+        <div class="p-6 flex space-x-4 border-b">
+          <img class="h-12 w-12 rounded-full" :src="ticket.author.avatar_url" alt="User image">
+          <div class="flex flex-col">
+            <span class="text-lg font-bold">
+              {{ ticket.author.first_name }} {{ ticket.author.last_name }}
+            </span>
+            <span v-if="ticket.author.role" class="text-sm">{{ ticket.author.role.label }}</span>
+          </div>
+        </div>
+
+        <div class="p-4 w-full" v-if="canShare">
+          <edit-share-with :shared_with="shared_with" :errors="errors" class="mb-2" :inbox_id="ticket.inbox"
+                          v-on:input="updateSharedWith"></edit-share-with>
+        </div>
+
+        <recent-questions class="m-4" :author="ticket.author" :inbox_id="ticket.inbox"></recent-questions>
+      </div>
+
+      <!-- <div v-if="is_staff" class="flex flex-col w-full lg:min-w-1/4 lg:w-1/4 space-y-3">
         <author-card class="hidden lg:block" :author="ticket.author" :inbox_id="ticket.inbox"/>
         <card outlined>
           <edit-label :ticket="ticket" class="p-3 border-b border-gray-400"/>
@@ -11,70 +32,72 @@
             <avatars :users="ticket.participants"/>
           </div>
         </card>
-      </div>
-      <div class="flex flex-col flex-grow">
-        <div class="flex">
-          <div class="p-3 flex w-full">
-            <div class="flex flex-col flex-grow items-start space-y-1">
-              <h1 class="flex font-bold text-xl text-gray-800 items-center">
-                <span v-if="ticket.status === 'PNDG'"
-                      class="mr-1 py-1 px-1 inline-flex leading-5 font-semibold rounded-full bg-red-200 text-red-700">
-                    Pending
-                </span>
-                <span v-if="ticket.status === 'ASGD'"
-                      class="mr-1 py-1 px-1 inline-flex leading-5 font-semibold rounded-full bg-orange-100 text-orange-700">
-                    Assigned
-                </span>
-                <span v-if="ticket.status === 'ANSD'"
-                      class="mr-1 py-1 px-1 inline-flex leading-5 font-semibold rounded-full bg-green-200 text-green-700">
-                    Answered
-                </span>
-                <span v-if="ticket.status === 'CLSD'"
-                      class="mr-1 py-1 px-1 inline-flex leading-5 font-semibold rounded-full bg-gray-300 text-gray-800">
-                    Closed
-                </span>
-                #{{ ticket.ticket_inbox_id }} - {{ ticket.title }}
-              </h1>
-              <div>
-                <chip class="mr-1" v-for="label in ticket.labels" :key="label.id"
-                      :background="label.color">
-                  {{ label.name }}
-                </chip>
+      </div> -->
+
+      <div class="w-full col-span-4">
+        <div class="m-8 lg:flex lg:items-center lg:justify-between">
+          <div class="flex-1 min-w-0">
+            <a class="text-xs text-gray-700 hover:underline">
+              <i class="fa fa-arrow-left mr-2"></i>
+              {{ ticket.inbox }}
+            </a>
+            <h2 class="text-2xl font-bold leading-7 text-gray-900 sm:text-3xl sm:leading-9 sm:truncate">
+              #{{ ticket.ticket_inbox_id }} - {{ ticket.title }}
+            </h2>
+            <div class="flex flex-row flex-wrap space-x-4 sm:space-x-6">
+              <div class="mt-2 flex items-center text-sm leading-5 text-gray-500" title="Ticket Status">
+                <i
+                  class="fa mr-1"
+                  :class="{ 'fa-envelope-open': ticket.status == 'PNDG' || ticket.status == 'ASGD', 'fa-envelope': ticket.status == 'ANSD' || ticket.status == 'CLSD' }"
+                ></i>
+                {{ status[ticket.status] }}
               </div>
-              <span class="text-sm text-gray-600">{{ date }}</span>
-            </div>
-            <div class="flex-shrink w-1/6" v-if="canShare">
-              <edit-share-with :shared_with="shared_with" :errors="errors" class="mb-2" :inbox_id="ticket.inbox"
-                               v-on:input="updateSharedWith"></edit-share-with>
-            </div>
-            <div v-if="is_staff">
-                        <span v-if="ticket.status !== 'CLSD'" class="sm:ml-3 shadow-sm rounded-md">
-                            <button type="button" @click="closeTicket"
-                                    class="inline-flex items-center px-4 py-2 border border-gray-300 text-sm leading-5 font-medium rounded-md text-gray-700 bg-white hover:text-gray-500 focus:outline-none focus:shadow-outline-orange focus:border-orange-300 active:text-gray-800 active:bg-gray-50 active:text-gray-800">
-                                <i class="fa fa-archive mr-2"></i>
-                                Close
-                            </button>
-                        </span>
+              <div class="mt-2 flex items-center text-sm leading-5 text-gray-500" title="Assigned to">
+                <i class="fa fa-user mr-1"></i>
+                {{ ticket.assignee.first_name }} {{ ticket.assignee.last_name }}
+              </div>
+              <div class="mt-2 flex items-center text-sm leading-5 text-gray-500" title="Assigned to">
+                <i class="fa fa-calendar mr-1"></i>
+                {{ date }}
+              </div>
             </div>
           </div>
+          <div class="mt-5 flex lg:mt-0 lg:ml-4 space-x-4">
+            <span class="shadow-sm rounded-md">
+              <a type="button" :href="`/inboxes/${ticket.inbox}/tickets`"
+                class="inline-flex items-center px-4 py-2 border border-gray-300 text-sm leading-5 font-medium rounded-md text-gray-700 bg-white hover:text-gray-500 focus:outline-none focus:shadow-outline-blue focus:border-blue-300 active:text-gray-800 active:bg-gray-50 transition duration-150 ease-in-out">
+                <i class="fa fa-arrow-left mr-2"></i>
+                Inbox
+              </a>
+            </span>
 
+            <span v-if="is_staff && ticket.status !== 'CLSD'" class="shadow-sm rounded-md">
+              <button type="button" @click="closeTicket"
+                class="inline-flex items-center px-4 py-2 border border-transparent text-sm leading-5 font-medium rounded-md text-white bg-orange-400 hover:bg-orange-500 focus:outline-none focus:shadow-outline-orange focus:border-orange-700 active:bg-orange-700 transition duration-150 ease-in-out">
+                <i class="fa fa-archive mr-2"></i>
+                Close Ticket
+              </button>
+            </span>
+          </div>
         </div>
+        <div class="flex flex-col flex-grow">
+          <ul class="flex border-b w-full mb-2">
+            <tab :active="activeTab === 'external'" @click="activeTab = 'external'" title="External"
+                :badge="replies.length + 1"/>
+            <tab :active="activeTab === 'internal'" @click="activeTab = 'internal'" title="Internal"
+                :badge="comments.length" v-if="is_staff"/>
+            <tab :active="activeTab === 'attachments'" @click="activeTab = 'attachments'" title="Attachments"
+                :badge="ticket.attachments.length"/>
+          </ul>
 
-        <ul class="flex border-b w-full mb-2">
-          <tab :active="activeTab === 'external'" @click="activeTab = 'external'" title="External"
-               :badge="replies.length + 1"/>
-          <tab :active="activeTab === 'internal'" @click="activeTab = 'internal'" title="Internal"
-               :badge="comments.length" v-if="is_staff"/>
-          <tab :active="activeTab === 'attachments'" @click="activeTab = 'attachments'" title="Attachments"
-               :badge="ticket.attachments.length"/>
-        </ul>
-
-        <external-tab v-if="activeTab === 'external'" :ticket="ticket" :replies="replies"
-                      v-on:post="onReplyPost" :user="user"/>
-        <internal-tab v-if="is_staff && activeTab === 'internal'" :ticket="ticket" :comments="comments"
-                      v-on:post="onCommentPost" :user="user" :staff="staff_excluding_self"/>
-        <attachments-tab v-if="activeTab === 'attachments'" :ticket="ticket"/>
+          <external-tab v-if="ticket && user && replies && activeTab === 'external'" :ticket="ticket" :replies="replies"
+                        v-on:post="onReplyPost" :user="user"/>
+          <internal-tab v-if="ticket && user && comments && is_staff && activeTab === 'internal'" :ticket="ticket" :comments="comments"
+                        v-on:post="onCommentPost" :user="user" :staff="staff_excluding_self"/>
+          <attachments-tab v-if="ticket && activeTab === 'attachments'" :ticket="ticket"/>
+        </div>
       </div>
+
     </div>
   </div>
 </template>
@@ -133,6 +156,12 @@ export default {
       role: null,
       shared_with: [],
       errors: [],
+      status: {
+        PNDG: 'Pending',
+        ASGD: 'Assigned',
+        ANSD: 'Answered',
+        CLSD: 'Closed'
+      }
     }
   },
   mounted() {
@@ -154,11 +183,15 @@ export default {
               this.staff = response.data;
             });
           }
-          if (this.isStaff() || this.ticket.author.id === this.user.id) {
+          if (this.isStaff() || (this.ticket.author && this.ticket.author.id === this.user.id)) {
             axios.get("/api" + window.location.pathname + "/shared").then(response => {
               this.shared_with = response.data.shared_with;
             });
           }
+        })
+
+        axios.get("/api/inboxes/" + this.ticket.inbox + "/users/" + this.ticket.author.id + "/roles").then(response => {
+          this.$set(this.ticket.author, 'role', response.data)
         })
       });
     });
@@ -175,14 +208,12 @@ export default {
       return this.isStaff()
     },
     staff_excluding_self: function () {
-      if (!this.staff || !this.user) {
-        return []
-      }
+      if (!this.staff || !this.user) return []
 
       return this.staff.filter(user => user.id !== this.user.id)
     },
     canShare: function () {
-      return this.is_staff || this.ticket.author.id === this.user.id
+      return this.is_staff || (this.user && this.ticket.author.id === this.user.id)
     }
   },
   methods: {

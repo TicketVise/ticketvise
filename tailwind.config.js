@@ -9,8 +9,9 @@ module.exports = {
                 'tv-blue': '#5781A8',
                 'tv-blue-dark': '#2F4C6F',
                 'tv-blue-darker': '#061732',
-                'tv-orange': '#FF6600',
-                'tv-pink': '#FF1F4F',
+                'tv-orange': '#dd6b20',
+                'primary': '#dd6b20',
+                'tv-pink': '#FF1F4F'
             },
             fontSize: {
                 '2xs': '.625rem'
