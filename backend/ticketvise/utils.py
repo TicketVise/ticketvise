@@ -15,47 +15,6 @@ from .models.user import User, Role
 from .settings import DEFAULT_AVATAR_PATH, DEFAULT_INBOX_IMAGE_PATH
 
 
-def edit_inbox_image_to_base64(image_path, color):
-    """
-    Edit the inbox image and encode it in base64.
-
-    :param image_path: Path to the image
-    :param color: Color to apply to the color filter
-
-    :return: Base64-encoded image.
-    """
-    if not path.exists(f"ticketvise/{image_path}") or image_path == DEFAULT_INBOX_IMAGE_PATH:
-        image = Image.open(f"ticketvise{DEFAULT_INBOX_IMAGE_PATH}")
-    else:
-        image = Image.open(f"ticketvise/{image_path}")
-
-    image = apply_color_filter(image, color)
-    image = crop_image(image)
-
-    return convert_to_base64(image)
-
-
-def apply_color_filter(image, color, alpha=0.6):
-    """
-    Apply a simple linear color filter to the image.
-
-    :param image: Image to apply the color to
-    :param color: Color to use in the filter
-    :param alpha: Weight to give to the color
-
-    :return: Color filterd image
-    """
-    inbox_array = np.array(image)
-    inbox_array = inbox_array[:, :, :3]
-    color_array = np.zeros_like(inbox_array)
-    color_array[:, :] = ImageColor.getcolor(color, "RGB")
-
-    final_array = (1 - alpha) * color_array + alpha * inbox_array
-    final_array = final_array.astype(np.int8)
-
-    return Image.fromarray(final_array.astype(np.uint8))
-
-
 def crop_image(image):
     """
     Crop the image to a 4:3 ratio.
@@ -80,24 +39,6 @@ def crop_image(image):
         crop_per_side = int(height_difference / 2)
 
         return image.crop((0, crop_per_side, width, height - crop_per_side))
-
-
-def convert_to_base64(image):
-    """
-    Convert an image to base64.
-    Source: https://stackoverflow.com/a/42505258
-
-    :param image: Image to convert
-
-    :return: Base64 string
-    """
-    in_mem_file = BytesIO()
-    image.save(in_mem_file, format="PNG")
-    in_mem_file.seek(0)
-    image_bytes = in_mem_file.read()
-    base64_encoded_result_bytes = b64encode(image_bytes)
-
-    return base64_encoded_result_bytes.decode("ascii")
 
 
 def get_text_color(background_color):

@@ -9,7 +9,7 @@ from django.contrib.auth.tokens import default_token_generator
 from django.template.defaultfilters import stringfilter
 from django.utils.http import urlsafe_base64_encode
 
-from ..utils import get_text_color, edit_inbox_image_to_base64
+from ..utils import get_text_color, crop_image
 
 register = template.Library()
 
@@ -17,19 +17,6 @@ register = template.Library()
 @register.simple_tag
 def abs_value(value):
     return abs(value)
-
-
-@register.simple_tag
-def get_base64_inbox_image(inbox):
-    """
-    Crop and color filter the inbox image, return the base64-encoded image.
-
-    :param Inbox inbox: Inbox to filter the image from.
-
-    :return: The inbox image color filtered, cropped in base64.
-    :rtype: str
-    """
-    return edit_inbox_image_to_base64(inbox.image, inbox.color)
 
 
 @register.simple_tag
@@ -57,20 +44,6 @@ def get_user_role(user, inbox):
     :rtype: Role
     """
     return user.get_role_by_inbox(inbox)
-
-
-@register.simple_tag
-def get_user_tickets_five(user, inbox):
-    """
-    Get tickets of this user of this inbox
-
-    :param User user: The user.
-    :param Inbox inbox: The inbox.
-
-    :return: The tickets of the user in the inbox.
-    :rtype: <Queryset>
-    """
-    return user.get_tickets_by_inbox(inbox)[:5]
 
 
 @register.simple_tag
