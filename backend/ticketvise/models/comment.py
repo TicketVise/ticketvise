@@ -93,9 +93,8 @@ class Comment(models.Model):
 
     def __str__(self):
         content = str(self.content)
-        content_length = len(content)
 
-        if content_length < MAX_COMMENT_CHAR_LENGTH:
+        if len(content) < MAX_COMMENT_CHAR_LENGTH:
             return content
         else:
             return content[:MAX_COMMENT_CHAR_LENGTH] + "..."

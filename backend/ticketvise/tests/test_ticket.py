@@ -9,7 +9,7 @@ from django.test import TestCase, Client
 from django.urls import reverse
 from rest_framework.test import APITestCase
 
-from ticketvise.models.comment import Comment
+from ticketvise.models.comment import Comment, MAX_COMMENT_CHAR_LENGTH
 from ticketvise.models.inbox import Inbox
 from ticketvise.models.label import Label
 from ticketvise.models.ticket import Ticket
@@ -141,304 +141,6 @@ class TicketTestApi(APITestCase, TicketTestCase):
 
         response = self.client.get(f"/api/inboxes/{self.inbox.id}/tickets/{self.ticket.ticket_inbox_id}", follow=True)
         self.assertEqual(response.status_code, 403)
-
-    def test_get_comment_as_student(self):
-        """
-        Test to verify a student cannot get comments
-        """
-        self.client.force_login(self.student2)
-
-        response = self.client.get(f"/api/inboxes/{self.inbox.id}/tickets/{self.ticket.ticket_inbox_id}/comments",
-                                   follow=True)
-        self.assertEqual(response.status_code, 403)
-
-    def test_get_comment_as_shared_with(self):
-        """
-        Test to verify a student cannot get comments
-        """
-        self.client.force_login(self.student2)
-
-        response = self.client.get(f"/api/inboxes/{self.inbox.id}/tickets/{self.ticket2.ticket_inbox_id}/comments",
-                                   follow=True)
-        self.assertEqual(response.status_code, 403)
-
-    def test_get_comment_as_author(self):
-        """
-        Test to verify an author cannot get comments
-        """
-        self.client.force_login(self.student)
-
-        response = self.client.get(f"/api/inboxes/{self.inbox.id}/tickets/{self.ticket.ticket_inbox_id}/comments",
-                                   follow=True)
-        self.assertEqual(response.status_code, 403)
-
-    def test_get_comment_as_ta_in_inbox(self):
-        """
-        Test to verify an assistant of the inbox can get comments
-        """
-        self.client.force_login(self.assistant)
-
-        response = self.client.get(f"/api/inboxes/{self.inbox.id}/tickets/{self.ticket.ticket_inbox_id}/comments",
-                                   follow=True)
-        self.assertEqual(response.status_code, 200)
-
-    def test_get_comment_as_ta_not_in_inbox(self):
-        """
-        Test to verify an assistant not in the inbox cannot get comments
-        """
-        self.client.force_login(self.assistant2)
-
-        response = self.client.get(f"/api/inboxes/{self.inbox.id}/tickets/{self.ticket.ticket_inbox_id}/comments",
-                                   follow=True)
-        self.assertEqual(response.status_code, 403)
-
-    def test_post_comment_as_student(self):
-        """
-        Test to verify a student cannot get comments
-        """
-        self.client.force_login(self.student2)
-
-        data = {
-            "content": "Testcontent"
-        }
-
-        response = self.client.post(
-            f"/api/inboxes/{self.inbox.id}/tickets/{self.ticket.ticket_inbox_id}/comments/post", data,
-            follow=True)
-        self.assertEqual(response.status_code, 403)
-
-    def test_post_comment_as_shared_with(self):
-        """
-        Test to verify a student cannot get comments
-        """
-        self.client.force_login(self.student2)
-
-        data = {
-            "content": "Testcontent"
-        }
-
-        response = self.client.post(
-            f"/api/inboxes/{self.inbox.id}/tickets/{self.ticket2.ticket_inbox_id}/comments/post", data,
-            follow=True)
-        self.assertEqual(response.status_code, 403)
-
-    def test_post_comment_as_author(self):
-        """
-        Test to verify an author cannot get comments
-        """
-        self.client.force_login(self.student)
-
-        data = {
-            "content": "Testcontent"
-        }
-
-        response = self.client.post(
-            f"/api/inboxes/{self.inbox.id}/tickets/{self.ticket.ticket_inbox_id}/comments/post", data, follow=True)
-        self.assertEqual(response.status_code, 403)
-
-    def test_post_comment_as_ta_in_inbox(self):
-        """
-        Test to verify an assistant of the inbox can get comments
-        """
-        self.client.force_login(self.assistant)
-        count = Comment.objects.count()
-
-        data = {
-            "content": "Testcontent"
-        }
-
-        response = self.client.post(
-            f"/api/inboxes/{self.inbox.id}/tickets/{self.ticket.ticket_inbox_id}/comments/post", data, follow=True)
-        self.assertEqual(response.status_code, 201)
-        self.assertNotEqual(Comment.objects.count(), count)
-
-    def test_post_comment_as_ta_not_in_inbox(self):
-        """
-        Test to verify an assistant not in the inbox cannot get comments
-        """
-        self.client.force_login(self.assistant2)
-
-        data = {
-            "content": "Testcontent"
-        }
-
-        response = self.client.post(
-            f"/api/inboxes/{self.inbox.id}/tickets/{self.ticket.ticket_inbox_id}/comments/post", data, follow=True)
-        self.assertEqual(response.status_code, 403)
-
-    def test_get_replies_as_student(self):
-        """
-        Test to verify a student cannot get replies
-        """
-        self.client.force_login(self.student3)
-
-        response = self.client.get(f"/api/inboxes/{self.inbox.id}/tickets/{self.ticket.ticket_inbox_id}/replies",
-                                   follow=True)
-        self.assertEqual(response.status_code, 403)
-
-    def test_get_replies_as_shared_with(self):
-        """
-        Test to verify a shared_with cannot get replies
-        """
-        self.client.force_login(self.student2)
-
-        response = self.client.get(f"/api/inboxes/{self.inbox.id}/tickets/{self.ticket2.ticket_inbox_id}/replies",
-                                   follow=True)
-        self.assertEqual(response.status_code, 200)
-
-    def test_get_replies_as_author(self):
-        """
-        Test to verify an author cannot get replies
-        """
-        self.client.force_login(self.student)
-
-        response = self.client.get(f"/api/inboxes/{self.inbox.id}/tickets/{self.ticket.ticket_inbox_id}/replies",
-                                   follow=True)
-        self.assertEqual(response.status_code, 200)
-
-    def test_get_replies_as_ta_in_inbox(self):
-        """
-        Test to verify an assistant of the inbox can get replies
-        """
-        self.client.force_login(self.assistant)
-
-        response = self.client.get(f"/api/inboxes/{self.inbox.id}/tickets/{self.ticket.ticket_inbox_id}/replies",
-                                   follow=True)
-        self.assertEqual(response.status_code, 200)
-
-    def test_get_replies_as_ta_not_in_inbox(self):
-        """
-        Test to verify an assistant not in the inbox cannot get replies
-        """
-        self.client.force_login(self.assistant2)
-
-        response = self.client.get(f"/api/inboxes/{self.inbox.id}/tickets/{self.ticket.ticket_inbox_id}/replies",
-                                   follow=True)
-        self.assertEqual(response.status_code, 403)
-
-    def test_post_replies_as_student(self):
-        """
-        Test to verify a student cannot get replies
-        """
-        self.client.force_login(self.student2)
-
-        data = {
-            "content": "Testcontent"
-        }
-
-        response = self.client.post(
-            f"/api/inboxes/{self.inbox.id}/tickets/{self.ticket.ticket_inbox_id}/replies/post", data,
-            follow=True)
-        self.assertEqual(response.status_code, 403)
-
-    def test_post_replies_as_shared_with(self):
-        """
-        Test to verify a shared_with can get replies
-        """
-        self.client.force_login(self.student2)
-        count = Comment.objects.count()
-
-        data = {
-            "content": "Testcontent"
-        }
-
-        response = self.client.post(
-            f"/api/inboxes/{self.inbox.id}/tickets/{self.ticket2.ticket_inbox_id}/replies/post", data,
-            follow=True)
-        self.assertEqual(response.status_code, 201)
-        self.assertNotEqual(Comment.objects.count(), count)
-
-    def test_post_replies_as_author(self):
-        """
-        Test to verify an author cannot get replies
-        """
-        self.client.force_login(self.student)
-        count = Comment.objects.count()
-
-        data = {
-            "content": "Testcontent"
-        }
-
-        response = self.client.post(
-            f"/api/inboxes/{self.inbox.id}/tickets/{self.ticket.ticket_inbox_id}/replies/post", data, follow=True)
-        self.assertEqual(response.status_code, 201)
-        self.assertNotEqual(Comment.objects.count(), count)
-
-    def test_post_replies_as_ta_in_inbox(self):
-        """
-        Test to verify an assistant of the inbox can get replies
-        """
-        self.client.force_login(self.assistant)
-        count = Comment.objects.count()
-
-        data = {
-            "content": "Testcontent"
-        }
-
-        response = self.client.post(
-            f"/api/inboxes/{self.inbox.id}/tickets/{self.ticket.ticket_inbox_id}/replies/post", data, follow=True)
-        self.assertEqual(response.status_code, 201)
-        self.assertNotEqual(Comment.objects.count(), count)
-
-    def test_post_replies_as_ta_not_in_inbox(self):
-        """
-        Test to verify an assistant not in the inbox cannot get replies
-        """
-        self.client.force_login(self.assistant2)
-
-        data = {
-            "content": "Testcontent"
-        }
-
-        response = self.client.post(
-            f"/api/inboxes/{self.inbox.id}/tickets/{self.ticket.ticket_inbox_id}/replies/post", data, follow=True)
-        self.assertEqual(response.status_code, 403)
-
-    def test_reopen_ticket_pending_student(self):
-        """
-        Test to verify an closed ticket will be reopened with status pending if no assignee.
-        """
-        self.client.force_login(self.student)
-        self.ticket.status = self.ticket.status.CLOSED
-        self.ticket.assignee = None
-        self.ticket.save()
-
-        count = Comment.objects.count()
-
-        data = {
-            "content": "Testcontent"
-        }
-
-        response = self.client.post(
-            f"/api/inboxes/{self.inbox.id}/tickets/{self.ticket.ticket_inbox_id}/replies/post", data, follow=True)
-        self.assertEqual(response.status_code, 201)
-        self.assertNotEqual(Comment.objects.count(), count)
-
-        ticket = Ticket.objects.get(pk=self.ticket.pk)
-        self.assertTrue(ticket.status == self.ticket.status.PENDING)
-
-    def test_reopen_ticket_assigned_student(self):
-        """
-        Test to verify an closed ticket will be reopened with status assigned if assigned.
-        """
-        self.client.force_login(self.student)
-        self.ticket.status = self.ticket.status.CLOSED
-        self.ticket.assignee = self.assistant
-        self.ticket.save()
-
-        count = Comment.objects.count()
-
-        data = {
-            "content": "Testcontent"
-        }
-
-        response = self.client.post(
-            f"/api/inboxes/{self.inbox.id}/tickets/{self.ticket.ticket_inbox_id}/replies/post", data, follow=True)
-        self.assertEqual(response.status_code, 201)
-        self.assertNotEqual(Comment.objects.count(), count)
-
-        ticket = Ticket.objects.get(pk=self.ticket.pk)
-        self.assertTrue(ticket.status == self.ticket.status.ASSIGNED)
 
     def test_get_staff_as_student(self):
         """
@@ -673,3 +375,33 @@ class TicketTestApi(APITestCase, TicketTestCase):
         response = self.client.get(f"/api/inboxes/{self.inbox.id}/tickets/{self.ticket2.ticket_inbox_id}/shared")
 
         self.assertEqual(response.status_code, 403)
+
+    def test_add_label(self):
+        old_labels_count = self.ticket.labels.count()
+        self.ticket.add_label(self.label)
+        self.assertNotEqual(old_labels_count, Ticket.objects.get(pk=self.ticket.pk).labels.count())
+
+    def test_delete_label(self):
+        old_labels_count = self.ticket.labels.count()
+        self.ticket.add_label(self.label)
+        self.assertNotEqual(old_labels_count, Ticket.objects.get(pk=self.ticket.pk).labels.count())
+
+        old_labels_count = self.ticket.labels.count()
+        self.ticket.delete_label(self.label)
+        self.assertNotEqual(old_labels_count, Ticket.objects.get(pk=self.ticket.pk).labels.count())
+
+    def test_add_duplicate_label(self):
+        old_labels_count = self.ticket.labels.count()
+        self.ticket.add_label(self.label)
+        self.assertNotEqual(old_labels_count, Ticket.objects.get(pk=self.ticket.pk).labels.count())
+
+        old_labels_count = self.ticket.labels.count()
+        self.ticket.add_label(self.label)
+        self.assertEqual(old_labels_count, Ticket.objects.get(pk=self.ticket.pk).labels.count())
+
+    def test_remove_no_label(self):
+        old_labels_count = self.ticket.labels.count()
+        self.ticket.delete_label(self.label)
+        self.assertEqual(old_labels_count, Ticket.objects.get(pk=self.ticket.pk).labels.count())
+
+
