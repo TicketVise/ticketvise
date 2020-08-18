@@ -48,7 +48,7 @@ def apply_color_filter(image, color, alpha=0.6):
     inbox_array = np.array(image)
     inbox_array = inbox_array[:, :, :3]
     color_array = np.zeros_like(inbox_array)
-    color_array[:, :] = hex_to_rgb(color)
+    color_array[:, :] = ImageColor.getcolor(color, "RGB")
 
     final_array = (1 - alpha) * color_array + alpha * inbox_array
     final_array = final_array.astype(np.int8)
@@ -100,57 +100,6 @@ def convert_to_base64(image):
     return base64_encoded_result_bytes.decode("ascii")
 
 
-def _convert_to_linear(srgb):
-    """
-    Converts sRGB to linear RGB.
-    Uses a modified version of https://en.wikipedia.org/wiki/SRGB#The_reverse_transformation.
-    Translated from: https://github.com/jgthms/bulma/blob/master/sass/utilities/functions.sass.
-
-    :param float srgb: RGB value to convert.
-
-    :return: The linear value of the RGB color.
-    :rtype: float
-    """
-    value = srgb / 255
-
-    if value < 0.03928:
-        value /= 12.92
-    else:
-        value = (value + 0.055) / 1.055
-        value = pow(value, 2)
-
-    return value
-
-
-def hex_to_rgb(hex_color):
-    """
-    Convert hex color to RGB values.
-
-    :param str hex_color: Hex color to convert.
-
-    :return: RGB values from hex color.
-    :rtype: tuple
-    """
-    return ImageColor.getcolor(hex_color, "RGB")
-
-
-def _get_color_luminance(hex_color):
-    """
-    Get the relative color luminance of the color.
-    Relative luminance multipliers: https://en.wikipedia.org/wiki/Relative_luminance.
-
-    :param str hex_color: Hex color to get relative luminance of.
-
-    :return: Relative luminance of color.
-    :rtype: float
-    """
-    multipliers = (0.2126, 0.7152, 0.0722)
-
-    return sum(
-        map(lambda value, multiplier: _convert_to_linear(value) * multiplier, hex_to_rgb(hex_color), multipliers)
-    )
-
-
 def get_text_color(background_color):
     """
     Get the text color (black or white) depending on the background color.
@@ -160,7 +109,8 @@ def get_text_color(background_color):
     :return: Text color.
     :rtype: str
     """
-    return "#000000" if _get_color_luminance(background_color) > 0.55 else "#ffffff"
+    r, g, b = ImageColor.getcolor(background_color, "RGB")
+    return "#000000" if (r * 0.299 + g * 0.587 + b * 0.114) > 186 else "#ffffff"
 
 
 def get_global_context():
