@@ -266,3 +266,6 @@ bundle.js.LICENSE.txt
 styles.css
 bundle.js.map
 styles.css.map
+
+# Ignore generated emails
+backend/ticketvise/templates/email/*.html

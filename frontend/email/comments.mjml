@@ -15,7 +15,7 @@
     </mj-section>
 
     <mj-raw>
-      {% for comment, index in ticket.comments %}
+      {% for comment, index in comments %}
     </mj-raw>
 
     <mj-section background-color="#EDF2F7" border-radius="5px">
