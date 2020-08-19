@@ -199,24 +199,17 @@ STATIC_ROOT = os.path.join(BASE_DIR, "ticketvise/static")
 #: Email settings
 #: ~~~~~~~~~~~~~~~~~~~
 
-SMTP_INBOUND_PORT = 1337
+SMTP_INBOUND_PORT = os.getenv("SMTP_INBOUND_PORT", 1337)
 
-#: Email host.
-EMAIL_HOST = "smtp.zoho.com"
-#: Email port to use.
-EMAIL_PORT = 465
-#: Email address to use.
-EMAIL_HOST_USER = "noreply@ticketvise.com"
-EMAIL_HOST_PASSWORD = os.getenv("EMAIL_PASSWORD")
-EMAIL_USE_TLS = False
-EMAIL_USE_SSL = True
-DEFAULT_FROM_EMAIL = "noreply@ticketvise.com"
-
-# Global settings:
-#: These settings can be used when importing "from django.conf import settings".
-GLOBAL_SETTINGS = {
-    "email_address": EMAIL_HOST_USER,
-}
+if DEBUG:
+    EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+EMAIL_HOST = os.getenv("SMTP_OUTBOUND_HOST", "smtp.sendgrid.net")
+EMAIL_PORT = os.getenv("SMTP_OUTBOUND_PORT", 587)
+EMAIL_HOST_USER = os.getenv("SMTP_OUTBOUND_USER", "apikey")
+EMAIL_HOST_PASSWORD = os.getenv("SMTP_OUTBOUND_PASSWORD", "Welkom01")
+EMAIL_USE_TLS = os.getenv("SMTP_TLS", True)
+EMAIL_USE_SSL = os.getenv("SMTP_SSL", False)
+EMAIL_FROM = os.getenv("SMTP_OUTBOUND_FROM", "ticket@uva.ticketvise.com")
 
 #: Celery and Redis settings
 #: ~~~~~~~~~~~~~~~~~~~~~~~~~

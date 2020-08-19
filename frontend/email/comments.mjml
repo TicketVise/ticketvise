@@ -1,7 +1,7 @@
 <mjml>
   <mj-head>
     <mj-title>
-      <mj-raw>#{{ ticket.ticket_inbox_id}}</mj-raw> - {{ title }}
+      <mj-raw>{{ title }}</mj-raw>
     </mj-title>
     <mj-preview>{{ title }}</mj-preview>
   </mj-head>
@@ -15,7 +15,7 @@
     </mj-section>
 
     <mj-raw>
-      {% for comment, index in comments %}
+      {% for comment in comments %}
     </mj-raw>
 
     <mj-section background-color="#EDF2F7" border-radius="5px">
@@ -33,7 +33,7 @@
     </mj-section>
 
     <mj-raw>
-      {% if index != len(ticket.comments) - 1 %}
+      {% if not forloop.last %}
     </mj-raw>
     <mj-raw>
       {% endif %}
