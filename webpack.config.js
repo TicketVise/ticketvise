@@ -75,7 +75,11 @@ module.exports = {
                         loader: 'file-loader',
                         options: {
                             name: '../templates/email/[name].html',
+                            esModule: false,
                         },
+                    },
+                    {
+                        loader: "extract-loader"
                     },
                     {
                         loader: 'webpack-mjml-loader',
