@@ -35,7 +35,6 @@
     <mj-raw>
       {% if index != len(ticket.comments) - 1 %}
     </mj-raw>
-    <mj-spacer />
     <mj-raw>
       {% endif %}
     </mj-raw>
