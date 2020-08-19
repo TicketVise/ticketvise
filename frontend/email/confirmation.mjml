@@ -1,4 +1,8 @@
 <mjml>
+  <mj-head>
+    <mj-title><mj-raw>#{{ ticket.ticket_inbox_id}}</mj-raw> - Your ticket has been received</mj-title>
+    <mj-preview>Your ticket has been received</mj-preview>
+  </mj-head>
   <mj-body>
     <mj-section>
       <mj-column>
