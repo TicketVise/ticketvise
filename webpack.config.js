@@ -84,7 +84,7 @@ module.exports = {
                     {
                         loader: 'webpack-mjml-loader',
                         options: {
-                            minify: true
+                            minify: process.env.NODE_ENV === "production"
                         }
                     }
                 ]
