@@ -10,6 +10,7 @@ from django.urls import reverse
 
 from ticketvise.models.user import User, Role
 from ticketvise.tests.utils import create_inbox
+from ticketvise.utils import get_text_color
 
 
 class InboxConfigureTestCase(TestCase):
@@ -92,3 +93,4 @@ class InboxConfigureTestCase(TestCase):
 
         relation = self.coordinator.get_entry_by_inbox(inbox)
         self.assertFalse(relation.is_bookmarked)
+

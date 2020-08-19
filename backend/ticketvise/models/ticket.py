@@ -14,6 +14,7 @@ from django.utils.translation import gettext_lazy as _
 from ticketvise.email import send_ticket_status_changed_mail
 from ticketvise.models.notification import Notification
 
+
 class Ticket(models.Model):
     """
     This model represents a ticket. Each ticket is associated with a single :class:`Inbox` and
@@ -26,6 +27,8 @@ class Ticket(models.Model):
 
     #: The :class:`User` who created the ticket.
     author = models.ForeignKey("User", models.CASCADE, related_name=_("author"))
+    #: The :class:`User` who the ticket is shared with.
+    shared_with = models.ManyToManyField("User", blank=True, related_name=_("participants"))
     #: The :class:`User` to whom the ticket is assigned. Nullable and optional.
     assignee = models.ForeignKey("User", models.CASCADE, blank=True, null=True, related_name=_("assignee"))
     #: The :class:`Inbox` that the ticket is associated with.
@@ -147,9 +150,6 @@ class Ticket(models.Model):
             return "Closed"
         else:
             raise NotImplementedError(f"Status {self.status} not implemented")
-
-    def __str__(self):
-        return self.title
 
 
 class TicketAttachment(models.Model):

@@ -19,43 +19,14 @@ def schedule_ticket(ticket: Ticket):
 
     :return: None.
     """
-    schedule(ticket.inbox.scheduling_algorithm, ticket)
-
-
-def schedule_by_inbox(inbox: Inbox):
-    """
-    Gets the scheduling algorithm of a :class:`Inbox`.
-
-    :param Inbox inbox: The inbox to get the scheduling algorithm of.
-
-    :return: The scheduling algorithm of the inbox.
-    :rtype: str
-    """
-    return inbox.scheduling_algorithm
-
-
-def schedule(scheduling_algorithm, ticket: Ticket):
-    """
-    Schedule a ticket (i.e. assign it to the right TA according to the scheduling algorithm).
-
-    :param str scheduling_algorithm: Scheduling algorithm to use.
-    :param Ticket ticket: :class:`Ticket` to schedule.
-    :param Label label: :class:`Label` that was used to schedule the ticket. Can be ``None``.
-    :param bool use_inbox_algorithm: Whether to use the :class:`Inbox` scheduling
-                                      algorithm or the :class:`Label` scheduling algorithm.
-
-    :return: None.
-
-    :raises NotImplementedError: When the scheduling algorithm is invalid.
-    """
-    if scheduling_algorithm == SchedulingAlgorithm.ROUND_ROBIN:
+    if ticket.inbox.scheduling_algorithm == SchedulingAlgorithm.ROUND_ROBIN:
         schedule_round_robin(ticket)
-    elif scheduling_algorithm == SchedulingAlgorithm.LEAST_ASSIGNED_FIRST:
+    elif ticket.inbox.scheduling_algorithm == SchedulingAlgorithm.LEAST_ASSIGNED_FIRST:
         schedule_least_assigned_first(ticket)
-    elif scheduling_algorithm == SchedulingAlgorithm.MANUAL:
+    elif ticket.inbox.scheduling_algorithm == SchedulingAlgorithm.MANUAL:
         return
     else:
-        raise NotImplementedError("It seems like the scheduling algorithm you wanted to use is undefined!")
+        raise NotImplementedError(f"Scheduling algorithm {ticket.inbox.scheduling_algorithm} not implemented.")
 
 
 def schedule_round_robin(ticket: Ticket):

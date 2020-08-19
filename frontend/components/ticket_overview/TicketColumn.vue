@@ -18,7 +18,7 @@
       </div>
     </div>
 
-    <div class="border-t border-gray-700 border-opacity-50 overflow-y-auto" style="max-height: calc(100vh - 318px);">
+    <div class="border-t border-gray-700 border-opacity-50 overflow-y-auto max-h-screen">
       <div class="p-2 space-y-2" :id="`${title}-tickets`" v-if="title != 'Closed'">
         <ticket-card
           v-for="ticket in ticketList"

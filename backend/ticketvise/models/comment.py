@@ -66,13 +66,13 @@ class Comment(models.Model):
                 send_mentioned_mail(self, receiver)
 
         if self.is_reply:
-            if self.ticket.status == "CLSD":
-                if self.author.id == self.ticket.author.id:
+            if self.author.is_assistant_or_coordinator(self.ticket.inbox):
+                self.ticket.status = "ANSD"
+            elif self.ticket.status == "CLSD":
+                if self.ticket.assignee:
                     self.ticket.status = "ASGD"
                 else:
-                    self.ticket.status = "ANSD"
-            elif self.author.id != self.ticket.author.id:
-                self.ticket.status = "ANSD"
+                    self.ticket.status = "PNDG"
 
             self.ticket.save()
 
@@ -89,9 +89,8 @@ class Comment(models.Model):
 
     def __str__(self):
         content = str(self.content)
-        content_length = len(content)
 
-        if content_length < MAX_COMMENT_CHAR_LENGTH:
+        if len(content) < MAX_COMMENT_CHAR_LENGTH:
             return content
         else:
             return content[:MAX_COMMENT_CHAR_LENGTH] + "..."
