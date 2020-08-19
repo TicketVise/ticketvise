@@ -1,1 +1,1 @@
-import './test.mjml'
+import './confirmation.mjml'
