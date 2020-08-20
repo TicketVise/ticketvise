@@ -41,6 +41,24 @@ class UserIsInboxStaffMixin(AccessMixin):
         return super().dispatch(request, *args, **kwargs)
 
 
+class UserIsInboxManagerMixin(AccessMixin):
+    inbox_key = "inbox_id"
+
+    def dispatch(self, request, *args, **kwargs):
+        if not request.user.is_authenticated:
+            return self.handle_no_permission()
+
+        inbox_id = kwargs.get(self.inbox_key)
+        if not inbox_id:
+            return self.handle_no_permission()
+
+        inbox = get_object_or_404(Inbox, pk=inbox_id)
+        if not request.user.is_coordinator_for_inbox(inbox):
+            return self.handle_no_permission()
+
+        return super().dispatch(request, *args, **kwargs)
+
+
 class UserIsTicketAuthorOrInboxStaffMixin(AccessMixin):
     inbox_key = "inbox_id"
     ticket_key = "ticket_inbox_id"

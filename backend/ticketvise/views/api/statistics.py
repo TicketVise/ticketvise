@@ -12,12 +12,12 @@ from ticketvise.models.inbox import Inbox
 from ticketvise.models.label import Label
 from ticketvise.models.ticket import Ticket, TicketStatusEvent, Status
 from ticketvise.models.user import User
-from ticketvise.views.api.security import UserIsInboxStaffMixin
+from ticketvise.views.api.security import UserIsInboxStaffMixin, UserIsInboxManagerMixin
 from ticketvise.views.api.ticket import LabelSerializer
 from ticketvise.views.api.user import UserSerializer
 
 
-class InboxTicketsPerDateTypeStatisticsApiView(UserIsInboxStaffMixin, APIView):
+class InboxTicketsPerDateTypeStatisticsApiView(UserIsInboxManagerMixin, APIView):
 
     truncaters = [TruncYear, TruncMonth, TruncWeek, TruncDate]
     extracters = [ExtractHour]
@@ -72,7 +72,7 @@ class InboxAverageAgentResponseTimeSerializer(ModelSerializer):
         fields = UserSerializer.Meta.fields + ["avg_response_time"]
 
 
-class InboxAverageAgentResponseTimeStatisticsApiView(UserIsInboxStaffMixin, APIView):
+class InboxAverageAgentResponseTimeStatisticsApiView(UserIsInboxManagerMixin, APIView):
 
     def get(self, request, inbox_id):
         inbox = get_object_or_404(Inbox, pk=inbox_id)
@@ -93,7 +93,7 @@ class InboxAverageAgentResponseTimeStatisticsApiView(UserIsInboxStaffMixin, APIV
         return JsonResponse(InboxAverageAgentResponseTimeSerializer(users, many=True).data, safe=False)
 
 
-class InboxAverageTimeToCloseStatisticsApiView(UserIsInboxStaffMixin, APIView):
+class InboxAverageTimeToCloseStatisticsApiView(UserIsInboxManagerMixin, APIView):
 
     def get(self, request, inbox_id):
         inbox = get_object_or_404(Inbox, pk=inbox_id)
@@ -118,7 +118,7 @@ class LabelWithCountSerializer(ModelSerializer):
         fields = LabelSerializer.Meta.fields + ["count"]
 
 
-class LabelsCountStatisticsApiView(UserIsInboxStaffMixin, APIView):
+class LabelsCountStatisticsApiView(UserIsInboxManagerMixin, APIView):
 
     def get(self, request, inbox_id):
         inbox = get_object_or_404(Inbox, pk=inbox_id)
