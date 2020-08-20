@@ -17,7 +17,6 @@ from django.utils.translation import gettext_lazy as _
 from model_utils.managers import InheritanceManager
 
 from ticketvise.email import send_ticket_status_changed_mail
-from ticketvise.email import send_email
 from ticketvise.middleware import CurrentUserMiddleware
 from ticketvise.models.label import Label
 from ticketvise.models.notification import Notification
