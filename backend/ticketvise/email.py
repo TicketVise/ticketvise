@@ -6,7 +6,7 @@ Used to send an email to a user.
 from email import policy
 from email.parser import BytesParser
 
-from django.core.mail import send_mail
+from django.core.mail import send_mail, EmailMultiAlternatives
 from django.template.loader import render_to_string
 from django.utils.html import strip_tags
 from django.conf import settings
@@ -139,7 +139,9 @@ def send_mail_template(subject, to, template, headers, context):
     plain_message = strip_tags(html_message)
     from_email = settings.EMAIL_FROM
 
-    send_mail(subject, plain_message, from_email, [to], html_message=html_message)
+    email = EmailMultiAlternatives(subject=subject, body=plain_message, from_email=from_email, to=[to], headers=headers)
+    email.attach_alternative(html_message, "text/html")
+    email.send()
 
 
 class SmtpServer:
