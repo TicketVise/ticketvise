@@ -31,5 +31,3 @@ class Label(models.Model):
     #: Indicates if the instance is active or not. Defaults to ``True``.
     is_active = models.BooleanField(_("Is active"), default=True)
 
-    def __str__(self):
-        return self.name

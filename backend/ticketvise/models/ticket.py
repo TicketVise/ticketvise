@@ -181,9 +181,6 @@ class Ticket(models.Model):
         else:
             raise NotImplementedError(f"Status {self.status} not implemented")
 
-    def __str__(self):
-        return self.title
-
 
 class TicketLabel(models.Model):
     ticket = models.ForeignKey(Ticket, on_delete=models.CASCADE)
