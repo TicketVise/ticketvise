@@ -61,7 +61,8 @@ let create_vue = (components) => {
 let components = {
     '/inboxes/*/tickets': ['ticket-overview'],
     '/inboxes/*/tickets/new': ['ticket-form'],
-    '/inboxes/*/tickets/*': ['ticket']
+    '/inboxes/*/tickets/*': ['ticket'],
+    '/inboxes/*/statistics': ['inbox-statistics']
 }
 
 /* Now lets set them all up. */

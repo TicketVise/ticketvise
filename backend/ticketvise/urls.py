@@ -13,6 +13,8 @@ from django.urls import path, re_path
 #: Contains the url paths for the website.
 from django.views.generic import RedirectView
 
+from ticketvise.models.label import Label
+from ticketvise.models.ticket import TicketLabel, Ticket
 from ticketvise.views.inbox.labels import InboxLabelsView, CreateInboxLabelView, EditInboxLabelView, \
     DeleteInboxLabelView
 from ticketvise.views.inbox.settings import InboxSettingsView

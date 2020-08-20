@@ -26,7 +26,7 @@ class LtiTestCase(TestCase):
             "context_id": "2734dde21bed2288f65c7513a78f1653415da235",
             "context_label": "Test_code",
             "context_title": "Testcurses",
-            "custom_inbox_name": "100",
+            "custom_course_name": "100",
             "custom_email": "test@ticketvise.com",
             "custom_image_url": "https://uvadlo-tes.instructure.com/images/messages/avatar-50.png",
             "custom_user_full_name": "Test persoon",

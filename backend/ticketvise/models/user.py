@@ -8,7 +8,6 @@ Contains all entity sets for the user database.
 * :class:`UserInbox`
 """
 from django.contrib.auth.models import AbstractUser
-from django.contrib.auth.validators import UnicodeUsernameValidator
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
@@ -25,6 +24,7 @@ class Role(models.TextChoices):
     GUEST = "GUEST", _(settings.ROLE_GUEST_DISPLAY_NAME)
     AGENT = "AGENT", _(settings.ROLE_AGENT_DISPLAY_NAME)
     MANAGER = "MANAGER", _(settings.ROLE_MANAGER_DISPLAY_NAME)
+
 
 class User(AbstractUser):
     """
