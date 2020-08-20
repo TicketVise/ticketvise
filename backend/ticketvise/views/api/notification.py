@@ -108,3 +108,4 @@ class NotificationsReadAll(LoginRequiredMixin, UpdateAPIView):
     def put(self, request, *args, **kwargs):
         Notification.objects.filter(receiver=self.request.user).update(read=True)
         return Response()
+

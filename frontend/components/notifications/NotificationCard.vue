@@ -1,7 +1,7 @@
 <template>
     <div class="flex w-full my-1">
         <avatar :source="notification.receiver.avatar_url" class="h-12 m-2"></avatar>
-        <div class="flex-grow m-2">
+        <div class="flex-grow m-2 pl-2 border-l-4" :style="borderColor">
             <div class="flex-row" v-if="notification.read">
                 <a :href="notification.get_ticket_url">{{ notification.get_title }}</a> <span class="text-sm">{{ notification.get_author }} - {{ date }}</span>
             </div>
@@ -32,6 +32,11 @@
             date: function (date_created) {
                 return moment.parseZone(date_created).fromNow()
             },
+            borderColor() {
+                return {
+                    "border-color": this.notification.get_inbox.color
+                }
+            }
         },
         methods: {
             flipRead() {
