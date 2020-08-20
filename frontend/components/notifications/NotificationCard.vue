@@ -1,19 +1,43 @@
 <template>
-    <card outlined class="flex w-full mt-3">
+    <div class="flex w-full my-1">
         <avatar :source="notification.receiver.avatar_url" class="h-12 m-2"></avatar>
-        <div>
-            {{ notification.get_title }}
+        <div class="flex-grow m-2">
+            <div class="flex-row" v-if="notification.read">
+                <a :href="notification.get_ticket_url">{{ notification.get_title }}</a> <span class="text-sm">{{ notification.get_author }} - {{ date }}</span>
+            </div>
+            <div class="flex-row font-semibold" v-else>
+                <a :href="notification.get_ticket_url">{{ notification.get_title }}</a> <span class="text-sm">{{ notification.get_author }} - {{ date }}</span>
+            </div>
+            <div class="flex-row">
+                {{ notification.get_content }}
+            </div>
         </div>
-    </card>
+        <div class="my-2">
+            <button class="fa fa-envelope" v-if="!notification.read" @click="flipRead()"></button>
+            <button class="fa fa-envelope-open-o" v-if="notification.read" @click="flipRead()"></button>
+        </div>
+    </div>
 </template>
 
 <script>
     import Avatar from "../elements/Avatar";
+    import moment from "moment"
+    import axios from "axios"
 
     export default {
         name: "NotificationCard",
         components: {Avatar},
-        props: {notification: {type: Object, default: null, required: true}}
+        props: {notification: {type: Object, default: null, required: true}},
+        computed: {
+            date: function (date_created) {
+                return moment.parseZone(date_created).fromNow()
+            },
+        },
+        methods: {
+            flipRead() {
+                axios.put()
+            }
+        }
     }
 </script>
 

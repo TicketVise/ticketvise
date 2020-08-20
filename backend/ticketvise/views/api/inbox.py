@@ -1,5 +1,6 @@
 from django.shortcuts import get_object_or_404
 from rest_framework.generics import ListAPIView
+from rest_framework.serializers import ModelSerializer
 
 from ticketvise.models.inbox import Inbox
 from ticketvise.models.label import Label
@@ -7,6 +8,12 @@ from ticketvise.models.user import User, Role
 from ticketvise.views.api.security import UserIsInboxStaffMixin, UserIsInInboxMixin
 from ticketvise.views.api.ticket import LabelSerializer
 from ticketvise.views.api.user import UserSerializer
+
+
+class InboxSerializer(ModelSerializer):
+    class Meta:
+        model = Inbox
+        fields = ["name", "id"]
 
 
 class InboxStaffApiView(UserIsInboxStaffMixin, ListAPIView):
