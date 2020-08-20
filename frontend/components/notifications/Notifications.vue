@@ -21,7 +21,7 @@
         <div class="flex justify-end w-full">
             <submit-button v-on:click.native=prevPage() text="Prev" class="m-2"
                            v-if="notifications.previous"></submit-button>
-            <span v-if="notifications.next || notifications.previous">{{pageNumber}}</span>
+            <span v-if="notifications.next || notifications.previous" class="m-3">{{pageNumber}}</span>
             <submit-button v-on:click.native=nextPage() text="Next" class="m-2"
                            v-if="notifications.next"></submit-button>
         </div>
