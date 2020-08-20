@@ -25,62 +25,50 @@
         data() {
             return {
                 value: null,
-                inbox_labels: null,
-                labels: []
+                labels: [],
             }
         },
         mounted() {
             axios.get("/api/inboxes/" + this.ticket.inbox + "/labels").then(response => {
-                this.inbox_labels = response.data;
+                this.labels = response.data;
             });
         },
         methods: {
             submit(label) {
-                this.value = label
-                this.labels = [this.value.id];
-
-                let dictionary = this.ticket.labels;
-                for (let key in dictionary) {
-                    this.labels.push(dictionary[key].id)
-                }
+                this.ticket.labels.push(label)
 
                 axios.defaults.xsrfCookieName = 'csrftoken';
                 axios.defaults.xsrfHeaderName = "X-CSRFTOKEN";
 
-                axios.put("/api" + window.location.pathname + "/labels", {"labels": this.labels})
-                    .then(response => {
-                        this.ticket.labels.push(this.value)
+                axios.put("/api" + window.location.pathname + "/labels",
+                    {
+                      "labels": this.ticket.labels.map(label => label.id)
+                    }).then(response => {
                         this.value = null
                     });
             },
             deleteEvent: function (index) {
                 this.ticket.labels.splice(index, 1);
 
-                let dictionary = this.ticket.labels;
-                for (let key in dictionary) {
-                    this.labels.push(dictionary[key].id)
-                }
-
-                let formData = new FormData();
-                formData.append("labels", this.labels);
-
                 axios.defaults.xsrfCookieName = 'csrftoken';
                 axios.defaults.xsrfHeaderName = "X-CSRFTOKEN";
 
-                axios.put("/api" + window.location.pathname + "/labels", {"labels": this.labels})
-                    .then(_ => {
+                axios.put("/api" + window.location.pathname + "/labels",
+                    {
+                      "labels": this.ticket.labels.map(label => label.id)
+                    }).then(_ => {
                     });
             }
         },
         computed: {
             unused_labels: function () {
-                if (!this.inbox_labels) {
+                if (!this.labels) {
                     return []
                 }
 
                 const ticket_label_ids = this.ticket.labels.map(label => label.id)
 
-                return this.inbox_labels.filter(label => !ticket_label_ids.includes(label.id))
+                return this.labels.filter(label => !ticket_label_ids.includes(label.id))
             }
         }
     }

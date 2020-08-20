@@ -11,6 +11,7 @@ from ticketvise.tests.test_ticket import TicketTestCase
 
 class CommentTestCase(TicketTestCase):
 
+
     def test_get_comment_as_student(self):
         """
         Test to verify a student cannot get comments
@@ -291,6 +292,7 @@ class CommentTestCase(TicketTestCase):
         Test to verify an closed ticket will be reopened with status assigned if assigned.
         """
         self.client.force_login(self.student)
+        print(self.student.id)
         self.ticket.status = self.ticket.status.CLOSED
         self.ticket.assignee = self.assistant
         self.ticket.save()
