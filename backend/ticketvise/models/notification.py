@@ -27,18 +27,23 @@ class Notification(models.Model):
     #: Date that the notification was created. Automatically added on creation.
     date_created = models.DateTimeField(_("Date created"), auto_now_add=True)
 
+    @property
     def get_ticket_url(self):
         raise NotImplementedError
 
+    @property
     def get_title(self):
         raise NotImplementedError
 
+    @property
     def get_author(self):
         raise NotImplementedError
 
+    @property
     def get_content(self):
         raise NotImplementedError
 
+    @property
     def get_inbox(self):
         raise NotImplementedError
 
@@ -51,30 +56,35 @@ class MentionNotification(Notification):
     #: :class:`Comment` that the notification is associated with.
     comment = models.ForeignKey("Comment", models.CASCADE, related_name="mention_notifications")
 
+    @property
     def get_ticket_url(self):
         """
         :return: The ticket url of the ticket connected.
         """
         return reverse("ticket", args=(self.comment.ticket.inbox_id, self.comment.ticket.ticket_inbox_id))
 
+    @property
     def get_title(self):
         """
         :return: The title of the ticket that the comment was posted on.
         """
         return self.comment.ticket.title
 
+    @property
     def get_author(self):
         """
         :return: The username of the author of the comment, prefixed by ``@``.
         """
         return f"@{self.comment.author.username}"
 
+    @property
     def get_content(self):
         """
         :return: The content of the notification.
         """
         return f"You have been mentioned by {self.comment.author.get_full_name()}"
 
+    @property
     def get_inbox(self):
         """
         :return: URL of the inbox connected.
@@ -98,24 +108,28 @@ class CommentNotification(Notification):
     #: :class:`Comment` that was posted.
     comment = models.ForeignKey("Comment", models.CASCADE, related_name="comment_notifications")
 
+    @property
     def get_ticket_url(self):
         """
         :return: The ticket url of the notification.
         """
         return reverse("ticket", args=(self.comment.ticket.inbox_id, self.comment.ticket.ticket_inbox_id))
 
+    @property
     def get_title(self):
         """
         :return: The title of the ticket that the comment was posted on.
         """
         return self.comment.ticket.title
 
+    @property
     def get_author(self):
         """
         :return: The username of the author of the comment, prefixed by ``@``.
         """
         return f"@{self.comment.author.username}"
 
+    @property
     def get_content(self):
         """
         :return: The content of the notification.
@@ -125,6 +139,7 @@ class CommentNotification(Notification):
 
         return f"{self.comment.author.get_full_name()} has posted a comment"
 
+    @property
     def get_inbox(self):
         """
         :return: URL of the inbox connected.
