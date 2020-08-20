@@ -1,8 +1,4 @@
-![Logo of TicketVise](https://ticketvise.com/img/logo.svg)
-
-## Table of contents
-1. [Introduction](#Introduction)
-2. [The software license](#The-software-license)
+![Logo of TicketVise](backend/ticketvise/static/img/logo/banner.png)
 
 ## Introduction
 TicketVise is a ticket system that makes answering questions from students easier than ever before.
