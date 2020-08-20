@@ -35,7 +35,15 @@
         },
         methods: {
             flipRead() {
-                axios.put()
+                let formData = new FormData;
+                formData.append("read", this.notification.read ? "False" : "True");
+
+                axios.defaults.xsrfCookieName = 'csrftoken';
+                axios.defaults.xsrfHeaderName = "X-CSRFTOKEN";
+
+                axios.put("/api/notifications/" + this.notification.id + "/read", formData).then(response => {
+                    this.notification.read = response.data.read
+                })
             }
         }
     }

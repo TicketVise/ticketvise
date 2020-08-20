@@ -1,6 +1,6 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db import models
-from rest_framework.generics import ListAPIView
+from rest_framework.generics import ListAPIView, UpdateAPIView
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.serializers import ModelSerializer
 
@@ -19,7 +19,7 @@ class CommentNotificationSerializer(ModelSerializer):
 
     class Meta:
         model = CommentNotification
-        fields = ["receiver", "date_created", "read", "comment", "get_title", "get_ticket_url", "get_author",
+        fields = ["id", "receiver", "date_created", "read", "comment", "get_title", "get_ticket_url", "get_author",
                   "get_content", "get_inbox"]
 
 
@@ -30,7 +30,7 @@ class MentionNotificationSerializer(ModelSerializer):
 
     class Meta:
         model = MentionNotification
-        fields = ["receiver", "date_created", "read", "comment", "get_title", "get_ticket_url", "get_author",
+        fields = ["id", "receiver", "date_created", "read", "comment", "get_title", "get_ticket_url", "get_author",
                   "get_content", "get_inbox"]
 
 
@@ -42,7 +42,7 @@ class TicketStatusChangedNotificationSerializer(ModelSerializer):
 
     class Meta:
         model = TicketStatusChangedNotification
-        fields = ["receiver", "date_created", "read", "ticket", "old_status", "get_title", "get_ticket_url",
+        fields = ["id", "receiver", "date_created", "read", "ticket", "old_status", "get_title", "get_ticket_url",
                   "get_author", "get_content",
                   "get_inbox"]
 
@@ -75,3 +75,13 @@ class NotificationsAPIView(LoginRequiredMixin, ListAPIView):
 
     def get_queryset(self):
         return Notification.objects.filter(receiver=self.request.user).select_subclasses()
+
+    def validate_read(self, read):
+        if read == "True":
+            return True
+        return False
+
+
+class NotificationFlipRead(LoginRequiredMixin, UpdateAPIView):
+    serializer_class = NotificationSerializer
+    queryset = Notification
