@@ -1,5 +1,7 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db import models
+from django.http import JsonResponse
+from rest_framework.filters import SearchFilter
 from rest_framework.generics import ListAPIView, UpdateAPIView
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.serializers import ModelSerializer
@@ -74,12 +76,23 @@ class NotificationsAPIView(LoginRequiredMixin, ListAPIView):
     pagination_class = NotificationPagination
 
     def get_queryset(self):
-        return Notification.objects.filter(receiver=self.request.user).select_subclasses()
+        read = self.request.GET.get("read", "")
+
+        notifications = Notification.objects.filter(receiver=self.request.user).select_subclasses()
+
+        if read == "True":
+            notifications = notifications.filter(read=True)
+        if read == "False":
+            notifications = notifications.filter(read=False)
+
+        return notifications
 
     def validate_read(self, read):
         if read == "True":
             return True
-        return False
+        elif read == "False":
+            return False
+        return None
 
 
 class NotificationFlipRead(LoginRequiredMixin, UpdateAPIView):
