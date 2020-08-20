@@ -5,7 +5,9 @@ This file tests the ticket page that show the information of a ticket.
 """
 import json
 
-from django.test import TestCase, Client
+from django.db import transaction
+from django.db.transaction import atomic
+from django.test import TestCase, Client, TransactionTestCase
 from django.urls import reverse
 from rest_framework.test import APITestCase
 
@@ -17,7 +19,9 @@ from ticketvise.models.user import User, Role
 from ticketvise.views.api.user import UserSerializer
 
 
-class TicketTestCase(TestCase):
+class TicketTestCase(TransactionTestCase):
+
+    @transaction.atomic
     def setUp(self):
         """
         Set up the database for the tests.

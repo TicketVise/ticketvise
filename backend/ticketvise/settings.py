@@ -53,7 +53,7 @@ MIDDLEWARE = [
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     "csp.middleware.CSPMiddleware",
-    "django_currentuser.middleware.ThreadLocalUserMiddleware",
+    "ticketvise.middleware.CurrentUserMiddleware",
 ]
 
 #: URL configuration path.

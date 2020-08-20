@@ -12,11 +12,10 @@ from django.db.models.signals import m2m_changed
 from django.dispatch import receiver
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
-from django_currentuser.middleware import (
-    get_current_authenticated_user)
 from model_utils.managers import InheritanceManager
 
 from ticketvise.email import send_email
+from ticketvise.middleware import CurrentUserMiddleware
 from ticketvise.models.label import Label
 from ticketvise.models.notification import Notification
 
@@ -126,16 +125,16 @@ class Ticket(models.Model):
 
         if old_ticket:
             if old_ticket.status != self.status:
-                TicketStatusEvent.objects.create(ticket=self, initiator=get_current_authenticated_user(),
+                TicketStatusEvent.objects.create(ticket=self, initiator=CurrentUserMiddleware.get_current_user(),
                                                  old_status=old_status, new_status=self.status)
 
             if old_ticket.title != self.title:
                 TicketTitleEvent.objects.create(ticket=self, old_title=old_ticket.title, new_title=self.title,
-                                                initiator=get_current_authenticated_user())
+                                                initiator=CurrentUserMiddleware.get_current_user())
 
-            if old_ticket.assignee != self.assignee:
+            if self.assignee and old_ticket.assignee != self.assignee:
                 TicketAssigneeEvent.objects.create(ticket=self, assignee=self.assignee,
-                                                   initiator=get_current_authenticated_user())
+                                                   initiator=CurrentUserMiddleware.get_current_user())
 
         if old_status == self.get_status():
             return
@@ -193,11 +192,11 @@ class TicketLabel(models.Model):
 
         if not self.id:
             TicketLabelEvent.objects.create(ticket=self.ticket, label=self.label, is_added=True,
-                                            initiator=get_current_authenticated_user())
+                                            initiator=CurrentUserMiddleware.get_current_user())
 
     def delete(self, using=None, keep_parents=False):
         TicketLabelEvent.objects.create(ticket=self.ticket, label=self.label, is_added=False,
-                                        initiator=get_current_authenticated_user())
+                                        initiator=CurrentUserMiddleware.get_current_user())
 
         return super().delete(using, keep_parents)
 
@@ -210,11 +209,11 @@ def labels_changed_handler(sender, action, instance, model, **kwargs):
     if action == "post_add":
         for label in labels:
             TicketLabelEvent.objects.create(ticket=ticket, label=label, is_added=True,
-                                            initiator=get_current_authenticated_user())
+                                            initiator=CurrentUserMiddleware.get_current_user())
     elif action == "post_remove":
         for label in labels:
             TicketLabelEvent.objects.create(ticket=ticket, label=label, is_added=False,
-                                            initiator=get_current_authenticated_user())
+                                            initiator=CurrentUserMiddleware.get_current_user())
 
 
 class TicketAttachment(models.Model):
@@ -279,7 +278,7 @@ class TicketStatusChangedNotification(Notification):
 class TicketEvent(models.Model):
     objects = InheritanceManager()
     ticket = models.ForeignKey(Ticket, on_delete=models.CASCADE)
-    initiator = models.ForeignKey("User", models.CASCADE, null=True)
+    initiator = models.ForeignKey("ticketvise.User", on_delete=models.CASCADE, null=True)
     date_created = models.DateTimeField(auto_now_add=True)
 
 
@@ -289,11 +288,11 @@ class TicketStatusEvent(TicketEvent):
 
 
 class TicketAssigneeEvent(TicketEvent):
-    assignee = models.ForeignKey("User", on_delete=models.CASCADE)
+    assignee = models.ForeignKey("ticketvise.User", on_delete=models.CASCADE)
 
 
 class TicketLabelEvent(TicketEvent):
-    label = models.ForeignKey("Label", on_delete=models.CASCADE)
+    label = models.ForeignKey("ticketvise.Label", on_delete=models.CASCADE)
     is_added = models.BooleanField()
 
 
