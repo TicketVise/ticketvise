@@ -7,6 +7,8 @@ Contains all entity sets for the ticket database and TicketStatusChangedNotifica
 * :class:`Ticket`
 * :class:`TicketStatuscChangedNotification`
 """
+import uuid
+
 from django.db import models
 from django.db.models.signals import m2m_changed
 from django.dispatch import receiver
@@ -72,6 +74,8 @@ class Ticket(models.Model):
     labels = models.ManyToManyField("Label", blank=True, related_name="tickets", through="TicketLabel")
     #: Indicates if the instance is active or not. Defaults to ``True``.
     is_active = models.BooleanField(_("Is active"), default=True)
+    reply_message_id = models.UUIDField(default=uuid.uuid4, editable=False, unique=True, null=False)
+    comment_message_id = models.UUIDField(default=uuid.uuid4, editable=False, unique=True, null=False)
 
     class Meta:
         unique_together = ("ticket_inbox_id", "inbox")

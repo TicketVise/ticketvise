@@ -22,7 +22,10 @@ DEBUG = int(os.environ.get("DEBUG", True))
 #: If ``True``, mails are sent when calling :func:`email.send_email`.
 SEND_MAIL = int(os.environ.get("SEND_MAIL", False))
 
+DOMAIN = "uva.ticketvise.com"
+
 ALLOWED_HOSTS = ["*"]
+
 
 #: Application definition
 #: ~~~~~~~~~~~~~~~~~~~~~~
@@ -117,7 +120,7 @@ SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
 LTI_KEY = os.environ.get("LTI_KEY", "<LTI_KEY_DEFAULT>")
 LTI_SECRET = os.environ.get("LTI_SECRET", "<LTI_SECRET_DEFAULT>")
-LTI_HOST = os.environ.get("LTI_HOST", "https://uva.ticketvise.com")
+LTI_HOST = os.environ.get("LTI_HOST", "https://" + DOMAIN)
 LTI_XML_CONFIG_URL = LTI_HOST + "/lti/config.xml"
 
 #: Database to use.
@@ -211,7 +214,7 @@ EMAIL_HOST_USER = os.getenv("SMTP_OUTBOUND_USER", "apikey")
 EMAIL_HOST_PASSWORD = os.getenv("SMTP_OUTBOUND_PASSWORD", "Welkom1")
 EMAIL_USE_TLS = os.getenv("SMTP_TLS", True)
 EMAIL_USE_SSL = os.getenv("SMTP_SSL", False)
-EMAIL_FROM = os.getenv("SMTP_OUTBOUND_FROM", "ticket@uva.ticketvise.com")
+EMAIL_FROM = os.getenv("SMTP_OUTBOUND_FROM", "ticket@" + DOMAIN)
 
 #: Celery and Redis settings
 #: ~~~~~~~~~~~~~~~~~~~~~~~~~

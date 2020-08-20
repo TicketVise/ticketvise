@@ -9,9 +9,10 @@ from email.parser import BytesParser
 from django.core.mail import send_mail, EmailMultiAlternatives
 from django.template.loader import render_to_string
 from django.utils.html import strip_tags
-from django.conf import settings
 from aiosmtpd.controller import Controller
 from email_reply_parser import EmailReplyParser
+
+from ticketvise import settings
 
 
 def send_ticket_shared_mail(ticket, to):
@@ -22,7 +23,7 @@ def send_ticket_shared_mail(ticket, to):
         to.email,
         "comments",
         {
-            "X-Ticket-Id": ticket.id
+            "Message-Id": f"<{ticket.reply_message_id}@{settings.DOMAIN}>",
         },
         {
             "title": title,
@@ -40,7 +41,7 @@ def send_ticket_assigned_mail(ticket, to):
         to.email,
         "comments",
         {
-            "X-Ticket-Id": ticket.id
+            "Message-Id": f"<{ticket.reply_message_id}@{settings.DOMAIN}>",
         },
         {
             "title": title,
@@ -58,7 +59,7 @@ def send_mentioned_mail(comment, to):
         to.email,
         "comments",
         {
-            "X-Ticket-Id": comment.ticket.id
+            "Message-Id": f"<{comment.ticket.comment_message_id}@{settings.DOMAIN}>",
         },
         {
             "title": title,
@@ -76,7 +77,7 @@ def send_ticket_status_changed_mail(ticket, to):
         to.email,
         "comments",
         {
-            "X-Ticket-Id": ticket.id
+            "Message-Id": f"<{ticket.reply_message_id}@{settings.DOMAIN}>",
         },
         {
             "title": title,
@@ -94,7 +95,7 @@ def send_ticket_new_reply_mail(ticket, comment, to):
         to.email,
         "comments",
         {
-            "X-Ticket-Id": ticket.id
+            "Message-Id": f"<{ticket.reply_message_id}@{settings.DOMAIN}>",
         },
         {
             "title": title,
@@ -113,7 +114,7 @@ def send_ticket_reminder_email(ticket, to):
         to.email,
         "comments",
         {
-            "X-Ticket-Id": ticket.id
+            "Message-Id": f"<{ticket.reply_message_id}@{settings.DOMAIN}>",
         },
         {
             "title": title,
