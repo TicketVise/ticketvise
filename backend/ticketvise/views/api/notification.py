@@ -4,6 +4,7 @@ from django.http import JsonResponse
 from rest_framework.filters import SearchFilter
 from rest_framework.generics import ListAPIView, UpdateAPIView
 from rest_framework.pagination import PageNumberPagination
+from rest_framework.response import Response
 from rest_framework.serializers import ModelSerializer
 
 from ticketvise.models.notification import Notification, CommentNotification, MentionNotification
@@ -98,3 +99,12 @@ class NotificationsAPIView(LoginRequiredMixin, ListAPIView):
 class NotificationFlipRead(LoginRequiredMixin, UpdateAPIView):
     serializer_class = NotificationSerializer
     queryset = Notification
+
+
+class NotificationsReadAll(LoginRequiredMixin, UpdateAPIView):
+    serializer_class = NotificationSerializer
+    queryset = Notification
+
+    def put(self, request, *args, **kwargs):
+        Notification.objects.filter(receiver=self.request.user).update(read=True)
+        return Response()

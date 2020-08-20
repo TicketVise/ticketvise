@@ -1,17 +1,20 @@
 <template>
     <div class="container divide-y-2 divide-y-m-2 divide-gray-400">
         <nav class="m-3">
-            <div class="grid grid-cols-3 divide-x divide-gray-400">
+            <div class="flex">
+                <div class="grid grid-cols-3 divide-x divide-gray-400 flex-grow max-w-5/6">
+                    <div @click="toggleAll" class="text-center font-semibold" v-if="read === ''">All</div>
+                    <a @click="toggleAll" class="text-center" v-else>All</a>
 
-            <div @click="toggleAll" class="text-center font-semibold" v-if="read === ''">All</div>
-            <a @click="toggleAll" class="text-center" v-else>All</a>
+                    <div @click="toggleRead" class="text-center font-semibold" v-if="read === 'True'">Read</div>
+                    <a @click="toggleRead" class="text-center" v-else>Read</a>
 
-            <div @click="toggleRead" class="text-center font-semibold" v-if="read === 'True'">Read</div>
-            <a @click="toggleRead" class="text-center" v-else>Read</a>
-
-            <div @click="toggleUnread" class="text-center font-semibold" v-if="read === 'False'">Unread</div>
-            <a @click="toggleUnread" class="text-center" v-else>Unread</a>
+                    <div @click="toggleUnread" class="text-center font-semibold" v-if="read === 'False'">Unread</div>
+                    <a @click="toggleUnread" class="text-center" v-else>Unread</a>
+                </div>
             </div>
+            <submit-button text="Mark all as read" v-on:click.native="markAllAsRead"
+                           class="bg-orange-400 flex-wrap md:w-1/6"></submit-button>
         </nav>
         <notification-card v-for="notification in notifications.results" :key="notification.id"
                            :notification="notification"></notification-card>
@@ -70,21 +73,30 @@
                     params: {
                         search: this.search,
                         read: this.read
-                    }}).then(response => {
+                    }
+                }).then(response => {
                     this.notifications = response.data
                 })
             },
-            toggleRead(){
+            toggleRead() {
                 this.read = "True";
                 this.getNotifications()
             },
-            toggleUnread(){
+            toggleUnread() {
                 this.read = "False";
                 this.getNotifications()
             },
-            toggleAll(){
+            toggleAll() {
                 this.read = "";
                 this.getNotifications()
+            },
+            markAllAsRead() {
+                axios.defaults.xsrfCookieName = 'csrftoken';
+                axios.defaults.xsrfHeaderName = "X-CSRFTOKEN";
+
+                axios.put("/api/notifications/read/all").then(_ => {
+                    this.getNotifications()
+                })
             }
         }
     }
