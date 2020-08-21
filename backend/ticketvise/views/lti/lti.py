@@ -2,32 +2,35 @@ from django.contrib.auth import login
 from django.contrib.auth.hashers import make_password
 from django.core.exceptions import PermissionDenied
 from django.http import Http404
+from django.shortcuts import render
 from django.urls import reverse
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
-from django.views.generic import RedirectView, TemplateView
+from django.views.generic import RedirectView, TemplateView, FormView
 
+from ticketvise import settings
 from ticketvise.models.inbox import Inbox
 from ticketvise.models.user import User, UserInbox, Role
 from ticketvise.views.lti.validation import LtiLaunchForm
 
 
 @method_decorator(csrf_exempt, name="dispatch")
-class LtiView(TemplateView):
+class LtiView(FormView):
     """
     Implementation of the LTI launch. The form authenticates a user based on its data from the LMS. If the user is
     not present in the database a new one is created and will be associated with the inbox from where the launch was
     initiated from. The implementation also assigns the correct role to the user based on the inbox and LMS role.
     """
     template_name = "lti.html"
+    form_class = LtiLaunchForm
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context["next_url"] = self.get_redirect_url()
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs["request"] = self.request
 
-        return context
+        return kwargs
 
-    def get_redirect_url(self):
+    def form_valid(self, form):
         """
         Handles the LTI launch request.
 
@@ -37,11 +40,6 @@ class LtiView(TemplateView):
         :return: The url to redirect the user.
         :rtype: str or None
         """
-        form = LtiLaunchForm(self.request.POST, request=self.request)
-
-        if not form.is_valid():
-            raise PermissionDenied(form.errors.items())
-
         user_id = form.cleaned_data["user_id"]
         first_name, last_name = form.cleaned_data["custom_user_full_name"].split(" ", 1)
         username = form.cleaned_data["custom_username"]
@@ -96,7 +94,14 @@ class LtiView(TemplateView):
 
         login(self.request, user)
 
+        next_url = reverse("ticket_overview", args=[inbox.id])
         if user.has_role_in_inbox(inbox, Role.GUEST):
-            return reverse("new_ticket", args=[inbox.id])
+            next_url = reverse("new_ticket", args=[inbox.id])
 
-        return reverse("ticket_overview", args=[inbox.id])
+        context = self.get_context_data()
+        context["next_url"] = next_url
+        context["full_window_launch_url"] = settings.LTI_HOST + "/lti"
+
+        return render(self.request, self.template_name, self.get_context_data())
+
+
