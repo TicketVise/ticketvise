@@ -2,7 +2,7 @@ from django.contrib.auth import login
 from django.contrib.auth.hashers import make_password
 from django.core.exceptions import PermissionDenied
 from django.http import Http404
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.urls import reverse
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
@@ -21,14 +21,27 @@ class LtiView(FormView):
     not present in the database a new one is created and will be associated with the inbox from where the launch was
     initiated from. The implementation also assigns the correct role to the user based on the inbox and LMS role.
     """
-    template_name = "lti.html"
     form_class = LtiLaunchForm
+    template_name = "lti.html"
 
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
         kwargs["request"] = self.request
 
         return kwargs
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["full_window_launch_url"] = settings.LTI_HOST + "/lti"
+
+        return context
+
+    def post(self, request, *args, **kwargs):
+        platform_redirect_url = request.POST.get("platform_redirect_url")
+        if platform_redirect_url:
+            return redirect(platform_redirect_url)
+
+        return super().post(request, *args, **kwargs)
 
     def form_valid(self, form):
         """
@@ -100,8 +113,7 @@ class LtiView(FormView):
 
         context = self.get_context_data()
         context["next_url"] = next_url
-        context["full_window_launch_url"] = settings.LTI_HOST + "/lti"
 
-        return render(self.request, self.template_name, self.get_context_data())
+        return render(self.request, self.template_name, context)
 
 

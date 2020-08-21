@@ -26,7 +26,7 @@
                         </h3>
                         <div class="mt-2">
                             <p class="text-sm leading-5 text-gray-500">
-                                TicketVise requires cookies to be enabled to function properly. These cookies are
+                                TicketVise requires third-party cookies to be enabled to function properly. These cookies are
                                 <span class="font-semibold">NOT</span> used for tracking your web activity but are used
                                 to
                                 maintain the session. We are working
@@ -42,6 +42,12 @@
                     <button type="button" id="enable-button"
                             class="inline-flex justify-center w-full rounded-md border border-transparent px-4 py-2 bg-green-600 text-base leading-6 font-medium text-white shadow-sm hover:bg-green-500 focus:outline-none focus:border-green-700 focus:shadow-outline-green transition ease-in-out duration-150 sm:text-sm sm:leading-5">
                         Enable
+                    </button>
+                </span>
+                <span class="mt-3 flex w-full rounded-md shadow-sm sm:mt-0 sm:w-auto">
+                    <button type="button" id="cancel-button"
+                            class="inline-flex justify-center w-full rounded-md border border-gray-300 px-4 py-2 bg-white text-base leading-6 font-medium text-gray-700 shadow-sm hover:text-gray-500 focus:outline-none focus:border-blue-300 focus:shadow-outline-blue transition ease-in-out duration-150 sm:text-sm sm:leading-5">
+                        Cancel
                     </button>
                 </span>
             </div>
@@ -61,20 +67,23 @@
         }
     })
 
-    const requestFullWindowLaunch = () => {
+    const requestFullWindowLaunch = function () {
         window.parent.postMessage({
             messageType: "requestFullWindowLaunch",
             data: "{{ full_window_launch_url }}",
         }, "*");
     }
 
-    console.log("?")
     document.getElementById("enable-button").addEventListener('click', function () {
-        console.log("test")
-        document.requestStorageAccess().then(_ => requestFullWindowLaunch()).catch(e => {
+        document.requestStorageAccess().then(_ => {
+            window.location.href = "{{ next_url }}"
+        }).catch(e => {
             console.log(e)
-        });
+            requestFullWindowLaunch()
+        })
     })
+
+    document.getElementById("cancel-button").addEventListener("click", requestFullWindowLaunch)
 </script>
 
 {% endblock javascript %}
