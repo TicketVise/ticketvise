@@ -2,11 +2,12 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db import models
 from django.http import JsonResponse
 from rest_framework.filters import SearchFilter
-from rest_framework.generics import ListAPIView, UpdateAPIView
+from rest_framework.generics import ListAPIView, UpdateAPIView, get_object_or_404
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.response import Response
 from rest_framework.serializers import ModelSerializer
 
+from ticketvise.models.inbox import Inbox
 from ticketvise.models.notification import Notification, CommentNotification, MentionNotification
 from ticketvise.models.ticket import TicketStatusChangedNotification, Ticket
 from ticketvise.views.api.comment import CommentSerializer
@@ -81,7 +82,8 @@ class NotificationsAPIView(LoginRequiredMixin, ListAPIView):
     def get_queryset(self):
         read = self.request.GET.get("read", "")
 
-        notifications = Notification.objects.filter(receiver=self.request.user).select_subclasses()
+        notifications = Notification.objects.filter(receiver=self.request.user).select_subclasses().order_by(
+            "-date_created")
 
         if read == "True":
             notifications = notifications.filter(read=True)
@@ -105,7 +107,6 @@ class NotificationFlipRead(LoginRequiredMixin, UpdateAPIView):
 
 class NotificationsReadAll(LoginRequiredMixin, UpdateAPIView):
     serializer_class = NotificationSerializer
-    queryset = Notification
 
     def put(self, request, *args, **kwargs):
         Notification.objects.filter(receiver=self.request.user).update(read=True)
@@ -114,8 +115,12 @@ class NotificationsReadAll(LoginRequiredMixin, UpdateAPIView):
 
 class VisitTicketNotificationApi(UserHasAccessToTicketMixin, UpdateAPIView):
     serializer_class = NotificationSerializer
-    queryset = Notification
 
     def put(self, request, *args, **kwargs):
-        Notification.objects.filter(receiver=self.request.user).update(read=True)
+        inbox = get_object_or_404(Inbox, pk=self.kwargs["inbox_id"])
+        ticket = get_object_or_404(Ticket, inbox=inbox, ticket_inbox_id=self.kwargs["ticket_inbox_id"])
+
+        MentionNotification.objects.filter(comment__ticket=ticket, receiver=self.request.user).update(read=True)
+        TicketStatusChangedNotification.objects.filter(ticket=ticket, receiver=self.request.user).update(read=True)
+        CommentNotification.objects.filter(comment__ticket=ticket, receiver=self.request.user).update(read=True)
         return Response()

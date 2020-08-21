@@ -29,8 +29,8 @@
         components: {Avatar},
         props: {notification: {type: Object, default: null, required: true}},
         computed: {
-            date: function (date_created) {
-                return moment.parseZone(date_created).fromNow()
+            date: function () {
+                return moment.parseZone(this.notification.date_created).fromNow()
             },
             borderColor() {
                 return {

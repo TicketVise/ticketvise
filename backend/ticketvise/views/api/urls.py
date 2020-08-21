@@ -3,7 +3,8 @@ from django.urls import path
 from ticketvise.views.api.comment import TicketCommentsApiView, CreateCommentApiView, CreateReplyApiView, \
     TicketRepliesApiView
 from ticketvise.views.api.inbox import InboxStaffApiView, InboxLabelsApiView
-from ticketvise.views.api.notification import NotificationsAPIView, NotificationFlipRead, NotificationsReadAll
+from ticketvise.views.api.notification import NotificationsAPIView, NotificationFlipRead, NotificationsReadAll, \
+    VisitTicketNotificationApi
 from ticketvise.views.api.ticket import TicketApiView, TicketUpdateAssignee, \
     TicketStatusUpdateApiView, \
     RecentTicketApiView, InboxTicketsApiView, TicketLabelApiView, TicketCreateApiView, TicketSharedAPIView
@@ -30,6 +31,7 @@ urlpatterns = [
     path("inboxes/<int:inbox_id>/labels", InboxLabelsApiView.as_view()),
     path("notifications", NotificationsAPIView.as_view()),
     path("notifications/read/all", NotificationsReadAll.as_view()),
+    path("notifications/read/inboxes/<int:inbox_id>/tickets/<int:ticket_inbox_id>", VisitTicketNotificationApi.as_view()),
     path("notifications/<int:pk>/read", NotificationFlipRead.as_view()),
     path("me", CurrentUserApiView.as_view()),
 ]
