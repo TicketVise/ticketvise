@@ -53,7 +53,7 @@
       nextPage() {
         if (this.notifications.next) {
           axios.get(this.notifications.next.substr(this.notifications.next.indexOf("/", 7))).then(response => {
-            this.notifications = response.data
+            this.notifications = response.data;
             this.pageNumber += 1;
           })
         }
@@ -65,7 +65,7 @@
             this.getNotifications()
           } else if (this.pageNumber > 2) {
             axios.get(this.notifications.next.substr(this.notifications.next.indexOf("/", 7))).then(response => {
-              this.notifications = response.data
+              this.notifications = response.data;
               this.pageNumber -= 1;
             })
           }
