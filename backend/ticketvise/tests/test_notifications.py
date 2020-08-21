@@ -452,7 +452,7 @@ class NotificationsAPITestCase(NotificationsTestCase):
         MentionNotification.objects.create(receiver=self.ta, read=False, comment=comment)
         CommentNotification.objects.create(receiver=self.ta, read=False, comment=comment)
         TicketStatusChangedNotification.objects.create(receiver=self.ta, read=False,
-                                                                                          ticket=self.ticket)
+                                                       ticket=self.ticket)
         response = self.client.put(f"/api/notifications/read/inboxes/{self.inbox.id}/tickets/{self.ticket.id}")
         self.assertTrue(response.status_code, 200)
 
