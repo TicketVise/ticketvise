@@ -1,8 +1,16 @@
 {% extends "navigation.html" %}
 
 {% block content %}
-    {% include "utils/page_header.html" with title="Notifications" subtitle="Make sure you stay up to date" %}
-
+    <!-- Header -->
+    <div class="border-b shadow flex justify-center">
+        <div class="container px-4 my-4 xl:flex xl:items-center xl:justify-between" v-if="inbox">
+          <div class="flex-1 min-w-0">
+            <h2 class="text-2xl font-bold leading-7 text-gray-900 sm:text-3xl sm:leading-9 sm:truncate">
+              Notifications
+            </h2>
+          </div>
+        </div>
+    </div>
 
     <div class="section container">
         <nav class="level">

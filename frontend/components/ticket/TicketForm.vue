@@ -4,7 +4,7 @@
     <div class="border-b shadow flex justify-center">
       <div class="container px-4 mb-4 mt-2 xl:flex xl:items-center xl:justify-between" v-if="inbox">
         <div class="flex-1 min-w-0">
-          <a :href="`/inboxes/${inbox.id}/tickets`" class="text-xs text-gray-700 hover:underline cursor-pointer">
+          <a :href="`/inboxes/${inbox_id}/tickets`" class="text-xs text-gray-700 hover:underline cursor-pointer">
             <i class="fa fa-arrow-left mr-2"></i>
             {{ inbox ? inbox.name : '' }}
           </a>
@@ -92,12 +92,12 @@ export default {
     }
   },
   mounted() {
-    axios.get("/api/inboxes/" + this.inbox_id + "/labels").then(response => {
-      this.inbox_labels = response.data;
-    })
-
     axios.get("/api/inboxes/" + this.inbox_id).then(response => {
       this.inbox = response.data
+    })
+
+    axios.get("/api/inboxes/" + this.inbox_id + "/labels").then(response => {
+      this.inbox_labels = response.data;
     })
   },
   methods: {
