@@ -58,7 +58,7 @@ jobs:
 
       - name: Deploy to Docker Swarm
         uses: sagebind/docker-swarm-deploy-action@v2
-        if: github.event_name == 'push'
+        if: github.event_name == 'push' && github.ref == 'refs/heads/master'
         env:
           DJANGO_SECRET: ${{ secrets.DJANGO_SECRET }}
           SQL_USER: ${{ secrets.SQL_USER }}
