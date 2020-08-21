@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <section class="max-h-full">
     <div class="flex flex-col md:grid md:grid-cols-5 md:gap-2 p-4 space-y-2 md:space-y-0">
       <search-bar v-model="search" v-on:input="get_tickets" class="flex-grow px-2 md:col-span-3"></search-bar>
 
@@ -12,7 +12,7 @@
 
         <submit-button
           v-if="is_staff"
-          class="bg-orange-400 text-white px-2 md:m-0"
+          class="bg-primary text-white px-2 md:m-0"
           :class="{ 'bg-orange-500': showPersonal }"
           text="My Tickets"
           @click="showPersonal = !showPersonal; get_tickets()"
@@ -20,7 +20,7 @@
       </div>
     </div>
 
-    <div class="w-full flex md:space-x-4 flex-grow min-h-screen overflow-x-scroll px-4 mb-2 space-x-2">
+    <div class="w-full flex md:space-x-4 flex-grow overflow-x-auto px-4 mb-4 space-x-2">
       <!-- Columns -->
       <ticket-column
         v-for="(column, i) in tickets"
@@ -31,7 +31,7 @@
         :ticket-list="column.tickets"
       />
     </div>
-  </div>
+  </section>
 </template>
 
 <script>

@@ -1,7 +1,7 @@
 <template>
   <div v-if="ticket" class="h-full">
-    <div class="h-full flex">
-      <div class="h-full w-screen max-w-sm bg-gray-200">
+    <div class="lg:h-full flex flex-col-reverse lg:flex-row w-full">
+      <div class="w-screen lg:max-w-sm bg-gray-100 border-r border-t lg:border-t-0">
         <!-- <author-card class="hidden lg:block" :author="ticket.author" :inbox_id="ticket.inbox"/> -->
         <!-- Ticket Author -->
         <div class="p-6 flex space-x-4 border-b">
@@ -14,12 +14,23 @@
           </div>
         </div>
 
-        <div class="p-4 w-full" v-if="canShare">
+        <!-- Recent question -->
+        <recent-questions class="m-4" :author="ticket.author" :inbox_id="ticket.inbox"></recent-questions>
+
+        <!-- Sharing -->
+        <div v-if="canShare" class="px-4 py-1">
           <edit-share-with :shared_with="shared_with" :errors="errors" class="mb-2" :inbox_id="ticket.inbox"
                           v-on:input="updateSharedWith"></edit-share-with>
         </div>
 
-        <recent-questions class="m-4" :author="ticket.author" :inbox_id="ticket.inbox"></recent-questions>
+        <!-- Assignee -->
+        <edit-assignee :ticket="ticket" :staff="staff"></edit-assignee>
+
+        <!-- Participants -->
+        <div class="p-4 pt-2">
+          <h4 class="font-semibold text-gray-800 mb-2">Participants</h4>
+          <avatars :users="ticket.participants"/>
+        </div>
       </div>
 
       <!-- <div v-if="is_staff" class="flex flex-col w-full lg:min-w-1/4 lg:w-1/4 space-y-3">
@@ -34,12 +45,12 @@
         </card>
       </div> -->
 
-      <div class="w-full col-span-4">
-        <div class="m-8 lg:flex lg:items-center lg:justify-between">
+      <div class="relative h-full flex-grow">
+        <div class="m-4 mt-2 xl:flex xl:items-center xl:justify-between">
           <div class="flex-1 min-w-0">
-            <a class="text-xs text-gray-700 hover:underline">
+            <a :href="`/inboxes/${ticket.inbox}/tickets`" class="text-xs text-gray-700 hover:underline cursor-pointer">
               <i class="fa fa-arrow-left mr-2"></i>
-              {{ ticket.inbox }}
+              {{ inbox ? inbox.name : '' }}
             </a>
             <h2 class="text-2xl font-bold leading-7 text-gray-900 sm:text-3xl sm:leading-9 sm:truncate">
               #{{ ticket.ticket_inbox_id }} - {{ ticket.title }}
@@ -52,39 +63,31 @@
                 ></i>
                 {{ status[ticket.status] }}
               </div>
-              <div class="mt-2 flex items-center text-sm leading-5 text-gray-500" title="Assigned to">
+              <div class="mt-2 flex items-center text-sm leading-5 text-gray-500" title="Assigned to" v-if="ticket.assignee">
                 <i class="fa fa-user mr-1"></i>
                 {{ ticket.assignee.first_name }} {{ ticket.assignee.last_name }}
               </div>
-              <div class="mt-2 flex items-center text-sm leading-5 text-gray-500" title="Assigned to">
+              <div class="mt-2 flex items-center text-sm leading-5 text-gray-500" title="Created at">
                 <i class="fa fa-calendar mr-1"></i>
                 {{ date }}
               </div>
             </div>
           </div>
-          <div class="mt-5 flex lg:mt-0 lg:ml-4 space-x-4">
-            <span class="shadow-sm rounded-md">
-              <a type="button" :href="`/inboxes/${ticket.inbox}/tickets`"
-                class="inline-flex items-center px-4 py-2 border border-gray-300 text-sm leading-5 font-medium rounded-md text-gray-700 bg-white hover:text-gray-500 focus:outline-none focus:shadow-outline-blue focus:border-blue-300 active:text-gray-800 active:bg-gray-50 transition duration-150 ease-in-out">
-                <i class="fa fa-arrow-left mr-2"></i>
-                Inbox
-              </a>
-            </span>
-
+          <div class="mt-5 flex xl:mt-0 xl:ml-4 space-x-4">
             <span v-if="is_staff && ticket.status !== 'CLSD'" class="shadow-sm rounded-md">
               <button type="button" @click="closeTicket"
-                class="inline-flex items-center px-4 py-2 border border-transparent text-sm leading-5 font-medium rounded-md text-white bg-orange-400 hover:bg-orange-500 focus:outline-none focus:shadow-outline-orange focus:border-orange-700 active:bg-orange-700 transition duration-150 ease-in-out">
+                class="inline-flex items-center px-4 py-2 border border-transparent text-sm leading-5 font-medium rounded-md text-white bg-primary hover:bg-orange-500 focus:outline-none focus:shadow-outline-orange focus:border-orange-700 active:bg-orange-700 transition duration-150 ease-in-out">
                 <i class="fa fa-archive mr-2"></i>
                 Close Ticket
               </button>
             </span>
           </div>
         </div>
-        <div class="flex flex-col flex-grow">
-          <ul class="flex border-b w-full mb-2">
-            <tab :active="activeTab === 'external'" @click="activeTab = 'external'" title="External"
+        <div class="flex flex-col">
+          <ul class="flex border-b mb-2">
+            <tab :active="activeTab === 'external'" @click="activeTab = 'external'" title="Question"
                 :badge="replies.length + 1"/>
-            <tab :active="activeTab === 'internal'" @click="activeTab = 'internal'" title="Internal"
+            <tab :active="activeTab === 'internal'" @click="activeTab = 'internal'" title="Discussion"
                 :badge="comments.length" v-if="is_staff"/>
             <tab :active="activeTab === 'attachments'" @click="activeTab = 'attachments'" title="Attachments"
                 :badge="ticket.attachments.length"/>
@@ -97,7 +100,6 @@
           <attachments-tab v-if="ticket && activeTab === 'attachments'" :ticket="ticket"/>
         </div>
       </div>
-
     </div>
   </div>
 </template>
@@ -146,12 +148,13 @@ export default {
   },
   data() {
     return {
+      inbox: null,
       ticket: null,
       replies: [],
       comments: [],
       commentEditor: "",
       staff: [],
-      activeTab: "external",
+      activeTab: 'external',
       user: null,
       role: null,
       shared_with: [],
@@ -194,6 +197,10 @@ export default {
           this.$set(this.ticket.author, 'role', response.data)
         })
       });
+
+      axios.get("/api/inboxes/" + this.ticket.inbox).then(response => {
+        this.inbox = response.data
+      })
     });
     axios.get("/api" + window.location.pathname + "/replies").then(response => {
       this.replies = response.data;

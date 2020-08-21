@@ -2,13 +2,14 @@ from django.urls import path
 
 from ticketvise.views.api.comment import TicketCommentsApiView, CreateCommentApiView, CreateReplyApiView, \
     TicketRepliesApiView
-from ticketvise.views.api.inbox import InboxStaffApiView, InboxLabelsApiView
+from ticketvise.views.api.inbox import InboxStaffApiView, InboxLabelsApiView, InboxApiView
 from ticketvise.views.api.ticket import TicketApiView, TicketUpdateAssignee, \
     TicketStatusUpdateApiView, \
     RecentTicketApiView, InboxTicketsApiView, TicketLabelApiView, TicketCreateApiView, TicketSharedAPIView
 from ticketvise.views.api.user import UserRoleApiView, CurrentUserApiView, UserGetFromUsernameApiView, UserRoleByIdApiView
 
 urlpatterns = [
+    path("inboxes/<int:inbox_id>", InboxApiView.as_view()),
     path("inboxes/<int:inbox_id>/tickets", InboxTicketsApiView.as_view()),
     path("inboxes/<int:inbox_id>/tickets/new", TicketCreateApiView.as_view()),
     path("inboxes/<int:inbox_id>/tickets/<int:ticket_inbox_id>", TicketApiView.as_view()),

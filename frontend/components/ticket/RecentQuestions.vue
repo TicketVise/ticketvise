@@ -1,17 +1,16 @@
 <template>
-    <card outlined>
-        <div class="p-3">
-            <h4 class="font-semibold text-gray-800 mb-2">Recent questions</h4>
-            <ul class="list-none">
-                <li v-for="ticket in tickets" :key="ticket.id">
-                    <a class="block my-1 px-2 py-1 bg-gray-100 rounded hover:bg-gray-200 text-sm"
-                       :href="'/inboxes/' + inbox_id + '/tickets/' + ticket.ticket_inbox_id">
-                        <span class="font-semibold mr-2">#{{ticket.ticket_inbox_id}}</span>{{ticket.title}}
-                    </a>
-                </li>
-            </ul>
-        </div>
-    </card>
+    <div>
+        <h4 class="font-semibold text-gray-800 mb-1">Recent questions</h4>
+        <ul class="list-none">
+            <li v-for="ticket in tickets" :key="ticket.id">
+                <a class="block px-2 py-0.5 bg-gray-100 rounded hover:bg-gray-200 text-sm truncate"
+                    :href="'/inboxes/' + inbox_id + '/tickets/' + ticket.ticket_inbox_id">
+                    <span class="font-semibold mr-2">#{{ticket.ticket_inbox_id}}</span>
+                    {{ticket.title}}
+                </a>
+            </li>
+        </ul>
+    </div>
 </template>
 
 <script>

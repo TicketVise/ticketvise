@@ -1,23 +1,27 @@
 <template>
-    <div class="flex flex-column flex-wrap w-full">
+    <div class="flex flex-column flex-wrap w-full pr-4">
         <div class="mt-3 w-full">
-            <div class="mb-3" v-if="comments.length === 0">
-                It seems like there are no messages yet, be the first!
+            <div v-if="comments.length === 0" class="text-center mb-8">
+                <img src="/static/img/svg/undraw_a_moment_to_relax_bbpa.svg" alt="Nothing here" class="w-1/2 md:w-1/4 mx-auto mb-8">
+                <span class="text-gray-600 text-lg md:text-xl">There are no messages here yet...</span>
             </div>
             <comment v-for="comment in comments" :key="comment.id" :comment="comment" :ticket="ticket"/>
         </div>
 
         <div class="flex w-full">
             <avatar :source="user.avatar_url" size="w-12 h-12 m-3"/>
-            <div class="flex-grow w-full">
+            <div class="flex flex-col items-end flex-grow w-full mb-4">
                 <card outlined class="mb-2 w-full">
                     <mention :ticket="ticket" :users="staff">
                         <editor ref="commentEditor" initialEditType="wysiwyg" previewStyle="tab"/>
                     </mention>
                 </card>
-                <span class="shadow-sm rounded-md">
-                    <submit-button @click="submitComment" text="Comment"></submit-button>
-                </span>
+                <button
+                    @click="submitComment"
+                    class="group relative w-full sm:w-auto flex justify-center sm:justify-start items-center py-2 px-4 border border-transparent text-sm leading-5 font-medium rounded-md text-white bg-primary hover:bg-orange-500 focus:outline-none focus:border-orange-700 focus:shadow-outline-orange active:bg-orange-700 transition duration-150 ease-in-out">
+                    <i class="fa fa-reply text-orange-200 absolute sm:relative left-4 sm:left-auto mr-2"></i>
+                    Comment
+                </button>
             </div>
         </div>
     </div>
@@ -64,6 +68,11 @@
             staff: {
                 required: true,
                 default: []
+            }
+        },
+        data() {
+            return {
+                commentEditor: "",
             }
         },
         methods: {
