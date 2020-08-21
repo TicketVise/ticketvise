@@ -10,7 +10,7 @@ from django.test import TestCase, Client
 
 from ticketvise.models.comment import Comment
 from ticketvise.models.inbox import Inbox
-from ticketvise.models.notification import Notification, MentionNotification, CommentNotification
+from ticketvise.models.notification import MentionNotification, CommentNotification, Notification
 from ticketvise.models.ticket import Ticket, TicketStatusChangedNotification
 from ticketvise.models.user import User, Role
 
@@ -27,25 +27,19 @@ class NotificationsTestCase(TestCase):
         self.inbox = Inbox.objects.create(code="ABC", name="how to code")
 
         self.student = User.objects.create_user(
-            username="student", email="root@ticketvise.com", password="test12345", is_staff=False,
+            username="student", email="student@ticketvise.com", password="test12345", is_staff=False,
         )
-        self.student.inboxes.add(self.inbox)
-        self.student.set_password("test12345")
-        self.student.save()
+        self.student.add_inbox(self.inbox)
 
         self.ta = User.objects.create_user(
-            username="admin", email="admin@ticketvise.com", password="test67891", is_staff=True
+            username="admin", email="admin@ticketvise.com", password="test67891", is_staff=True,
         )
         self.ta.add_inbox(self.inbox, Role.AGENT)
-        self.ta.set_password("test67891")
-        self.ta.save()
 
         self.ta2 = User.objects.create_user(
             username="admin2", email="admin2@ticketvise.com", password="test67891", is_staff=True
         )
         self.ta2.add_inbox(self.inbox, Role.AGENT)
-        self.ta2.set_password("test67891")
-        self.ta2.save()
 
         self.ticket = Ticket.objects.create(author=self.student, assignee=self.ta,
                                             title="How to code?",
@@ -63,7 +57,7 @@ class NotificationsTestCase(TestCase):
 
         :return: None.
         """
-        self.client.login(username="student", password="test12345")
+        self.client.force_login(self.student)
         response = self.client.get("/notifications")
         self.assertEqual(response.status_code, 200)
 
@@ -84,7 +78,7 @@ class NotificationsTestCase(TestCase):
 
         :return: None.
         """
-        self.client.login(username="admin", password="test67891")
+        self.client.force_login(self.ta)
 
         ticket_notification = TicketStatusChangedNotification.objects.filter(
             receiver=self.ta, old_status=None, ticket__assignee__isnull=False).exists()
@@ -100,7 +94,7 @@ class NotificationsTestCase(TestCase):
 
         :return: None.
         """
-        self.client.login(username="admin", password="test67891")
+        self.client.force_login(self.ta)
         Comment.objects.create(ticket=self.ticket, author=self.ta2, content="test comment for "
                                                                             "status change",
                                is_reply=True, is_active=True)
@@ -119,7 +113,7 @@ class NotificationsTestCase(TestCase):
 
         :return: None.
         """
-        self.client.login(username="admin", password="test67891")
+        self.client.force_login(self.ta)
         Comment.objects.create(ticket=self.ticket, author=self.ta2, content="test comment for "
                                                                             "status change",
                                is_reply=True, is_active=True)
@@ -140,7 +134,7 @@ class NotificationsTestCase(TestCase):
 
         :return: None.
         """
-        self.client.login(username="admin", password="test67891")
+        self.client.force_login(self.ta)
 
         ticket_notification = TicketStatusChangedNotification.objects.filter(
             ticket__assignee=self.ta, receiver=self.ta).exists()
@@ -152,7 +146,7 @@ class NotificationsTestCase(TestCase):
 
         :return: None.
         """
-        self.client.login(username="admin", password="test67891")
+        self.client.force_login(self.ta)
 
         ticket_notification = TicketStatusChangedNotification.objects.filter(
             ticket__assignee=None, receiver=self.ta).exists()
@@ -172,7 +166,7 @@ class NotificationsTestCase(TestCase):
 
         :return: None.
         """
-        self.client.login(username="admin", password="test67891")
+        self.client.force_login(self.ta)
         notification = Notification.objects.filter(read=False).first()
 
         self.client.post("/notifications", urlencode({"id": notification.id}), follow=True,
@@ -189,7 +183,7 @@ class NotificationsTestCase(TestCase):
 
         :return: None.
         """
-        self.client.login(username="admin", password="test67891")
+        self.client.force_login(self.ta)
 
         for notification in Notification.objects.filter(receiver=self.ticket.author):
             self.assertFalse(notification.read)
@@ -206,7 +200,7 @@ class NotificationsTestCase(TestCase):
 
         :return: None.
         """
-        self.client.login(username="admin", password="test67891")
+        self.client.force_login(self.ta)
 
         for notification in Notification.objects.filter(receiver=self.ticket.author):
             self.assertFalse(notification.read)
@@ -224,7 +218,7 @@ class NotificationsTestCase(TestCase):
 
         :return: None.
         """
-        self.client.login(username="admin2", password="test67891")
+        self.client.force_login(self.ta2)
         Comment.objects.create(ticket=self.ticket, author=self.ta2, content="@admin")
 
         self.assertTrue(MentionNotification.objects.filter(receiver=self.ta,
@@ -246,7 +240,7 @@ class NotificationsTestCase(TestCase):
 
         :return: None.
         """
-        self.client.login(username="student", password="test12345")
+        self.client.force_login(self.student)
 
         Comment.objects.create(ticket=self.ticket, author=self.ta2, content="test", is_reply=False)
 
@@ -263,7 +257,7 @@ class NotificationsTestCase(TestCase):
 
         :return: None.
         """
-        self.client.login(username="admin", password="test67891")
+        self.client.force_login(self.ta)
 
         settings = ["notification_mention_mail",
                     "notification_mention_app",
@@ -293,7 +287,7 @@ class NotificationsTestCase(TestCase):
 
         :return: None.
         """
-        self.client.login(username="admin", password="test67891")
+        self.client.force_login(self.ta)
 
         MentionNotification.objects.all().delete()
         CommentNotification.objects.all().delete()
@@ -400,3 +394,52 @@ class NotificationsTestCase(TestCase):
             notification.get_content
         with self.assertRaises(NotImplementedError):
             notification.get_inbox
+
+
+class NotificationsAPITestCase(NotificationsTestCase):
+
+    def test_get_notifications_200(self):
+        self.client.force_login(self.student)
+        response = self.client.get("/api/notifications")
+        self.assertEqual(response.status_code, 200)
+
+    def test_get_notifications_unauthorized(self):
+        response = self.client.get("/api/notifications")
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.url, "/login/?next=/api/notifications")
+
+    def test_get_notifications_read_all(self):
+        self.client.force_login(self.ta)
+
+        comment = Comment.objects.create(ticket=self.ticket, author=self.student, content="@admin", is_reply=True)
+
+        MentionNotification.objects.create(receiver=self.ta, read=False, comment=comment)
+        CommentNotification.objects.create(receiver=self.ta, read=False, comment=comment)
+        TicketStatusChangedNotification.objects.create(receiver=self.ta, read=False, ticket=self.ticket)
+
+        self.assertTrue(Notification.objects.filter(read=False, receiver=self.ta).exists())
+
+        response = self.client.put("/api/notifications/read/all")
+        self.assertTrue(response.status_code, 200)
+
+        self.assertFalse(Notification.objects.filter(read=False, receiver=self.ta).exists())
+
+    def test_get_notifications_flip_read(self):
+        self.client.force_login(self.ta)
+
+        comment = Comment.objects.create(ticket=self.ticket, author=self.student, content="@admin", is_reply=True)
+
+        mention_notification = MentionNotification.objects.create(receiver=self.ta, read=False, comment=comment)
+        comment_notification = CommentNotification.objects.create(receiver=self.ta, read=False, comment=comment)
+        ticketstatuschanged_notification = TicketStatusChangedNotification.objects.create(receiver=self.ta, read=False,
+                                                                                          ticket=self.ticket)
+        response = self.client.put(f"/api/notifications/{mention_notification.id}/read")
+        self.assertTrue(response.status_code, 200)
+        response = self.client.put(f"/api/notifications/{comment_notification.id}/read")
+        self.assertTrue(response.status_code, 200)
+        response = self.client.put(f"/api/notifications/{ticketstatuschanged_notification.id}/read")
+        self.assertTrue(response.status_code, 200)
+
+        self.assertFalse(MentionNotification.objects.get(id=mention_notification.id).read)
+        self.assertFalse(CommentNotification.objects.get(id=comment_notification.id).read)
+        self.assertFalse(TicketStatusChangedNotification.objects.get(id=ticketstatuschanged_notification.id).read)

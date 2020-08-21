@@ -10,7 +10,6 @@ Contains all entity sets for the ticket database and TicketStatusChangedNotifica
 from django.db import models
 from django.db.models.signals import m2m_changed
 from django.dispatch import receiver
-from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
 from model_utils.managers import InheritanceManager
 
