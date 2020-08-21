@@ -443,3 +443,22 @@ class NotificationsAPITestCase(NotificationsTestCase):
         self.assertFalse(MentionNotification.objects.get(id=mention_notification.id).read)
         self.assertFalse(CommentNotification.objects.get(id=comment_notification.id).read)
         self.assertFalse(TicketStatusChangedNotification.objects.get(id=ticketstatuschanged_notification.id).read)
+
+    def test_get_notifications_read_ticket(self):
+        self.client.force_login(self.ta)
+
+        comment = Comment.objects.create(ticket=self.ticket, author=self.student, content="@admin", is_reply=True)
+
+        MentionNotification.objects.create(receiver=self.ta, read=False, comment=comment)
+        CommentNotification.objects.create(receiver=self.ta, read=False, comment=comment)
+        TicketStatusChangedNotification.objects.create(receiver=self.ta, read=False,
+                                                                                          ticket=self.ticket)
+        response = self.client.put(f"/api/notifications/read/inboxes/{self.inbox.id}/tickets/{self.ticket.id}")
+        self.assertTrue(response.status_code, 200)
+
+        self.assertFalse(
+            MentionNotification.objects.filter(receiver=self.ta, comment__ticket=self.ticket, read=False).exists())
+        self.assertFalse(
+            CommentNotification.objects.filter(receiver=self.ta, comment__ticket=self.ticket, read=False).exists())
+        self.assertFalse(
+            TicketStatusChangedNotification.objects.filter(receiver=self.ta, ticket=self.ticket, read=False).exists())
