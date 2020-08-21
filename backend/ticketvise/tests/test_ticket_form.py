@@ -18,7 +18,7 @@ class TicketFormTestCase(TicketTestCase):
         :return: None.
         """
         self.client.force_login(self.student)
-        response = self.client.get(reverse("new_ticket", args=[self.course.id]))
+        response = self.client.get(reverse("new_ticket", args=[self.inbox.id]))
         self.assertEqual(response.status_code, 200)
 
     def test_ticket_page_401(self):
@@ -28,8 +28,8 @@ class TicketFormTestCase(TicketTestCase):
 
         :return: None.
         """
-        response = self.client.get(reverse("new_ticket", args=[self.course.id]))
-        self.assertRedirects(response, '/login/?next=' + reverse("new_ticket", args=[self.course.id]))
+        response = self.client.get(reverse("new_ticket", args=[self.inbox.id]))
+        self.assertRedirects(response, '/login/?next=' + reverse("new_ticket", args=[self.inbox.id]))
 
     def test_correct_template_used(self):
         """
@@ -38,7 +38,7 @@ class TicketFormTestCase(TicketTestCase):
         :return: None.
         """
         self.client.force_login(self.student)
-        response = self.client.get(reverse("new_ticket", args=(self.course.id,)))
+        response = self.client.get(reverse("new_ticket", args=(self.inbox.id,)))
         self.assertTemplateUsed(response, "ticket_form.html")
 
 
@@ -46,12 +46,13 @@ class TicketFormTestAPI(APITestCase, TicketTestCase):
     def test_create_ticket(self):
         self.client.force_login(self.student)
 
-        url = f"/api/courses/{self.course.id}/tickets/new"
+        url = f"/api/inboxes/{self.inbox.id}/tickets/new"
         data = {
             "title": "TestTicket",
             "content": "TestTicket",
-            "course": self.course.id,
-            "labels": [self.label.id]
+            "inbox": self.inbox.id,
+            "labels": [self.label.id],
+            "shared_with": []
         }
 
         response = self.client.post(url, data, format='json', follow=True)
@@ -61,15 +62,47 @@ class TicketFormTestAPI(APITestCase, TicketTestCase):
     def test_create_ticket_attachment(self):
         self.client.force_login(self.student)
 
-        url = f"/api/courses/{self.course.id}/tickets/new"
+        url = f"/api/inboxes/{self.inbox.id}/tickets/new"
 
         file = SimpleUploadedFile('test.txt', b'Testing some text inside of a file')
         data = {
             "title": "TestTicket",
             "content": "TestTicket",
-            "course": self.course.id,
+            "inbox": self.inbox.id,
             "attachments": file
         }
 
         response = self.client.post(url, data, format='json', follow=True)
         self.assertEqual(response.status_code, 201)
+
+    def test_create_ticket_shared(self):
+        self.client.force_login(self.student)
+
+        url = f"/api/inboxes/{self.inbox.id}/tickets/new"
+        data = {
+            "title": "TestTicket",
+            "content": "TestTicket",
+            "inbox": self.inbox.id,
+            "labels": [self.label.id],
+            "shared_with": [self.student2.id]
+        }
+
+        response = self.client.post(url, data, format='json', follow=True)
+        self.assertEqual(response.status_code, 201)
+        self.assertEqual(response.data, data)
+
+    def test_create_ticket_shared_assistant(self):
+        self.client.force_login(self.student)
+
+        url = f"/api/inboxes/{self.inbox.id}/tickets/new"
+        data = {
+            "title": "TestTicket",
+            "content": "TestTicket",
+            "inbox": self.inbox.id,
+            "labels": [self.label.id],
+            "shared_with": [self.assistant.id]
+        }
+
+        response = self.client.post(url, data, format='json', follow=True)
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.data, {"shared_with": ["This ticket cannot be shared with one of these users"]})

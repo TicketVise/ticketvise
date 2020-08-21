@@ -1,0 +1,119 @@
+<!-- THE WEBPAGE FOR THE INBOX OVERVIEW. -->
+
+{% extends "navigation.html" %}
+
+{% block content %}
+
+    <!-- THE TITLE AND SUBTITLE OF THE PAGE. -->
+    {% include "utils/page_header.html" with title="Select your inbox" %}
+
+    {% load ticketvise_extras %}
+    <section class="section">
+        <div class="container">
+            <!-- ADD A CARD FOR EVERY INBOX OF THE USER. -->
+            {% for inbox in inboxes %}
+                <!--GET THE ROLE OF THE USER-->
+                {% get_user_role user inbox as role %}
+
+                <!-- ADD A NEW ROW EVERY 3 CARDS. -->
+                {% if forloop.counter0|divisibleby:tiles_per_row %}
+                    <div class="tile is-ancestor">
+                {% endif %}
+            <div class="tile is-parent">
+                <div class="card tile is-child">
+                    <!-- INBOX IMAGE -->
+                    <div class="card-image">
+                        <figure class="image is-4by3">
+                            <a href="{% url 'ticket_overview' inbox.id %}" class="card-header-icon"
+                               aria-label="more options">
+                                {% include "utils/inbox_image.html" %}
+                            </a>
+                        </figure>
+
+                        <div class="card-header-title is-size-5"
+                             style="overflow: hidden; text-overflow: ellipsis;">
+                            <!-- CARD NEW BOOKMARK ACTION-->
+                            <div class="card-header-action is-size-5">
+                                <form name="bookmark_{{ inbox.id }}" id="bookmark" method="POST">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="inbox_id" value="{{ inbox.id }}">
+                                    <a class="pl-0 card-footer-item" aria-label="more options"
+                                       onclick="document.forms['bookmark_{{ inbox.id }}'].submit()">
+                                        {% user_has_bookmarked user inbox as bookmarked %}
+                                        {% if bookmarked %}
+                                            <i class="fa fa-bookmark" aria-hidden="true"></i>
+                                        {% else %}
+                                            <i class="fa fa-bookmark-o" aria-hidden="true"></i>
+                                        {% endif %}
+                                    </a>
+                                </form>
+                            </div>
+
+                            <!-- INBOX NAME. -->
+                            <a href="{% url 'ticket_overview' inbox.id %}">
+                                {{ inbox.name }}
+                            </a>
+                        </div>
+
+                        <div class="card-header-actions">
+                            <!-- INBOX CODE -->
+                            <div class="card-header-tag">
+                                <span class="tag is-white has-text-info">{{ inbox.code }}</span>
+                            </div>
+
+                            <!-- CARD INBOX CONFIGURE ACTION -->
+                            {% if role != ROLE_STUDENT %}
+                                <div class="card-header-action is-size-5">
+                                    <a href="{% url 'inbox_settings' inbox.id %}" class="card-footer-item"
+                                       aria-label="more options">
+                                            <span class="icon mr-1 is-size-6">
+                                                <i class="fa fa-cog" aria-hidden="true"></i>
+                                            </span>
+                                        <span class="is-size-6">Configure</span>
+                                    </a>
+                                </div>
+                            {% endif %}
+
+                            <!-- CARD NEW TICKET ACTION -->
+                            <div class="card-header-action is-size-5">
+                                <a href="{% url 'new_ticket' inbox.id %}" class="card-footer-item"
+                                   aria-label="more options">
+                                            <span class="icon mr-1 is-size-6">
+                                                <i class="fa fa-plus" aria-hidden="true"></i>
+                                            </span>
+                                    <span class="is-size-6">Ticket</span>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- END A NEW ROW EVERY 3 CARDS. -->
+            {% if forloop.counter|divisibleby:tiles_per_row %}
+                </div>
+            {% endif %}
+            {% endfor %}
+
+            <!-- ADD MORE TILES FOR PROPER OUTLINING OF THE CARDS. -->
+            {% for extra_tile in extra_tiles_list %}
+                <div class="tile is-parent"></div>
+            {% endfor %}
+        </div>
+    </section>
+{% endblock content %}
+
+{% block javascript %}
+    <!-- RETAIN SCROLL POSITION FOR FLIPPING BOOKMARK -->
+    <script>
+        $(document).ready(function () {
+            $(window).on('beforeunload', function () {
+                sessionStorage.scrollTop = $(window).scrollTop();
+            });
+
+            if (sessionStorage.scrollTop) {
+                $(window).scrollTop(sessionStorage.scrollTop);
+            }
+        });
+    </script>
+{% endblock %}

@@ -39,7 +39,6 @@ class LtiTestCase(TestCase):
         initial_data = {
             "oauth_consumer_key": settings.LTI_KEY,
             "oauth_signature_method": "HMAC-SHA1",
-            "oauth_token": "token",
             "oauth_nonce": "nonce",
             "oauth_timestamp": str(math.floor(time.time())),
             "oauth_version": "1.0"
@@ -112,9 +111,9 @@ class LtiTestCase(TestCase):
                                     content_type="application/x-www-form-urlencoded")
         self.assertEqual(response.status_code, 403)
 
-    def test_lti_no_course(self):
+    def test_lti_no_inbox(self):
         """
-        Launch LTI without active course.
+        Launch LTI without active inbox.
 
         :return: None.
         """
@@ -134,7 +133,7 @@ class LtiTestCase(TestCase):
         """
         signed_data = self.sign_data("POST", "/lti", self.data)
 
-        # Create course.
+        # Create inbox.
         response1 = self.client.post("/lti", signed_data, follow=True,
                                      content_type="application/x-www-form-urlencoded")
 
@@ -155,7 +154,7 @@ class LtiTestCase(TestCase):
 
         :return: None.
         """
-        # Create course.
+        # Create inbox.
         self.data["roles"] = "instructor"
         signed_data = self.sign_data("POST", "/lti", self.data)
 

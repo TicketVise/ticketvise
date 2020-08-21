@@ -6,12 +6,20 @@ services:
     build:
       context: .
     command: >
-      sh -c "python manage.py wait_for_database &&
+      sh -c "env > /etc/environment && cron &&
+             python manage.py wait_for_database &&
              python manage.py migrate --no-input &&
-             python generate_database.py &&
+             python manage.py insert_demo_data &&
              python manage.py runserver 0.0.0.0:6000"
     volumes:
       - ./backend:/backend
+    environment:
+      - DJANGO_SECRET=Welkom01
+      - EMAIL_PASSWORD=Welkom01
+      - SQL_USER=ticketvise
+      - SQL_PASSWORD=Welkom01
+      - LTI_KEY=LtiKey01
+      - LTI_SECRET=LtiSecret01
 
   proxy:
     image: ticketvise/ticketvise/proxy:latest
@@ -23,3 +31,8 @@ services:
       - ./backend/ticketvise/media:/home/media:ro
       - ./backend/ticketvise/static:/home/static:ro
 
+  database:
+    environment:
+      - POSTGRES_DB=ticketvise
+      - POSTGRES_USER=ticketvise
+      - POSTGRES_PASSWORD=Welkom01

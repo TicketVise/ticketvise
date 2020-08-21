@@ -8,7 +8,7 @@ from urllib.parse import urlencode
 from django.test import TestCase, Client
 from django.urls import reverse
 
-from ticketvise.models.course import Course
+from ticketvise.models.inbox import Inbox
 from ticketvise.models.user import User
 
 
@@ -40,9 +40,9 @@ class LoginTestCase(TestCase):
 
         :return: None.
         """
-        course = Course.objects.create(name="name", code="code")
-        response = self.client.get(reverse("ticket_overview", args=(course.id,)))
-        self.assertRedirects(response, "/login/?next=%2Fcourses%2F{}%2Ftickets".format(course.id))
+        inbox = Inbox.objects.create(name="name", code="code")
+        response = self.client.get(reverse("ticket_overview", args=(inbox.id,)))
+        self.assertRedirects(response, "/login/?next=%2Finboxes%2F{}%2Ftickets".format(inbox.id))
 
     def test_preserve_username_when_login_failed(self):
         """
@@ -67,7 +67,7 @@ class LoginTestCase(TestCase):
         :return: None.
         """
         response = self.client.post("/login/", {"username": "root", "password": "correct"}, follow=True)
-        self.assertRedirects(response, "/courses")
+        self.assertRedirects(response, "/inboxes")
 
         self.client.logout()
 

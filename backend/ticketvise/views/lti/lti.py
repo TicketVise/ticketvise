@@ -1,17 +1,3 @@
-"""
-LTI
--------------------------------
-This view handles the LTI request we get from the LMS.
-We check the fields and if the message is valid,
-we handle the user and based on the role and existance
-of a course it preforms different actions.
-
-**Table of contents**
-
-* :class:`LtiLaunchForm`
-* :class:`LtiView`
-"""
-
 from django.contrib.auth import login
 from django.contrib.auth.hashers import make_password
 from django.core.exceptions import PermissionDenied
@@ -21,35 +7,35 @@ from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
 from django.views.generic import RedirectView
 
-from ticketvise.models.course import Course
-from ticketvise.models.user import User, UserCourseRelationship
+from ticketvise.models.inbox import Inbox
+from ticketvise.models.user import User, UserInbox, Role
 from ticketvise.views.lti.validation import LtiLaunchForm
 
 
 @method_decorator(csrf_exempt, name="dispatch")
 class LtiView(RedirectView):
     """
-    Grab data from the LTI form and the redirect.
+    Implementation of the LTI launch. The form authenticates a user based on its data from the LMS. If the user is
+    not present in the database a new one is created and will be associated with the inbox from where the launch was
+    initiated from. The implementation also assigns the correct role to the user based on the inbox and LMS role.
     """
 
     query_string = True
 
     def get_redirect_url(self, *args, **kwargs):
         """
-        Handle the LTI request.
+        Handles the LTI launch request.
 
         :param list args: Additional list arguments.
         :param dict kwargs: Additional keyword arguments.
 
         :return: The url to redirect the user.
         :rtype: str or None
-
-        :raises Http404: When accessing the wrong page.
         """
         form = LtiLaunchForm(self.request.POST, request=self.request)
 
         if not form.is_valid():
-            raise PermissionDenied
+            raise PermissionDenied(form.errors.items())
 
         user_id = form.cleaned_data["user_id"]
         first_name, last_name = form.cleaned_data["custom_user_full_name"].split(" ", 1)
@@ -77,35 +63,35 @@ class LtiView(RedirectView):
             user.save()
 
         user_roles = [role.split("/")[-1].lower() for role in form.cleaned_data["roles"].split(",")]
-        course_code = form.cleaned_data["context_label"]
-        course = Course.objects.filter(code=course_code).first()
+        inbox_code = form.cleaned_data["context_label"]
+        inbox = Inbox.objects.filter(code=inbox_code).first()
 
-        if course is None:
+        if inbox is None:
             if "instructor" in user_roles:
-                course_name = form.cleaned_data["custom_course_name"]
-                course = Course.objects.create(code=course_code, name=course_name)
+                inbox_name = form.cleaned_data["custom_course_name"]
+                inbox = Inbox.objects.create(code=inbox_code, name=inbox_name)
             else:
                 raise Http404("Course does not have a ticket system (yet). Please contact your instructor.")
 
-        user_role = User.Roles.STUDENT
+        user_role = Role.GUEST
 
         if any("instructor" in s for s in user_roles):
-            user_role = User.Roles.COORDINATOR
+            user_role = Role.MANAGER
 
         if any("teachingassistant" in s for s in user_roles):
-            user_role = User.Roles.ASSISTANT
+            user_role = Role.AGENT
 
-        relation = UserCourseRelationship.objects.filter(user=user, course=course).first()
+        relation = UserInbox.objects.filter(user=user, inbox=inbox).first()
 
         if relation is None:
-            UserCourseRelationship.objects.create(user=user, course=course, role=user_role)
+            UserInbox.objects.create(user=user, inbox=inbox, role=user_role)
         elif relation.role != user_role:
             relation.role = user_role
             relation.save()
 
         login(self.request, user)
 
-        if user.has_role_in_course(course, User.Roles.STUDENT):
-            return reverse("new_ticket", args=[course.id])
+        if user.has_role_in_inbox(inbox, Role.GUEST):
+            return reverse("new_ticket", args=[inbox.id])
 
-        return reverse("ticket_overview", args=[course.id])
+        return reverse("ticket_overview", args=[inbox.id])

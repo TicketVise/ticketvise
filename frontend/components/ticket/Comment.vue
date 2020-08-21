@@ -12,7 +12,7 @@
                     </span>
                     <span class="text-xs flex-grow ml-1">· {{ natural_time }}</span>
                     <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-gray-200 text-gray-800">
-                        {{comment.role}}
+                        {{comment.role.label}}
                     </span>
                 </div>
                 <viewer class="px-2" :initialValue="content"></viewer>
@@ -51,7 +51,7 @@
                 const matches = content.match(/\B(#\d+\b)(?!;)/g)
                 if (matches) {
                     for (const match of matches) {
-                        const url = `/courses/${this.ticket.course}/tickets/${match.substring(1)}`
+                        const url = `/inboxes/${this.ticket.inbox}/tickets/${match.substring(1)}`
                         content = content.replace(match, `[${match}](${url})`)
                     }
                 }

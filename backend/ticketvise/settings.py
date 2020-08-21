@@ -40,8 +40,7 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "django.contrib.humanize",
-    "django_celery_results",
-    "django_probes",
+    "rest_framework",
 ]
 
 #: Middleware used for Django.
@@ -54,6 +53,7 @@ MIDDLEWARE = [
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     "csp.middleware.CSPMiddleware",
+    "ticketvise.middleware.CurrentUserMiddleware",
 ]
 
 #: URL configuration path.
@@ -108,6 +108,10 @@ AUTHENTICATION_BACKENDS = [
     "django.contrib.auth.backends.ModelBackend",
 ]
 
+# PROXY
+USE_X_FORWARDED_HOST = True
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+
 #: LTI settings
 #: ~~~~~~~~~~~~
 
@@ -120,9 +124,9 @@ LTI_XML_CONFIG_URL = LTI_HOST + "/lti/config.xml"
 DATABASES = {
     "default": {
         "ENGINE": os.environ.get("SQL_ENGINE", "django.db.backends.sqlite3"),
-        "NAME": os.environ.get("POSTGRES_DB", 'ticketvise.sqlite3'),
-        "USER": os.environ.get("POSTGRES_USER", "ticketvise"),
-        "PASSWORD": os.environ.get("POSTGRES_PASSWORD", "Welkom01"),
+        "NAME": os.environ.get("SQL_DATABASE", 'ticketvise.sqlite3'),
+        "USER": os.environ.get("SQL_USER", "ticketvise"),
+        "PASSWORD": os.environ.get("SQL_PASSWORD", "Welkom01"),
         "HOST": os.environ.get("SQL_HOST", "localhost"),
         "PORT": os.environ.get("SQL_PORT", "5432"),
     }
@@ -139,10 +143,10 @@ MEDIA_ROOT = os.path.join(BASE_DIR, "ticketvise/")
 DEFAULT_AVATAR_PATH = "/static/img/avatars/default-avatar.png"
 #: Directory for uploaded avatar pictures.
 AVATAR_DIRECTORY = "media/img/avatars"
-#: Path to the default course image.
-DEFAULT_COURSE_IMAGE_PATH = "/static/img/courses/default-course.png"
-#: Directory for uploaded course images.
-COURSE_IMAGE_DIRECTORY = "media/img/courses"
+#: Path to the default inbox image.
+DEFAULT_INBOX_IMAGE_PATH = "/static/img/inboxes/default-inbox.png"
+#: Directory for uploaded inbox images.
+INBOX_IMAGE_DIRECTORY = "media/img/inboxes"
 #: Set max upload size for files
 FILE_UPLOAD_MAX_MEMORY_SIZE = 314572800
 
@@ -152,7 +156,7 @@ FILE_UPLOAD_MAX_MEMORY_SIZE = 314572800
 #: URL that users get redirected to on logout.
 LOGOUT_REDIRECT_URL = "/"
 #: Default URL that users get redirected to on login.
-LOGIN_REDIRECT_URL = "/courses"
+LOGIN_REDIRECT_URL = "/inboxes"
 #: Default URL for the login page.
 LOGIN_URL = "/login/"
 
@@ -228,3 +232,21 @@ CELERY_TASK_SERIALIZER = "json"
 CELERY_RESULT_SERIALIZER = "json"
 
 PAGE_SIZE = 25
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+        },
+    },
+    'root': {
+        'handlers': ['console'],
+        'level': 'WARNING',
+    },
+}
+
+ROLE_GUEST_DISPLAY_NAME = os.getenv("ROLE_GUEST_DISPLAY_NAME", "Student")
+ROLE_AGENT_DISPLAY_NAME = os.getenv("ROLE_AGENT_DISPLAY_NAME", "Teaching Assistant")
+ROLE_MANAGER_DISPLAY_NAME = os.getenv("ROLE_MANAGER_DISPLAY_NAME", "Coordinator")

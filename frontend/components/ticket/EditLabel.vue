@@ -25,64 +25,50 @@
         data() {
             return {
                 value: null,
-                course_labels: null,
-                labels: []
+                labels: [],
             }
         },
         mounted() {
-            axios.get("/api/courses/" + this.ticket.course + "/labels").then(response => {
-                this.course_labels = response.data;
+            axios.get("/api/inboxes/" + this.ticket.inbox + "/labels").then(response => {
+                this.labels = response.data;
             });
         },
         methods: {
             submit(label) {
-                this.value = label
-                let formData = new FormData();
-                this.labels = [this.value.id];
-
-                let dictionary = this.ticket.labels;
-                for (let key in dictionary) {
-                    this.labels.push(dictionary[key].id)
-                }
-                formData.append("labels", this.labels);
+                this.ticket.labels.push(label)
 
                 axios.defaults.xsrfCookieName = 'csrftoken';
                 axios.defaults.xsrfHeaderName = "X-CSRFTOKEN";
 
-                axios.put("/api" + window.location.pathname + "/labels", {"labels": this.labels})
-                    .then(response => {
-                        this.ticket.labels.push(this.value)
+                axios.put("/api" + window.location.pathname + "/labels",
+                    {
+                      "labels": this.ticket.labels.map(label => label.id)
+                    }).then(response => {
                         this.value = null
                     });
             },
             deleteEvent: function (index) {
                 this.ticket.labels.splice(index, 1);
 
-                let dictionary = this.ticket.labels;
-                for (let key in dictionary) {
-                    this.labels.push(dictionary[key].id)
-                }
-
-                let formData = new FormData();
-                formData.append("labels", this.labels);
-
                 axios.defaults.xsrfCookieName = 'csrftoken';
                 axios.defaults.xsrfHeaderName = "X-CSRFTOKEN";
 
-                axios.put("/api" + window.location.pathname + "/labels", {"labels": this.labels})
-                    .then(_ => {
+                axios.put("/api" + window.location.pathname + "/labels",
+                    {
+                      "labels": this.ticket.labels.map(label => label.id)
+                    }).then(_ => {
                     });
             }
         },
         computed: {
             unused_labels: function () {
-                if (!this.course_labels) {
+                if (!this.labels) {
                     return []
                 }
 
                 const ticket_label_ids = this.ticket.labels.map(label => label.id)
 
-                return this.course_labels.filter(label => !ticket_label_ids.includes(label.id))
+                return this.labels.filter(label => !ticket_label_ids.includes(label.id))
             }
         }
     }

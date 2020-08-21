@@ -5,7 +5,7 @@
             <div class="px-4">
                 <div class="font-semibold text-gray-800 mb-1">{{ author.first_name }} {{ author.last_name }}</div>
                 <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-gray-200 text-gray-800">
-                    {{role}}
+                    {{role.label}}
                 </span>
             </div>
         </div>
@@ -14,8 +14,8 @@
             <ul class="list-none">
                 <li v-for="ticket in tickets" :key="ticket.id">
                     <a class="block my-1 px-2 py-1 bg-gray-100 rounded hover:bg-gray-200 text-sm"
-                       :href="'/courses/' + course_id + '/tickets/' + ticket.ticket_course_id">
-                        <span class="font-semibold mr-2">#{{ticket.ticket_course_id}}</span>{{ticket.title}}
+                       :href="'/inboxes/' + inbox_id + '/tickets/' + ticket.ticket_inbox_id">
+                        <span class="font-semibold mr-2">#{{ticket.ticket_inbox_id}}</span>{{ticket.title}}
                     </a>
                 </li>
             </ul>
@@ -32,7 +32,7 @@
     export default {
         name: "AuthorCard",
         components: {Card, Avatar},
-        props: ["author", "course_id"],
+        props: ["author", "inbox_id"],
         data() {
             return {
                 tickets: null,
@@ -40,10 +40,10 @@
             }
         },
         mounted() {
-            axios.get("/api/courses/" + this.course_id + "/users/" + this.author.id + "/tickets/recent").then(response => {
+            axios.get("/api/inboxes/" + this.inbox_id + "/users/" + this.author.id + "/tickets/recent").then(response => {
                 this.tickets = response.data;
             });
-            axios.get("/api/courses/" + this.course_id + "/users/" + this.author.id + "/roles").then(response => {
+            axios.get("/api/inboxes/" + this.inbox_id + "/users/" + this.author.id + "/roles").then(response => {
                 this.role = response.data;
             })
         }

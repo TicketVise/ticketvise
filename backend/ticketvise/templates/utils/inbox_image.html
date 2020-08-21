@@ -1,0 +1,14 @@
+<!--
+    Displays the inbox image.
+
+    Arguments:
+    - `inbox`: Inbox to display the image of.
+    - `id`: Id of the img element.
+-->
+{% load ticketvise_extras %}
+
+{% if inbox.image %}
+    <div style="background-image: url('{{ inbox.image }}')"></div>
+{% else %}
+    <img src="" alt="No image found.">
+{% endif %}

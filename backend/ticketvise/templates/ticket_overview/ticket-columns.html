@@ -37,7 +37,7 @@
         <div style="padding: 10px 15px 0px 15px" class="tile is-parent is-vertical" id="{{ column_title }}-tickets">
             {% for ticket in ticket_list %}
                 <article class="tile is-child notification box is-white ticket">
-                    <a href="{% url 'ticket' ticket.course.id ticket.ticket_course_id %}" class="ticket-link">
+                    <a href="{% url 'ticket' ticket.inbox.id ticket.ticket_inbox_id %}" class="ticket-link">
                         <nav class="level mb-1 is-mobile">
                             <!-- SHOW EDIT ICON. -->
                             {% if role != ROLE_STUDENT %}

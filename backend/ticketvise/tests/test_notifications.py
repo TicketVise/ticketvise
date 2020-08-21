@@ -10,10 +10,10 @@ from django.test import TestCase, Client
 from django.urls import reverse
 
 from ticketvise.models.comment import Comment
-from ticketvise.models.course import Course
+from ticketvise.models.inbox import Inbox
 from ticketvise.models.notification import Notification, MentionNotification, CommentNotification
 from ticketvise.models.ticket import Ticket, TicketStatusChangedNotification
-from ticketvise.models.user import User
+from ticketvise.models.user import User, Role
 
 
 class NotificationsTestCase(TestCase):
@@ -25,38 +25,38 @@ class NotificationsTestCase(TestCase):
         :return: None.
         """
         self.client = Client()
-        self.course = Course.objects.create(code="ABC", name="how to code")
+        self.inbox = Inbox.objects.create(code="ABC", name="how to code")
 
         self.student = User.objects.create_user(
             username="student", email="root@ticketvise.com", password="test12345", is_staff=False,
         )
-        self.student.courses.add(self.course)
+        self.student.inboxes.add(self.inbox)
         self.student.set_password("test12345")
         self.student.save()
 
         self.ta = User.objects.create_user(
             username="admin", email="admin@ticketvise.com", password="test67891", is_staff=True
         )
-        self.ta.add_course(self.course, User.Roles.ASSISTANT)
+        self.ta.add_inbox(self.inbox, Role.AGENT)
         self.ta.set_password("test67891")
         self.ta.save()
 
         self.ta2 = User.objects.create_user(
             username="admin2", email="admin2@ticketvise.com", password="test67891", is_staff=True
         )
-        self.ta2.add_course(self.course, User.Roles.ASSISTANT)
+        self.ta2.add_inbox(self.inbox, Role.AGENT)
         self.ta2.set_password("test67891")
         self.ta2.save()
 
         self.ticket = Ticket.objects.create(author=self.student, assignee=self.ta,
                                             title="How to code?",
-                                            course=self.course, content="wat is 1+1?")
+                                            inbox=self.inbox, content="wat is 1+1?")
         self.ticket_2 = Ticket.objects.create(author=self.student, assignee=self.ta,
                                               title="How to code v2?",
-                                              course=self.course, content="wat is 2+1?")
+                                              inbox=self.inbox, content="wat is 2+1?")
         self.ticket_unassigned = Ticket.objects.create(author=self.student,
                                                        title="How to code v2?",
-                                                       course=self.course, content="wat is 2+1?")
+                                                       inbox=self.inbox, content="wat is 2+1?")
 
     def test_notification_page_200(self):
         """
@@ -80,7 +80,7 @@ class NotificationsTestCase(TestCase):
 
     def test_new_ticket_notification(self):
         """
-        When a new ticket is created, TA"s registered to the course, or the assigned TA should
+        When a new ticket is created, TA"s registered to the inbox, or the assigned TA should
         receive a notification.
 
         :return: None.
@@ -149,7 +149,7 @@ class NotificationsTestCase(TestCase):
 
     def test_unassigned_ticket(self):
         """
-        If a ticket has no assignee, all TA"s connected to a course must receive a notification.
+        If a ticket has no assignee, all TA"s connected to a inbox must receive a notification.
 
         :return: None.
         """
@@ -161,7 +161,7 @@ class NotificationsTestCase(TestCase):
 
         Ticket.objects.create(author=self.student, assignee=None,
                               title="How to code v3?",
-                              course=self.course, content="wat is 3+1?")
+                              inbox=self.inbox, content="wat is 3+1?")
 
         ticket_notification = TicketStatusChangedNotification.objects.filter(
             ticket__assignee=None, receiver=self.ta).exists()
@@ -213,8 +213,8 @@ class NotificationsTestCase(TestCase):
         for notification in Notification.objects.filter(receiver=self.ticket.author):
             self.assertFalse(notification.read)
 
-        self.client.get("/courses/{}/tickets/{}".format(self.ticket.course.id,
-                                                        self.ticket.ticket_course_id),
+        self.client.get("/inboxes/{}/tickets/{}".format(self.ticket.inbox.id,
+                                                        self.ticket.ticket_inbox_id),
                         follow=True)
 
         for notification in Notification.objects.filter(receiver=self.ticket.author):
@@ -319,7 +319,7 @@ class NotificationsTestCase(TestCase):
 
         no_notifications_ticket = Ticket.objects.create(author=self.student,
                                                         title="How to code v2?",
-                                                        course=self.course, content="wat is 2+1?")
+                                                        inbox=self.inbox, content="wat is 2+1?")
         comment = Comment.objects.create(ticket=no_notifications_ticket, author=self.ta2,
                                          content="@admin")
 
@@ -345,11 +345,11 @@ class NotificationsTestCase(TestCase):
         reply = Comment.objects.create(ticket=self.ticket, author=self.student, content="@admin", is_reply=True)
         comment_notification = CommentNotification.objects.create(comment=reply, receiver=self.ta)
         self.assertEqual(comment_notification.get_ticket_url(),
-                         reverse("ticket", args=[reply.ticket.course.id, reply.ticket.ticket_course_id]))
+                         reverse("ticket", args=[reply.ticket.inbox.id, reply.ticket.ticket_inbox_id]))
         self.assertEqual(comment_notification.get_title(), reply.ticket.title)
         self.assertEqual(comment_notification.get_author(), f"@{reply.author.username}")
         self.assertEqual(comment_notification.get_content(), f"{reply.author.get_full_name()} has posted a reply")
-        self.assertEqual(comment_notification.get_course(), self.ticket.course)
+        self.assertEqual(comment_notification.get_inbox(), self.ticket.inbox)
 
         comment = Comment.objects.create(ticket=self.ticket, author=self.student, content="@admin", is_reply=False)
         comment_notification = CommentNotification.objects.create(comment=comment, receiver=self.ta)
@@ -364,12 +364,12 @@ class NotificationsTestCase(TestCase):
         comment = Comment.objects.create(ticket=self.ticket, author=self.student, content="@admin", is_reply=True)
         mention_notification = MentionNotification.objects.create(comment=comment, receiver=self.ta)
         self.assertEqual(mention_notification.get_ticket_url(),
-                         reverse("ticket", args=[comment.ticket.course.id, comment.ticket.ticket_course_id]))
+                         reverse("ticket", args=[comment.ticket.inbox.id, comment.ticket.ticket_inbox_id]))
         self.assertEqual(mention_notification.get_title(), comment.ticket.title)
         self.assertEqual(mention_notification.get_author(), f"@{comment.author.username}")
         self.assertEqual(mention_notification.get_content(),
                          f"You have been mentioned by {comment.author.get_full_name()}")
-        self.assertEqual(mention_notification.get_course(), self.ticket.course)
+        self.assertEqual(mention_notification.get_inbox(), self.ticket.inbox)
 
     def test_getters_ticket_status_change(self):
         """
@@ -381,13 +381,13 @@ class NotificationsTestCase(TestCase):
         ticket_status_change = TicketStatusChangedNotification.objects.create(ticket=self.ticket, old_status="Pending",
                                                                               new_status="Closed", receiver=self.ta)
         self.assertEqual(ticket_status_change.get_ticket_url(),
-                         reverse("ticket", args=[comment.ticket.course.id, comment.ticket.ticket_course_id]))
+                         reverse("ticket", args=[comment.ticket.inbox.id, comment.ticket.ticket_inbox_id]))
         self.assertEqual(ticket_status_change.get_title(), self.ticket.title)
         self.assertEqual(ticket_status_change.get_author(), f"@{self.ticket.author.username}")
         self.assertEqual(ticket_status_change.get_content(),
                          f"Ticket status changed from \"{ticket_status_change.old_status}\" to "
                          f"\"{ticket_status_change.new_status}\"")
-        self.assertEqual(ticket_status_change.get_course(), self.ticket.course)
+        self.assertEqual(ticket_status_change.get_inbox(), self.ticket.inbox)
 
         ticket_status_change = TicketStatusChangedNotification.objects.create(ticket=self.ticket, new_status="Pending",
                                                                               receiver=self.ta)
@@ -404,4 +404,4 @@ class NotificationsTestCase(TestCase):
         self.assertRaises(NotImplementedError, notification.get_author)
         self.assertRaises(NotImplementedError, notification.get_title)
         self.assertRaises(NotImplementedError, notification.get_content)
-        self.assertRaises(NotImplementedError, notification.get_course)
+        self.assertRaises(NotImplementedError, notification.get_inbox)

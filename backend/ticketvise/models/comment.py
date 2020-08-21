@@ -66,17 +66,17 @@ class Comment(models.Model):
                 mail_vars = {"ticket": self.ticket, "comment": self}
 
                 send_email(
-                    "Mention in ticket #%s" % self.ticket.ticket_course_id, receiver.email, "ticket_mention", mail_vars
+                    "Mention in ticket #%s" % self.ticket.ticket_inbox_id, receiver.email, "ticket_mention", mail_vars
                 )
 
         if self.is_reply:
-            if self.ticket.status == "CLSD":
-                if self.author.id == self.ticket.author.id:
+            if self.author.is_assistant_or_coordinator(self.ticket.inbox):
+                self.ticket.status = "ANSD"
+            elif self.ticket.status == "CLSD":
+                if self.ticket.assignee:
                     self.ticket.status = "ASGD"
                 else:
-                    self.ticket.status = "ANSD"
-            elif self.author.id != self.ticket.author.id:
-                self.ticket.status = "ANSD"
+                    self.ticket.status = "PNDG"
 
             self.ticket.save()
 
@@ -87,15 +87,14 @@ class Comment(models.Model):
             message = CommentNotification(receiver=self.ticket.assignee, comment=self)
             message.save()
         else:
-            for receiver in self.ticket.course.get_assistants_and_coordinators():
+            for receiver in self.ticket.inbox.get_assistants_and_coordinators():
                 message = CommentNotification(receiver=receiver, comment=self)
                 message.save()
 
     def __str__(self):
         content = str(self.content)
-        content_length = len(content)
 
-        if content_length < MAX_COMMENT_CHAR_LENGTH:
+        if len(content) < MAX_COMMENT_CHAR_LENGTH:
             return content
         else:
             return content[:MAX_COMMENT_CHAR_LENGTH] + "..."

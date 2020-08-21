@@ -34,14 +34,14 @@
 
         <!-- LOAD THE NOTIFICATIONS. -->
         {% for notification in notifications %}
-            <article class="columns message-body" style="border-color:{{ notification.get_course.color }}">
+            <article class="columns message-body" style="border-color:{{ notification.get_inbox.color }}">
                 <div class="column is-one-fifth">
                     {% if notification.read %}
-                        <a class="media_course_name has-text-black"
-                           href="{{ notification.get_course.url }}">{{ notification.get_course.name }}</a>
+                        <a class="media_inbox_name has-text-black"
+                           href="{{ notification.get_inbox.url }}">{{ notification.get_inbox.name }}</a>
                     {% else %}
-                        <a class="media_course_name has-text-black has-text-weight-bold"
-                           href="{{ notification.get_course.url }}">{{ notification.get_course.name }}</a>
+                        <a class="media_inbox_name has-text-black has-text-weight-bold"
+                           href="{{ notification.get_inbox.url }}">{{ notification.get_inbox.name }}</a>
                     {% endif %}
                 </div>
 
