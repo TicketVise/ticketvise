@@ -37,7 +37,7 @@ class LtiView(FormView):
         return context
 
     def post(self, request, *args, **kwargs):
-        platform_redirect_url = request.POST.get("platform_redirect_url")
+        platform_redirect_url = request.GET.get("platform_redirect_url")
         if platform_redirect_url:
             return redirect(platform_redirect_url)
 
