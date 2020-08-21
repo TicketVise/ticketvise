@@ -30,22 +30,5 @@ if you see this, something is wrong!
 {% block javascript %}
 {% endblock javascript %}
 
-<script>
-    document.hasStorageAccess().then(hasAccess => {
-        console.log(hasAccess)
-
-        if (!hasAccess) {
-            return document.requestStorageAccess();
-        }
-    }).then(_ => {
-        if (!localStorage.getItem('checkStorageAccess')) {
-            localStorage.setItem('checkStorageAccess', true)
-            window.location.reload();
-        }
-    }).catch(e => {
-        console.log(e)
-    });
-</script>
-
 </body>
 </html>

@@ -5,7 +5,7 @@ from django.http import Http404
 from django.urls import reverse
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
-from django.views.generic import RedirectView
+from django.views.generic import RedirectView, TemplateView
 
 from ticketvise.models.inbox import Inbox
 from ticketvise.models.user import User, UserInbox, Role
@@ -13,16 +13,21 @@ from ticketvise.views.lti.validation import LtiLaunchForm
 
 
 @method_decorator(csrf_exempt, name="dispatch")
-class LtiView(RedirectView):
+class LtiView(TemplateView):
     """
     Implementation of the LTI launch. The form authenticates a user based on its data from the LMS. If the user is
     not present in the database a new one is created and will be associated with the inbox from where the launch was
     initiated from. The implementation also assigns the correct role to the user based on the inbox and LMS role.
     """
+    template_name = "lti.html"
 
-    query_string = True
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["next_url"] = self.get_redirect_url()
 
-    def get_redirect_url(self, *args, **kwargs):
+        return context
+
+    def get_redirect_url(self):
         """
         Handles the LTI launch request.
 
