@@ -3,16 +3,16 @@
         <avatar :source="notification.receiver.avatar_url" class="h-12 m-2"></avatar>
         <div class="flex-grow m-2 pl-2 border-l-4" :style="borderColor">
             <div class="flex-row" v-if="notification.read">
-                <a :href="ticketUrl">{{ notification.get_ticket.title }}</a> <span class="text-sm">{{ notification.get_author }} - {{ date }}</span>
+                <a :href="ticketUrl">{{ notification.get_ticket.title }}</a> <span class="text-sm">{{ notification.get_author }} - <span class="whitespace-no-wrap">{{ date }}</span></span>
             </div>
             <div class="flex-row font-semibold" v-else>
-                <a :href="ticketUrl">{{ notification.get_ticket.title }}</a> <span class="text-sm">{{ notification.get_author }} - {{ date }}</span>
+                <a :href="ticketUrl">{{ notification.get_ticket.title }}</a> <span class="text-sm">{{ notification.get_author }} - <span class="whitespace-no-wrap">{{ date }}</span></span>
             </div>
             <div class="flex-row">
                 {{ notification.get_content }}
             </div>
         </div>
-        <div class="my-2">
+        <div class="py-2">
             <button class="fa fa-envelope" v-if="!notification.read" @click="flipRead()"></button>
             <button class="fa fa-envelope-open-o" v-if="notification.read" @click="flipRead()"></button>
         </div>

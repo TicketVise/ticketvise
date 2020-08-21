@@ -40,7 +40,6 @@
         data() {
             return {
                 notifications: [],
-                search: "",
                 read: "",
                 pageNumber: 1
             }
@@ -77,7 +76,6 @@
             getNotifications() {
                 axios.get("/api/notifications", {
                     params: {
-                        search: this.search,
                         read: this.read
                     }
                 }).then(response => {
