@@ -1,7 +1,5 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db import models
-from django.http import JsonResponse
-from rest_framework.filters import SearchFilter
 from rest_framework.generics import ListAPIView, UpdateAPIView, get_object_or_404
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.response import Response
@@ -9,7 +7,7 @@ from rest_framework.serializers import ModelSerializer
 
 from ticketvise.models.inbox import Inbox
 from ticketvise.models.notification import Notification, CommentNotification, MentionNotification
-from ticketvise.models.ticket import TicketStatusChangedNotification, Ticket
+from ticketvise.models.ticket import TicketStatusChangedNotification, Ticket, Status
 from ticketvise.views.api.comment import CommentSerializer
 from ticketvise.views.api.inbox import InboxSerializer
 from ticketvise.views.api.security import UserHasAccessToTicketMixin
@@ -44,7 +42,7 @@ class MentionNotificationSerializer(ModelSerializer):
 class TicketStatusChangedNotificationSerializer(ModelSerializer):
     receiver = UserSerializer(read_only=True)
     get_ticket = TicketSerializer(read_only=True)
-    old_status = models.CharField(max_length=8, choices=Ticket.Status.choices)
+    old_status = models.CharField(max_length=8, choices=Status.choices)
     get_inbox = InboxSerializer(read_only=True)
 
     class Meta:
