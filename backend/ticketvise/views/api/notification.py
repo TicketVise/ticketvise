@@ -11,6 +11,7 @@ from ticketvise.models.notification import Notification, CommentNotification, Me
 from ticketvise.models.ticket import TicketStatusChangedNotification, Ticket
 from ticketvise.views.api.comment import CommentSerializer
 from ticketvise.views.api.inbox import InboxSerializer
+from ticketvise.views.api.security import UserHasAccessToTicketMixin
 from ticketvise.views.api.ticket import TicketSerializer
 from ticketvise.views.api.user import UserSerializer
 
@@ -18,36 +19,37 @@ from ticketvise.views.api.user import UserSerializer
 class CommentNotificationSerializer(ModelSerializer):
     receiver = UserSerializer(read_only=True)
     comment = CommentSerializer(read_only=True)
+    get_ticket = TicketSerializer(read_only=True)
     get_inbox = InboxSerializer(read_only=True)
 
     class Meta:
         model = CommentNotification
-        fields = ["id", "receiver", "date_created", "read", "comment", "get_title", "get_ticket_url", "get_author",
-                  "get_content", "get_inbox"]
+        fields = ["id", "receiver", "date_created", "read", "comment", "get_ticket", "get_author", "get_content",
+                  "get_inbox"]
 
 
 class MentionNotificationSerializer(ModelSerializer):
     receiver = UserSerializer(read_only=True)
     comment = CommentSerializer(read_only=True)
+    get_ticket = TicketSerializer(read_only=True)
     get_inbox = InboxSerializer(read_only=True)
 
     class Meta:
         model = MentionNotification
-        fields = ["id", "receiver", "date_created", "read", "comment", "get_title", "get_ticket_url", "get_author",
-                  "get_content", "get_inbox"]
+        fields = ["id", "receiver", "date_created", "read", "comment", "get_ticket", "get_author", "get_content",
+                  "get_inbox"]
 
 
 class TicketStatusChangedNotificationSerializer(ModelSerializer):
     receiver = UserSerializer(read_only=True)
-    ticket = TicketSerializer(read_only=True)
+    get_ticket = TicketSerializer(read_only=True)
     old_status = models.CharField(max_length=8, choices=Ticket.Status.choices)
     get_inbox = InboxSerializer(read_only=True)
 
     class Meta:
         model = TicketStatusChangedNotification
-        fields = ["id", "receiver", "date_created", "read", "ticket", "old_status", "get_title", "get_ticket_url",
-                  "get_author", "get_content",
-                  "get_inbox"]
+        fields = ["id", "receiver", "date_created", "read", "old_status", "get_ticket", "get_author",
+                  "get_content", "get_inbox"]
 
 
 class NotificationSerializer(ModelSerializer):
@@ -109,3 +111,11 @@ class NotificationsReadAll(LoginRequiredMixin, UpdateAPIView):
         Notification.objects.filter(receiver=self.request.user).update(read=True)
         return Response()
 
+
+class VisitTicketNotificationApi(UserHasAccessToTicketMixin, UpdateAPIView):
+    serializer_class = NotificationSerializer
+    queryset = Notification
+
+    def put(self, request, *args, **kwargs):
+        Notification.objects.filter(receiver=self.request.user).update(read=True)
+        return Response()

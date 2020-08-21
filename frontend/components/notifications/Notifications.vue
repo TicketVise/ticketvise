@@ -63,7 +63,7 @@
                 if (this.notifications.previous) {
                     this.pageNumber = this.notifications.previous.substring(0, this.notifications.previous.indexOf("="));
                     if (!this.pageNumber) {
-                        this.pageNumber = 1
+                        this.pageNumber = 1;
                         axios.get("/api/notifications").then(response => {
                             this.notifications = response.data
                         })

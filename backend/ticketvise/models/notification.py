@@ -28,11 +28,7 @@ class Notification(models.Model):
     date_created = models.DateTimeField(_("Date created"), auto_now_add=True)
 
     @property
-    def get_ticket_url(self):
-        raise NotImplementedError
-
-    @property
-    def get_title(self):
+    def get_ticket(self):
         raise NotImplementedError
 
     @property
@@ -57,18 +53,11 @@ class MentionNotification(Notification):
     comment = models.ForeignKey("Comment", models.CASCADE, related_name="mention_notifications")
 
     @property
-    def get_ticket_url(self):
+    def get_ticket(self):
         """
-        :return: The ticket url of the ticket connected.
+        :return: The ticket of the notification.
         """
-        return reverse("ticket", args=(self.comment.ticket.inbox_id, self.comment.ticket.ticket_inbox_id))
-
-    @property
-    def get_title(self):
-        """
-        :return: The title of the ticket that the comment was posted on.
-        """
-        return self.comment.ticket.title
+        return self.comment.ticket
 
     @property
     def get_author(self):
@@ -109,18 +98,11 @@ class CommentNotification(Notification):
     comment = models.ForeignKey("Comment", models.CASCADE, related_name="comment_notifications")
 
     @property
-    def get_ticket_url(self):
+    def get_ticket(self):
         """
-        :return: The ticket url of the notification.
+        :return: The ticket of the notification.
         """
-        return reverse("ticket", args=(self.comment.ticket.inbox_id, self.comment.ticket.ticket_inbox_id))
-
-    @property
-    def get_title(self):
-        """
-        :return: The title of the ticket that the comment was posted on.
-        """
-        return self.comment.ticket.title
+        return self.comment.ticket
 
     @property
     def get_author(self):

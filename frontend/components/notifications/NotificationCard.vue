@@ -3,10 +3,10 @@
         <avatar :source="notification.receiver.avatar_url" class="h-12 m-2"></avatar>
         <div class="flex-grow m-2 pl-2 border-l-4" :style="borderColor">
             <div class="flex-row" v-if="notification.read">
-                <a :href="notification.get_ticket_url">{{ notification.get_title }}</a> <span class="text-sm">{{ notification.get_author }} - {{ date }}</span>
+                <a :href="ticketUrl">{{ notification.get_ticket.title }}</a> <span class="text-sm">{{ notification.get_author }} - {{ date }}</span>
             </div>
             <div class="flex-row font-semibold" v-else>
-                <a :href="notification.get_ticket_url">{{ notification.get_title }}</a> <span class="text-sm">{{ notification.get_author }} - {{ date }}</span>
+                <a :href="ticketUrl">{{ notification.get_ticket.title }}</a> <span class="text-sm">{{ notification.get_author }} - {{ date }}</span>
             </div>
             <div class="flex-row">
                 {{ notification.get_content }}
@@ -36,6 +36,9 @@
                 return {
                     "border-color": this.notification.get_inbox.color
                 }
+            },
+            ticketUrl() {
+                return `/inboxes/${this.notification.get_inbox.id}/tickets/${this.notification.get_ticket.ticket_inbox_id}`
             }
         },
         methods: {
