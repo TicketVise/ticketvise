@@ -116,7 +116,7 @@ class VisitTicketNotificationApi(UserHasAccessToTicketMixin, UpdateAPIView):
 
     def put(self, request, *args, **kwargs):
         inbox = get_object_or_404(Inbox, pk=self.kwargs["inbox_id"])
-        ticket = get_object_or_404(Ticket, inbox=inbox, ticket_inbox_id=self.kwargs["ticket_inbox_id"])
+        ticket = Ticket.objects.get(inbox=inbox, ticket_inbox_id=self.kwargs["ticket_inbox_id"])
 
         MentionNotification.objects.filter(comment__ticket=ticket, receiver=self.request.user).update(read=True)
         TicketStatusChangedNotification.objects.filter(ticket=ticket, receiver=self.request.user).update(read=True)
