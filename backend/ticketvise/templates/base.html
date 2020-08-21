@@ -30,16 +30,16 @@ if you see this, something is wrong!
 {% block javascript %}
 {% endblock javascript %}
 
-<script>
-    if (document.hasOwnProperty('hasStorageAccess')) {
-        document.hasStorageAccess().then(hasAccess => {
-            if (!hasAccess) {
-                return document.requestStorageAccess();
-            }
-        }).then(_ => location.reload()).catch(e => {
-            console.log(e)
-        });
-    }
+<script type="text/javascript">
+    document.hasStorageAccess().then(hasAccess => {
+        console.log(hasAccess)
+
+        if (!hasAccess) {
+            return document.requestStorageAccess();
+        }
+    }).then(_ => location.reload()).catch(e => {
+        console.log(e)
+    });
 </script>
 
 </body>
