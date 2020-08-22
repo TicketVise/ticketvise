@@ -32,16 +32,9 @@ class LtiView(FormView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["full_window_launch_url"] = settings.LTI_HOST + "/lti"
+        context["full_window_launch_url"] = settings.LTI_HOST + "/lti/relaunch"
 
         return context
-
-    def post(self, request, *args, **kwargs):
-        platform_redirect_url = request.GET.get("platform_redirect_url")
-        if platform_redirect_url:
-            return redirect(platform_redirect_url)
-
-        return super().post(request, *args, **kwargs)
 
     def form_valid(self, form):
         """

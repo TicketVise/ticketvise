@@ -24,6 +24,7 @@ from ticketvise.views.inboxes import InboxesView
 from ticketvise.views.error import ErrorHandler
 from ticketvise.views.lti.config import LtiConfigView
 from ticketvise.views.lti.lti import LtiView
+from ticketvise.views.lti.relaunch import LtiRelaunchView
 from ticketvise.views.notifications import NotificationsView
 from ticketvise.views.profile import ProfileView
 from ticketvise.views.settings.lti import LtiSettingsView
@@ -34,6 +35,7 @@ from ticketvise.views.ticket_overview import TicketOverview
 urlpatterns = [
     path("admin/", admin.site.urls),
     path("lti", LtiView.as_view()),
+    path("lti/relaunch", LtiRelaunchView.as_view()),
     path("lti/config.xml", LtiConfigView.as_view()),
     path("settings/lti", LtiSettingsView.as_view(), name="settings_lti"),
     path("", InboxesView.as_view(), name="home"),
