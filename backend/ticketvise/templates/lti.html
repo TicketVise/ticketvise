@@ -61,32 +61,34 @@
 {% block javascript %}
 
 <script type="text/javascript">
+    const next_url = "{{ next_url }}"
+
     if (typeof document.hasStorageAccess === "function") {
         document.hasStorageAccess().then(hasAccess => {
-            const next_url = "{{ next_url }}"
             if (hasAccess && next_url !== "") {
                 window.location.href = "{{ next_url }}"
             }
         })
-    } else {
-        window.location.href = "{{ next_url }}"
+
+        const requestFullWindowLaunch = function () {
+            window.parent.postMessage({
+                messageType: "requestFullWindowLaunch",
+                data: "{{ full_window_launch_url }}",
+            }, "*");
+        }
+
+        document.getElementById("enable-button").addEventListener('click', function () {
+            document.requestStorageAccess().then(_ => {
+                document.cookie = "{{ session_cookie_name }}={{ session_cookie_value }}; Secure"
+                window.location.href = next_url
+            }).catch(_ => requestFullWindowLaunch())
+        })
+
+        document.getElementById("cancel-button").addEventListener("click", requestFullWindowLaunch)
+    } else if (next_url !== "") {
+        window.location.href = next_url
     }
 
-    const requestFullWindowLaunch = function () {
-        window.parent.postMessage({
-            messageType: "requestFullWindowLaunch",
-            data: "{{ full_window_launch_url }}",
-        }, "*");
-    }
-
-    document.getElementById("enable-button").addEventListener('click', function () {
-        document.requestStorageAccess().then(_ => {
-            document.cookie = "{{ session_cookie_name }}={{ session_cookie_value }}; Secure"
-            window.location.href = "{{ next_url }}"
-        }).catch(_ => requestFullWindowLaunch())
-    })
-
-    document.getElementById("cancel-button").addEventListener("click", requestFullWindowLaunch)
 </script>
 
 {% endblock javascript %}
