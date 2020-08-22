@@ -62,8 +62,6 @@
 <script type="text/javascript">
     document.hasStorageAccess().then(hasAccess => {
         const next_url = "{{ next_url }}"
-        console.log("access")
-        console.log(hasAccess)
         if (hasAccess && next_url !== "") {
             window.location.href = "{{ next_url }}"
         }
@@ -79,14 +77,8 @@
     document.getElementById("enable-button").addEventListener('click', function () {
         document.requestStorageAccess().then(_ => {
             document.cookie = "{{ session_cookie_name }}={{ session_cookie_value }}; Secure"
-            console.log("cookies: ")
-            console.log(document.cookie)
-
             window.location.href = "{{ next_url }}"
-        }).catch(e => {
-            console.log(e)
-            requestFullWindowLaunch()
-        })
+        }).catch(_ => requestFullWindowLaunch())
     })
 
     document.getElementById("cancel-button").addEventListener("click", requestFullWindowLaunch)
