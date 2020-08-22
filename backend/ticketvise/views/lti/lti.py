@@ -1,10 +1,11 @@
 from django.contrib.auth import login
 from django.contrib.auth.hashers import make_password
-from django.core.exceptions import PermissionDenied
+from django.core.exceptions import PermissionDenied, SuspiciousOperation
 from django.http import Http404
 from django.shortcuts import render, redirect
 from django.urls import reverse
 from django.utils.decorators import method_decorator
+from django.views import View
 from django.views.decorators.csrf import csrf_exempt
 from django.views.generic import RedirectView, TemplateView, FormView
 
@@ -15,37 +16,26 @@ from ticketvise.views.lti.validation import LtiLaunchForm
 
 
 @method_decorator(csrf_exempt, name="dispatch")
-class LtiView(FormView):
+class LtiView(View):
     """
     Implementation of the LTI launch. The form authenticates a user based on its data from the LMS. If the user is
     not present in the database a new one is created and will be associated with the inbox from where the launch was
     initiated from. The implementation also assigns the correct role to the user based on the inbox and LMS role.
     """
-    form_class = LtiLaunchForm
-    template_name = "lti.html"
 
-    def get_form_kwargs(self):
-        kwargs = super().get_form_kwargs()
-        kwargs["request"] = self.request
+    def get(self, request):
+        redirect_url = self.request.GET.get("platform_redirect_url")
+        if not redirect_url:
+            raise SuspiciousOperation("platform_redirect_url missing")
 
-        return kwargs
+        return render(request, "lti-relaunch.html", context={"url": redirect_url})
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context["full_window_launch_url"] = settings.LTI_HOST + "/lti/relaunch"
+    def post(self, request):
+        form = LtiLaunchForm(request.POST, request=request)
 
-        return context
+        if not form.is_valid():
+            raise PermissionDenied(form.errors.items())
 
-    def form_valid(self, form):
-        """
-        Handles the LTI launch request.
-
-        :param list args: Additional list arguments.
-        :param dict kwargs: Additional keyword arguments.
-
-        :return: The url to redirect the user.
-        :rtype: str or None
-        """
         user_id = form.cleaned_data["user_id"]
         first_name, last_name = form.cleaned_data["custom_user_full_name"].split(" ", 1)
         username = form.cleaned_data["custom_username"]
@@ -98,17 +88,17 @@ class LtiView(FormView):
             relation.role = user_role
             relation.save()
 
-        login(self.request, user)
+        login(request, user)
 
         next_url = reverse("ticket_overview", args=[inbox.id])
         if user.has_role_in_inbox(inbox, Role.GUEST):
             next_url = reverse("new_ticket", args=[inbox.id])
 
-        context = self.get_context_data()
-        context["next_url"] = next_url
-        context["session_cookie_name"] = "sessionid"
-        context["session_cookie_value"] = self.request.session.session_key
+        context = {
+            "next_url": next_url,
+            "full_window_launch_url": settings.LTI_HOST + "/lti",
+            "session_cookie_name": "sessionid",
+            "session_cookie_value": request.session.session_key
+        }
 
-        return render(self.request, self.template_name, context)
-
-
+        return render(request, "lti.html", context)

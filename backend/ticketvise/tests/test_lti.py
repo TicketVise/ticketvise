@@ -95,7 +95,7 @@ class LtiTestCase(TestCase):
 
         response = self.client.post("/lti", signed_data, follow=True,
                                     content_type="application/x-www-form-urlencoded")
-        self.assertEqual(response.template_name, ["lti.html"])
+        self.assertEqual(response.status_code, 403)
 
     def test_lti_invalid_timestamp(self):
         """
@@ -109,7 +109,7 @@ class LtiTestCase(TestCase):
 
         response = self.client.post("/lti", signed_data, follow=True,
                                     content_type="application/x-www-form-urlencoded")
-        self.assertEqual(response.template_name, ["lti.html"])
+        self.assertEqual(response.status_code, 403)
 
     def test_lti_no_inbox(self):
         """
