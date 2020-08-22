@@ -23,10 +23,6 @@ class LtiView(View):
     """
 
     def post(self, request):
-        redirect_url = self.request.GET.get("platform_redirect_url")
-        if redirect_url:
-            return render(request, "lti-relaunch.html", context={"url": redirect_url})
-
         form = LtiLaunchForm(request.POST, request=request)
 
         if not form.is_valid():
@@ -85,6 +81,10 @@ class LtiView(View):
             relation.save()
 
         login(request, user)
+
+        redirect_url = self.request.GET.get("platform_redirect_url")
+        if redirect_url:
+            return render(request, "lti-relaunch.html", context={"url": redirect_url})
 
         next_url = reverse("ticket_overview", args=[inbox.id])
         if user.has_role_in_inbox(inbox, Role.GUEST):

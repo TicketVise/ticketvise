@@ -78,7 +78,7 @@
 
     document.getElementById("enable-button").addEventListener('click', function () {
         document.requestStorageAccess().then(_ => {
-            document.cookie = "{{ session_cookie_name }}={{ session_cookie_value }}; Domain=ticketvise.com; Path=/; Secure"
+            document.cookie = "{{ session_cookie_name }}={{ session_cookie_value }}; Secure"
             console.log("cookies: ")
             console.log(document.cookie)
 
