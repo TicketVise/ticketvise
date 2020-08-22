@@ -23,14 +23,18 @@ class LtiView(View):
     initiated from. The implementation also assigns the correct role to the user based on the inbox and LMS role.
     """
 
-    def get(self, request):
-        redirect_url = self.request.GET.get("platform_redirect_url")
-        if not redirect_url:
-            raise SuspiciousOperation("platform_redirect_url missing")
-
-        return render(request, "lti-relaunch.html", context={"url": redirect_url})
+    # def get(self, request):
+    #     redirect_url = self.request.GET.get("platform_redirect_url")
+    #     if not redirect_url:
+    #         raise SuspiciousOperation("platform_redirect_url missing")
+    #
+    #     return render(request, "lti-relaunch.html", context={"url": redirect_url})
 
     def post(self, request):
+        redirect_url = self.request.GET.get("platform_redirect_url")
+        if redirect_url:
+            return render(request, "lti-relaunch.html", context={"url": redirect_url})
+
         form = LtiLaunchForm(request.POST, request=request)
 
         if not form.is_valid():
