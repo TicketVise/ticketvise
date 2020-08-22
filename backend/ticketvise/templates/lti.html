@@ -62,6 +62,7 @@
 <script type="text/javascript">
     document.hasStorageAccess().then(hasAccess => {
         const next_url = "{{ next_url }}"
+        console.log(hasAccess)
         if (hasAccess && next_url !== "") {
             window.location.href = "{{ next_url }}"
         }
@@ -76,8 +77,7 @@
 
     document.getElementById("enable-button").addEventListener('click', function () {
         document.requestStorageAccess().then(_ => {
-            document.cookie = "{{ session_cookie_name }}={{ session_cookie_value }}"
-            document.cookie = "test=1"
+            document.cookie = "{{ session_cookie_name }}={{ session_cookie_value }}; Path=/; Secure"
             console.log(document.cookie)
 
             window.location.href = "{{ next_url }}"
