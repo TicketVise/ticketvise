@@ -1,26 +1,8 @@
 {% extends "navigation.html" %}
 
 {% block content %}
-    {% include "utils/page_header.html" with title="Settings" subtitle="Configure your deployment" %}
-
-    <div class="container">
-        <!-- SHOW THE TABBED NAVIGATION. -->
-        <div class="section">
-            <div class="tabs">
-                <ul>
-                    <!-- LTI INTEGRATION TAB. -->
-                    <li>
-                        <a>
-                            <span>LTI integration</span>
-                        </a>
-                    </li>
-                </ul>
-            </div>
-        </div>
-
-        {% block settings-content %}
-            if you see this, something is wrong!
-        {% endblock settings-content %}
-    </div>
+{% block settings-content %}
+    if you see this, something is wrong!
+{% endblock settings-content %}
 
 {% endblock content %}

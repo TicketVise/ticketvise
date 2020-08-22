@@ -6,7 +6,7 @@ from ticketvise.views.api.inbox import InboxStaffApiView, InboxLabelsApiView, In
 from ticketvise.views.api.ticket import TicketApiView, TicketUpdateAssignee, \
     TicketStatusUpdateApiView, \
     RecentTicketApiView, InboxTicketsApiView, TicketLabelApiView, TicketCreateApiView, TicketSharedAPIView
-from ticketvise.views.api.user import UserRoleApiView, CurrentUserApiView, UserGetFromUsernameApiView, UserRoleByIdApiView
+from ticketvise.views.api.user import UserRoleApiView, CurrentUserApiView, UserGetFromUsernameApiView, UserRoleByIdApiView, NotificationsApiView
 
 urlpatterns = [
     path("inboxes/<int:inbox_id>", InboxApiView.as_view()),
@@ -28,4 +28,6 @@ urlpatterns = [
     path("inboxes/<int:inbox_id>/staff", InboxStaffApiView.as_view()),
     path("inboxes/<int:inbox_id>/labels", InboxLabelsApiView.as_view()),
     path("me", CurrentUserApiView.as_view()),
+    path("user", CurrentUserApiView.as_view()),
+    path("user/notifications", NotificationsApiView.as_view()),
 ]

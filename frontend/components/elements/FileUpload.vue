@@ -24,7 +24,7 @@
             </li>
         </ul>
 
-        <div class="p-6 bg-gray-100 border border-dashed border-gray-300 max-w-screen-sm" @dragover="dragover" @dragleave="dragleave" @drop="drop">
+        <div class="p-6 bg-gray-100 border border-dashed border-gray-300" @dragover="dragover" @dragleave="dragleave" @drop="drop">
             <input type="file" multiple name="fields[attachment][]" id="attachment"
                    class="w-px h-px opacity-0 overflow-hidden absolute" @change="onChange" ref="file"
                    :accept="accepted"/>
