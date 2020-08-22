@@ -90,6 +90,9 @@ class LtiView(View):
         if user.has_role_in_inbox(inbox, Role.GUEST):
             next_url = reverse("new_ticket", args=[inbox.id])
 
+        if "safari" not in request.META['HTTP_USER_AGENT'].lower():
+            return redirect(next_url)
+
         context = {
             "next_url": next_url,
             "full_window_launch_url": settings.LTI_HOST + "/lti",
