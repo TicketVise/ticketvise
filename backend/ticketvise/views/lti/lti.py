@@ -7,7 +7,6 @@ from django.urls import reverse
 from django.utils.decorators import method_decorator
 from django.views import View
 from django.views.decorators.csrf import csrf_exempt
-from django.views.generic import RedirectView, TemplateView, FormView
 
 from ticketvise import settings
 from ticketvise.models.inbox import Inbox
@@ -22,13 +21,6 @@ class LtiView(View):
     not present in the database a new one is created and will be associated with the inbox from where the launch was
     initiated from. The implementation also assigns the correct role to the user based on the inbox and LMS role.
     """
-
-    # def get(self, request):
-    #     redirect_url = self.request.GET.get("platform_redirect_url")
-    #     if not redirect_url:
-    #         raise SuspiciousOperation("platform_redirect_url missing")
-    #
-    #     return render(request, "lti-relaunch.html", context={"url": redirect_url})
 
     def post(self, request):
         redirect_url = self.request.GET.get("platform_redirect_url")
