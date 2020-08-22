@@ -26,7 +26,8 @@
                         </h3>
                         <div class="mt-2">
                             <p class="text-sm leading-5 text-gray-500">
-                                TicketVise requires third-party cookies to be enabled to function properly. These cookies are
+                                TicketVise requires third-party cookies to be enabled to function properly. These
+                                cookies are
                                 <span class="font-semibold">NOT</span> used for tracking your web activity but are used
                                 to
                                 maintain the session. We are working
@@ -60,12 +61,16 @@
 {% block javascript %}
 
 <script type="text/javascript">
-    document.hasStorageAccess().then(hasAccess => {
-        const next_url = "{{ next_url }}"
-        if (hasAccess && next_url !== "") {
-            window.location.href = "{{ next_url }}"
-        }
-    })
+    if (typeof document.hasStorageAccess === "function") {
+        document.hasStorageAccess().then(hasAccess => {
+            const next_url = "{{ next_url }}"
+            if (hasAccess && next_url !== "") {
+                window.location.href = "{{ next_url }}"
+            }
+        })
+    } else {
+        window.location.href = "{{ next_url }}"
+    }
 
     const requestFullWindowLaunch = function () {
         window.parent.postMessage({
