@@ -113,6 +113,8 @@ class LtiView(FormView):
 
         context = self.get_context_data()
         context["next_url"] = next_url
+        context["session_cookie_name"] = "sessionid"
+        context["session_cookie_value"] = self.request.session.session_key
 
         return render(self.request, self.template_name, context)
 

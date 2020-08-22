@@ -78,6 +78,7 @@
     document.getElementById("enable-button").addEventListener('click', function () {
         document.requestStorageAccess().then(_ => {
             console.log("request allowed")
+            document.cookie = "{{ session_cookie_name }}={{ session_cookie }}"
             window.location.href = "{{ next_url }}"
         }).catch(e => {
             console.log(e)
