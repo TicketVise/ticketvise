@@ -10,7 +10,6 @@ Contains all entity sets for the ticket database and TicketStatusChangedNotifica
 from django.db import models
 from django.db.models.signals import m2m_changed
 from django.dispatch import receiver
-from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
 from model_utils.managers import InheritanceManager
 
@@ -116,7 +115,7 @@ class Ticket(models.Model):
 
         if self.id:
             old_ticket = Ticket.objects.get(pk=self.id)
-            old_status = old_ticket.status
+            old_status = old_ticket.get_status()
         else:
             # + 1 so the ticket_inbox_id starts at 1 instead of 0.
             self.ticket_inbox_id = Ticket.objects.filter(inbox=self.inbox).count() + 1
@@ -233,25 +232,15 @@ class TicketStatusChangedNotification(Notification):
     #: The ticket's status after it changed.
     new_status = models.CharField(max_length=8, choices=Status.choices)
 
-    def get_ticket_url(self):
-        """
-        :return: The ticket url of the notification.
-        """
-        return reverse("ticket", args=(self.ticket.inbox_id, self.ticket.ticket_inbox_id))
-
-    def get_title(self):
-        """
-        :return: The title of the ticket.
-        """
-        return self.ticket.title
-
-    def get_author(self):
+    @property
+    def author(self):
         """
         :return: The author of the ticket, prefixed by ``@``.
         """
         return f"@{self.ticket.author.username}"
 
-    def get_content(self):
+    @property
+    def content(self):
         """
         :return: The content of the notification.
         """
@@ -260,7 +249,8 @@ class TicketStatusChangedNotification(Notification):
 
         return "A new ticket has been opened"
 
-    def get_inbox(self):
+    @property
+    def inbox(self):
         """
         :return: URL of the inbox connected.
         """
