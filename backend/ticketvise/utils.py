@@ -3,16 +3,12 @@ Utils
 -------------------------------
 Various utility functions for use in python files.
 """
-from base64 import b64encode
-from io import BytesIO
-from os import path
 
-import numpy as np
-from PIL import ImageColor, Image
+from PIL import ImageColor
 
-from .models.ticket import Ticket, Status
-from .models.user import User, Role
-from .settings import DEFAULT_AVATAR_PATH, DEFAULT_INBOX_IMAGE_PATH
+from .models.ticket import Status
+from .models.user import Role
+from .settings import DEFAULT_AVATAR_PATH
 
 
 def crop_image(image):
