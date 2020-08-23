@@ -23,6 +23,7 @@
         <lticm:property name="privacy_level">anonymous</lticm:property>
         <lticm:options name="course_navigation">
             <lticm:property name="enabled">true</lticm:property>
+            <lticm:property name="default">disabled</lticm:property>
         </lticm:options>
     </blti:extensions>
 
