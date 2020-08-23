@@ -91,7 +91,7 @@ class LtiView(View):
             next_url = reverse("new_ticket", args=[inbox.id])
 
         userAgent = request.META.get("HTTP_USER_AGENT", "").lower()
-        if ("chrome" in userAgent or "firefox" in userAgent) and "safari" not in userAgent:
+        if "chrome" in userAgent or "firefox" in userAgent:
             return redirect(next_url)
 
         context = {
