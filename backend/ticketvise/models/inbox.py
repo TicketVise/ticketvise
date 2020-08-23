@@ -6,7 +6,11 @@ Contains all entity sets for the inbox database.
 **Table of contents**
 * :class:`Inbox`
 """
+from django.core.files.base import ContentFile
 from django.db import models
+
+from os import path
+from PIL import Image
 
 from ticketvise.models.user import UserInbox, User, Role
 from ticketvise.models.validators import validate_hex_color
@@ -135,6 +139,14 @@ class Inbox(models.Model):
         return self.name
 
     def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
-        if self.image != DEFAULT_INBOX_IMAGE_PATH:
-            self.image = crop_image(self.image)
+        # p = ''
+        # if not path.exists(f"ticketvise/{self.image}") or self.image == DEFAULT_INBOX_IMAGE_PATH:
+        #     p = self.image
+        #     self.image = Image.open(f"ticketvise{DEFAULT_INBOX_IMAGE_PATH}")
+        # else:
+        #     p = self.image
+        #     self.image = Image.open(f"ticketvise/{self.image}")
+            
+        # self.image = crop_image(self.image)
+        # self.image.save(f"ticketvise/{p}", quality=60)
         super().save(force_insert, force_update, using, update_fields)
