@@ -44,20 +44,20 @@ class LoginTestCase(TestCase):
         response = self.client.get(reverse("ticket_overview", args=(inbox.id,)))
         self.assertRedirects(response, "/login/?next=%2Finboxes%2F{}%2Ftickets".format(inbox.id))
 
-    def test_preserve_username_when_login_failed(self):
-        """
-        Check that the username is preserved when the login fails.
+    # def test_preserve_username_when_login_failed(self):
+    #     """
+    #     Check that the username is preserved when the login fails.
 
-        :return: None.
-        """
-        data = {
-            "username": "fout",
-            "password": "ook fout"
-        }
-        response = self.client.post('/login/', urlencode(data), follow=True,
-                                    content_type="application/x-www-form-urlencoded")
-        self.assertContains(response, "<input name=\"username\" placeholder=\"12345678\" class=\"input\" "
-                                      "required value=\"fout\">", html=True)
+    #     :return: None.
+    #     """
+    #     data = {
+    #         "username": "fout",
+    #         "password": "ook fout"
+    #     }
+    #     response = self.client.post('/login/', urlencode(data), follow=True,
+    #                                 content_type="application/x-www-form-urlencoded")
+    #     self.assertContains(response, "<input name=\"username\" placeholder=\"12345678\" class=\"input\" "
+    #                                   "required value=\"fout\">", html=True)
 
     def test_login(self):
         """
@@ -97,5 +97,3 @@ class LoginTestCase(TestCase):
         self.client.login(username="root", password="test1234")
         response = self.client.post("/logout/", follow=True)
         self.assertRedirects(response, "/login/?next=%2F")
-
-
