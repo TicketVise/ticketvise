@@ -18,37 +18,37 @@ from ticketvise.views.api.user import UserSerializer
 class CommentNotificationSerializer(ModelSerializer):
     receiver = UserSerializer(read_only=True)
     comment = CommentSerializer(read_only=True)
-    get_ticket = TicketSerializer(read_only=True)
-    get_inbox = InboxSerializer(read_only=True)
+    ticket = TicketSerializer(read_only=True)
+    inbox = InboxSerializer(read_only=True)
 
     class Meta:
         model = CommentNotification
-        fields = ["id", "receiver", "date_created", "read", "comment", "get_ticket", "get_author", "get_content",
-                  "get_inbox"]
+        fields = ["id", "receiver", "date_created", "read", "comment", "ticket", "author", "content",
+                  "inbox"]
 
 
 class MentionNotificationSerializer(ModelSerializer):
     receiver = UserSerializer(read_only=True)
     comment = CommentSerializer(read_only=True)
-    get_ticket = TicketSerializer(read_only=True)
-    get_inbox = InboxSerializer(read_only=True)
+    ticket = TicketSerializer(read_only=True)
+    inbox = InboxSerializer(read_only=True)
 
     class Meta:
         model = MentionNotification
-        fields = ["id", "receiver", "date_created", "read", "comment", "get_ticket", "get_author", "get_content",
-                  "get_inbox"]
+        fields = ["id", "receiver", "date_created", "read", "comment", "ticket", "author", "content",
+                  "inbox"]
 
 
 class TicketStatusChangedNotificationSerializer(ModelSerializer):
     receiver = UserSerializer(read_only=True)
-    get_ticket = TicketSerializer(read_only=True)
+    ticket = TicketSerializer(read_only=True)
     old_status = models.CharField(max_length=8, choices=Status.choices)
-    get_inbox = InboxSerializer(read_only=True)
+    inbox = InboxSerializer(read_only=True)
 
     class Meta:
         model = TicketStatusChangedNotification
-        fields = ["id", "receiver", "date_created", "read", "old_status", "get_ticket", "get_author",
-                  "get_content", "get_inbox"]
+        fields = ["id", "receiver", "date_created", "read", "old_status", "ticket", "author",
+                  "content", "inbox"]
 
 
 class NotificationSerializer(ModelSerializer):

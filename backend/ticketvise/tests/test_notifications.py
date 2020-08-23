@@ -336,14 +336,14 @@ class NotificationsTestCase(TestCase):
         """
         reply = Comment.objects.create(ticket=self.ticket, author=self.student, content="@admin", is_reply=True)
         comment_notification = CommentNotification.objects.create(comment=reply, receiver=self.ta)
-        self.assertEqual(comment_notification.get_ticket, reply.ticket)
-        self.assertEqual(comment_notification.get_author, f"@{reply.author.username}")
-        self.assertEqual(comment_notification.get_content, f"{reply.author.get_full_name()} has posted a reply")
-        self.assertEqual(comment_notification.get_inbox, self.ticket.inbox)
+        self.assertEqual(comment_notification.ticket, reply.ticket)
+        self.assertEqual(comment_notification.author, f"@{reply.author.username}")
+        self.assertEqual(comment_notification.content, f"{reply.author.get_full_name()} has posted a reply")
+        self.assertEqual(comment_notification.inbox, self.ticket.inbox)
 
         comment = Comment.objects.create(ticket=self.ticket, author=self.student, content="@admin", is_reply=False)
         comment_notification = CommentNotification.objects.create(comment=comment, receiver=self.ta)
-        self.assertEqual(comment_notification.get_content, f"{comment.author.get_full_name()} has posted a comment")
+        self.assertEqual(comment_notification.content, f"{comment.author.get_full_name()} has posted a comment")
 
     def test_getters_mention_notifications(self):
         """
@@ -353,11 +353,11 @@ class NotificationsTestCase(TestCase):
         """
         comment = Comment.objects.create(ticket=self.ticket, author=self.student, content="@admin", is_reply=True)
         mention_notification = MentionNotification.objects.create(comment=comment, receiver=self.ta)
-        self.assertEqual(mention_notification.get_ticket, comment.ticket)
-        self.assertEqual(mention_notification.get_author, f"@{comment.author.username}")
-        self.assertEqual(mention_notification.get_content,
+        self.assertEqual(mention_notification.ticket, comment.ticket)
+        self.assertEqual(mention_notification.author, f"@{comment.author.username}")
+        self.assertEqual(mention_notification.content,
                          f"You have been mentioned by {comment.author.get_full_name()}")
-        self.assertEqual(mention_notification.get_inbox, self.ticket.inbox)
+        self.assertEqual(mention_notification.inbox, self.ticket.inbox)
 
     def test_getters_ticket_status_change(self):
         """
@@ -368,16 +368,16 @@ class NotificationsTestCase(TestCase):
         comment = Comment.objects.create(ticket=self.ticket, author=self.student, content="@admin", is_reply=True)
         ticket_status_change = TicketStatusChangedNotification.objects.create(ticket=self.ticket, old_status="Pending",
                                                                               new_status="Closed", receiver=self.ta)
-        self.assertEqual(ticket_status_change.get_ticket, self.ticket)
-        self.assertEqual(ticket_status_change.get_author, f"@{self.ticket.author.username}")
-        self.assertEqual(ticket_status_change.get_content,
+        self.assertEqual(ticket_status_change.ticket, self.ticket)
+        self.assertEqual(ticket_status_change.author, f"@{self.ticket.author.username}")
+        self.assertEqual(ticket_status_change.content,
                          f"Ticket status changed from \"{ticket_status_change.old_status}\" to "
                          f"\"{ticket_status_change.new_status}\"")
-        self.assertEqual(ticket_status_change.get_inbox, self.ticket.inbox)
+        self.assertEqual(ticket_status_change.inbox, self.ticket.inbox)
 
         ticket_status_change = TicketStatusChangedNotification.objects.create(ticket=self.ticket, new_status="Pending",
                                                                               receiver=self.ta)
-        self.assertEqual(ticket_status_change.get_content, "A new ticket has been opened")
+        self.assertEqual(ticket_status_change.content, "A new ticket has been opened")
 
     def test_notification_getters_not_implemented(self):
         """
@@ -387,13 +387,13 @@ class NotificationsTestCase(TestCase):
         """
         notification = Notification.objects.create(receiver=self.ta)
         with self.assertRaises(NotImplementedError):
-            notification.get_ticket
+            notification.ticket
         with self.assertRaises(NotImplementedError):
-            notification.get_author
+            notification.author
         with self.assertRaises(NotImplementedError):
-            notification.get_content
+            notification.content
         with self.assertRaises(NotImplementedError):
-            notification.get_inbox
+            notification.inbox
 
 
 class NotificationsAPITestCase(NotificationsTestCase):

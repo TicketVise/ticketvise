@@ -233,21 +233,14 @@ class TicketStatusChangedNotification(Notification):
     new_status = models.CharField(max_length=8, choices=Status.choices)
 
     @property
-    def get_ticket(self):
-        """
-        :return: The ticket of the notification.
-        """
-        return self.ticket
-
-    @property
-    def get_author(self):
+    def author(self):
         """
         :return: The author of the ticket, prefixed by ``@``.
         """
         return f"@{self.ticket.author.username}"
 
     @property
-    def get_content(self):
+    def content(self):
         """
         :return: The content of the notification.
         """
@@ -257,7 +250,7 @@ class TicketStatusChangedNotification(Notification):
         return "A new ticket has been opened"
 
     @property
-    def get_inbox(self):
+    def inbox(self):
         """
         :return: URL of the inbox connected.
         """

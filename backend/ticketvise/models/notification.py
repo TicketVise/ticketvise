@@ -28,19 +28,19 @@ class Notification(models.Model):
     date_created = models.DateTimeField(_("Date created"), auto_now_add=True)
 
     @property
-    def get_ticket(self):
+    def ticket(self):
         raise NotImplementedError
 
     @property
-    def get_author(self):
+    def author(self):
         raise NotImplementedError
 
     @property
-    def get_content(self):
+    def content(self):
         raise NotImplementedError
 
     @property
-    def get_inbox(self):
+    def inbox(self):
         raise NotImplementedError
 
 
@@ -53,28 +53,28 @@ class MentionNotification(Notification):
     comment = models.ForeignKey("Comment", models.CASCADE, related_name="mention_notifications")
 
     @property
-    def get_ticket(self):
+    def ticket(self):
         """
         :return: The ticket of the notification.
         """
         return self.comment.ticket
 
     @property
-    def get_author(self):
+    def author(self):
         """
         :return: The username of the author of the comment, prefixed by ``@``.
         """
         return f"@{self.comment.author.username}"
 
     @property
-    def get_content(self):
+    def content(self):
         """
         :return: The content of the notification.
         """
         return f"You have been mentioned by {self.comment.author.get_full_name()}"
 
     @property
-    def get_inbox(self):
+    def inbox(self):
         """
         :return: URL of the inbox connected.
         """
@@ -98,21 +98,21 @@ class CommentNotification(Notification):
     comment = models.ForeignKey("Comment", models.CASCADE, related_name="comment_notifications")
 
     @property
-    def get_ticket(self):
+    def ticket(self):
         """
         :return: The ticket of the notification.
         """
         return self.comment.ticket
 
     @property
-    def get_author(self):
+    def author(self):
         """
         :return: The username of the author of the comment, prefixed by ``@``.
         """
         return f"@{self.comment.author.username}"
 
     @property
-    def get_content(self):
+    def content(self):
         """
         :return: The content of the notification.
         """
@@ -122,7 +122,7 @@ class CommentNotification(Notification):
         return f"{self.comment.author.get_full_name()} has posted a comment"
 
     @property
-    def get_inbox(self):
+    def inbox(self):
         """
         :return: URL of the inbox connected.
         """
