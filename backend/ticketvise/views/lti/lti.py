@@ -90,7 +90,8 @@ class LtiView(View):
         if user.has_role_in_inbox(inbox, Role.GUEST):
             next_url = reverse("new_ticket", args=[inbox.id])
 
-        if "safari" not in request.META.get("HTTP_USER_AGENT", "").lower():
+        userAgent = request.META.get("HTTP_USER_AGENT", "").lower()
+        if ("chrome" in userAgent or "firefox" in userAgent) and "safari" not in userAgent:
             return redirect(next_url)
 
         context = {
