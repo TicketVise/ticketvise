@@ -11,7 +11,8 @@ from ticketvise.models.comment import Comment
 from ticketvise.models.inbox import Inbox
 from ticketvise.models.label import Label
 from ticketvise.models.notification import Notification, MentionNotification
-from ticketvise.models.ticket import Ticket, TicketStatusChangedNotification
+from ticketvise.models.ticket import Ticket, TicketStatusChangedNotification, TicketEvent, TicketStatusEvent, \
+    TicketAssigneeEvent, TicketLabelEvent, TicketTitleEvent
 from ticketvise.models.user import User, UserInbox
 
 
@@ -41,6 +42,11 @@ admin.site.register(Inbox)
 admin.site.register(UserInbox)
 admin.site.register(Label)
 admin.site.register(Ticket)
+admin.site.register(TicketEvent)
+admin.site.register(TicketStatusEvent)
+admin.site.register(TicketAssigneeEvent)
+admin.site.register(TicketLabelEvent)
+admin.site.register(TicketTitleEvent)
 admin.site.register(Comment)
 admin.site.register(Notification)
 admin.site.register(MentionNotification)

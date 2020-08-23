@@ -7,7 +7,7 @@ from django.utils import timezone
 from ticketvise.models.comment import Comment
 from ticketvise.models.inbox import Inbox
 from ticketvise.models.label import Label
-from ticketvise.models.ticket import Ticket
+from ticketvise.models.ticket import Ticket, Status
 from ticketvise.models.user import User, UserInbox, Role
 
 
@@ -186,7 +186,7 @@ class Command(BaseCommand):
         ticket_10.date_created = timezone.now() - datetime.timedelta(days=2, hours=19)
         ticket_10.date_edited = timezone.now() - datetime.timedelta(days=2, hours=19)
         ticket_10.add_label(label_pse_report)
-        ticket_10.status = Ticket.Status.ANSWERED
+        ticket_10.status = Status.ANSWERED
         ticket_10.save()
 
         ticket_11 = Ticket.objects.create(
@@ -200,7 +200,7 @@ class Command(BaseCommand):
         ticket_11.date_created = timezone.now() - datetime.timedelta(days=5, hours=2)
         ticket_11.date_edited = timezone.now() - datetime.timedelta(days=5, hours=2)
         ticket_11.add_label(label_pse_swebok)
-        ticket_11.status = Ticket.Status.ANSWERED
+        ticket_11.status = Status.ANSWERED
         ticket_11.save()
 
         ticket_12 = Ticket.objects.create(
@@ -235,7 +235,7 @@ class Command(BaseCommand):
             author=user_ivan,
             inbox=inbox_ds,
             title="What's the difference between a hash table and a linked list?",
-            status=Ticket.Status.ANSWERED,
+            status=Status.ANSWERED,
             content="Both seem to use a linked list..",
         )
         ticket_15.add_label(label_ds_list)
@@ -247,7 +247,7 @@ class Command(BaseCommand):
             assignee=user_ana,
             title="When is the next SWEBOK panel?",
             content="On Canvas the times do not indicate the group.",
-            status=Ticket.Status.ASSIGNED,
+            status=Status.ASSIGNED,
         )
         ticket_16.add_label(label_pse_swebok)
 
@@ -259,7 +259,7 @@ class Command(BaseCommand):
             content="E-Journal does not work",
         )
         ticket_17.add_label(label_pse_ejournal)
-        ticket_17.status = Ticket.Status.CLOSED
+        ticket_17.status = Status.CLOSED
         ticket_17.date_created = timezone.now() - datetime.timedelta(days=18, hours=2)
         ticket_17.date_edited = timezone.now() - datetime.timedelta(days=18, hours=2)
         ticket_17.save()
@@ -274,7 +274,7 @@ class Command(BaseCommand):
         ticket_18.date_created = timezone.now() - datetime.timedelta(days=4, hours=1)
         ticket_18.date_edited = timezone.now() - datetime.timedelta(days=4, hours=1)
         ticket_18.add_label(label_pse_assignment)
-        ticket_18.status = Ticket.Status.ANSWERED
+        ticket_18.status = Status.ANSWERED
         ticket_18.save()
 
         ticket_19 = Ticket.objects.create(
@@ -288,7 +288,7 @@ class Command(BaseCommand):
         ticket_19.date_edited = timezone.now() - datetime.timedelta(hours=23)
         ticket_19.add_label(label_pse_laptop)
         ticket_19.add_label(label_pse_report)
-        ticket_19.status = Ticket.Status.ANSWERED
+        ticket_19.status = Status.ANSWERED
         ticket_19.save()
 
         ticket_20 = Ticket.objects.create(
@@ -301,7 +301,7 @@ class Command(BaseCommand):
         ticket_20.date_created = timezone.now() - datetime.timedelta(days=9, hours=23)
         ticket_20.date_edited = timezone.now() - datetime.timedelta(days=9, hours=23)
         ticket_20.add_label(label_pse_lecture)
-        ticket_20.status = Ticket.Status.ANSWERED
+        ticket_20.status = Status.ANSWERED
         ticket_20.save()
 
         ticket_21 = Ticket.objects.create(
@@ -314,7 +314,7 @@ class Command(BaseCommand):
         ticket_21.date_created = timezone.now() - datetime.timedelta(days=3)
         ticket_21.date_edited = timezone.now() - datetime.timedelta(days=3)
         ticket_21.add_label(label_pse_laptop)
-        ticket_21.status = Ticket.Status.ANSWERED
+        ticket_21.status = Status.ANSWERED
         ticket_21.save()
 
         ticket_22 = Ticket.objects.create(
@@ -327,7 +327,7 @@ class Command(BaseCommand):
         ticket_22.date_created = timezone.now() - datetime.timedelta(days=1, hours=17)
         ticket_22.date_edited = timezone.now() - datetime.timedelta(days=1, hours=17)
         ticket_22.add_label(label_pse_ejournal)
-        ticket_22.status = Ticket.Status.ANSWERED
+        ticket_22.status = Status.ANSWERED
         ticket_22.save()
 
         ticket_23 = Ticket.objects.create(
@@ -336,7 +336,7 @@ class Command(BaseCommand):
             assignee=user_ana,
             title="Is there a lecture on the day of the demo?",
             content="Is there a lecture on the day of the demo? I want to make my report!",
-            status=Ticket.Status.ASSIGNED,
+            status=Status.ASSIGNED,
         )
         ticket_23.date_created = timezone.now() - datetime.timedelta(hours=2)
         ticket_23.date_edited = timezone.now() - datetime.timedelta(hours=2)
@@ -350,7 +350,7 @@ class Command(BaseCommand):
             assignee=user_tom,
             title="Why are there no project proposals for eJournal?",
             content="Why are there no project proposals for eJournal?",
-            status=Ticket.Status.ASSIGNED,
+            status=Status.ASSIGNED,
         )
         ticket_24.date_created = timezone.now() - datetime.timedelta(hours=1, minutes=23)
         ticket_24.date_edited = timezone.now() - datetime.timedelta(hours=1, minutes=23)
@@ -364,7 +364,7 @@ class Command(BaseCommand):
             assignee=user_jelle,
             title="Should the SWEBOK panel questions I answered in " + "eJournal be in my individual report?",
             content="Should the SWEBOK panel questions I answered in " + "eJournal be in my individual report?",
-            status=Ticket.Status.ASSIGNED,
+            status=Status.ASSIGNED,
         )
         ticket_25.date_created = timezone.now() - datetime.timedelta(minutes=43)
         ticket_25.date_edited = timezone.now() - datetime.timedelta(minutes=43)
@@ -382,7 +382,7 @@ class Command(BaseCommand):
         )
         ticket_26.add_label(label_pse_report)
         ticket_26.add_label(label_pse_assignment)
-        ticket_26.status = Ticket.Status.CLOSED
+        ticket_26.status = Status.CLOSED
         ticket_26.date_created = timezone.now() - datetime.timedelta(days=28, hours=17)
         ticket_26.date_edited = timezone.now() - datetime.timedelta(days=28, hours=17)
         ticket_26.save()
@@ -395,7 +395,7 @@ class Command(BaseCommand):
             content="Where can I find the SWEBOK?",
         )
         ticket_27.add_label(label_pse_swebok)
-        ticket_27.status = Ticket.Status.CLOSED
+        ticket_27.status = Status.CLOSED
         ticket_27.date_created = timezone.now() - datetime.timedelta(days=23, hours=13)
         ticket_27.date_edited = timezone.now() - datetime.timedelta(days=23, hours=13)
         ticket_27.save()
@@ -408,7 +408,7 @@ class Command(BaseCommand):
             content="Do we have to make any smaller assignments?",
         )
         ticket_28.add_label(label_pse_assignment)
-        ticket_28.status = Ticket.Status.CLOSED
+        ticket_28.status = Status.CLOSED
         ticket_28.date_created = timezone.now() - datetime.timedelta(days=15, hours=3)
         ticket_28.date_edited = timezone.now() - datetime.timedelta(days=15, hours=3)
         ticket_28.save()
@@ -421,7 +421,7 @@ class Command(BaseCommand):
             content="Which parts of SWEBOK do we have to read?",
         )
         ticket_29.add_label(label_pse_swebok)
-        ticket_29.status = Ticket.Status.CLOSED
+        ticket_29.status = Status.CLOSED
         ticket_29.date_created = timezone.now() - datetime.timedelta(days=18, hours=21)
         ticket_29.date_edited = timezone.now() - datetime.timedelta(days=18, hours=21)
         ticket_29.save()
@@ -435,7 +435,7 @@ class Command(BaseCommand):
         )
         ticket_30.add_label(label_pse_report)
         ticket_30.add_label(label_pse_assignment)
-        ticket_30.status = Ticket.Status.CLOSED
+        ticket_30.status = Status.CLOSED
         ticket_30.date_created = timezone.now() - datetime.timedelta(days=11, hours=15)
         ticket_30.date_edited = timezone.now() - datetime.timedelta(days=11, hours=15)
         ticket_30.save()
@@ -445,7 +445,7 @@ class Command(BaseCommand):
             content="How long should the demo be?",
         )
         ticket_31.add_label(label_pse_assignment)
-        ticket_31.status = Ticket.Status.PENDING
+        ticket_31.status = Status.PENDING
         ticket_31.date_created = timezone.now() - datetime.timedelta(minutes=5)
         ticket_31.date_edited = timezone.now() - datetime.timedelta(minutes=5)
         ticket_31.save()
@@ -458,7 +458,7 @@ class Command(BaseCommand):
         )
         ticket_32.add_label(label_pse_assignment)
         ticket_32.add_label(label_pse_report)
-        ticket_32.status = Ticket.Status.CLOSED
+        ticket_32.status = Status.CLOSED
         ticket_32.date_created = timezone.now() - datetime.timedelta(days=18, hours=2)
         ticket_32.date_edited = timezone.now() - datetime.timedelta(days=18, hours=2)
         ticket_32.save()
@@ -472,7 +472,7 @@ class Command(BaseCommand):
         details of the developers so I can tell them?",
         )
         ticket_33.add_label(label_pse_ejournal)
-        ticket_33.status = Ticket.Status.CLOSED
+        ticket_33.status = Status.CLOSED
         ticket_33.date_created = timezone.now() - datetime.timedelta(days=18, hours=5)
         ticket_33.date_edited = timezone.now() - datetime.timedelta(days=18, hours=5)
         ticket_33.save()
@@ -485,7 +485,7 @@ class Command(BaseCommand):
             content="The SWEBOK panel dates do not specify the group",
         )
         ticket_34.add_label(label_pse_swebok)
-        ticket_34.status = Ticket.Status.CLOSED
+        ticket_34.status = Status.CLOSED
         ticket_34.date_created = timezone.now() - datetime.timedelta(days=28, hours=16)
         ticket_34.date_edited = timezone.now() - datetime.timedelta(days=28, hours=16)
         ticket_34.save()
@@ -498,7 +498,7 @@ class Command(BaseCommand):
             content="I have to join a lecture of an extracurricular " + "inbox I am taking at the same time.",
         )
         ticket_35.add_label(label_pse_lecture)
-        ticket_35.status = Ticket.Status.CLOSED
+        ticket_35.status = Status.CLOSED
         ticket_35.date_created = timezone.now() - datetime.timedelta(days=28, hours=15)
         ticket_35.date_edited = timezone.now() - datetime.timedelta(days=28, hours=15)
         ticket_35.save()
@@ -513,7 +513,7 @@ class Command(BaseCommand):
         ticket_36.date_created = timezone.now() - datetime.timedelta(days=2, hours=18)
         ticket_36.date_edited = timezone.now() - datetime.timedelta(days=2, hours=18)
         ticket_36.add_label(label_pse_swebok)
-        ticket_36.status = Ticket.Status.ANSWERED
+        ticket_36.status = Status.ANSWERED
         ticket_36.save()
 
         # Create Comments

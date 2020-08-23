@@ -8,7 +8,7 @@
 {% load ticketvise_extras %}
 
 {% if inbox.image %}
-    <img id="{{ id }}" class="h-64 w-full object-cover rounded shadow-lg" src="data:image/png;base64, {% get_base64_inbox_image inbox %}" alt="No image found.">
+    <div style="background-image: url('{{ inbox.image }}')"></div>
 {% else %}
     <img src="" alt="No image found.">
 {% endif %}

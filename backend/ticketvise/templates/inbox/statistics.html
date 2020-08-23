@@ -9,45 +9,61 @@
         Last week
     </h3>
 
-    <div class="rounded-lg shadow flex my-4">
-        <div class="flex-grow border-r-2 p-4">
-            <h3 class="text-lg leading-6 font-medium text-gray-900">
-                Pending
-            </h3>
-            <div class="flex items-baseline mt-1">
-                <h2 class="text-2xl font-medium">{{ current_week_pending }}</h2>
-                <span class="ml-2 text-sm flex-grow text-gray-600">from {{ last_week_pending }} last week</span>
-                {% include "inbox/stat_increase_label.html" with value=pending_pct %}
+    <div class="container">
+
+        <h3 class="text-lg leading-6 font-medium text-gray-900">
+            Last week
+        </h3>
+
+        <div class="rounded-lg shadow flex my-4">
+            <div class="flex-grow border-r p-4">
+                <h3 class="text-lg leading-6 font-medium text-gray-900">
+                    Pending
+                </h3>
+                <div class="flex items-baseline mt-1">
+                    <h2 class="text-2xl font-medium">{{ current_week_pending }}</h2>
+                    <span class="ml-2 text-sm flex-grow text-gray-600">from {{ last_week_pending }} last week</span>
+                    {% if last_week_pending != 0 %}
+                        {% include "inbox/stat_increase_label.html" with value=pending_pct %}
+                    {% endif %}
+                </div>
             </div>
-        </div>
-        <div class="flex-grow border-r-2 p-4">
-            <h3 class="text-lg leading-6 font-medium text-gray-900">
-                Assigned
-            </h3>
-            <div class="flex items-baseline mt-1">
-                <h2 class="text-2xl font-medium">{{ current_week_assigned }}</h2>
-                <span class="ml-2 text-sm flex-grow text-gray-600">from {{ last_week_assigned }} last week</span>
-                {% include "inbox/stat_increase_label.html" with value=assigned_pct %}
+            <div class="flex-grow border-r p-4">
+                <h3 class="text-lg leading-6 font-medium text-gray-900">
+                    Assigned
+                </h3>
+                <div class="flex items-baseline mt-1">
+                    <h2 class="text-2xl font-medium">{{ current_week_assigned }}</h2>
+                    <span class="ml-2 text-sm flex-grow text-gray-600">from {{ last_week_assigned }} last week</span>
+                    {% if last_week_assigned != 0 %}
+                        {% include "inbox/stat_increase_label.html" with value=assigned_pct %}
+                    {% endif %}
+                </div>
             </div>
-        </div>
-        <div class="flex-grow p-4 border-r-2">
-            <h3 class="text-lg leading-6 font-medium text-gray-900">
-                Answered
-            </h3>
-            <div class="flex items-baseline mt-1">
-                <h2 class="text-2xl font-medium">{{ current_week_answered }}</h2>
-                <span class="ml-2 text-sm flex-grow text-gray-600">from {{ last_week_answered }} last week</span>
-                {% include "inbox/stat_increase_label.html" with value=answered_pct %}
+            <div class="flex-grow p-4 border-r">
+                <h3 class="text-lg leading-6 font-medium text-gray-900">
+                    Answered
+                </h3>
+                <div class="flex items-baseline mt-1">
+                    <h2 class="text-2xl font-medium">{{ current_week_answered }}</h2>
+                    <span class="ml-2 text-sm flex-grow text-gray-600">from {{ last_week_answered }} last week</span>
+                    {% if last_week_answered != 0 %}
+                        {% include "inbox/stat_increase_label.html" with value=answered_pct %}
+
+                    {% endif %}
+                </div>
             </div>
-        </div>
-        <div class="flex-grow p-4">
-            <h3 class="text-lg leading-6 font-medium text-gray-900">
-                Closed
-            </h3>
-            <div class="flex items-baseline mt-1">
-                <h2 class="text-2xl font-medium">{{ current_week_closed }}</h2>
-                <span class="ml-2 text-sm flex-grow text-gray-600">from {{ last_week_closed }} last week</span>
-                {% include "inbox/stat_increase_label.html" with value=closed_pct %}
+            <div class="flex-grow p-4">
+                <h3 class="text-lg leading-6 font-medium text-gray-900">
+                    Closed
+                </h3>
+                <div class="flex items-baseline mt-1">
+                    <h2 class="text-2xl font-medium">{{ current_week_closed }}</h2>
+                    <span class="ml-2 text-sm flex-grow text-gray-600">from {{ last_week_closed }} last week</span>
+                    {% if last_week_closed != 0 %}
+                        {% include "inbox/stat_increase_label.html" with value=closed_pct %}
+                    {% endif %}
+                </div>
             </div>
         </div>
     </div>
@@ -56,14 +72,15 @@
         Summary
     </h3>
 
-    <div class="flex">
-        <div class="rounded-lg shadow my-4 flex-grow p-4 mr-4">
-            <h3 class="text-lg leading-6 font-medium text-gray-900">
-                Total tickets
-            </h3>
-            <div class="flex items-baseline mt-1">
-                <h2 class="text-2xl font-medium">{{ total_tickets }}</h2>
-                <span class="ml-2 text-sm flex-grow text-gray-600">from 320 last week</span>
+        <div class="flex flex-wrap">
+            <div class="rounded-lg shadow my-4 flex-grow p-4 mr-4">
+                <h3 class="text-lg leading-6 font-medium text-gray-900">
+                    Total tickets
+                </h3>
+                <div class="flex items-baseline mt-1">
+                    <h2 class="text-2xl font-medium">{{ total_tickets }}</h2>
+                    <span class="ml-2 text-sm flex-grow text-gray-600">from {{ last_week_total_tickets }} last week</span>
+                </div>
             </div>
         </div>
 
@@ -84,6 +101,8 @@
                 <h2 class="text-2xl font-medium">{{ total_students }}</h2>
             </div>
         </div>
+
+        <div id="inbox-statistics"></div>
     </div>
 </div>
 

@@ -14,12 +14,11 @@ services:
       - POSTGRES_PASSWORD=${SQL_PASSWORD}
 
   web:
-    image: docker.pkg.github.com/ticketvise/ticketvise/backend:develop
+    image: docker.pkg.github.com/ticketvise/ticketvise/backend:latest
     command: >
       sh -c "env > /etc/environment && cron &&
              python manage.py wait_for_database &&
              python manage.py migrate --no-input &&
-             python manage.py insert_demo_data &&
              gunicorn ticketvise.wsgi:application --bind 0.0.0.0:6000"
     deploy:
       restart_policy:
@@ -40,7 +39,7 @@ services:
       - LTI_SECRET=${LTI_SECRET}
 
   proxy:
-    image: docker.pkg.github.com/ticketvise/ticketvise/proxy:develop
+    image: docker.pkg.github.com/ticketvise/ticketvise/proxy:latest
     deploy:
       restart_policy:
         condition: on-failure

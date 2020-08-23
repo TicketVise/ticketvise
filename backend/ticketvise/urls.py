@@ -13,6 +13,8 @@ from django.urls import path, re_path
 #: Contains the url paths for the website.
 from django.views.generic import RedirectView
 
+from ticketvise.models.label import Label
+from ticketvise.models.ticket import TicketLabel, Ticket
 from ticketvise.views.inbox.labels import InboxLabelsView, CreateInboxLabelView, EditInboxLabelView, \
     DeleteInboxLabelView
 from ticketvise.views.inbox.settings import InboxSettingsView
@@ -20,7 +22,6 @@ from ticketvise.views.inbox.statistics import InboxStatisticsView
 from ticketvise.views.inbox.users import InboxUserDeleteView, InboxUserView, InboxUsersView
 from ticketvise.views.inboxes import InboxesView
 from ticketvise.views.error import ErrorHandler
-from ticketvise.views.home import HomeView
 from ticketvise.views.lti.config import LtiConfigView
 from ticketvise.views.lti.lti import LtiView
 from ticketvise.views.notifications import NotificationsView
@@ -35,7 +36,7 @@ urlpatterns = [
     path("lti", LtiView.as_view()),
     path("lti/config.xml", LtiConfigView.as_view()),
     path("settings/lti", LtiSettingsView.as_view(), name="settings_lti"),
-    path("", HomeView.as_view()),
+    path("", InboxesView.as_view(), name="home"),
     path("inboxes/<int:inbox_id>/tickets/<int:ticket_inbox_id>", TicketView.as_view(), name="ticket"),
     path("inboxes/<int:inbox_id>/tickets/new", TicketFormView.as_view(), name="new_ticket"),
     path("inboxes/<int:inbox_id>/users/<int:pk>/delete", InboxUserDeleteView.as_view(), name="inbox_user_delete"),

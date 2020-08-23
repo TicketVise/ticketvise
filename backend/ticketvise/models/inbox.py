@@ -11,6 +11,7 @@ from django.db import models
 from ticketvise.models.user import UserInbox, User, Role
 from ticketvise.models.validators import validate_hex_color
 from ticketvise.settings import INBOX_IMAGE_DIRECTORY, DEFAULT_INBOX_IMAGE_PATH
+from ticketvise.utils import crop_image
 
 
 class SchedulingAlgorithm(models.TextChoices):
@@ -132,3 +133,8 @@ class Inbox(models.Model):
 
     def __str__(self):
         return self.name
+
+    def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
+        if self.image != DEFAULT_INBOX_IMAGE_PATH:
+            self.image = crop_image(self.image)
+        super().save(force_insert, force_update, using, update_fields)

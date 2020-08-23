@@ -8,11 +8,31 @@ Contains all entity sets for the ticket database and TicketStatusChangedNotifica
 * :class:`TicketStatuscChangedNotification`
 """
 from django.db import models
+from django.db.models.signals import m2m_changed
+from django.dispatch import receiver
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
+from model_utils.managers import InheritanceManager
 
 from ticketvise.email import send_email
+from ticketvise.middleware import CurrentUserMiddleware
+from ticketvise.models.label import Label
 from ticketvise.models.notification import Notification
+
+
+class Status(models.TextChoices):
+    """
+    Choices for the :attr:`Ticket.status` field.
+    """
+
+    #: Status when the ticket is first create and not automatically assigned.
+    PENDING = "PNDG", _("Pending")
+    #: Status when the ticket is assigned to an assistant.
+    ASSIGNED = "ASGD", _("Assigned")
+    #: Status when an assistant has replied to the ticket.
+    ANSWERED = "ANSD", _("Answered")
+    #: Status when the ticket has been resolved.
+    CLOSED = "CLSD", _("Closed")
 
 
 class Ticket(models.Model):
@@ -37,24 +57,6 @@ class Ticket(models.Model):
     title = models.CharField(max_length=100)
     #: Ticket ID for the inbox it is part of. Used in URLs and references.
     ticket_inbox_id = models.PositiveIntegerField()
-
-    class Meta:
-        unique_together = ("ticket_inbox_id", "inbox")
-
-    class Status(models.TextChoices):
-        """
-        Choices for the :attr:`Ticket.status` field.
-        """
-
-        #: Status when the ticket is first create and not automatically assigned.
-        PENDING = "PNDG", _("Pending")
-        #: Status when the ticket is assigned to an assistant.
-        ASSIGNED = "ASGD", _("Assigned")
-        #: Status when an assistant has replied to the ticket.
-        ANSWERED = "ANSD", _("Answered")
-        #: Status when the ticket has been resolved.
-        CLOSED = "CLSD", _("Closed")
-
     #: Ticket status. Must be one of the choices in :class:`Ticket.Status`.
     #: Defaults to :attr:`Ticket.Status.PENDING`.
     status = models.CharField(max_length=8, choices=Status.choices, default=Status.PENDING)
@@ -66,9 +68,12 @@ class Ticket(models.Model):
     #: The content inside the ticket.
     content = models.TextField()
     #: The :class:`Label` s associated with the ticket. Optional.
-    labels = models.ManyToManyField("Label", blank=True, related_name="tickets")
+    labels = models.ManyToManyField("Label", blank=True, related_name="tickets", through="TicketLabel")
     #: Indicates if the instance is active or not. Defaults to ``True``.
     is_active = models.BooleanField(_("Is active"), default=True)
+
+    class Meta:
+        unique_together = ("ticket_inbox_id", "inbox")
 
     def add_label(self, label):
         """
@@ -96,7 +101,7 @@ class Ticket(models.Model):
         :param User user: User to assign the ticket to.
         """
         self.assignee = receiver
-        self.status = Ticket.Status.ASSIGNED
+        self.status = Status.ASSIGNED
         self.save()
 
     def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
@@ -106,34 +111,51 @@ class Ticket(models.Model):
         assignee. Also send an email to the student that submitted the ticket if the status has changed to assigned
         or closed. Only send the change to assigned email if show assignee is enabled for the inbox.
         """
+        old_ticket = None
         old_status = None
 
         if self.id:
-            old_status = Ticket.objects.get(pk=self.id).get_status()
+            old_ticket = Ticket.objects.get(pk=self.id)
+            old_status = old_ticket.status
         else:
             # + 1 so the ticket_inbox_id starts at 1 instead of 0.
             self.ticket_inbox_id = Ticket.objects.filter(inbox=self.inbox).count() + 1
 
         super().save(force_insert, force_update, using, update_fields)
 
+        if old_ticket:
+            if old_ticket.status != self.status:
+                TicketStatusEvent.objects.create(ticket=self, initiator=CurrentUserMiddleware.get_current_user(),
+                                                 old_status=old_status, new_status=self.status)
+
+            if old_ticket.title != self.title:
+                TicketTitleEvent.objects.create(ticket=self, old_title=old_ticket.title, new_title=self.title,
+                                                initiator=CurrentUserMiddleware.get_current_user())
+
+            if self.assignee and old_ticket.assignee != self.assignee:
+                TicketAssigneeEvent.objects.create(ticket=self, assignee=self.assignee,
+                                                   initiator=CurrentUserMiddleware.get_current_user())
+
         if old_status == self.get_status():
             return
 
         if self.assignee:
             message = TicketStatusChangedNotification(
-                receiver=self.assignee, read=False, ticket=self, old_status=old_status, new_status=self.get_status()
+                receiver=self.assignee, read=False, ticket=self, old_status=old_status,
+                new_status=self.get_status()
             )
             message.save()
         else:
             for receiver in self.inbox.get_assistants_and_coordinators():
                 message = TicketStatusChangedNotification(
-                    receiver=receiver, read=False, ticket=self, old_status=old_status, new_status=self.get_status()
+                    receiver=receiver, read=False, ticket=self, old_status=old_status,
+                    new_status=self.get_status()
                 )
 
                 message.save()
 
         if self.author.notification_ticket_status_change_mail:
-            if not (self.status == Ticket.Status.ASSIGNED and not self.inbox.visibility_assignee):
+            if not (self.status == Status.ASSIGNED and not self.inbox.visibility_assignee):
                 mail_vars = {"ticket": self}
 
                 send_email(
@@ -147,19 +169,51 @@ class Ticket(models.Model):
         """
         :return: Ticket status in human-readable format.
         """
-        if self.status == Ticket.Status.PENDING:
+        if self.status == Status.PENDING:
             return "Pending"
-        elif self.status == Ticket.Status.ASSIGNED:
+        elif self.status == Status.ASSIGNED:
             return "Assigned"
-        elif self.status == Ticket.Status.ANSWERED:
+        elif self.status == Status.ANSWERED:
             return "Answered"
-        elif self.status == Ticket.Status.CLOSED:
+        elif self.status == Status.CLOSED:
             return "Closed"
         else:
             raise NotImplementedError(f"Status {self.status} not implemented")
 
-    def __str__(self):
-        return self.title
+
+class TicketLabel(models.Model):
+    ticket = models.ForeignKey(Ticket, on_delete=models.CASCADE)
+    label = models.ForeignKey(Label, on_delete=models.CASCADE)
+    date_created = models.DateTimeField(_("Date created"), auto_now_add=True)
+    date_edited = models.DateTimeField(_("Date edited"), auto_now=True, blank=True, null=True)
+
+    def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
+        super().save(force_insert, force_update, using, update_fields)
+
+        if not self.id:
+            TicketLabelEvent.objects.create(ticket=self.ticket, label=self.label, is_added=True,
+                                            initiator=CurrentUserMiddleware.get_current_user())
+
+    def delete(self, using=None, keep_parents=False):
+        TicketLabelEvent.objects.create(ticket=self.ticket, label=self.label, is_added=False,
+                                        initiator=CurrentUserMiddleware.get_current_user())
+
+        return super().delete(using, keep_parents)
+
+
+@receiver(m2m_changed, sender=Ticket.labels.through)
+def labels_changed_handler(sender, action, instance, model, **kwargs):
+    ticket = instance
+    labels = Label.objects.filter(id__in=kwargs["pk_set"])
+
+    if action == "post_add":
+        for label in labels:
+            TicketLabelEvent.objects.create(ticket=ticket, label=label, is_added=True,
+                                            initiator=CurrentUserMiddleware.get_current_user())
+    elif action == "post_remove":
+        for label in labels:
+            TicketLabelEvent.objects.create(ticket=ticket, label=label, is_added=False,
+                                            initiator=CurrentUserMiddleware.get_current_user())
 
 
 class TicketAttachment(models.Model):
@@ -175,9 +229,9 @@ class TicketStatusChangedNotification(Notification):
     #: The ticket that had its status changed.
     ticket = models.ForeignKey("Ticket", models.CASCADE, related_name="ticket_notifications")
     #: The ticket's status before it changed. Nullable.
-    old_status = models.CharField(max_length=8, choices=Ticket.Status.choices, null=True)
+    old_status = models.CharField(max_length=8, choices=Status.choices, null=True)
     #: The ticket's status after it changed.
-    new_status = models.CharField(max_length=8, choices=Ticket.Status.choices)
+    new_status = models.CharField(max_length=8, choices=Status.choices)
 
     def get_ticket_url(self):
         """
@@ -219,3 +273,29 @@ class TicketStatusChangedNotification(Notification):
         """
         if self.receiver.notification_ticket_status_change_app or self.receiver.notification_ticket_status_change_mail:
             super().save(force_insert, force_update, using, update_fields)
+
+
+class TicketEvent(models.Model):
+    objects = InheritanceManager()
+    ticket = models.ForeignKey(Ticket, on_delete=models.CASCADE)
+    initiator = models.ForeignKey("ticketvise.User", on_delete=models.CASCADE, null=True)
+    date_created = models.DateTimeField(auto_now_add=True)
+
+
+class TicketStatusEvent(TicketEvent):
+    old_status = models.CharField(max_length=8, choices=Status.choices, null=True)
+    new_status = models.CharField(max_length=8, choices=Status.choices, null=False)
+
+
+class TicketAssigneeEvent(TicketEvent):
+    assignee = models.ForeignKey("ticketvise.User", on_delete=models.CASCADE)
+
+
+class TicketLabelEvent(TicketEvent):
+    label = models.ForeignKey("ticketvise.Label", on_delete=models.CASCADE)
+    is_added = models.BooleanField()
+
+
+class TicketTitleEvent(TicketEvent):
+    old_title = models.CharField(max_length=100)
+    new_title = models.CharField(max_length=100)

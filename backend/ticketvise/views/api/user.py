@@ -67,7 +67,7 @@ class UserGetFromUsernameApiView(UserIsInInboxMixin, RetrieveAPIView):
 
     def handle_exception(self, exc):
         if isinstance(exc, Http404):
-            return JsonResponse({"username": ["Username not found within this course"]}, status=404)
+            return JsonResponse({"username": ["Username not found within this inbox"]}, status=404)
         return super().handle_exception(exc)
 
 

@@ -1,0 +1,39 @@
+<template>
+  <doughnut-chart
+      v-if="data"
+      :data="data"
+      :options="options"/>
+</template>
+
+<script>
+import axios from "axios";
+import DoughnutChart from "./DoughnutChart";
+
+export default {
+  components: {DoughnutChart},
+  data: () => ({
+    data: null,
+    options: {
+      responsive: true,
+      maintainAspectRatio: false
+    }
+  }),
+  async mounted() {
+    const response = await axios.get("/api" + window.location.pathname + "/labels/count");
+    this.data = {
+      labels: response.data.map(label => label.name),
+      datasets: [
+        {
+          label: "Labels",
+          backgroundColor: response.data.map(label => label.color),
+          data: response.data.map(label => label.count)
+        }
+      ]
+    }
+  }
+}
+</script>
+
+<style scoped>
+
+</style>

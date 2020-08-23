@@ -6,7 +6,7 @@ This file tests the scheduling algorithms to divide the workload amond TAs.
 from django.test import TestCase, Client
 
 from ticketvise.models.inbox import SchedulingAlgorithm
-from ticketvise.models.ticket import Ticket
+from ticketvise.models.ticket import Ticket, TicketLabel
 from ticketvise.models.user import User, UserInbox, Role
 from ticketvise.scheduling import schedule_ticket
 from ticketvise.tests.utils import create_inbox
@@ -56,6 +56,7 @@ class TicketTestCase(TestCase):
 
         :return: None.
         """
+        self.client.force_login(self.assistant3)
         self.inbox.scheduling_algorithm = SchedulingAlgorithm.MANUAL
         self.inbox.save()
 
@@ -86,7 +87,7 @@ class TicketTestCase(TestCase):
 
         for i in range(schedule_amount):
             for assistant in self.assistants:
-                self.ticket4.labels.clear()
+                TicketLabel.objects.filter(ticket=self.ticket4).delete()
                 self.ticket4.save()
 
                 schedule_ticket(self.ticket4)
@@ -94,3 +95,9 @@ class TicketTestCase(TestCase):
 
         self.assertEqual(self.inbox.round_robin_parameter,
                          schedule_amount * len(self.assistants))
+
+    def test_not_implemented_algorithm(self):
+        self.inbox.scheduling_algorithm = "Test"
+        with self.assertRaises(NotImplementedError):
+            schedule_ticket(self.ticket1)
+

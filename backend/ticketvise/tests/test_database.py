@@ -6,7 +6,7 @@ This file tests the database of the website.
 from django.core.exceptions import ValidationError
 from django.test import TestCase
 
-from ticketvise.models.ticket import Ticket
+from ticketvise.models.ticket import Ticket, Status
 from ticketvise.models.user import User, Role
 from ticketvise.models.validators import validate_hex_color
 from ticketvise.tests.utils import create_user, create_inbox, random_string
@@ -83,8 +83,8 @@ class DatabaseTestCase(TestCase):
         """
         # Setup
         student = create_user()
-        ticket_assigned = Ticket.objects.create(author=student, assignee=self.user, inbox=self.inbox, status=Ticket.Status.ASSIGNED)
-        ticket_closed = Ticket.objects.create(author=student, assignee=self.user, inbox=self.inbox, status=Ticket.Status.CLOSED)
+        ticket_assigned = Ticket.objects.create(author=student, assignee=self.user, inbox=self.inbox, status=Status.ASSIGNED)
+        ticket_closed = Ticket.objects.create(author=student, assignee=self.user, inbox=self.inbox, status=Status.CLOSED)
 
         self.user.add_inbox(self.inbox)
         self.user.set_role_for_inbox(self.inbox, self.role)
@@ -94,5 +94,5 @@ class DatabaseTestCase(TestCase):
         self.assertEqual(self.inbox.get_assistants_and_coordinators().first(), self.user)
         self.assertEqual(self.inbox.get_tickets_by_assignee(self.user).first(), ticket_assigned)
         self.assertEqual(self.inbox.get_tickets_by_author(student).first(), ticket_assigned)
-        self.assertEqual(self.inbox.get_tickets_by_assignee(self.user, Ticket.Status.CLOSED).first(), ticket_closed)
-        self.assertEqual(self.inbox.get_tickets_by_author(student, Ticket.Status.CLOSED).first(), ticket_closed)
+        self.assertEqual(self.inbox.get_tickets_by_assignee(self.user, Status.CLOSED).first(), ticket_closed)
+        self.assertEqual(self.inbox.get_tickets_by_author(student, Status.CLOSED).first(), ticket_closed)
