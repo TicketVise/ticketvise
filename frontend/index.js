@@ -15,7 +15,10 @@ window.axios = require('axios')
  * Import vue into our appliction.
  */
 import Vue from 'vue'
+window.Vue = Vue
 Vue.config.productionTip = false
+
+import 'alpinejs'
 
 /**
  * Load every vue single file components.
@@ -63,7 +66,8 @@ let components = {
     '/inboxes/*/tickets': ['ticket-overview'],
     '/inboxes/*/tickets/new': ['ticket-form'],
     '/inboxes/*/tickets/*': ['ticket'],
-    '/inboxes/*/statistics': ['inbox-statistics']
+    '/inboxes/*/statistics': ['inbox-statistics'],
+    '/profile': ['profile']
 }
 
 /* Now lets set them all up. */

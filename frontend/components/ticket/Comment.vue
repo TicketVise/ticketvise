@@ -7,7 +7,7 @@
                     <span class="font-semibold text-sm">
                         {{ comment.author.first_name }} {{comment.author.last_name}}
                     </span>
-                    <span class="text-xs ml-1">
+                    <span class="text-xs ml-1 hidden md:block">
                         @{{comment.author.username}}
                     </span>
                     <span class="text-xs flex-grow ml-1">· {{ natural_time }}</span>

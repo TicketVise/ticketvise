@@ -1,5 +1,5 @@
 <template>
-    <div class="flex flex-column flex-wrap w-full">
+    <div class="flex flex-column flex-wrap w-full pr-4">
         <div class="mt-3 w-full">
             <comment :comment="ticket"/>
             <comment v-for="comment in replies" :key="comment.id" :comment="comment" :ticket="ticket"/>
@@ -7,13 +7,16 @@
 
         <div class="flex w-full">
             <avatar :source="user.avatar_url" size="w-12 h-12 m-3"/>
-            <div class="flex-grow w-full">
-                <card outlined class="mb-2 w-full">
+            <div class="flex flex-col items-end flex-grow w-full mb-4">
+                <card outlined class="mb-4 w-full">
                     <editor ref="replyEditor" initialEditType="wysiwyg" previewStyle="tab"/>
                 </card>
-                <span class="shadow-sm rounded-md">
-                    <submit-button @click="submitReply" :text="button_text"></submit-button>
-                </span>
+                <button
+                    @click="submitReply"
+                    class="group relative w-full sm:w-auto flex justify-center sm:justify-start items-center py-2 px-4 border border-transparent text-sm leading-5 font-medium rounded-md text-white bg-primary hover:bg-orange-500 focus:outline-none focus:border-orange-700 focus:shadow-outline-orange active:bg-orange-700 transition duration-150 ease-in-out">
+                    <i class="fa fa-reply text-orange-200 absolute sm:relative left-4 sm:left-auto mr-2"></i>
+                    {{ button_text }}
+                </button>
             </div>
         </div>
     </div>

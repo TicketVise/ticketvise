@@ -1,5 +1,5 @@
 from django.shortcuts import get_object_or_404
-from rest_framework.generics import ListAPIView
+from rest_framework.generics import ListAPIView, RetrieveAPIView
 from rest_framework.serializers import ModelSerializer
 
 from ticketvise.models.inbox import Inbox
@@ -31,3 +31,9 @@ class InboxLabelsApiView(UserIsInInboxMixin, ListAPIView):
     def get_queryset(self):
         inbox = get_object_or_404(Inbox, pk=self.kwargs[self.inbox_key])
         return Label.objects.filter(inbox=inbox).order_by("name")
+
+
+class InboxApiView(UserIsInInboxMixin, RetrieveAPIView):
+    serializer_class = InboxSerializer
+    queryset = Inbox
+    lookup_url_kwarg = "inbox_id"

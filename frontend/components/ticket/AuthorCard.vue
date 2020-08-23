@@ -4,7 +4,7 @@
             <avatar :source="author.avatar_url" class="h-16 w-16"></avatar>
             <div class="px-4">
                 <div class="font-semibold text-gray-800 mb-1">{{ author.first_name }} {{ author.last_name }}</div>
-                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-gray-200 text-gray-800">
+                <span v-if="role" class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-gray-200 text-gray-800">
                     {{role.label}}
                 </span>
             </div>

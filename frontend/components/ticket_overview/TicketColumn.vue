@@ -1,6 +1,6 @@
 <template>
   <div class="flex-1 border rounded border-gray-700 border-opacity-50 border-t-0 bg-gray-100" :id="title">
-    <div class="py-1 text-center border-t-2 bg-white" :style="`border-color: ${color};`">
+    <div class="py-1 text-center border-t-2 bg-white rounded-tl rounded-tr" :style="`border-color: ${color};`">
       <p>{{ title }} (<strong>{{ ticketList.length }}</strong>)</p>
 
       <div class="is-marginless pretty p-icon p-round select-column" style="display: none;">
@@ -34,7 +34,6 @@
       </div>
     </div>
   </div>
-
 </template>
 
 <script>
