@@ -2,7 +2,7 @@ version: '3.7'
 
 services:
   web:
-    image: ticketvise/ticketvise/backend:latest
+    image: ticketvise/backend
     build:
       context: .
     command: >
@@ -22,7 +22,7 @@ services:
       - LTI_SECRET=LtiSecret01
 
   proxy:
-    image: ticketvise/ticketvise/proxy:latest
+    image: ticketvise/proxy
     build: ./nginx
     ports:
       - 8000:8000
