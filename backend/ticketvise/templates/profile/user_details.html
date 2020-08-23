@@ -33,7 +33,6 @@
     <form method="post"
           onsubmit="return confirm('This will delete your account and all your information for good. Are you sure?')">
         {% csrf_token %}
-        <a class="button is-success" href="{% url "password_change" %}">Change password</a>
         <input type="hidden" name="action" value="delete_account"/>
         <button type="submit" class="button is-danger" name="delete_account">
             Delete account

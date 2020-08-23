@@ -8,6 +8,7 @@ from django.conf.urls import include
 from django.conf.urls.static import static
 from django.contrib import admin
 from django.contrib.auth import views as auth_views
+from django.contrib.auth.views import LoginView, LogoutView
 from django.urls import path, re_path
 
 #: Contains the url paths for the website.
@@ -53,12 +54,8 @@ urlpatterns = [
     path("inboxes", InboxesView.as_view(), name="inboxes"),
     path("notifications", NotificationsView.as_view(), name="notifications"),
     path("error/<int:error_code>", ErrorHandler.as_view(), name="error"),
-    path(
-      "password_reset/",
-      auth_views.PasswordResetView.as_view(
-          html_email_template_name="registration/password_reset_html_email.html"),
-    ),
-    path("", include("django.contrib.auth.urls")),
+    path('login/', LoginView.as_view(), name='login'),
+    path('logout/', LogoutView.as_view(), name='logout'),
     re_path(r"^api/", include("ticketvise.views.api.urls"))
     ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 

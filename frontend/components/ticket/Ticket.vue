@@ -205,7 +205,6 @@ export default {
     axios.get("/api" + window.location.pathname + "/replies").then(response => {
       this.replies = response.data;
     });
-
   },
   computed: {
     date: function () {
@@ -265,14 +264,9 @@ export default {
       axios.put("/api" + window.location.pathname + "/shared", formData).then(response => {
 
       }).catch(error => {
-            this.errors = error.response.data
-          }
-      )
+        this.errors = error.response.data
+      })
     }
   }
 }
 </script>
-
-<style scoped>
-
-</style>
