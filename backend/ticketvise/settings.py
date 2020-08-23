@@ -95,9 +95,9 @@ CSP_SCRIPT_SRC = [
 CSP_IMG_SRC = ["*", "data:"]
 CSP_DEFAULT_SRC = ["'self'", "'unsafe-inline'", "'unsafe-eval'"]
 
-CSRF_COOKIE_SAMESITE = None
+CSRF_COOKIE_SAMESITE = "None"
 CSRF_COOKIE_SECURE = not DEBUG
-SESSION_COOKIE_SAMESITE = None
+SESSION_COOKIE_SAMESITE = "None"
 SESSION_COOKIE_SECURE = not DEBUG
 
 #: WSGI application path.
