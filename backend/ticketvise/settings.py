@@ -6,10 +6,6 @@ some custom.
 """
 import os
 
-from dotenv import load_dotenv
-
-load_dotenv()
-
 #: Project base directory.
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -81,23 +77,18 @@ CSP_FRAME_ANCESTORS = ["https://uvadlo-tes.instructure.com", "https://*.uva.nl"]
 CSP_STYLE_SRC = [
     "'self'",
     "'unsafe-inline'",
-    "*.gstatic.com",
-    "https://uicdn.toast.com/editor/latest/toastui-editor.min.css",
-    "https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.48.4/codemirror.min.css"
 ]
 CSP_SCRIPT_SRC = [
     "'self'",
     "'unsafe-inline'",
-    "*.gstatic.com",
     "'unsafe-eval'",
-    "https://uicdn.toast.com/editor/latest/toastui-editor-all.min.js"
 ]
 CSP_IMG_SRC = ["*", "data:"]
 CSP_DEFAULT_SRC = ["'self'", "'unsafe-inline'", "'unsafe-eval'"]
 
-CSRF_COOKIE_SAMESITE = None
+CSRF_COOKIE_SAMESITE = "None"
 CSRF_COOKIE_SECURE = not DEBUG
-SESSION_COOKIE_SAMESITE = None
+SESSION_COOKIE_SAMESITE = "None"
 SESSION_COOKIE_SECURE = not DEBUG
 
 #: WSGI application path.

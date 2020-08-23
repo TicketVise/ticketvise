@@ -98,42 +98,4 @@ class LoginTestCase(TestCase):
         response = self.client.post("/logout/", follow=True)
         self.assertRedirects(response, "/login/?next=%2F")
 
-    def test_password_change_page_200(self):
-        """
-        Authorized users should be able to see the change password page.
 
-        :return: None.
-        """
-        self.client.login(username="root", password="test1234")
-        response = self.client.post(reverse("password_change"), follow=True)
-        self.assertEqual(response.status_code, 200)
-
-    def test_password_change_page_401(self):
-        """
-        Unauthorized users should be redirected to the login page. When logged in
-        it should redirect to the password_change page.
-
-        :return: None.
-        """
-        response = self.client.post(reverse("password_change"), follow=True)
-        self.assertRedirects(response, '/login/?next=' + reverse("password_change"))
-
-    def test_password_change_done_page_200(self):
-        """
-        Authorized users should be able to see the change password done page.
-
-        :return: None.
-        """
-        self.client.login(username="root", password="test1234")
-        response = self.client.post(reverse("password_change"), follow=True)
-        self.assertEqual(response.status_code, 200)
-
-    def test_password_change_done_page_401(self):
-        """
-        Unauthorized users should be redirected to the login page. When logged in
-        it should redirect to the password change done page.
-
-        :return: None.
-        """
-        response = self.client.post(reverse("password_change"), follow=True)
-        self.assertRedirects(response, '/login/?next=' + reverse("password_change"))

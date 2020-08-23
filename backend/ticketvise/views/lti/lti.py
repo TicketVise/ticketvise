@@ -1,38 +1,29 @@
 from django.contrib.auth import login
 from django.contrib.auth.hashers import make_password
-from django.core.exceptions import PermissionDenied
+from django.core.exceptions import PermissionDenied, SuspiciousOperation
 from django.http import Http404
+from django.shortcuts import render, redirect
 from django.urls import reverse
 from django.utils.decorators import method_decorator
+from django.views import View
 from django.views.decorators.csrf import csrf_exempt
-from django.views.generic import RedirectView
 
+from ticketvise import settings
 from ticketvise.models.inbox import Inbox
 from ticketvise.models.user import User, UserInbox, Role
 from ticketvise.views.lti.validation import LtiLaunchForm
 
 
 @method_decorator(csrf_exempt, name="dispatch")
-class LtiView(RedirectView):
+class LtiView(View):
     """
     Implementation of the LTI launch. The form authenticates a user based on its data from the LMS. If the user is
     not present in the database a new one is created and will be associated with the inbox from where the launch was
     initiated from. The implementation also assigns the correct role to the user based on the inbox and LMS role.
     """
 
-    query_string = True
-
-    def get_redirect_url(self, *args, **kwargs):
-        """
-        Handles the LTI launch request.
-
-        :param list args: Additional list arguments.
-        :param dict kwargs: Additional keyword arguments.
-
-        :return: The url to redirect the user.
-        :rtype: str or None
-        """
-        form = LtiLaunchForm(self.request.POST, request=self.request)
+    def post(self, request):
+        form = LtiLaunchForm(request.POST, request=request)
 
         if not form.is_valid():
             raise PermissionDenied(form.errors.items())
@@ -89,9 +80,25 @@ class LtiView(RedirectView):
             relation.role = user_role
             relation.save()
 
-        login(self.request, user)
+        login(request, user)
 
+        redirect_url = self.request.GET.get("platform_redirect_url")
+        if redirect_url:
+            return render(request, "lti-relaunch.html", context={"url": redirect_url})
+
+        next_url = reverse("ticket_overview", args=[inbox.id])
         if user.has_role_in_inbox(inbox, Role.GUEST):
-            return reverse("new_ticket", args=[inbox.id])
+            next_url = reverse("new_ticket", args=[inbox.id])
 
-        return reverse("ticket_overview", args=[inbox.id])
+        user_agent = request.META.get("HTTP_USER_AGENT", "").lower()
+        if "chrome" in user_agent or "firefox" in user_agent:
+            return redirect(next_url)
+
+        context = {
+            "next_url": next_url,
+            "full_window_launch_url": settings.LTI_HOST + "/lti",
+            "session_cookie_name": "sessionid",
+            "session_cookie_value": request.session.session_key
+        }
+
+        return render(request, "lti.html", context)
