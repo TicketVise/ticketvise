@@ -22,7 +22,7 @@
       </div>
     </nav>
     <notification-card v-for="notification in notifications.results" :key="notification.id"
-                       :notification="notification"></notification-card>
+                       :notification="notification" v-on:input="getNotificationCount"></notification-card>
     <div class="flex justify-end w-full">
       <submit-button v-on:click.native=prevPage() text="Prev" class="m-2"
                      v-if="notifications.previous"></submit-button>
@@ -53,7 +53,7 @@
     created() {
       axios.get("/api/notifications").then(response => {
         this.notifications = response.data;
-
+        this.getNotificationCount()
       })
     },
     methods: {
@@ -85,6 +85,7 @@
           }
         }).then(response => {
           this.notifications = response.data
+          this.getNotificationCount()
         })
       },
       getNotificationCount() {
