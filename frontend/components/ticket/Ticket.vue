@@ -24,7 +24,7 @@
         </div>
 
         <!-- Assignee -->
-        <edit-assignee :ticket="ticket" :staff="staff"></edit-assignee>
+        <edit-assignee v-if="is_staff" :ticket="ticket" :staff="staff"></edit-assignee>
 
         <!-- Participants -->
         <div class="p-4 pt-2">
