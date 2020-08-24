@@ -42,6 +42,9 @@
           {{ label.name }}
         </chip>
       </div>
+      <div class="flex flex-wrap mb-2" v-else>
+        No labels selected
+      </div>
       <div class="mb-4">
         <label-dropdown :values="inbox_labels" v-model="labels"/>
       </div>
