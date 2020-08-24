@@ -2,7 +2,7 @@
   <div class="flex w-full my-1">
     <avatar :source="notification.receiver.avatar_url" class="h-12 m-2"></avatar>
     <div class="flex-grow m-2 pl-2 border-l-4" :style="borderColor">
-      <div class="flex-row" v-if="notification.read">
+      <div class="flex-row" v-if="notification.is_read">
         <a :href="ticketUrl">{{ notification.ticket.title }}</a> <span class="text-sm">{{ notification.author }} - <span
               class="whitespace-no-wrap">{{ date }}</span></span>
       </div>
@@ -15,8 +15,8 @@
       </div>
     </div>
     <div class="py-2">
-      <button class="fa fa-envelope" v-if="!notification.read" @click="flipRead()"></button>
-      <button class="fa fa-envelope-open-o" v-if="notification.read" @click="flipRead()"></button>
+      <button class="fa fa-envelope" v-if="!notification.is_read" @click="flipRead()"></button>
+      <button class="fa fa-envelope-open-o" v-if="notification.is_read" @click="flipRead()"></button>
     </div>
   </div>
 </template>
@@ -46,13 +46,13 @@
     methods: {
       flipRead() {
         let formData = new FormData;
-        formData.append("read", this.notification.read ? "False" : "True");
+        formData.append("is_read", this.notification.is_read ? "False" : "True");
 
         axios.defaults.xsrfCookieName = 'csrftoken';
         axios.defaults.xsrfHeaderName = "X-CSRFTOKEN";
 
         axios.put("/api/notifications/" + this.notification.id + "/read", formData).then(response => {
-          this.notification.read = response.data.read
+          this.notification.is_read = response.data.is_read
         })
       }
     }
