@@ -2,9 +2,9 @@
   <div>
     <h4 class="font-semibold text-gray-800 mb-1">Recent questions</h4>
     <ul class="list-none">
-      <li v-for="ticket in tickets" :key="ticket.id">
-        <a class="block px-2 py-0.5 bg-gray-100 rounded hover:bg-gray-200 text-sm truncate"
-           :href="'/inboxes/' + inbox_id + '/tickets/' + ticket.ticket_inbox_id">
+      <li :key="ticket.id" v-for="ticket in tickets">
+        <a :href="'/inboxes/' + inbox_id + '/tickets/' + ticket.ticket_inbox_id"
+           class="block px-2 py-0.5 bg-gray-100 rounded hover:bg-gray-200 text-sm truncate">
           <span class="font-semibold mr-2">#{{ticket.ticket_inbox_id}}</span>
           {{ticket.title}}
         </a>

@@ -49,7 +49,8 @@
         <div class="m-4 mt-2 xl:flex xl:items-center xl:justify-between">
           <div class="flex-1 min-w-0">
             <a :href="`/inboxes/${ticket.inbox}/tickets`" class="text-xs text-gray-700 hover:underline cursor-pointer">
-              <i class="fa fa-arrow-left mr-2"></i>
+              <i
+                      class="fa fa-arrow-left mr-2"></i>
               {{ inbox ? inbox.name : '' }}
             </a>
             <h2 class="text-2xl font-bold leading-7 text-gray-900 sm:text-3xl sm:leading-9 sm:truncate">
@@ -158,7 +159,7 @@
         staff: [],
         activeTab: 'external',
         user: null,
-        role: null,
+        role: "",
         shared_with: [],
         errors: [],
         status: {
@@ -172,6 +173,12 @@
     mounted() {
       axios.get("/api" + window.location.pathname).then(response => {
         this.ticket = response.data;
+
+        axios.defaults.xsrfCookieName = 'csrftoken';
+        axios.defaults.xsrfHeaderName = "X-CSRFTOKEN";
+
+        axios.put("/api/notifications/read" + window.location.pathname).then(_ => {
+        });
 
         axios.get("/api/me").then(response => {
           this.user = response.data;
@@ -260,7 +267,7 @@
         let formData = new FormData()
         this.shared_with.forEach(shared_with => formData.append("shared_with", shared_with.id))
 
-        axios.defaults.xsrfCookieName = 'csrftoken';
+        axios.defaults.xsrfCookieName = "csrftoken";
         axios.defaults.xsrfHeaderName = "X-CSRFTOKEN";
 
         axios.put("/api" + window.location.pathname + "/shared", formData).then(response => {

@@ -7,15 +7,15 @@
       <div class="flex space-x-2 md:col-span-2 items-center">
         <!--FILTER LABELS-->
         <div class="flex-grow">
-          <label-dropdown v-model="label" :values="inbox_labels" v-on:update="updateLabels"/>
+          <label-dropdown :values="inbox_labels" v-model="label" v-on:update="updateLabels"/>
         </div>
 
         <submit-button
-                v-if="is_staff"
-                class="bg-primary text-white px-2 md:m-0"
                 :class="{ 'bg-orange-500': showPersonal }"
-                text="My Tickets"
                 @click="showPersonal = !showPersonal; get_tickets()"
+                class="bg-primary text-white px-2 md:m-0"
+                text="My Tickets"
+                v-if="is_staff"
         ></submit-button>
       </div>
     </div>
@@ -23,12 +23,12 @@
     <div class="w-full flex md:space-x-4 flex-grow overflow-x-auto px-4 mb-4 space-x-2">
       <!-- Columns -->
       <ticket-column
-              v-for="(column, i) in tickets"
-              :key="column.label"
-              :title="column.label"
               :color="colors[i]"
-              class="min-w-3/4 sm:min-w-1/2 lg:min-w-0"
+              :key="column.label"
               :ticket-list="column.tickets"
+              :title="column.label"
+              class="min-w-3/4 sm:min-w-1/2 lg:min-w-0"
+              v-for="(column, i) in tickets"
       />
     </div>
   </section>

@@ -2,14 +2,14 @@
   <div class="flex flex-column flex-wrap w-full pr-4">
     <div class="mt-3 w-full">
       <comment :comment="ticket"/>
-      <comment v-for="comment in replies" :key="comment.id" :comment="comment" :ticket="ticket"/>
+      <comment :comment="comment" :key="comment.id" :ticket="ticket" v-for="comment in replies"/>
     </div>
 
     <div class="flex w-full">
       <avatar :source="user.avatar_url" size="w-12 h-12 m-3"/>
       <div class="flex flex-col items-end flex-grow w-full mb-4">
-        <card outlined class="mb-4 w-full">
-          <editor ref="replyEditor" initialEditType="wysiwyg" previewStyle="tab"/>
+        <card class="mb-4 w-full" outlined>
+          <editor initialEditType="wysiwyg" previewStyle="tab" ref="replyEditor"/>
         </card>
         <button
                 @click="submitReply"

@@ -2,7 +2,7 @@
   <div class="flex w-full">
     <avatar :source="comment.author.avatar_url" size="w-12 h-12 m-3"/>
     <div class="flex flex-col flex-grow">
-      <card outlined class="flex-grow w-full">
+      <card class="flex-grow w-full" outlined>
         <div class="flex bg-gray-100 pl-2 pr-1 py-1 border-b border-gray-400 items-center">
                     <span class="font-semibold text-sm">
                         {{ comment.author.first_name }} {{comment.author.last_name}}
@@ -15,7 +15,7 @@
                         {{comment.role.label}}
                     </span>
         </div>
-        <viewer class="px-2" :initialValue="content"></viewer>
+        <viewer :initialValue="content" class="px-2"></viewer>
       </card>
       <div class="h-6 border-l border-gray-400 w-1 mx-6"/>
     </div>

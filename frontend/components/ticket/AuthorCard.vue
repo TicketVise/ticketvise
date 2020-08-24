@@ -4,8 +4,8 @@
       <avatar :source="author.avatar_url" class="h-16 w-16"></avatar>
       <div class="px-4">
         <div class="font-semibold text-gray-800 mb-1">{{ author.first_name }} {{ author.last_name }}</div>
-        <span v-if="role"
-              class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-gray-200 text-gray-800">
+        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-gray-200 text-gray-800"
+              v-if="role">
                     {{role.label}}
                 </span>
       </div>
@@ -13,9 +13,9 @@
     <div class="p-3">
       <h4 class="font-semibold text-gray-800 mb-2">Recent questions</h4>
       <ul class="list-none">
-        <li v-for="ticket in tickets" :key="ticket.id">
-          <a class="block my-1 px-2 py-1 bg-gray-100 rounded hover:bg-gray-200 text-sm"
-             :href="'/inboxes/' + inbox_id + '/tickets/' + ticket.ticket_inbox_id">
+        <li :key="ticket.id" v-for="ticket in tickets">
+          <a :href="'/inboxes/' + inbox_id + '/tickets/' + ticket.ticket_inbox_id"
+             class="block my-1 px-2 py-1 bg-gray-100 rounded hover:bg-gray-200 text-sm">
             <span class="font-semibold mr-2">#{{ticket.ticket_inbox_id}}</span>{{ticket.title}}
           </a>
         </li>

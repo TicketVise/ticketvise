@@ -5,7 +5,7 @@
       <div class="container px-4 my-4 xl:flex xl:items-center xl:justify-between">
         <div class="flex-1 min-w-0">
           <h2 class="text-2xl font-bold leading-7 text-gray-900 sm:text-3xl sm:leading-9 sm:truncate">
-            Notifications
+            <span class="font-semibold" v-if="this.count">{{ this.count }}</span> Notifications
           </h2>
         </div>
       </div>
@@ -30,7 +30,7 @@
       </nav>
 
       <notification-card v-for="notification in notifications.results" :key="notification.id"
-                         :notification="notification"></notification-card>
+                         :notification="notification" v-on:input="getNotificationCount"></notification-card>
 
       <div class="flex justify-center w-full">
         <submit-button v-on:click.native=prevPage() text="Prev" class="m-2"
@@ -56,12 +56,14 @@
       return {
         notifications: [],
         read: "",
-        pageNumber: 1
+        pageNumber: 1,
+        count: 0
       }
     },
     created() {
       axios.get("/api/notifications").then(response => {
-        this.notifications = response.data
+        this.notifications = response.data;
+        this.getNotificationCount()
       })
     },
     methods: {
@@ -93,6 +95,12 @@
           }
         }).then(response => {
           this.notifications = response.data
+          this.getNotificationCount()
+        })
+      },
+      getNotificationCount() {
+        axios.get("/api/notifications/unread").then(response => {
+          this.count = response.data
         })
       },
       toggleRead() {

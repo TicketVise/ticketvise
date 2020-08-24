@@ -5,12 +5,12 @@
 
       <div class="is-marginless pretty p-icon p-round select-column" style="display: none;">
         <input
-                autocomplete="off"
-                type="checkbox"
-                name="select-column-checkbox"
+                :id="`select-column-${title}`"
                 :value="title"
+                autocomplete="off"
                 class="select-column-checkbox"
-                :id="`select-column-${title}`"/>
+                name="select-column-checkbox"
+                type="checkbox"/>
         <div class="state">
           <i class="icon fa fa-check"></i>
           <label></label>
@@ -21,16 +21,16 @@
     <div class="border-t border-gray-700 border-opacity-50 overflow-y-auto max-h-screen">
       <div class="p-2 space-y-2" :id="`${title}-tickets`" v-if="title != 'Closed'">
         <ticket-card
-                v-for="ticket in ticketList"
                 :key="ticket.id"
-                :ticket="ticket"/>
+                :ticket="ticket"
+                v-for="ticket in ticketList"/>
       </div>
       <div class="p-2 space-y-2" :id="`${title}-tickets`" v-else>
         <ticket-card
-                v-for="ticket in ticketList"
                 :key="ticket.id"
                 :ticket="ticket"
-                small/>
+                small
+                v-for="ticket in ticketList"/>
       </div>
     </div>
   </div>

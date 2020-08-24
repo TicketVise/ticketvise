@@ -1,7 +1,7 @@
 <template>
   <div class="w-full p-4 pt-2">
     <h4 class="font-semibold text-gray-800 mb-2">Assignee</h4>
-    <user-dropdown v-bind:value="value" v-on:input="submit" :values="staff" class="full-w"/>
+    <user-dropdown :values="staff" class="full-w" v-bind:value="value" v-on:input="submit"/>
   </div>
 </template>
 

@@ -10,8 +10,8 @@
 
     <div v-if="!small" class="space-x-1 select-none">
       <chip
-              v-for="label in ticket.labels"
               :key="label.id"
+              v-for="label in ticket.labels"
       >{{ label.name }}
       </chip>
     </div>

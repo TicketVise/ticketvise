@@ -2,13 +2,13 @@
   <div class="flex flex-column items-start">
     <h4 class="font-semibold text-gray-800 mb-2">Labels</h4>
     <div class="flex flex-wrap mb-2">
-      <chip class="m-1" v-for="(label, index) in ticket.labels" :key="label.id" :background="label.color">
+      <chip :background="label.color" :key="label.id" class="m-1" v-for="(label, index) in ticket.labels">
         {{label.name}}
-        <a class="fa fa-close" @click="deleteEvent(index)"></a>
+        <a @click="deleteEvent(index)" class="fa fa-close"></a>
       </chip>
     </div>
 
-    <label-dropdown v-bind:value="value" :values="unused_labels" v-on:input="submit" class="w-full"/>
+    <label-dropdown :values="unused_labels" class="w-full" v-bind:value="value" v-on:input="submit"/>
   </div>
 
 </template>
