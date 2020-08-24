@@ -22,11 +22,11 @@
 </template>
 
 <script>
-    import Avatar from "../elements/Avatar";
-    import moment from "moment"
-    import axios from "axios"
+  import Avatar from "../elements/Avatar";
+  import moment from "moment"
+  import axios from "axios"
 
-    export default {
+  export default {
     name: "NotificationCard",
     components: {Avatar},
     props: {notification: {type: Object, default: null, required: true}},
@@ -52,7 +52,7 @@
                 axios.defaults.xsrfHeaderName = "X-CSRFTOKEN";
 
                 axios.put("/api/notifications/" + this.notification.id + "/read", formData).then(response => {
-                    this.notification.read = response.data.read
+                    this.notification.is_read = response.data.is_read
                     this.$emit("input")
                 })
             }
