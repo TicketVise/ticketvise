@@ -59,7 +59,7 @@ class LabelsTest(InboxTestCase):
         data = {
             "name": "test_name",
             "color": "#ff3333",
-            "is_form_label": "on",
+            "is_visible_to_guest": "on",
             "is_active": "on"
         }
 

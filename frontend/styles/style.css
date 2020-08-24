@@ -67,6 +67,7 @@ a.ticket-link {
     text-decoration: inherit !important;
     cursor: pointer;
 }
+
 a.ticket-link:hover {
     text-decoration: underline !important;
 }
@@ -384,6 +385,7 @@ input:checked + .slider:before {
     box-shadow: none;
     border: 1px solid #00000015;
 }
+
 .tile.outlined {
     box-shadow: none;
 }
@@ -472,19 +474,28 @@ input:checked + .slider:before {
 
 /* The typing effect */
 @keyframes typing {
-  from { width: 0 }
-  to { width: 100% }
+    from {
+        width: 0
+    }
+    to {
+        width: 100%
+    }
 }
 
 /* The typewriter cursor effect */
 @keyframes blink-caret {
-  from, to { border-color: transparent }
-  50% { border-color: #ff6600; }
+    from, to {
+        border-color: transparent
+    }
+    50% {
+        border-color: #ff6600;
+    }
 }
 
 .navbar {
     min-height: 4.25rem;
 }
+
 .media_inbox_name {
     overflow: hidden;
     display: -webkit-box;

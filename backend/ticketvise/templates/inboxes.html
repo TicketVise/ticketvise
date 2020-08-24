@@ -3,69 +3,69 @@
 {% extends "navigation.html" %}
 
 {% block content %}
-<header class="bg-white shadow">
+  <header class="bg-white shadow">
     <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
-        <h1 class="text-3xl font-bold leading-tight text-gray-900">
-            Your inboxes
-        </h1>
+      <h1 class="text-3xl font-bold leading-tight text-gray-900">
+        Your inboxes
+      </h1>
     </div>
-</header>
-<main>
+  </header>
+  <main>
     {% load ticketvise_extras %}
     <div class="max-w-7xl mx-auto sm:py-6 sm:px-6 lg:px-8">
-        <!-- Replace with your content -->
-        <div class="px-4 py-6 sm:px-0 grid md:grid-cols-3 gap-4">
-            <!-- ADD A CARD FOR EVERY INBOX OF THE USER. -->
-            {% for inbox in inboxes %}
-            <!--GET THE ROLE OF THE USER-->
-            {% get_user_role user inbox as role %}
-            <div class="bg-white relative">
-                <!-- INBOX IMAGE -->
-                <a href="{% url 'ticket_overview' inbox.id %}" class="" aria-label="more options">
-                    {% include "utils/inbox_image.html" %}
+      <!-- Replace with your content -->
+      <div class="px-4 py-6 sm:px-0 grid md:grid-cols-3 gap-4">
+        <!-- ADD A CARD FOR EVERY INBOX OF THE USER. -->
+        {% for inbox in inboxes %}
+          <!--GET THE ROLE OF THE USER-->
+          {% get_user_role user inbox as role %}
+          <div class="bg-white relative">
+            <!-- INBOX IMAGE -->
+            <a href="{% url 'ticket_overview' inbox.id %}" class="" aria-label="more options">
+              {% include "utils/inbox_image.html" %}
+            </a>
+
+            <div class="absolute bottom-0 bg-gray-800 bg-opacity-50 w-full text-white flex py-2 px-4 space-x-2 rounded-br rounded-bl shadow-lg"
+                 style="overflow: hidden; text-overflow: ellipsis;">
+              <!-- CARD NEW BOOKMARK ACTION-->
+              <form name="bookmark_{{ inbox.id }}" id="bookmark" method="POST">
+                {% csrf_token %}
+                <input type="hidden" name="inbox_id" value="{{ inbox.id }}">
+                <a class="pl-0" aria-label="more options"
+                   onclick="document.forms['bookmark_{{ inbox.id }}'].submit()">
+                  {% user_has_bookmarked user inbox as bookmarked %}
+                  {% if bookmarked %}
+                    <i class="fa fa-bookmark" aria-hidden="true"></i>
+                  {% else %}
+                    <i class="fa fa-bookmark-o" aria-hidden="true"></i>
+                  {% endif %}
                 </a>
+              </form>
 
-                <div class="absolute bottom-0 bg-gray-800 bg-opacity-50 w-full text-white flex py-2 px-4 space-x-2 rounded-br rounded-bl shadow-lg"
-                    style="overflow: hidden; text-overflow: ellipsis;">
-                    <!-- CARD NEW BOOKMARK ACTION-->
-                    <form name="bookmark_{{ inbox.id }}" id="bookmark" method="POST">
-                        {% csrf_token %}
-                        <input type="hidden" name="inbox_id" value="{{ inbox.id }}">
-                        <a class="pl-0" aria-label="more options"
-                            onclick="document.forms['bookmark_{{ inbox.id }}'].submit()">
-                            {% user_has_bookmarked user inbox as bookmarked %}
-                            {% if bookmarked %}
-                            <i class="fa fa-bookmark" aria-hidden="true"></i>
-                            {% else %}
-                            <i class="fa fa-bookmark-o" aria-hidden="true"></i>
-                            {% endif %}
-                        </a>
-                    </form>
-
-                    <!-- INBOX NAME. -->
-                    <a href="{% url 'ticket_overview' inbox.id %}">
-                        {{ inbox.name }}
-                    </a>
-                </div>
+              <!-- INBOX NAME. -->
+              <a href="{% url 'ticket_overview' inbox.id %}">
+                {{ inbox.name }}
+              </a>
             </div>
-            {% endfor %}
-        </div>
-        <!-- /End replace -->
+          </div>
+        {% endfor %}
+      </div>
+      <!-- /End replace -->
     </div>
-</main>
+  </main>
 {% endblock content %}
 
 {% block javascript %}
-<!-- RETAIN SCROLL POSITION FOR FLIPPING BOOKMARK -->
-<script>
+  <!-- RETAIN SCROLL POSITION FOR FLIPPING BOOKMARK -->
+  <script>
     $(document).ready(function () {
-        $(window).on('beforeunload', function () {
-            sessionStorage.scrollTop = $(window).scrollTop();
-        });
+      $(window).on('beforeunload', function () {
+        sessionStorage.scrollTop = $(window).scrollTop();
+      });
 
-        if (sessionStorage.scrollTop) {
-            $(window).scrollTop(sessionStorage.scrollTop);
-        }
+      if (sessionStorage.scrollTop) {
+        $(window).scrollTop(sessionStorage.scrollTop);
+      }
     });
-</script>
+  </script>
 {% endblock %}

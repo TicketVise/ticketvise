@@ -3,14 +3,14 @@ Test LTI
 -------------------------------
 This file tests the LTI integration with the website.
 """
+import math
+import time
+from urllib.parse import urlencode
+
 import oauthlib.oauth1.rfc5849.signature as oauth1
 from django.test import TestCase, Client
 
 from ticketvise import settings
-
-from urllib.parse import urlencode
-import time
-import math
 
 
 class LtiTestCase(TestCase):

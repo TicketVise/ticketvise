@@ -151,7 +151,8 @@
     },
     data() {
       return {
-        inbox: null, ticket: null,
+        inbox: null,
+        ticket: null,
         replies: [],
         comments: [],
         commentEditor: "",
@@ -160,7 +161,8 @@
         user: null,
         role: "",
         shared_with: [],
-        errors: [], status: {
+        errors: [],
+        status: {
           PNDG: 'Pending',
           ASGD: 'Assigned',
           ANSD: 'Answered',
@@ -265,7 +267,7 @@
         let formData = new FormData()
         this.shared_with.forEach(shared_with => formData.append("shared_with", shared_with.id))
 
-        axios.defaults.xsrfCookieName = 'csrftoken';
+        axios.defaults.xsrfCookieName = "csrftoken";
         axios.defaults.xsrfHeaderName = "X-CSRFTOKEN";
 
         axios.put("/api" + window.location.pathname + "/shared", formData).then(response => {
@@ -276,5 +278,4 @@
       }
     }
   }
-
 </script>

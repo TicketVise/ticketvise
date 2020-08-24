@@ -3,11 +3,11 @@ from django.urls import path
 from ticketvise.views.api.comment import TicketCommentsApiView, CreateCommentApiView, CreateReplyApiView, \
     TicketRepliesApiView
 from ticketvise.views.api.inbox import InboxStaffApiView, InboxLabelsApiView, InboxApiView
+from ticketvise.views.api.notification import NotificationsAPIView, NotificationFlipRead, NotificationsReadAll, \
+    VisitTicketNotificationApi, NotificationUnreadCountAPI
 from ticketvise.views.api.statistics import InboxTicketsPerDateTypeStatisticsApiView, \
     InboxAverageAgentResponseTimeStatisticsApiView, InboxAverageTimeToCloseStatisticsApiView, \
     LabelsCountStatisticsApiView
-from ticketvise.views.api.notification import NotificationsAPIView, NotificationFlipRead, NotificationsReadAll, \
-    VisitTicketNotificationApi, NotificationUnreadCountAPI
 from ticketvise.views.api.ticket import TicketApiView, TicketUpdateAssignee, \
     TicketStatusUpdateApiView, \
     RecentTicketApiView, InboxTicketsApiView, TicketLabelApiView, TicketCreateApiView, TicketSharedAPIView, \
@@ -16,6 +16,7 @@ from ticketvise.views.api.user import UserRoleApiView, CurrentUserApiView, UserG
     UserRoleByIdApiView, NotificationsApiView
 
 urlpatterns = [
+    path("inboxes/<int:inbox_id>", InboxApiView.as_view()),
     path("inboxes/<int:inbox_id>/tickets", InboxTicketsApiView.as_view()),
     path("inboxes/<int:inbox_id>/tickets/new", TicketCreateApiView.as_view()),
     path("inboxes/<int:inbox_id>/tickets/<int:ticket_inbox_id>", TicketApiView.as_view()),
@@ -35,13 +36,15 @@ urlpatterns = [
     path("inboxes/<int:inbox_id>/staff", InboxStaffApiView.as_view()),
     path("inboxes/<int:inbox_id>/labels", InboxLabelsApiView.as_view()),
     path("inboxes/<int:inbox_id>/statistics/tickets/count", InboxTicketsPerDateTypeStatisticsApiView.as_view()),
-    path("inboxes/<int:inbox_id>/statistics/agent/response/avg", InboxAverageAgentResponseTimeStatisticsApiView.as_view()),
+    path("inboxes/<int:inbox_id>/statistics/agent/response/avg",
+         InboxAverageAgentResponseTimeStatisticsApiView.as_view()),
     path("inboxes/<int:inbox_id>/statistics/close/avg", InboxAverageTimeToCloseStatisticsApiView.as_view()),
     path("inboxes/<int:inbox_id>/statistics/labels/count", LabelsCountStatisticsApiView.as_view()),
     path("notifications", NotificationsAPIView.as_view()),
     path("notifications/unread", NotificationUnreadCountAPI.as_view()),
     path("notifications/read/all", NotificationsReadAll.as_view()),
-    path("notifications/read/inboxes/<int:inbox_id>/tickets/<int:ticket_inbox_id>", VisitTicketNotificationApi.as_view()),
+    path("notifications/read/inboxes/<int:inbox_id>/tickets/<int:ticket_inbox_id>",
+         VisitTicketNotificationApi.as_view()),
     path("notifications/<int:pk>/read", NotificationFlipRead.as_view()),
     path("me", CurrentUserApiView.as_view()),
     path("user", CurrentUserApiView.as_view()),

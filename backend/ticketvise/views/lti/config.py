@@ -12,5 +12,3 @@ class LtiConfigView(TemplateView):
         context["host"] = settings.LTI_HOST
 
         return context
-
-

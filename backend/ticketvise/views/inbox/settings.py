@@ -9,7 +9,7 @@ class InboxSettingsView(InboxCoordinatorRequiredMixin, UpdateView):
     template_name = "inbox/settings.html"
     model = Inbox
     inbox_key = "pk"
-    fields = ["name", "code", "color", "visibility_assignee", "close_answered_weeks",
+    fields = ["name", "code", "color", "show_assignee", "close_answered_weeks",
               "alert_coordinator_unanswered_days", "scheduling_algorithm", "image"]
 
     def get_success_url(self):

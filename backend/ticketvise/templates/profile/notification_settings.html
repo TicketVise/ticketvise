@@ -1,97 +1,97 @@
 <!-- NOTIFICATION SETTINGS. -->
 <h1 class="subtitle">Notification settings</h1>
 <form name="notification-settings" method="POST" enctype="multipart/form-data">
-    {% csrf_token %}
-    <input type="hidden" name="action" value="notifications"/>
-    <div class="table-container">
-        <table class="table is-fullwidth is-hoverable">
-            <thead>
-            <tr>
-                <th></th>
-                <th>Email</th>
-                <th>In-App</th>
-            </tr>
-            </thead>
-            <tbody>
-            {% if user.is_assistant_or_coordinator_in_a_inbox %}
-                <tr>
-                    <td>Mentions</td>
-                    <td>
-                        <label class="switch">
-                            <input type="checkbox" name="notification_mention_mail"
-                                    {% if user.notification_mention_mail %} checked {% endif %}>
-                            <span class="slider round has-background-info"></span>
-                        </label>
-                    </td>
-                    <td>
-                        <label class="switch">
-                            <input type="checkbox" name="notification_mention_app"
-                                    {% if user.notification_mention_app %} checked {% endif %}>
-                            <span class="slider round has-background-info"></span>
-                        </label>
-                    </td>
-                </tr>
-            {% endif %}
-            <tr>
-                <td>Ticket status change</td>
-                <td>
-                    <label class="switch">
-                        <input type="checkbox" name="notification_ticket_status_change_mail"
-                                {% if user.notification_ticket_status_change_mail %} checked {% endif %}>
-                        <span class="slider round has-background-info"></span>
-                    </label>
-                </td>
-                <td>
-                    <label class="switch">
-                        <input type="checkbox" name="notification_ticket_status_change_app"
-                                {% if user.notification_ticket_status_change_app %} checked {% endif %}>
-                        <span class="slider round has-background-info"></span>
-                    </label>
-                </td>
-            </tr>
-            <tr>
-                <td>New ticket</td>
-                <td>
-                    <label class="switch">
-                        <input type="checkbox" name="notification_new_ticket_mail"
-                                {% if user.notification_new_ticket_mail %} checked {% endif %}>
-                        <span class="slider round has-background-info"></span>
-                    </label>
-                </td>
-                <td>
-                    <label class="switch">
-                        <input type="checkbox" name="notification_new_ticket_app"
-                                {% if user.notification_new_ticket_app %} checked {% endif %}>
-                        <span class="slider round has-background-info"></span>
-                    </label>
-                </td>
-            </tr>
-            <tr>
-                <td>Comments/Replies</td>
-                <td>
-                    <label class="switch">
-                        <input type="checkbox" name="notification_comment_mail"
-                                {% if user.notification_comment_mail %} checked {% endif %}>
-                        <span class="slider round has-background-info"></span>
-                    </label>
-                </td>
-                <td>
-                    <label class="switch">
-                        <input type="checkbox" name="notification_comment_app"
-                                {% if user.notification_comment_app %} checked {% endif %}>
-                        <span class="slider round has-background-info"></span>
-                    </label>
-                </td>
-            </tr>
-            </tbody>
-        </table>
-    </div>
+  {% csrf_token %}
+  <input type="hidden" name="action" value="notifications"/>
+  <div class="table-container">
+    <table class="table is-fullwidth is-hoverable">
+      <thead>
+      <tr>
+        <th></th>
+        <th>Email</th>
+        <th>In-App</th>
+      </tr>
+      </thead>
+      <tbody>
+      {% if user.is_assistant_or_coordinator_in_a_inbox %}
+        <tr>
+          <td>Mentions</td>
+          <td>
+            <label class="switch">
+              <input type="checkbox" name="notification_mention_mail"
+                      {% if user.notification_mention_mail %} checked {% endif %}>
+              <span class="slider round has-background-info"></span>
+            </label>
+          </td>
+          <td>
+            <label class="switch">
+              <input type="checkbox" name="notification_mention_app"
+                      {% if user.notification_mention_app %} checked {% endif %}>
+              <span class="slider round has-background-info"></span>
+            </label>
+          </td>
+        </tr>
+      {% endif %}
+      <tr>
+        <td>Ticket status change</td>
+        <td>
+          <label class="switch">
+            <input type="checkbox" name="notification_ticket_status_change_mail"
+                    {% if user.notification_ticket_status_change_mail %} checked {% endif %}>
+            <span class="slider round has-background-info"></span>
+          </label>
+        </td>
+        <td>
+          <label class="switch">
+            <input type="checkbox" name="notification_ticket_status_change_app"
+                    {% if user.notification_ticket_status_change_app %} checked {% endif %}>
+            <span class="slider round has-background-info"></span>
+          </label>
+        </td>
+      </tr>
+      <tr>
+        <td>New ticket</td>
+        <td>
+          <label class="switch">
+            <input type="checkbox" name="notification_new_ticket_mail"
+                    {% if user.notification_new_ticket_mail %} checked {% endif %}>
+            <span class="slider round has-background-info"></span>
+          </label>
+        </td>
+        <td>
+          <label class="switch">
+            <input type="checkbox" name="notification_new_ticket_app"
+                    {% if user.notification_new_ticket_app %} checked {% endif %}>
+            <span class="slider round has-background-info"></span>
+          </label>
+        </td>
+      </tr>
+      <tr>
+        <td>Comments/Replies</td>
+        <td>
+          <label class="switch">
+            <input type="checkbox" name="notification_comment_mail"
+                    {% if user.notification_comment_mail %} checked {% endif %}>
+            <span class="slider round has-background-info"></span>
+          </label>
+        </td>
+        <td>
+          <label class="switch">
+            <input type="checkbox" name="notification_comment_app"
+                    {% if user.notification_comment_app %} checked {% endif %}>
+            <span class="slider round has-background-info"></span>
+          </label>
+        </td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
 
-    <!-- SUBMIT AND CANCEL BUTTONS. -->
-    <div class="field is-grouped">
-        <div class="control">
-            <input type="submit" class="button is-success" name="SubmitButton" id="submit-button"
-                   value="Apply settings">
-        </div>
+  <!-- SUBMIT AND CANCEL BUTTONS. -->
+  <div class="field is-grouped">
+    <div class="control">
+      <input type="submit" class="button is-success" name="SubmitButton" id="submit-button"
+             value="Apply settings">
     </div>
+  </div>
 </form>

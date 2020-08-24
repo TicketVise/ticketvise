@@ -6,12 +6,10 @@ This file tests the ticket page that show the information of a ticket.
 import json
 
 from django.db import transaction
-from django.db.transaction import atomic
-from django.test import TestCase, Client, TransactionTestCase
+from django.test import Client, TransactionTestCase
 from django.urls import reverse
 from rest_framework.test import APITestCase
 
-from ticketvise.models.comment import Comment, MAX_COMMENT_CHAR_LENGTH
 from ticketvise.models.inbox import Inbox
 from ticketvise.models.label import Label
 from ticketvise.models.ticket import Ticket
@@ -412,4 +410,3 @@ class TicketTestApi(APITestCase, TicketTestCase):
         self.ticket.status = "Test"
         with self.assertRaises(NotImplementedError):
             self.ticket.get_status()
-

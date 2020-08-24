@@ -97,11 +97,11 @@ class NotificationsTestCase(TestCase):
         self.client.force_login(self.ta)
         Comment.objects.create(ticket=self.ticket, author=self.ta2, content="test comment for "
                                                                             "status change",
-                               is_reply=True, is_active=True)
+                               is_reply=True)
 
         Comment.objects.create(ticket=self.ticket_2, author=self.ta2, content="test comment for "
                                                                               "status change",
-                               is_reply=True, is_active=True)
+                               is_reply=True)
 
         status_change_notification = TicketStatusChangedNotification.objects.filter(
             receiver=self.ta, old_status=None).exists()
@@ -116,11 +116,11 @@ class NotificationsTestCase(TestCase):
         self.client.force_login(self.ta)
         Comment.objects.create(ticket=self.ticket, author=self.ta2, content="test comment for "
                                                                             "status change",
-                               is_reply=True, is_active=True)
+                               is_reply=True)
 
         Comment.objects.create(ticket=self.ticket, author=self.ta2, content="test comment for "
                                                                             "status change",
-                               is_reply=True, is_active=True)
+                               is_reply=True)
 
         status_change_notifications = TicketStatusChangedNotification.objects.filter(
             receiver=self.ta)
@@ -167,15 +167,15 @@ class NotificationsTestCase(TestCase):
         :return: None.
         """
         self.client.force_login(self.ta)
-        notification = Notification.objects.filter(read=False).first()
+        notification = Notification.objects.filter(is_read=False).first()
 
         self.client.post("/notifications", urlencode({"id": notification.id}), follow=True,
                          content_type="application/x-www-form-urlencoded")
-        self.assertTrue(Notification.objects.get(pk=notification.id).read)
+        self.assertTrue(Notification.objects.get(pk=notification.id).is_read)
 
         self.client.post("/notifications", urlencode({"id": notification.id}), follow=True,
                          content_type="application/x-www-form-urlencoded")
-        self.assertFalse(Notification.objects.get(pk=notification.id).read)
+        self.assertFalse(Notification.objects.get(pk=notification.id).is_read)
 
     def test_mark_all_notifications_read(self):
         """
@@ -186,12 +186,12 @@ class NotificationsTestCase(TestCase):
         self.client.force_login(self.ta)
 
         for notification in Notification.objects.filter(receiver=self.ticket.author):
-            self.assertFalse(notification.read)
+            self.assertFalse(notification.is_read)
 
         self.client.post("/notifications", follow=True)
 
         for notification in Notification.objects.filter(receiver=self.ticket.author):
-            self.assertTrue(notification.read)
+            self.assertTrue(notification.is_read)
 
     def test_opening_ticket_marks_related_notifications_as_read(self):
         """
@@ -203,14 +203,14 @@ class NotificationsTestCase(TestCase):
         self.client.force_login(self.ta)
 
         for notification in Notification.objects.filter(receiver=self.ticket.author):
-            self.assertFalse(notification.read)
+            self.assertFalse(notification.is_read)
 
         self.client.get("/inboxes/{}/tickets/{}".format(self.ticket.inbox.id,
                                                         self.ticket.ticket_inbox_id),
                         follow=True)
 
         for notification in Notification.objects.filter(receiver=self.ticket.author):
-            self.assertTrue(notification.read)
+            self.assertTrue(notification.is_read)
 
     def test_mention_notification(self):
         """
@@ -413,25 +413,26 @@ class NotificationsAPITestCase(NotificationsTestCase):
 
         comment = Comment.objects.create(ticket=self.ticket, author=self.student, content="@admin", is_reply=True)
 
-        MentionNotification.objects.create(receiver=self.ta, read=False, comment=comment)
-        CommentNotification.objects.create(receiver=self.ta, read=False, comment=comment)
-        TicketStatusChangedNotification.objects.create(receiver=self.ta, read=False, ticket=self.ticket)
+        MentionNotification.objects.create(receiver=self.ta, is_read=False, comment=comment)
+        CommentNotification.objects.create(receiver=self.ta, is_read=False, comment=comment)
+        TicketStatusChangedNotification.objects.create(receiver=self.ta, is_read=False, ticket=self.ticket)
 
-        self.assertTrue(Notification.objects.filter(read=False, receiver=self.ta).exists())
+        self.assertTrue(Notification.objects.filter(is_read=False, receiver=self.ta).exists())
 
         response = self.client.put("/api/notifications/read/all")
         self.assertTrue(response.status_code, 200)
 
-        self.assertFalse(Notification.objects.filter(read=False, receiver=self.ta).exists())
+        self.assertFalse(Notification.objects.filter(is_read=False, receiver=self.ta).exists())
 
     def test_get_notifications_flip_read(self):
         self.client.force_login(self.ta)
 
         comment = Comment.objects.create(ticket=self.ticket, author=self.student, content="@admin", is_reply=True)
 
-        mention_notification = MentionNotification.objects.create(receiver=self.ta, read=False, comment=comment)
-        comment_notification = CommentNotification.objects.create(receiver=self.ta, read=False, comment=comment)
-        ticketstatuschanged_notification = TicketStatusChangedNotification.objects.create(receiver=self.ta, read=False,
+        mention_notification = MentionNotification.objects.create(receiver=self.ta, is_read=False, comment=comment)
+        comment_notification = CommentNotification.objects.create(receiver=self.ta, is_read=False, comment=comment)
+        ticketstatuschanged_notification = TicketStatusChangedNotification.objects.create(receiver=self.ta,
+                                                                                          is_read=False,
                                                                                           ticket=self.ticket)
         response = self.client.put(f"/api/notifications/{mention_notification.id}/read")
         self.assertTrue(response.status_code, 200)
@@ -440,6 +441,6 @@ class NotificationsAPITestCase(NotificationsTestCase):
         response = self.client.put(f"/api/notifications/{ticketstatuschanged_notification.id}/read")
         self.assertTrue(response.status_code, 200)
 
-        self.assertFalse(MentionNotification.objects.get(id=mention_notification.id).read)
-        self.assertFalse(CommentNotification.objects.get(id=comment_notification.id).read)
-        self.assertFalse(TicketStatusChangedNotification.objects.get(id=ticketstatuschanged_notification.id).read)
+        self.assertFalse(MentionNotification.objects.get(id=mention_notification.id).is_read)
+        self.assertFalse(CommentNotification.objects.get(id=comment_notification.id).is_read)
+        self.assertFalse(TicketStatusChangedNotification.objects.get(id=ticketstatuschanged_notification.id).is_read)

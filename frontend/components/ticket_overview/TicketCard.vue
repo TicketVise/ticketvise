@@ -10,38 +10,39 @@
 
     <div v-if="!small" class="space-x-1 select-none">
       <chip
-        v-for="label in ticket.labels"
-        :key="label.id"
-      >{{ label.name }}</chip>
+              :key="label.id"
+              v-for="label in ticket.labels"
+      >{{ label.name }}
+      </chip>
     </div>
   </card>
 </template>
 
 <script>
-const moment = require('moment')
+  const moment = require('moment')
 
-export default {
-  props: {
-    ticket: {
-      type: Object,
-      require: true
+  export default {
+    props: {
+      ticket: {
+        type: Object,
+        require: true
+      },
+      small: {
+        type: Boolean,
+        required: false,
+        default: false
+      }
     },
-    small: {
-      type: Boolean,
-      required: false,
-      default: false
-    }
-  },
-  computed: {
-    date: function() {
-      return moment(this.ticket.date_edited).calendar()
-    },
-    link: function() {
-      return window.location.href + '/' + this.ticket.ticket_inbox_id
-    },
-    full_name: function() {
-      return this.ticket.author.first_name + ' ' + this.ticket.author.last_name
+    computed: {
+      date: function () {
+        return moment(this.ticket.date_edited).calendar()
+      },
+      link: function () {
+        return window.location.href + '/' + this.ticket.ticket_inbox_id
+      },
+      full_name: function () {
+        return this.ticket.author.first_name + ' ' + this.ticket.author.last_name
+      }
     }
   }
-}
 </script>

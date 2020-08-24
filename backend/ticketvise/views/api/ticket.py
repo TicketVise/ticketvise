@@ -21,7 +21,7 @@ from rest_framework.views import APIView
 from ticketvise.models.inbox import Inbox
 from ticketvise.models.label import Label
 from ticketvise.models.ticket import Ticket, TicketAttachment, TicketEvent, Status, TicketStatusEvent, \
-    TicketAssigneeEvent, TicketLabelEvent, TicketTitleEvent
+    TicketAssigneeEvent, TicketLabelEvent
 from ticketvise.models.user import User, UserInbox
 from ticketvise.views.api import AUTOCOMPLETE_MAX_ENTRIES
 from ticketvise.views.api.security import UserHasAccessToTicketMixin, UserIsInboxStaffMixin, UserIsInInboxMixin, \
@@ -63,6 +63,7 @@ class CreateTicketSerializer(ModelSerializer):
     Allows data to be converted into Python datatypes for the ticket.
     """
     labels = serializers.PrimaryKeyRelatedField(many=True, queryset=Label.objects.all())
+    shared_with = serializers.PrimaryKeyRelatedField(many=True, queryset=User.objects.all())
 
     class Meta:
         """
@@ -276,6 +277,8 @@ class TicketSharedWithRetrieveSerializer(ModelSerializer):
 
 
 class TicketSharedWithUpdateSerializer(ModelSerializer):
+    shared_with = serializers.PrimaryKeyRelatedField(many=True, queryset=User.objects.all())
+
     class Meta:
         model = Ticket
         fields = ["shared_with"]
@@ -307,14 +310,6 @@ class TicketLabelEventSerializer(ModelSerializer):
         fields = ["ticket", "initiator", "date_created", "label", "is_added"]
 
 
-class TicketTitleEventSerializer(ModelSerializer):
-    initiator = UserSerializer(read_only=True)
-
-    class Meta:
-        model = TicketTitleEvent
-        fields = ["ticket", "initiator", "date_created", "old_title", "new_title"]
-
-
 class TicketEventSerializer(ModelSerializer):
     initiator = UserSerializer(read_only=True)
 
@@ -325,8 +320,6 @@ class TicketEventSerializer(ModelSerializer):
             return TicketAssigneeEventSerializer(instance=instance).data
         elif isinstance(instance, TicketLabelEvent):
             return TicketLabelEventSerializer(instance=instance).data
-        elif isinstance(instance, TicketTitleEvent):
-            return TicketTitleEventSerializer(instance=instance).data
 
         return super().to_representation(instance)
 
@@ -343,6 +336,7 @@ class TicketEventsApiView(UserHasAccessToTicketMixin, ListAPIView):
         ticket = get_object_or_404(Ticket, inbox=inbox, ticket_inbox_id=self.kwargs["ticket_inbox_id"])
 
         return TicketEvent.objects.filter(ticket=ticket).select_subclasses()
+
 
 class TicketSharedAPIView(UserIsTicketAuthorOrInboxStaffMixin, RetrieveUpdateAPIView):
     def get_object(self):

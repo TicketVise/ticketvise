@@ -85,9 +85,9 @@ class NotificationsAPIView(LoginRequiredMixin, ListAPIView):
             "-date_created")
 
         if read == "True":
-            notifications = notifications.filter(read=True)
+            notifications = notifications.filter(is_read=True)
         if read == "False":
-            notifications = notifications.filter(read=False)
+            notifications = notifications.filter(is_read=False)
 
         return notifications
 
@@ -108,7 +108,7 @@ class NotificationsReadAll(LoginRequiredMixin, UpdateAPIView):
     serializer_class = NotificationSerializer
 
     def put(self, request, *args, **kwargs):
-        Notification.objects.filter(receiver=self.request.user).update(read=True)
+        Notification.objects.filter(receiver=self.request.user).update(is_read=True)
         return Response()
 
 
@@ -119,9 +119,9 @@ class VisitTicketNotificationApi(UserHasAccessToTicketMixin, UpdateAPIView):
         inbox = get_object_or_404(Inbox, pk=self.kwargs["inbox_id"])
         ticket = Ticket.objects.get(inbox=inbox, ticket_inbox_id=self.kwargs["ticket_inbox_id"])
 
-        MentionNotification.objects.filter(comment__ticket=ticket, receiver=self.request.user).update(read=True)
-        TicketStatusChangedNotification.objects.filter(ticket=ticket, receiver=self.request.user).update(read=True)
-        CommentNotification.objects.filter(comment__ticket=ticket, receiver=self.request.user).update(read=True)
+        MentionNotification.objects.filter(comment__ticket=ticket, receiver=self.request.user).update(is_read=True)
+        TicketStatusChangedNotification.objects.filter(ticket=ticket, receiver=self.request.user).update(is_read=True)
+        CommentNotification.objects.filter(comment__ticket=ticket, receiver=self.request.user).update(is_read=True)
         return Response()
 
 

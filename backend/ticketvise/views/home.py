@@ -7,7 +7,6 @@ Contains the view for a 404 not found page.
 
 * :class:`ErrorHandler`
 """
-from http.client import responses
 
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import TemplateView

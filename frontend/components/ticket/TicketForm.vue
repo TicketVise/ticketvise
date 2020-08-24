@@ -22,8 +22,8 @@
           Title
         </label>
         <input
-          class="appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none"
-          id="title" type="text" placeholder="Give your question a title" name="title" v-model="title">
+                class="appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none"
+                id="title" name="title" placeholder="Give your question a title" type="text" v-model="title">
       </div>
       <error v-for="error in this.errors.title" :key="error" :message="error"></error>
 
@@ -55,7 +55,7 @@
       <!-- Share with -->
       <div class="mb-4">
         <edit-share-with :shared_with="shared_with" :errors="errors" class="mb-2 w-1/5" :inbox_id="inbox_id"
-            v-on:input="updateSharedWith"></edit-share-with>
+                         v-on:input="updateSharedWith"></edit-share-with>
       </div>
 
       <submit-button v-on:click.native="submit" text="Submit" class="bg-primary hover:bg-orange-500 text-white">
@@ -66,91 +66,91 @@
 </template>
 
 <script>
-import EditLabel from "./EditLabel";
-import Chip from "../elements/chip/Chip";
-import LabelDropdown from "../elements/dropdown/LabelDropdown";
-import axios from "axios";
-import {Editor} from "@toast-ui/vue-editor";
-import FileUpload from "../elements/FileUpload";
-import SubmitButton from "../elements/buttons/SubmitButton";
-import Error from "../elements/message/Error";
-import EditShareWith from "./EditShareWith";
+  import EditLabel from "./EditLabel";
+  import Chip from "../elements/chip/Chip";
+  import LabelDropdown from "../elements/dropdown/LabelDropdown";
+  import axios from "axios";
+  import {Editor} from "@toast-ui/vue-editor";
+  import FileUpload from "../elements/FileUpload";
+  import SubmitButton from "../elements/buttons/SubmitButton";
+  import Error from "../elements/message/Error";
+  import EditShareWith from "./EditShareWith";
 
-export default {
-  name: "Form",
-  components: {EditShareWith, Error, SubmitButton, FileUpload, EditLabel, LabelDropdown, Editor, Chip},
-  data() {
-    return {
-      inbox: null,
-      files: [],
-      title: "",
-      labels: [],
-      inbox_labels: null,
-      inbox_id: window.location.pathname.split('/')[2],
-      errors: [],
-      shared_with: [],
-    }
-  },
-  mounted() {
-    axios.get("/api/inboxes/" + this.inbox_id).then(response => {
-      this.inbox = response.data
-    })
+  export default {
+    name: "Form",
+    components: {EditShareWith, Error, SubmitButton, FileUpload, EditLabel, LabelDropdown, Editor, Chip},
+    data() {
+      return {
+        inbox: null,
+        files: [],
+        title: "",
+        labels: [],
+        inbox_labels: null,
+        inbox_id: window.location.pathname.split('/')[2],
+        errors: [],
+        shared_with: [],
+      }
+    },
+    mounted() {
+      axios.get("/api/inboxes/" + this.inbox_id).then(response => {
+        this.inbox = response.data
+      })
 
-    axios.get("/api/inboxes/" + this.inbox_id + "/labels").then(response => {
-      this.inbox_labels = response.data;
-    })
-  },
-  methods: {
-    submit() {
-      let content = this.$refs.editor.invoke('getMarkdown');
-      let formData = new FormData();
-
-      formData.append("content", content);
-      formData.append("title", this.title);
-      formData.append("inbox", this.inbox_id);
-
-      this.labels.forEach(label => formData.append("labels", label.id))
-      this.files.forEach(file => formData.append("files", file))
-      this.shared_with.forEach(shared_with => formData.append("shared_with", shared_with.id))
-
-      axios.defaults.xsrfCookieName = 'csrftoken';
-      axios.defaults.xsrfHeaderName = "X-CSRFTOKEN";
-
-      axios.post("/api" + window.location.pathname, formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data'
-        }
-      }).then(() => {
-        window.location.href = "/inboxes/" + this.inbox_id + "/tickets";
-      }).catch(error => {
-        this.errors = error.response.data
+      axios.get("/api/inboxes/" + this.inbox_id + "/labels").then(response => {
+        this.inbox_labels = response.data;
       })
     },
-    setFiles(files) {
-      this.files = files
-    },
-    addLabel(label) {
-      this.labels.push(label)
-    },
-    removeLabel: function (index) {
-      this.labels.splice(index, 1);
-    },
-    updateSharedWith: function (list) {
-      this.shared_with = list
-    }
-  },
-  computed: {
-    unused_labels: function () {
-      if (!this.inbox_labels) {
-        return []
+    methods: {
+      submit() {
+        let content = this.$refs.editor.invoke('getMarkdown');
+        let formData = new FormData();
+
+        formData.append("content", content);
+        formData.append("title", this.title);
+        formData.append("inbox", this.inbox_id);
+
+        this.labels.forEach(label => formData.append("labels", label.id))
+        this.files.forEach(file => formData.append("files", file))
+        this.shared_with.forEach(shared_with => formData.append("shared_with", shared_with.id))
+
+        axios.defaults.xsrfCookieName = 'csrftoken';
+        axios.defaults.xsrfHeaderName = "X-CSRFTOKEN";
+
+        axios.post("/api" + window.location.pathname, formData, {
+          headers: {
+            'Content-Type': 'multipart/form-data'
+          }
+        }).then(() => {
+          window.location.href = "/inboxes/" + this.inbox_id + "/tickets";
+        }).catch(error => {
+          this.errors = error.response.data
+        })
+      },
+      setFiles(files) {
+        this.files = files
+      },
+      addLabel(label) {
+        this.labels.push(label)
+      },
+      removeLabel: function (index) {
+        this.labels.splice(index, 1);
+      },
+      updateSharedWith: function (list) {
+        this.shared_with = list
       }
+    },
+    computed: {
+      unused_labels: function () {
+        if (!this.inbox_labels) {
+          return []
+        }
 
-      const label_ids = this.labels.map(label => label.id)
-      return this.inbox_labels.filter(label => !label_ids.includes(label.id))
+        const label_ids = this.labels.map(label => label.id)
+        return this.inbox_labels.filter(label => !label_ids.includes(label.id))
+      }
     }
-  }
 
-}
+  }
 
 </script>
 

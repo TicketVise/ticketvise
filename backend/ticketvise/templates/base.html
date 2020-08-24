@@ -1,26 +1,26 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    {% if user.is_authenticated %}
+  <meta charset="UTF-8">
+  {% if user.is_authenticated %}
     {% number_of_unread_notifications user as count %}
-    {% endif %}
-    {% if count %}
+  {% endif %}
+  {% if count %}
     <title>({{ count }}) TicketVise</title>
-    {% else %}
+  {% else %}
     <title>TicketVise</title>
-    {% endif %}
+  {% endif %}
 
-    <meta name="description" content="TicketVise, making assisting great again.">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    {% load static %}
-    <link rel="shortcut icon" type="image/png" href="{% static 'favicon.png' %}"/>
-    <link rel="stylesheet" type="text/css" href="{% static 'styles.css' %}">
+  <meta name="description" content="TicketVise, making assisting great again.">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  {% load static %}
+  <link rel="shortcut icon" type="image/png" href="{% static 'favicon.png' %}"/>
+  <link rel="stylesheet" type="text/css" href="{% static 'styles.css' %}">
 </head>
 <body class="flex flex-col h-screen">
 
 {% block body %}
-if you see this, something is wrong!
+  if you see this, something is wrong!
 {% endblock body %}
 
 {% block navbar-javascript %}

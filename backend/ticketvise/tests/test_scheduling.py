@@ -47,7 +47,7 @@ class TicketTestCase(TestCase):
         self.ticket3 = Ticket.objects.create(author=self.student, assignee=self.assistant3, title="Ticket3", content="",
                                              inbox=self.inbox)
         Ticket.objects.create(author=self.student, assignee=self.assistant3, title="Ticket3", content="",
-                                             inbox=self.inbox)
+                              inbox=self.inbox)
         self.ticket4 = Ticket.objects.create(author=self.student, title="Ticket4", content="", inbox=self.inbox)
 
     def test_inbox_manual_scheduling(self):
@@ -100,4 +100,3 @@ class TicketTestCase(TestCase):
         self.inbox.scheduling_algorithm = "Test"
         with self.assertRaises(NotImplementedError):
             schedule_ticket(self.ticket1)
-
