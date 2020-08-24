@@ -1,6 +1,6 @@
 <template>
   <div class="w-full">
-    <div class="block text-gray-700 font-bold mb-2" for="username">
+    <div class="block text-gray-700 font-semibold mb-2" for="username">
       Share with
     </div>
     <div class="flex flex-wrap mb-2" v-if="shared_with.length > 0">
@@ -12,7 +12,7 @@
     <form @submit.prevent="username.length ? getUsername(username) : {}" class="flex space-x-2 w-full mb-2">
       <input
               class="appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none flex-grow focus:border-gray-800"
-              id="username" v-model="username" type="text" placeholder="username" name="username">
+              id="username" name="username" placeholder="username" type="text" v-model="username">
       <submit-button v-on:click.native="username.length ? getUsername(username) : {}" class="bg-primary text-white"
                      text="Share"></submit-button>
     </form>

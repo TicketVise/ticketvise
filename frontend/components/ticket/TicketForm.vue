@@ -23,7 +23,7 @@
         </label>
         <input
                 class="appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none"
-                id="title" type="text" placeholder="Give your question a title" name="title" v-model="title">
+                id="title" name="title" placeholder="Give your question a title" type="text" v-model="title">
       </div>
       <error v-for="error in this.errors.title" :key="error" :message="error"></error>
 
@@ -38,13 +38,15 @@
       <h4 class="block text-gray-700 font-bold mb-2">Labels</h4>
       <error v-for="error in this.errors.labels" :key="error" :message="error"></error>
       <div class="flex flex-wrap mb-2" v-if="labels.length > 0">
-        <chip class="m-1" v-for="(label, index) in labels" :key="label.id" :background="label.color">
+        <chip :background="label.color" :key="label.id" class="m-1" v-for="label in labels">
           {{ label.name }}
-          <a class="fa fa-close" @click="removeLabel(index)"></a>
         </chip>
       </div>
+      <div class="flex flex-wrap mb-2" v-else>
+        No labels selected
+      </div>
       <div class="mb-4">
-        <label-dropdown v-bind:value="labels" :values="unused_labels" v-on:input="addLabel"/>
+        <label-dropdown :values="inbox_labels" v-model="labels"/>
       </div>
 
       <!-- Attachments -->
@@ -129,27 +131,10 @@
       setFiles(files) {
         this.files = files
       },
-      addLabel(label) {
-        this.labels.push(label)
-      },
-      removeLabel: function (index) {
-        this.labels.splice(index, 1);
-      },
       updateSharedWith: function (list) {
         this.shared_with = list
       }
     },
-    computed: {
-      unused_labels: function () {
-        if (!this.inbox_labels) {
-          return []
-        }
-
-        const label_ids = this.labels.map(label => label.id)
-        return this.inbox_labels.filter(label => !label_ids.includes(label.id))
-      }
-    }
-
   }
 
 </script>

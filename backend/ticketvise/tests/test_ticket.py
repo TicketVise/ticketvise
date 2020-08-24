@@ -47,6 +47,12 @@ class TicketTestCase(TransactionTestCase):
                                               email="assistant3@ticketvise.com")
         self.assistant3.add_inbox(self.inbox)
         self.assistant3.set_role_for_inbox(self.inbox, Role.AGENT)
+
+        self.manager = User.objects.create(username="manager", password="test67891",
+                                              email="manager@ticketvise.com")
+        self.manager.add_inbox(self.inbox)
+        self.manager.set_role_for_inbox(self.inbox, Role.MANAGER)
+
         self.label = Label.objects.create(name="TestLabel", inbox=self.inbox)
 
         self.ticket = Ticket.objects.create(author=self.student, assignee=self.assistant, title="TestTicket",
@@ -410,3 +416,50 @@ class TicketTestApi(APITestCase, TicketTestCase):
         self.ticket.status = "Test"
         with self.assertRaises(NotImplementedError):
             self.ticket.get_status()
+
+    def test_inbox_show_assignee_to_guest_as_guest(self):
+        """
+        Test to verify that the assignee is hidden to a guest when the manager has disabled it in the inbox settings.
+        """
+        self.client.force_login(self.student)
+
+        self.inbox.show_assignee_to_guest = False
+        self.inbox.save()
+
+        self.ticket.assignee = self.assistant
+        self.ticket.save()
+
+        response = self.client.get(f"/api/inboxes/{self.inbox.id}/tickets/{self.ticket.ticket_inbox_id}", follow=True)
+        self.assertEqual(response.status_code, 200)
+        self.assertNotContains(response, self.ticket.assignee.username)
+
+        self.inbox.show_assignee_to_guest = True
+        self.inbox.save()
+
+        response = self.client.get(f"/api/inboxes/{self.inbox.id}/tickets/{self.ticket.ticket_inbox_id}", follow=True)
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, self.ticket.assignee.username)
+
+    def test_inbox_show_assignee_to_guest_as_staff(self):
+        """
+        Test to verify that the assignee is always visible to a staff member.
+        """
+        for user in [self.assistant3, self.manager]:
+            self.client.force_login(user)
+
+            self.inbox.show_assignee_to_guest = False
+            self.inbox.save()
+
+            self.ticket.assignee = self.assistant
+            self.ticket.save()
+
+            response = self.client.get(f"/api/inboxes/{self.inbox.id}/tickets/{self.ticket.ticket_inbox_id}", follow=True)
+            self.assertEqual(response.status_code, 200)
+            self.assertContains(response, self.ticket.assignee.username)
+
+            self.inbox.show_assignee_to_guest = True
+            self.inbox.save()
+
+            response = self.client.get(f"/api/inboxes/{self.inbox.id}/tickets/{self.ticket.ticket_inbox_id}", follow=True)
+            self.assertEqual(response.status_code, 200)
+            self.assertContains(response, self.ticket.assignee.username)

@@ -5,7 +5,7 @@
       <div class="container px-4 my-4 xl:flex xl:items-center xl:justify-between">
         <div class="flex-1 min-w-0">
           <h2 class="text-2xl font-bold leading-7 text-gray-900 sm:text-3xl sm:leading-9 sm:truncate">
-            Notifications
+            <span class="font-semibold" v-if="this.count">{{ this.count }}</span> Notifications
           </h2>
         </div>
       </div>
@@ -14,14 +14,14 @@
       <nav class="m-3">
         <div class="divide-x divide-gray-400 flex items-center">
           <span @click="toggleAll" class="font-semibold text-center flex-grow cursor-pointer"
-                v-if="read === ''">All</span>
+                v-if="is_read === ''">All</span>
           <a @click="toggleAll" class="text-center flex-grow text-blue-500 cursor-pointer" v-else>All</a>
 
-          <span @click="toggleRead" class="text-center font-semibold flex-grow cursor-pointer" v-if="read === 'True'">Read</span>
+          <span @click="toggleRead" class="text-center font-semibold flex-grow cursor-pointer" v-if="is_read === 'True'">Read</span>
           <a @click="toggleRead" class="text-center flex-grow text-blue-500 cursor-pointer" v-else>Read</a>
 
           <span @click="toggleUnread" class="text-center font-semibold flex-grow cursor-pointer"
-                v-if="read === 'False'">Unread</span>
+                v-if="is_read === 'False'">Unread</span>
           <a @click="toggleUnread" class="text-center flex-grow text-blue-500 cursor-pointer" v-else>Unread</a>
 
           <submit-button text="Mark all as read" v-on:click.native="markAllAsRead"
@@ -30,7 +30,7 @@
       </nav>
 
       <notification-card v-for="notification in notifications.results" :key="notification.id"
-                         :notification="notification"></notification-card>
+                         :notification="notification" v-on:input="getNotificationCount"></notification-card>
 
       <div class="flex justify-center w-full">
         <submit-button v-on:click.native=prevPage() text="Prev" class="m-2"
@@ -55,13 +55,15 @@
     data() {
       return {
         notifications: [],
-        read: "",
-        pageNumber: 1
+        is_read: "",
+        pageNumber: 1,
+        count: 0
       }
     },
     created() {
       axios.get("/api/notifications").then(response => {
-        this.notifications = response.data
+        this.notifications = response.data;
+        this.getNotificationCount()
       })
     },
     methods: {
@@ -89,22 +91,28 @@
       getNotifications() {
         axios.get("/api/notifications", {
           params: {
-            read: this.read
+            is_read: this.is_read
           }
         }).then(response => {
           this.notifications = response.data
+          this.getNotificationCount()
+        })
+      },
+      getNotificationCount() {
+        axios.get("/api/notifications/unread").then(response => {
+          this.count = response.data
         })
       },
       toggleRead() {
-        this.read = "True";
+        this.is_read = "True";
         this.getNotifications()
       },
       toggleUnread() {
-        this.read = "False";
+        this.is_read = "False";
         this.getNotifications()
       },
       toggleAll() {
-        this.read = "";
+        this.is_read = "";
         this.getNotifications()
       },
       markAllAsRead() {

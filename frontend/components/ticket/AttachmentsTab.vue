@@ -26,15 +26,15 @@
       <span class="text-gray-600 text-lg md:text-xl">There are no attachments</span>
     </div>
 
-    <div class="flex w-full p-4">
-      <div class="flex flex-col items-center flex-grow w-full mb-4">
-        <button @click="upload"
-                class="group relative w-full sm:w-auto flex justify-center sm:justify-start items-center py-2 px-4 border border-transparent text-sm leading-5 font-medium rounded-md text-white bg-primary hover:bg-orange-500 focus:outline-none focus:border-orange-700 focus:shadow-outline-orange active:bg-orange-700 transition duration-150 ease-in-out">
-          <i class="fa fa-upload text-orange-200 absolute sm:relative left-4 sm:left-auto mr-2"></i>
-          Upload file
-        </button>
-      </div>
-    </div>
+<!--    <div class="flex w-full p-4">-->
+<!--      <div class="flex flex-col items-center flex-grow w-full mb-4">-->
+<!--        <button @click="upload"-->
+<!--                class="group relative w-full sm:w-auto flex justify-center sm:justify-start items-center py-2 px-4 border border-transparent text-sm leading-5 font-medium rounded-md text-white bg-primary hover:bg-orange-500 focus:outline-none focus:border-orange-700 focus:shadow-outline-orange active:bg-orange-700 transition duration-150 ease-in-out">-->
+<!--          <i class="fa fa-upload text-orange-200 absolute sm:relative left-4 sm:left-auto mr-2"></i>-->
+<!--          Upload file-->
+<!--        </button>-->
+<!--      </div>-->
+<!--    </div>-->
   </div>
 </template>
 

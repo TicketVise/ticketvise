@@ -1,7 +1,7 @@
 <template>
   <div v-if="ticket" class="h-full">
     <div class="lg:h-full flex flex-col-reverse lg:flex-row w-full">
-      <div class="w-screen lg:max-w-sm bg-gray-100 border-r border-t lg:border-t-0">
+      <div class="w-screen lg:max-w-sm bg-gray-100 border-r border-t lg:border-t-0 h-full min-h-full space-y-2">
         <!-- <author-card class="hidden lg:block" :author="ticket.author" :inbox_id="ticket.inbox"/> -->
         <!-- Ticket Author -->
         <div class="p-6 flex space-x-4 border-b">
@@ -15,35 +15,46 @@
         </div>
 
         <!-- Recent question -->
-        <recent-questions class="m-4" :author="ticket.author" :inbox_id="ticket.inbox"></recent-questions>
+        <recent-questions :author="ticket.author" :inbox_id="ticket.inbox" class="mx-4" v-if="is_staff"/>
 
         <!-- Sharing -->
-        <div v-if="canShare" class="px-4 py-1">
-          <edit-share-with :shared_with="shared_with" :errors="errors" class="mb-2" :inbox_id="ticket.inbox"
+        <div class="px-4" v-if="canShare">
+          <edit-share-with :errors="errors" :inbox_id="ticket.inbox" :shared_with="shared_with"
                            v-on:input="updateSharedWith"></edit-share-with>
         </div>
 
+        <!-- Labels -->
+        <div class="p-4 pt-2">
+          <h4 class="block text-gray-700 font-bold mb-2">Labels</h4>
+          <error :key="error" :message="error" v-for="error in this.errors.labels"></error>
+          <div class="flex flex-wrap mb-2" v-if="labels.length > 0">
+            <chip :background="label.color" :key="label.id" class="m-1" v-for="label in labels">
+              {{ label.name }}
+            </chip>
+          </div>
+          <div class="flex flex-wrap mb-2" v-else>
+            No labels selected
+          </div>
+          <div class="mb-4">
+            <label-dropdown :selected="labels" :values="inbox.labels" v-if="canShare" v-model="labels"
+                            v-on:input="updateLabels"/>
+          </div>
+        </div>
+
         <!-- Assignee -->
-        <edit-assignee :ticket="ticket" :staff="staff"></edit-assignee>
+        <div class="p-4 pt-0" v-if="staff">
+          <h4 class="font-semibold text-gray-800 mb-2">Assignee</h4>
+          <div class="mb-4">
+            <user-dropdown :assignee="ticket.assignee" :staff="staff" v-if="staff" v-on:input="updateAssignee"/>
+          </div>
+        </div>
 
         <!-- Participants -->
-        <div class="p-4 pt-2">
+        <div class="px-4 pt-2">
           <h4 class="font-semibold text-gray-800 mb-2">Participants</h4>
           <avatars :users="ticket.participants"/>
         </div>
       </div>
-
-      <!-- <div v-if="is_staff" class="flex flex-col w-full lg:min-w-1/4 lg:w-1/4 space-y-3">
-        <author-card class="hidden lg:block" :author="ticket.author" :inbox_id="ticket.inbox"/>
-        <card outlined>
-          <edit-label :ticket="ticket" class="p-3 border-b border-gray-400"/>
-          <edit-assignee :ticket="ticket" :staff="staff" class="p-3 border-b border-gray-400"/>
-          <div class="p-3">
-            <h4 class="font-semibold text-gray-800 mb-2">Participants</h4>
-            <avatars :users="ticket.participants"/>
-          </div>
-        </card>
-      </div> -->
 
       <div class="relative h-full flex-grow">
         <div class="m-4 mt-2 xl:flex xl:items-center xl:justify-between">
@@ -59,7 +70,7 @@
               <div class="mt-2 flex items-center text-sm leading-5 text-gray-500" title="Ticket Status">
                 <i
                         class="fa mr-1"
-                        :class="{ 'fa-envelope-open': ticket.status == 'PNDG' || ticket.status == 'ASGD', 'fa-envelope': ticket.status == 'ANSD' || ticket.status == 'CLSD' }"
+                        :class="{ 'fa-envelope-open': ticket.status === 'PNDG' || ticket.status === 'ASGD', 'fa-envelope': ticket.status === 'ANSD' || ticket.status === 'CLSD' }"
                 ></i>
                 {{ status[ticket.status] }}
               </div>
@@ -119,7 +130,6 @@
   import '@toast-ui/editor/dist/toastui-editor.css';
   import {Editor, Viewer} from '@toast-ui/vue-editor';
   import EditLabel from "./EditLabel";
-  import EditAssignee from "./EditAssignee";
   import Mention from "../elements/mention/Mention";
   import Tab from "../elements/Tab"
   import ExternalTab from "./ExternalTab";
@@ -128,6 +138,8 @@
   import AttachmentsTab from "./AttachmentsTab";
   import Avatars from "../elements/Avatars";
   import EditShareWith from "./EditShareWith";
+  import UserDropdown from "../elements/dropdown/UserDropdown";
+  import RecentQuestions from "./RecentQuestions";
 
   export default {
     components: {
@@ -137,7 +149,7 @@
       InternalTab,
       ExternalTab,
       Mention,
-      EditAssignee,
+      UserDropdown,
       EditLabel,
       Avatar,
       AuthorCard,
@@ -145,6 +157,7 @@
       Viewer,
       editor: Editor,
       VueTribute,
+      RecentQuestions,
       Tab,
       Card
     },
@@ -153,12 +166,13 @@
         inbox: null,
         ticket: null,
         replies: [],
+        labels: [],
         comments: [],
         commentEditor: "",
         staff: [],
         activeTab: 'external',
         user: null,
-        role: null,
+        role: "",
         shared_with: [],
         errors: [],
         status: {
@@ -169,9 +183,16 @@
         }
       }
     },
-    mounted() {
+    created() {
       axios.get("/api" + window.location.pathname).then(response => {
         this.ticket = response.data;
+        this.labels = response.data.labels
+
+        axios.defaults.xsrfCookieName = 'csrftoken';
+        axios.defaults.xsrfHeaderName = "X-CSRFTOKEN";
+
+        axios.put("/api/notifications/read" + window.location.pathname).then(_ => {
+        });
 
         axios.get("/api/me").then(response => {
           this.user = response.data;
@@ -260,7 +281,7 @@
         let formData = new FormData()
         this.shared_with.forEach(shared_with => formData.append("shared_with", shared_with.id))
 
-        axios.defaults.xsrfCookieName = 'csrftoken';
+        axios.defaults.xsrfCookieName = "csrftoken";
         axios.defaults.xsrfHeaderName = "X-CSRFTOKEN";
 
         axios.put("/api" + window.location.pathname + "/shared", formData).then(response => {
@@ -268,6 +289,20 @@
         }).catch(error => {
           this.errors = error.response.data
         })
+      },
+      updateAssignee(assignee) {
+        this.ticket.assignee = assignee
+      },
+      updateLabels() {
+        axios.defaults.xsrfCookieName = 'csrftoken';
+        axios.defaults.xsrfHeaderName = "X-CSRFTOKEN";
+
+        axios.put("/api" + window.location.pathname + "/labels",
+            {
+              "labels": this.labels.map(label => label.id)
+            }).then(response => {
+
+        });
       }
     }
   }
