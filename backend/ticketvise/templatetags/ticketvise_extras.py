@@ -43,7 +43,7 @@ def get_user_role(user, inbox):
     :return: The role of the user in the inbox.
     :rtype: Role
     """
-    return user.get_role_by_inbox(inbox)
+    return user.get_role_label_by_inbox(inbox)
 
 
 @register.simple_tag
