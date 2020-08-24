@@ -33,18 +33,6 @@
         </div>
       </div>
 
-      <!-- <div v-if="is_staff" class="flex flex-col w-full lg:min-w-1/4 lg:w-1/4 space-y-3">
-        <author-card class="hidden lg:block" :author="ticket.author" :inbox_id="ticket.inbox"/>
-        <card outlined>
-          <edit-label :ticket="ticket" class="p-3 border-b border-gray-400"/>
-          <edit-assignee :ticket="ticket" :staff="staff" class="p-3 border-b border-gray-400"/>
-          <div class="p-3">
-            <h4 class="font-semibold text-gray-800 mb-2">Participants</h4>
-            <avatars :users="ticket.participants"/>
-          </div>
-        </card>
-      </div> -->
-
       <div class="relative h-full flex-grow">
         <div class="m-4 mt-2 xl:flex xl:items-center xl:justify-between">
           <div class="flex-1 min-w-0">
