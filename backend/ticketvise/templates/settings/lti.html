@@ -1,73 +1,73 @@
 {% extends "settings/base.html" %}
 
 {% block settings-content %}
-<!-- Header -->
-<div class="border-b shadow flex justify-center">
+  <!-- Header -->
+  <div class="border-b shadow flex justify-center">
     <div class="container px-4 my-4 mt-2 xl:flex xl:items-center xl:justify-between" v-if="inbox">
-        <div class="flex-1 min-w-0">
-            <a :href="`/inboxes`" class="text-xs text-gray-700 hover:underline cursor-pointer">
-                <i class="fa fa-arrow-left mr-2"></i>
-                Dashboard
-            </a>
-            <h2 class="text-2xl font-bold leading-7 text-gray-900 sm:text-3xl sm:leading-9 sm:truncate">
-                LTI Configuration
-            </h2>
-        </div>
+      <div class="flex-1 min-w-0">
+        <a :href="`/inboxes`" class="text-xs text-gray-700 hover:underline cursor-pointer">
+          <i class="fa fa-arrow-left mr-2"></i>
+          Dashboard
+        </a>
+        <h2 class="text-2xl font-bold leading-7 text-gray-900 sm:text-3xl sm:leading-9 sm:truncate">
+          LTI Configuration
+        </h2>
+      </div>
     </div>
-</div>
+  </div>
 
-<div class="container mx-auto m-2 mb-4 px-4 space-y-4">
+  <div class="container mx-auto m-2 mb-4 px-4 space-y-4">
     <!-- Name -->
     <div>
-        <label class="block text-gray-700 font-bold mb-2" for="name">
-            Name
-        </label>
-        <input class="appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none"
-            id="name" readonly type="text" name="name" value="TicketVise">
+      <label class="block text-gray-700 font-bold mb-2" for="name">
+        Name
+      </label>
+      <input class="appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none"
+             id="name" readonly type="text" name="name" value="TicketVise">
     </div>
 
     <!-- LTI Key -->
     <div>
-        <label class="block text-gray-700 font-bold mb-2" for="key">
-            Key
-        </label>
-        <input class="appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none"
-            id="key" readonly type="text" name="key" value="{{ key }}">
+      <label class="block text-gray-700 font-bold mb-2" for="key">
+        Key
+      </label>
+      <input class="appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none"
+             id="key" readonly type="text" name="key" value="{{ key }}">
     </div>
 
     <!-- LTI Secret -->
     <div>
-        <label class="block text-gray-700 font-bold mb-2" for="secret">
-            Secret
-        </label>
-        <input class="appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none"
-            id="secret" readonly type="text" name="secret" value="{{ secret }}">
+      <label class="block text-gray-700 font-bold mb-2" for="secret">
+        Secret
+      </label>
+      <input class="appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none"
+             id="secret" readonly type="text" name="secret" value="{{ secret }}">
     </div>
 
     <!-- Config URL -->
     <div>
-        <label class="block text-gray-700 font-bold mb-2" for="url">
-            url
-        </label>
-        <input class="appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none"
-            id="url" readonly type="text" name="url" value="{{ url }}">
+      <label class="block text-gray-700 font-bold mb-2" for="url">
+        url
+      </label>
+      <input class="appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none"
+             id="url" readonly type="text" name="url" value="{{ url }}">
     </div>
-</div>
+  </div>
 
 {% endblock settings-content %}
 
 {% block javascript %}
 
-<script>
+  <script>
     let show = (icon) => {
-        icon.parentElement.style.display = 'none'
-        icon.parentElement.nextElementSibling.style.display = 'block'
+      icon.parentElement.style.display = 'none'
+      icon.parentElement.nextElementSibling.style.display = 'block'
     }
 
     let hide = (icon) => {
-        icon.parentElement.style.display = 'none'
-        icon.parentElement.previousElementSibling.style.display = 'block'
+      icon.parentElement.style.display = 'none'
+      icon.parentElement.previousElementSibling.style.display = 'block'
     }
-</script>
+  </script>
 
 {% endblock javascript %}

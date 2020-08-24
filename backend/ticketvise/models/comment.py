@@ -10,7 +10,6 @@ Contains all entity sets for the comment database.
 import re
 
 from django.db import models
-from django.utils.translation import gettext_lazy as _
 
 from ticketvise.email import send_email
 from ticketvise.models.notification import MentionNotification, CommentNotification

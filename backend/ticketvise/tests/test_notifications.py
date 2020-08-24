@@ -431,7 +431,8 @@ class NotificationsAPITestCase(NotificationsTestCase):
 
         mention_notification = MentionNotification.objects.create(receiver=self.ta, is_read=False, comment=comment)
         comment_notification = CommentNotification.objects.create(receiver=self.ta, is_read=False, comment=comment)
-        ticketstatuschanged_notification = TicketStatusChangedNotification.objects.create(receiver=self.ta, is_read=False,
+        ticketstatuschanged_notification = TicketStatusChangedNotification.objects.create(receiver=self.ta,
+                                                                                          is_read=False,
                                                                                           ticket=self.ticket)
         response = self.client.put(f"/api/notifications/{mention_notification.id}/read")
         self.assertTrue(response.status_code, 200)

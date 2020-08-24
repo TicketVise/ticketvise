@@ -6,7 +6,7 @@ from rest_framework.serializers import ModelSerializer
 from ticketvise.models.comment import Comment
 from ticketvise.models.inbox import Inbox
 from ticketvise.models.ticket import Ticket
-from ticketvise.models.user import UserInbox, Role
+from ticketvise.models.user import UserInbox
 from ticketvise.views.api.security import UserHasAccessToTicketMixin, UserIsInboxStaffMixin
 from ticketvise.views.api.user import UserSerializer, RoleSerializer
 

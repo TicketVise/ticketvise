@@ -11,7 +11,6 @@ from ticketvise.tests.test_ticket import TicketTestCase
 
 class CommentTestCase(TicketTestCase):
 
-
     def test_get_comment_as_student(self):
         """
         Test to verify a student cannot get comments

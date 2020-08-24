@@ -7,8 +7,8 @@ from rest_framework.generics import RetrieveAPIView
 from rest_framework.serializers import ModelSerializer
 
 from ticketvise.models.inbox import Inbox
-from ticketvise.models.user import User, Role
 from ticketvise.models.notification import Notification
+from ticketvise.models.user import User, Role
 from ticketvise.views.api.security import UserIsInboxStaffMixin, UserIsInInboxMixin
 
 

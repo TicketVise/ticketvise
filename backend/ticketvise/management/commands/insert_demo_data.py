@@ -117,8 +117,10 @@ class Command(BaseCommand):
 
         # Creating Labels
         label_ds_heaps = Label.objects.create(inbox=inbox_ds, name="Heaps", color="#ff0000", is_visible_to_guest=True)
-        label_ds_list = Label.objects.create(inbox=inbox_ds, name="Linked List", color="#0097ff", is_visible_to_guest=True)
-        label_ds_hash = Label.objects.create(inbox=inbox_ds, name="Hash Table", color="#0ec81d", is_visible_to_guest=True)
+        label_ds_list = Label.objects.create(inbox=inbox_ds, name="Linked List", color="#0097ff",
+                                             is_visible_to_guest=True)
+        label_ds_hash = Label.objects.create(inbox=inbox_ds, name="Hash Table", color="#0ec81d",
+                                             is_visible_to_guest=True)
         label_pse_swebok = Label.objects.create(
             inbox=inbox_pse,
             name="SWEBOK",
@@ -138,7 +140,8 @@ class Command(BaseCommand):
         )
         label_pse_ejournal = Label.objects.create(inbox=inbox_pse, name="E-Journal", color="#fbf06d",
                                                   is_visible_to_guest=True)
-        label_pse_laptop = Label.objects.create(inbox=inbox_pse, name="Laptop", color="#150a1a", is_visible_to_guest=True)
+        label_pse_laptop = Label.objects.create(inbox=inbox_pse, name="Laptop", color="#150a1a",
+                                                is_visible_to_guest=True)
         label_pse_assignment = Label.objects.create(inbox=inbox_pse, name="Assignment", color="#00ffcd",
                                                     is_visible_to_guest=True)
         label_ip_hotel = Label.objects.create(inbox=inbox_ip, name="Hotel", color="#00b5fe", is_visible_to_guest=True)

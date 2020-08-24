@@ -9,13 +9,13 @@
         bg-gray-200 text-gray-700
     {% endif %}">
     {% if value > 0 %}
-        <i class="fa fa-arrow-up"></i>
+      <i class="fa fa-arrow-up"></i>
     {% elif value < 0 %}
-        <i class="fa fa-arrow-down"></i>
+      <i class="fa fa-arrow-down"></i>
     {% else %}
-        <i class="fa fa-minus"></i>
+      <i class="fa fa-minus"></i>
     {% endif %}
-    <span class="ml-2 font-medium ">
+  <span class="ml-2 font-medium ">
         {% abs_value value %}%
     </span>
 </span>

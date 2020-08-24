@@ -3,13 +3,6 @@ Test Periodic Tasks
 -------------------------------
 This file tests the periodic routine tasks that the platform runs.
 """
-from django.test import TestCase, Client
-from django.utils import timezone
-
-from ticketvise.models.ticket import Ticket
-from ticketvise.models.user import User
-from ticketvise.tasks import update_tickets, alert_unanswered_tickets
-
 
 # class PeriodicTasksTestCase(TestCase):
 #     def setUp(self):

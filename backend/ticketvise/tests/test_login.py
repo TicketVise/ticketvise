@@ -3,7 +3,6 @@ Test Login
 -------------------------------
 This file tests the login page of the website.
 """
-from urllib.parse import urlencode
 
 from django.test import TestCase, Client
 from django.urls import reverse

@@ -107,12 +107,12 @@ class ProfileNotificationsForm(forms.ModelForm):
 
 
 def password_change(
-    request,
-    template_name="registration/password_change.html",
-    post_change_redirect=None,
-    password_change_form=PasswordChangeForm,
-    current_app="ticketvise",
-    extra_context=None,
+        request,
+        template_name="registration/password_change.html",
+        post_change_redirect=None,
+        password_change_form=PasswordChangeForm,
+        current_app="ticketvise",
+        extra_context=None,
 ):
     """
     Change the password of a user.

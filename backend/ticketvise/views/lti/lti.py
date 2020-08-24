@@ -1,6 +1,6 @@
 from django.contrib.auth import login
 from django.contrib.auth.hashers import make_password
-from django.core.exceptions import PermissionDenied, SuspiciousOperation
+from django.core.exceptions import PermissionDenied
 from django.http import Http404
 from django.shortcuts import render, redirect
 from django.urls import reverse

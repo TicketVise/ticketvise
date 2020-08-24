@@ -111,6 +111,7 @@ def create_user(username="", password="", email="", first_name="", last_name="")
 
     return user
 
+
 def create_ticket(author=None, assignee=None, inbox=None, title="",
                   status=Status.PENDING, content="", labels=[]):
     """

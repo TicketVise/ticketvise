@@ -7,7 +7,7 @@ from django.core.exceptions import ValidationError
 from django.test import TestCase
 
 from ticketvise.models.ticket import Ticket, Status
-from ticketvise.models.user import User, Role
+from ticketvise.models.user import Role
 from ticketvise.models.validators import validate_hex_color
 from ticketvise.tests.utils import create_user, create_inbox, random_string
 
@@ -83,8 +83,10 @@ class DatabaseTestCase(TestCase):
         """
         # Setup
         student = create_user()
-        ticket_assigned = Ticket.objects.create(author=student, assignee=self.user, inbox=self.inbox, status=Status.ASSIGNED)
-        ticket_closed = Ticket.objects.create(author=student, assignee=self.user, inbox=self.inbox, status=Status.CLOSED)
+        ticket_assigned = Ticket.objects.create(author=student, assignee=self.user, inbox=self.inbox,
+                                                status=Status.ASSIGNED)
+        ticket_closed = Ticket.objects.create(author=student, assignee=self.user, inbox=self.inbox,
+                                              status=Status.CLOSED)
 
         self.user.add_inbox(self.inbox)
         self.user.set_role_for_inbox(self.inbox, self.role)

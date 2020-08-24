@@ -7,7 +7,6 @@ Contains all entity sets for the label database.
 * :class:`Label`
 """
 from django.db import models
-from django.utils.translation import gettext_lazy as _
 
 from ticketvise.models.validators import validate_hex_color
 

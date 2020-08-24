@@ -6,16 +6,11 @@ Contains all entity sets for the inbox database.
 **Table of contents**
 * :class:`Inbox`
 """
-from django.core.files.base import ContentFile
 from django.db import models
 
-from os import path
-from PIL import Image
-
-from ticketvise.models.user import UserInbox, User, Role
+from ticketvise.models.user import User, Role
 from ticketvise.models.validators import validate_hex_color
 from ticketvise.settings import INBOX_IMAGE_DIRECTORY, DEFAULT_INBOX_IMAGE_PATH
-from ticketvise.utils import crop_image
 
 
 class SchedulingAlgorithm(models.TextChoices):
@@ -136,7 +131,7 @@ class Inbox(models.Model):
         # else:
         #     p = self.image
         #     self.image = Image.open(f"ticketvise/{self.image}")
-            
+
         # self.image = crop_image(self.image)
         # self.image.save(f"ticketvise/{p}", quality=60)
         super().save(force_insert, force_update, using, update_fields)
