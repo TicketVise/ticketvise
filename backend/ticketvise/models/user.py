@@ -87,6 +87,17 @@ class User(AbstractUser):
         """
         return self.get_entry_by_inbox(inbox).role
 
+    def get_role_label_by_inbox(self, inbox):
+        """
+        Get the user's role for a inbox.
+
+        :param Inbox inbox: Inbox to get the role for.
+
+        :return: The role for the user in a specific inbox.
+        :rtype: str
+        """
+        return Role[self.get_role_by_inbox(inbox)].label
+
     def get_entries_by_role(self, role):
         """
         Filters :class:`UserInbox` s by role and returns the resulting set.
