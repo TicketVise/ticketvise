@@ -84,8 +84,8 @@ class InboxAverageAgentResponseTimeStatisticsApiView(UserIsInboxManagerMixin, AP
         avg_response_time = Comment.objects.filter(id__in=Subquery(recent_comment_ids)) \
             .annotate(response_time=F('date_created') - F('ticket__date_created')) \
             .values("author") \
-            .annotate(avg_response_time=Avg("response_time")) \
- \
+            .annotate(avg_response_time=Avg("response_time"))
+
         users = User.objects.filter(inbox_relationship__inbox=inbox) \
             .annotate(avg_response_time=Subquery(avg_response_time.values("avg_response_time")))
 
