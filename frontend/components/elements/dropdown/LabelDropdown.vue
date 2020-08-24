@@ -23,11 +23,11 @@
             class="max-h-56 rounded-md py-1 text-base leading-6 shadow-xs overflow-auto focus:outline-none sm:text-sm sm:leading-5"
             role="listbox"
             tabindex="-1">
-          <li :key="item.id" :value="item.id" @click="switchItem(item, index)"
+          <li :key="item.id" :value="item.id" @click="switchItem(item)"
               class="text-gray-900 hover:text-white hover:bg-orange-400 cursor-pointer select-none relative py-2 pl-3 pr-9"
               id="listbox-item-0"
               role="option"
-              v-for="(item, index) in values">
+              v-for="item in values">
             <div class="flex items-center space-x-3">
               <div :style="`background-color: ${item.color};`" class="w-2 h-2 rounded-full"></div>
               <span :class="{ 'font-semibold': containsObject(labels, item.id) }" class="font-normal block truncate">{{ item.name }}</span>
@@ -58,11 +58,11 @@
       this.labels = this.selected
     },
     methods: {
-      switchItem(value, index) {
+      switchItem(value) {
         if (this.containsObject(this.labels, value.id))
-          this.labels.splice(index, 1)
+          this.labels.splice(this.labels.findIndex(e => e.id === value.id), 1);
         else
-          this.labels.push(value)
+          this.labels.push(value);
 
         this.$emit("input", this.labels)
       },

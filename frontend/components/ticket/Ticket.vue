@@ -36,7 +36,8 @@
             No labels selected
           </div>
           <div class="mb-4">
-            <label-dropdown :selected="labels" :values="inbox.labels" v-if="canShare" v-model="labels"/>
+            <label-dropdown :selected="labels" :values="inbox.labels" v-if="canShare" v-model="labels"
+                            v-on:input="updateLabels"/>
           </div>
         </div>
 
@@ -290,6 +291,17 @@
       },
       updateAssignee(assignee) {
         this.ticket.assignee = assignee
+      },
+      updateLabels() {
+        axios.defaults.xsrfCookieName = 'csrftoken';
+        axios.defaults.xsrfHeaderName = "X-CSRFTOKEN";
+
+        axios.put("/api" + window.location.pathname + "/labels",
+            {
+              "labels": this.labels.map(label => label.id)
+            }).then(response => {
+
+        });
       }
     }
   }
