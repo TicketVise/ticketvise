@@ -106,8 +106,8 @@
                     class="block appearance-none bg-white border border-gray-400 hover:border-gray-500 px-4 py-1 pr-8 rounded shadow-sm leading-tight focus:outline-none focus:shadow-outline">
               {{ form.close_answered_weeks.value }}
               {% for i in 5|times %}
-                <option value="{{ i }}" {% if form.close_answered_weeks.value == i|stringformat:"i" %}
-                        selected {% endif %}>
+                <option value="{{ i }}"
+                        {% if form.close_answered_weeks.value == i %} selected {% endif %}>
                   {% if i == 0 %}
                     Disabled
                   {% else %}
@@ -128,7 +128,7 @@
                     class="block appearance-none bg-white border border-gray-400 hover:border-gray-500 px-4 py-1 pr-8 rounded shadow-sm leading-tight focus:outline-none focus:shadow-outline">
               {% for i in 8|times %}
                 <option value="{{ i }}"
-                        {% if form.alert_coordinator_unanswered_days.value == i|stringformat:"i" %}
+                        {% if form.alert_coordinator_unanswered_days.value == i %}
                         selected {% endif %}>
                   {% if i == 0 %}
                     Disabled
