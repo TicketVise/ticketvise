@@ -171,11 +171,11 @@ class NotificationsTestCase(TestCase):
 
         self.client.post("/notifications", urlencode({"id": notification.id}), follow=True,
                          content_type="application/x-www-form-urlencoded")
-        self.assertTrue(Notification.objects.get(pk=notification.id).read)
+        self.assertTrue(Notification.objects.get(pk=notification.id).is_read)
 
         self.client.post("/notifications", urlencode({"id": notification.id}), follow=True,
                          content_type="application/x-www-form-urlencoded")
-        self.assertFalse(Notification.objects.get(pk=notification.id).read)
+        self.assertFalse(Notification.objects.get(pk=notification.id).is_read)
 
     def test_mark_all_notifications_read(self):
         """
@@ -186,12 +186,12 @@ class NotificationsTestCase(TestCase):
         self.client.force_login(self.ta)
 
         for notification in Notification.objects.filter(receiver=self.ticket.author):
-            self.assertFalse(notification.read)
+            self.assertFalse(notification.is_read)
 
         self.client.post("/notifications", follow=True)
 
         for notification in Notification.objects.filter(receiver=self.ticket.author):
-            self.assertTrue(notification.read)
+            self.assertTrue(notification.is_read)
 
     def test_opening_ticket_marks_related_notifications_as_read(self):
         """
@@ -203,14 +203,14 @@ class NotificationsTestCase(TestCase):
         self.client.force_login(self.ta)
 
         for notification in Notification.objects.filter(receiver=self.ticket.author):
-            self.assertFalse(notification.read)
+            self.assertFalse(notification.is_read)
 
         self.client.get("/inboxes/{}/tickets/{}".format(self.ticket.inbox.id,
                                                         self.ticket.ticket_inbox_id),
                         follow=True)
 
         for notification in Notification.objects.filter(receiver=self.ticket.author):
-            self.assertTrue(notification.read)
+            self.assertTrue(notification.is_read)
 
     def test_mention_notification(self):
         """
@@ -440,6 +440,6 @@ class NotificationsAPITestCase(NotificationsTestCase):
         response = self.client.put(f"/api/notifications/{ticketstatuschanged_notification.id}/read")
         self.assertTrue(response.status_code, 200)
 
-        self.assertFalse(MentionNotification.objects.get(id=mention_notification.id).read)
-        self.assertFalse(CommentNotification.objects.get(id=comment_notification.id).read)
-        self.assertFalse(TicketStatusChangedNotification.objects.get(id=ticketstatuschanged_notification.id).read)
+        self.assertFalse(MentionNotification.objects.get(id=mention_notification.id).is_read)
+        self.assertFalse(CommentNotification.objects.get(id=comment_notification.id).is_read)
+        self.assertFalse(TicketStatusChangedNotification.objects.get(id=ticketstatuschanged_notification.id).is_read)

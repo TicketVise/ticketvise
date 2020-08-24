@@ -44,29 +44,19 @@ class Inbox(models.Model):
                         * **users** -- Set of :class:`User` s belonging to the inbox.
     """
 
-    #: Inbox code, must be unique for every inbox.
     code = models.CharField(max_length=50, unique=True)
-    #: Inbox name, maximum length of 100 characters.
     name = models.CharField(max_length=100)
-    #: Inbox color, must be a valid hex color.
     color = models.CharField(max_length=7, validators=[validate_hex_color])
-    #: Inbox image, shown to users. This image has the inbox color applied to it.
     image = models.ImageField(upload_to=INBOX_IMAGE_DIRECTORY, default=DEFAULT_INBOX_IMAGE_PATH)
-    #: Scheduling algorithm for the inbox, used to schedule tickets.
-    #: Must be one of the choices in :class:`SchedulingAlgorithms`.
-    #: Defaults to :attr:`SchedulingAlgorithms.MANUAL`.
     scheduling_algorithm = models.CharField(choices=SchedulingAlgorithm.choices, max_length=255,
                                             default=SchedulingAlgorithm.LEAST_ASSIGNED_FIRST)
-    #: Parameter used for round-robin scheduling. Defaults to ``0``.
     round_robin_parameter = models.PositiveIntegerField(default=0)
-    #: Indicates if students can see assignees of tickets. Defaults to ``False``.
-    visibility_assignee = models.BooleanField(default=False)
-    #: Close all answered tickets after set amount of weeks. Defaults to ``0``.
+    show_assignee = models.BooleanField(default=False)
     close_answered_weeks = models.PositiveIntegerField(default=0)
-    #: Alert coordinator of unanswered tickets after set amount of days. Defaults to ``0``.
     alert_coordinator_unanswered_days = models.PositiveIntegerField(default=0)
-    #: Indicates if the instance is active or not. Defaults to ``True``.
     is_active = models.BooleanField(default=True)
+    date_edited = models.DateTimeField(auto_now=True)
+    date_created = models.DateTimeField(auto_now_add=True)
 
     def round_robin_parameter_increase(self):
         """

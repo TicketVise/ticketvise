@@ -106,7 +106,7 @@ class NotificationsView(LoginRequiredMixin, TemplateView):
             notification = get_object_or_404(Notification, pk=form.cleaned_data["id"])
             if notification.receiver != request.user:
                 self.handle_no_permission()
-            notification.read = not notification.read
+            notification.is_read = not notification.is_read
             notification.save()
         else:
             Notification.objects.filter(receiver=self.request.user).update(read=True)

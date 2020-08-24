@@ -20,12 +20,10 @@ class Notification(models.Model):
     """
 
     objects = InheritanceManager()
-    #: The :class:`User` that received the notification.
-    receiver = models.ForeignKey("User", models.CASCADE, related_name="notifications")
-    #: If ``True``, the notification is marked as read. Defaults to ``False``.
-    read = models.BooleanField(_("Read"), default=False)
-    #: Date that the notification was created. Automatically added on creation.
-    date_created = models.DateTimeField(_("Date created"), auto_now_add=True)
+    receiver = models.ForeignKey("User", on_delete=models.CASCADE, related_name="notifications")
+    is_read = models.BooleanField(default=False)
+    date_edited = models.DateTimeField(auto_now=True)
+    date_created = models.DateTimeField(auto_now_add=True)
 
     @property
     def ticket(self):
@@ -50,7 +48,7 @@ class MentionNotification(Notification):
     """
 
     #: :class:`Comment` that the notification is associated with.
-    comment = models.ForeignKey("Comment", models.CASCADE, related_name="mention_notifications")
+    comment = models.ForeignKey("Comment", on_delete=models.CASCADE, related_name="mention_notifications")
 
     @property
     def ticket(self):
@@ -95,7 +93,7 @@ class CommentNotification(Notification):
     """
 
     #: :class:`Comment` that was posted.
-    comment = models.ForeignKey("Comment", models.CASCADE, related_name="comment_notifications")
+    comment = models.ForeignKey("Comment", on_delete=models.CASCADE, related_name="comment_notifications")
 
     @property
     def ticket(self):
