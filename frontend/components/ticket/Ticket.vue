@@ -1,7 +1,7 @@
 <template>
   <div v-if="ticket" class="h-full">
     <div class="lg:h-full flex flex-col-reverse lg:flex-row w-full">
-      <div class="w-screen lg:max-w-sm bg-gray-100 border-r border-t lg:border-t-0">
+      <div class="w-screen lg:max-w-sm bg-gray-100 border-r border-t lg:border-t-0 h-full min-h-full">
         <!-- <author-card class="hidden lg:block" :author="ticket.author" :inbox_id="ticket.inbox"/> -->
         <!-- Ticket Author -->
         <div class="p-6 flex space-x-4 border-b">
@@ -23,8 +23,30 @@
                            v-on:input="updateSharedWith"></edit-share-with>
         </div>
 
+        <!-- Labels -->
+        <div class="p-4 pt-2">
+          <h4 class="block text-gray-700 font-bold mb-2">Labels</h4>
+          <error :key="error" :message="error" v-for="error in this.errors.labels"></error>
+          <div class="flex flex-wrap mb-2" v-if="labels.length > 0">
+            <chip :background="label.color" :key="label.id" class="m-1" v-for="label in labels">
+              {{ label.name }}
+            </chip>
+          </div>
+          <div class="flex flex-wrap mb-2" v-else>
+            No labels selected
+          </div>
+          <div class="mb-4">
+            <label-dropdown :values="inbox.labels" v-if="canShare" v-model="labels"/>
+          </div>
+        </div>
+
         <!-- Assignee -->
-        <edit-assignee :ticket="ticket" :staff="staff"></edit-assignee>
+        <div class="p-4 pt-0">
+          <h4 class="font-semibold text-gray-800 mb-2">Assignee</h4>
+          <div class="mb-4">
+            <user-dropdown :assignee="ticket.assignee" :staff="staff" v-if="staff" v-on:input="updateAssignee"/>
+          </div>
+        </div>
 
         <!-- Participants -->
         <div class="p-4 pt-2">
@@ -108,7 +130,6 @@
   import '@toast-ui/editor/dist/toastui-editor.css';
   import {Editor, Viewer} from '@toast-ui/vue-editor';
   import EditLabel from "./EditLabel";
-  import EditAssignee from "./EditAssignee";
   import Mention from "../elements/mention/Mention";
   import Tab from "../elements/Tab"
   import ExternalTab from "./ExternalTab";
@@ -117,6 +138,7 @@
   import AttachmentsTab from "./AttachmentsTab";
   import Avatars from "../elements/Avatars";
   import EditShareWith from "./EditShareWith";
+  import UserDropdown from "../elements/dropdown/UserDropdown";
 
   export default {
     components: {
@@ -126,7 +148,7 @@
       InternalTab,
       ExternalTab,
       Mention,
-      EditAssignee,
+      UserDropdown,
       EditLabel,
       Avatar,
       AuthorCard,
@@ -142,6 +164,7 @@
         inbox: null,
         ticket: null,
         replies: [],
+        labels: [],
         comments: [],
         commentEditor: "",
         staff: [],
@@ -263,6 +286,9 @@
         }).catch(error => {
           this.errors = error.response.data
         })
+      },
+      updateAssignee(assignee) {
+        this.ticket.assignee = assignee
       }
     }
   }

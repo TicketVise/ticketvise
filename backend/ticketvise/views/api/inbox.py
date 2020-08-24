@@ -11,9 +11,11 @@ from ticketvise.views.api.user import UserSerializer
 
 
 class InboxSerializer(ModelSerializer):
+    labels = LabelSerializer(many=True, read_only=True)
+
     class Meta:
         model = Inbox
-        fields = ["name", "id", "color"]
+        fields = ["name", "id", "color", "labels"]
 
 
 class InboxStaffApiView(UserIsInboxStaffMixin, ListAPIView):
