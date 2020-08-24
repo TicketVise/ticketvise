@@ -3,14 +3,13 @@
     <span class="text-xs text-gray-500 float-right">
       #{{ ticket.ticket_inbox_id }}
     </span>
-    <h3 v-if="!small" class="text-xs text-gray-500">{{ date }}</h3>
+    <h3 v-if="!small" class="text-xs text-gray-500">{{ date(ticket.date_created) }}</h3>
     <a :href="link" class="font-medium text-gray-900 hover:underline">
       {{ ticket.title }}
     </a>
 
     <div v-if="!small" class="space-x-1 select-none">
-      <chip
-              :key="label.id"
+      <chip :key="label.id"
               v-for="label in ticket.labels"
       >{{ label.name }}
       </chip>
@@ -33,10 +32,12 @@
         default: false
       }
     },
+    methods: {
+      date: function (date) {
+        return moment(date).calendar()
+      }
+    },
     computed: {
-      date: function () {
-        return moment(this.ticket.date_edited).calendar()
-      },
       link: function () {
         return window.location.href + '/' + this.ticket.ticket_inbox_id
       },
