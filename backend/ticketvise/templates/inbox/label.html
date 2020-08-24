@@ -1,106 +1,104 @@
 {% extends "navigation.html" %}
 
 {% block content %}
+<div class="container mx-auto max-w-3xl">
+    <form method="post">
+        {% csrf_token %}
 
-    <div class="container max-w-3xl">
-        <form method="post">
-            {% csrf_token %}
-
-            <div class="mt-4 mb-4">
-                <div class="bg-gray-50 px-4 py-3 sm:gap-4 sm:px-6 border-b-2">
-                    <h3 class="text-lg leading-6 font-medium text-gray-900">
-                        Label
-                    </h3>
-                    <p class="mt-1 max-w-2xl text-sm leading-5 text-gray-500">
-                        {% if label.id %}
-                            Manage properties related to a label.
-                        {% else %}
-                            Manage properties related to a label.
-                        {% endif %}
-                    </p>
-                </div>
-                <div class="bg-gray-50 px-4 py-3 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6 border-b-2">
-                    <dt class="text-sm leading-5 font-medium text-gray-700 flex items-center">
-                        Name
-                    </dt>
-                    <dd class="mt-1 text-sm leading-5 text-gray-900 sm:mt-0 sm:col-span-2">
-                        <input type="text"
-                               class="block appearance-none w-full bg-white border {% if form.errors.name %} mb-2 border-red-600 hover:border-red-700 {% else %} border-gray-400 hover:border-gray-500 {% endif %} px-4 py-2 pr-8 rounded shadow-sm leading-tight focus:outline-none focus:shadow-outline"
-                               value="{{ form.name.value }}" name="name" autofocus>
-                        {% for error in form.errors.name %}
-                            <p class="text-sm text-red-600">{{ error }}</p>
-                        {% endfor %}
-                    </dd>
-                </div>
-                <div class="bg-gray-50 px-4 py-3 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6 border-b-2">
-                    <dt class="text-sm leading-5 font-medium text-gray-700 flex items-center">
-                        Color
-                    </dt>
-                    <dd class="mt-1 text-sm leading-5 text-gray-900 sm:mt-0 sm:col-span-2">
-                        <input type="color" id="color"
-                               class="block appearance-none w-full bg-white border {% if form.errors.color %} mb-2 border-red-600 hover:border-red-700 {% else %} border-gray-400 hover:border-gray-500 {% endif %} overflow-hidden rounded shadow-sm leading-tight focus:outline-none focus:shadow-outline"
-                               value="{{ form.color.value }}" name="color">
-                        {% for error in form.errors.color %}
-                            <p class="text-sm text-red-600">{{ error }}</p>
-                        {% endfor %}
-                    </dd>
-                </div>
-                <div class="bg-gray-50 px-4 py-3 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6 border-b-2">
-                    <label for="is_form_label" class="text-sm leading-5 font-medium text-gray-700 flex items-center">
-                        Visible for students
-                    </label>
-                    <dd class="mt-1 text-sm leading-5 text-gray-900 sm:mt-0 sm:col-span-2">
-                        <input type="checkbox"
-                               class="block appearance-none bg-white border border-gray-400 hover:border-gray-500 overflow-hidden rounded shadow-sm leading-tight focus:outline-none focus:shadow-outline"
-                               name="is_form_label" id="is_form_label" {% if form.is_form_label.value %}
-                               checked {% endif %}>
-                    </dd>
-                </div>
-                <div class="bg-gray-50 px-4 py-3 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6 border-b-2">
-                    <label for="is_active" class="text-sm leading-5 font-medium text-gray-700 flex items-center">
-                        Enabled
-                    </label>
-                    <dd class="mt-1 text-sm leading-5 text-gray-900 sm:mt-0 sm:col-span-2">
-                        <input type="checkbox"
-                               class="block appearance-none bg-white border border-gray-400 hover:border-gray-500 overflow-hidden rounded shadow-sm leading-tight focus:outline-none focus:shadow-outline"
-                               name="is_active" id="is_active" {% if form.is_active.value %} checked {% endif %} >
-                    </dd>
-                </div>
+        <div class="mt-4 mb-4">
+            <div class="bg-gray-50 px-4 py-3 sm:gap-4 sm:px-6 border-b-2">
+                <h3 class="text-lg leading-6 font-medium text-gray-900">
+                    Label
+                </h3>
+                <p class="mt-1 max-w-2xl text-sm leading-5 text-gray-500">
+                    {% if label.id %}
+                    Manage properties related to a label.
+                    {% else %}
+                    Manage properties related to a label.
+                    {% endif %}
+                </p>
             </div>
+            <div class="bg-gray-50 px-4 py-3 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6 border-b-2">
+                <dt class="text-sm leading-5 font-medium text-gray-700 flex items-center">
+                    Name
+                </dt>
+                <dd class="mt-1 text-sm leading-5 text-gray-900 sm:mt-0 sm:col-span-2">
+                    <input type="text"
+                        class="block appearance-none w-full bg-white border {% if form.errors.name %} mb-2 border-red-600 hover:border-red-700 {% else %} border-gray-400 hover:border-gray-500 {% endif %} px-4 py-2 pr-8 rounded shadow-sm leading-tight focus:outline-none focus:shadow-outline"
+                        value="{{ form.name.value }}" name="name">
+                    {% for error in form.errors.name %}
+                    <p class="text-sm text-red-600">{{ error }}</p>
+                    {% endfor %}
+                </dd>
+            </div>
+            <div class="bg-gray-50 px-4 py-3 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6 border-b-2">
+                <dt class="text-sm leading-5 font-medium text-gray-700 flex items-center">
+                    Color
+                </dt>
+                <dd class="mt-1 text-sm leading-5 text-gray-900 sm:mt-0 sm:col-span-2">
+                    <input type="color" id="color"
+                        class="block appearance-none w-full bg-white border {% if form.errors.color %} mb-2 border-red-600 hover:border-red-700 {% else %} border-gray-400 hover:border-gray-500 {% endif %} overflow-hidden rounded shadow-sm leading-tight focus:outline-none focus:shadow-outline"
+                        value="{{ form.color.value }}" name="color">
+                    {% for error in form.errors.color %}
+                    <p class="text-sm text-red-600">{{ error }}</p>
+                    {% endfor %}
+                </dd>
+            </div>
+            <div class="bg-gray-50 px-4 py-3 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6 border-b-2">
+                <label for="is_form_label" class="text-sm leading-5 font-medium text-gray-700 flex items-center">
+                    Visible for students
+                </label>
+                <dd class="mt-1 text-sm leading-5 text-gray-900 sm:mt-0 sm:col-span-2">
+                    <input type="checkbox"
+                        class="block appearance-none bg-white border border-gray-400 hover:border-gray-500 overflow-hidden rounded shadow-sm leading-tight focus:outline-none focus:shadow-outline"
+                        name="is_form_label" id="is_form_label" {% if form.is_form_label.value %} checked {% endif %}>
+                </dd>
+            </div>
+            <div class="bg-gray-50 px-4 py-3 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6 border-b-2">
+                <label for="is_active" class="text-sm leading-5 font-medium text-gray-700 flex items-center">
+                    Enabled
+                </label>
+                <dd class="mt-1 text-sm leading-5 text-gray-900 sm:mt-0 sm:col-span-2">
+                    <input type="checkbox"
+                        class="block appearance-none bg-white border border-gray-400 hover:border-gray-500 overflow-hidden rounded shadow-sm leading-tight focus:outline-none focus:shadow-outline"
+                        name="is_active" id="is_active" {% if form.is_active.value %} checked {% endif %}>
+                </dd>
+            </div>
+        </div>
 
-            <span class="sm:ml-3 shadow-sm rounded-md">
-                <button type="submit"
-                        class="inline-flex items-center px-4 py-2 border border-transparent text-sm leading-5 font-medium rounded-md text-white bg-green-200 text-green-700 hover:bg-green-100 focus:outline-none focus:shadow-outline-indigo focus:border-green-700 active:bg-green-700 ">
-                    <svg class="-ml-1 mr-2 h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                        <path fill-rule="evenodd"
-                              d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                              clip-rule="evenodd"/>
-                    </svg>
-                    Save
-                </button>
-            </span>
-        </form>
+        <span class="sm:ml-3 shadow-sm rounded-md">
+            <button type="submit"
+                class="inline-flex items-center px-4 py-2 border border-transparent text-sm leading-5 font-medium rounded-md text-white bg-green-200 text-green-700 hover:bg-green-100 focus:outline-none focus:shadow-outline-indigo focus:border-green-700 active:bg-green-700 ">
+                <svg class="-ml-1 mr-2 h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd"
+                        d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                        clip-rule="evenodd" />
+                </svg>
+                Save
+            </button>
+        </span>
+    </form>
 
-        {% if label.id %}
-            <form action="{% url 'delete_inbox_label' inbox_id=label.inbox.id pk=label.id %}" method="post"
-                  onsubmit="return confirm('Are you sure?')">
-                {% csrf_token %}
+    {% if label.id %}
+    <form action="{% url 'delete_inbox_label' inbox_id=label.inbox.id pk=label.id %}" method="post"
+        onsubmit="return confirm('Are you sure?')">
+        {% csrf_token %}
 
-                <div class="bg-white shadow overflow-hidden sm:rounded-lg mt-4 mb-4 px-4 py-5">
-                    <h3 class="text-lg leading-6 font-medium text-gray-900">
-                        Remove label
-                    </h3>
-                    <p class="mt-1 max-w-2xl text-sm leading-5 text-gray-500">
-                        Remove a label. When removing a label, the label will be removed from all ticket associated with
-                        it.
-                        This action in irreversible.
-                    </p>
-                    <button type="submit"
-                            class="mt-4 inline-flex justify-center rounded-md border border-transparent px-4 py-2 bg-red-200 text-red-600 co text-base leading-6 font-medium text-white shadow-sm hover:bg-red-100 focus:outline-none focus:border-red-700 focus:shadow-outline-red transition ease-in-out duration-150 sm:text-sm sm:leading-5">
-                        Remove
-                    </button>
-                </div>
-            </form>
-        {% endif %}
-    </div>
+        <div class="bg-white shadow overflow-hidden sm:rounded-lg mt-4 mb-4 px-4 py-5">
+            <h3 class="text-lg leading-6 font-medium text-gray-900">
+                Remove label
+            </h3>
+            <p class="mt-1 max-w-2xl text-sm leading-5 text-gray-500">
+                Remove a label. When removing a label, the label will be removed from all ticket associated with
+                it.
+                This action in irreversible.
+            </p>
+            <button type="submit"
+                class="mt-4 inline-flex justify-center rounded-md border border-transparent px-4 py-2 bg-red-200 text-red-600 co text-base leading-6 font-medium text-white shadow-sm hover:bg-red-100 focus:outline-none focus:border-red-700 focus:shadow-outline-red transition ease-in-out duration-150 sm:text-sm sm:leading-5">
+                Remove
+            </button>
+        </div>
+    </form>
+    {% endif %}
+</div>
 {% endblock content %}

@@ -4,6 +4,10 @@
 <!-- STATISTICS FOR MANAGER ABOUT INBOX AND ITS ASSISTANTS. -->
 
 {% block inbox-content %}
+<div class="container mx-auto">
+    <h3 class="text-lg leading-6 font-medium text-gray-900">
+        Last week
+    </h3>
 
     <div class="container">
 
@@ -62,10 +66,11 @@
                 </div>
             </div>
         </div>
+    </div>
 
-        <h3 class="text-lg leading-6 font-medium text-gray-900">
-            Summary
-        </h3>
+    <h3 class="text-lg leading-6 font-medium text-gray-900">
+        Summary
+    </h3>
 
         <div class="flex flex-wrap">
             <div class="rounded-lg shadow my-4 flex-grow p-4 mr-4">
@@ -77,27 +82,28 @@
                     <span class="ml-2 text-sm flex-grow text-gray-600">from {{ last_week_total_tickets }} last week</span>
                 </div>
             </div>
+        </div>
 
-            <div class="rounded-lg shadow my-4 flex-grow p-4 mr-4">
-                <h3 class="text-lg leading-6 font-medium text-gray-900">
-                    Average response time
-                </h3>
-                <div class="flex items-baseline mt-1">
-                    <h2 class="text-2xl font-medium">{{ avg_response_time }} hours</h2>
-                </div>
+        <div class="rounded-lg shadow my-4 flex-grow p-4 mr-4">
+            <h3 class="text-lg leading-6 font-medium text-gray-900">
+                Average response time
+            </h3>
+            <div class="flex items-baseline mt-1">
+                <h2 class="text-2xl font-medium">{{ avg_response_time }} hours</h2>
             </div>
+        </div>
 
-            <div class="rounded-lg shadow my-4 flex-grow p-4">
-                <h3 class="text-lg leading-6 font-medium text-gray-900">
-                    Active students
-                </h3>
-                <div class="flex items-baseline mt-1">
-                    <h2 class="text-2xl font-medium">{{ total_students }}</h2>
-                </div>
+        <div class="rounded-lg shadow my-4 flex-grow p-4">
+            <h3 class="text-lg leading-6 font-medium text-gray-900">
+                Active students
+            </h3>
+            <div class="flex items-baseline mt-1">
+                <h2 class="text-2xl font-medium">{{ total_students }}</h2>
             </div>
         </div>
 
         <div id="inbox-statistics"></div>
     </div>
+</div>
 
 {% endblock inbox-content %}
