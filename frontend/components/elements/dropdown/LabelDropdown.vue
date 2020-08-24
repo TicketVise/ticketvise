@@ -23,16 +23,16 @@
             class="max-h-56 rounded-md py-1 text-base leading-6 shadow-xs overflow-auto focus:outline-none sm:text-sm sm:leading-5"
             role="listbox"
             tabindex="-1">
-          <li :key="item.id" :value="item.id" @click="switchItem(item)"
+          <li :key="item.id" :value="item.id" @click="switchItem(item, index)"
               class="text-gray-900 hover:text-white hover:bg-orange-400 cursor-pointer select-none relative py-2 pl-3 pr-9"
               id="listbox-item-0"
               role="option"
-              v-for="item in values">
+              v-for="(item, index) in values">
             <div class="flex items-center space-x-3">
               <div :style="`background-color: ${item.color};`" class="w-2 h-2 rounded-full"></div>
-              <span :class="{ 'font-semibold': labels.includes(item) }" class="font-normal block truncate">{{ item.name }}</span>
+              <span :class="{ 'font-semibold': containsObject(labels, item.id) }" class="font-normal block truncate">{{ item.name }}</span>
             </div>
-            <span class="absolute inset-y-0 right-0 flex items-center pr-4" v-if="labels.includes(item)">
+            <span class="absolute inset-y-0 right-0 flex items-center pr-4" v-if="containsObject(labels, item.id)">
               <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
                 <path clip-rule="evenodd"
                       d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
@@ -49,15 +49,18 @@
 <script>
   export default {
     name: "Dropdown",
-    props: ["values"],
+    props: ["values", "selected"],
     data: () => ({
       open: false,
       labels: []
     }),
+    created() {
+      this.labels = this.selected
+    },
     methods: {
-      switchItem(value) {
-        if (this.labels.includes(value))
-          this.$delete(this.labels, this.labels.indexOf(value))
+      switchItem(value, index) {
+        if (this.containsObject(this.labels, value.id))
+          this.labels.splice(index, 1)
         else
           this.labels.push(value)
 
@@ -65,6 +68,10 @@
       },
       away() {
         this.open = false
+      },
+      containsObject(list, id) {
+        return !!list.some(e => e.id === id);
+
       }
     }
   }

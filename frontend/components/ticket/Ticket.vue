@@ -36,7 +36,7 @@
             No labels selected
           </div>
           <div class="mb-4">
-            <label-dropdown :values="inbox.labels" v-if="canShare" v-model="labels"/>
+            <label-dropdown :selected="labels" :values="inbox.labels" v-if="canShare" v-model="labels"/>
           </div>
         </div>
 
@@ -181,9 +181,10 @@
         }
       }
     },
-    mounted() {
+    created() {
       axios.get("/api" + window.location.pathname).then(response => {
         this.ticket = response.data;
+        this.labels = response.data.labels
 
         axios.defaults.xsrfCookieName = 'csrftoken';
         axios.defaults.xsrfHeaderName = "X-CSRFTOKEN";
