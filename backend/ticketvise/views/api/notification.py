@@ -24,7 +24,7 @@ class CommentNotificationSerializer(ModelSerializer):
 
     class Meta:
         model = CommentNotification
-        fields = ["id", "receiver", "date_created", "read", "comment", "ticket", "author", "content",
+        fields = ["id", "receiver", "date_created", "is_read", "comment", "ticket", "author", "content",
                   "inbox"]
 
 
@@ -36,7 +36,7 @@ class MentionNotificationSerializer(ModelSerializer):
 
     class Meta:
         model = MentionNotification
-        fields = ["id", "receiver", "date_created", "read", "comment", "ticket", "author", "content",
+        fields = ["id", "receiver", "date_created", "is_read", "comment", "ticket", "author", "content",
                   "inbox"]
 
 
@@ -48,7 +48,7 @@ class TicketStatusChangedNotificationSerializer(ModelSerializer):
 
     class Meta:
         model = TicketStatusChangedNotification
-        fields = ["id", "receiver", "date_created", "read", "old_status", "ticket", "author",
+        fields = ["id", "receiver", "date_created", "is_read", "old_status", "ticket", "author",
                   "content", "inbox"]
 
 
@@ -79,7 +79,7 @@ class NotificationsAPIView(LoginRequiredMixin, ListAPIView):
     pagination_class = NotificationPagination
 
     def get_queryset(self):
-        read = self.request.GET.get("read", "")
+        read = self.request.GET.get("is_read", "")
 
         notifications = Notification.objects.filter(receiver=self.request.user).select_subclasses().order_by(
             "-date_created")
@@ -127,4 +127,4 @@ class VisitTicketNotificationApi(UserHasAccessToTicketMixin, UpdateAPIView):
 
 class NotificationUnreadCountAPI(LoginRequiredMixin, RetrieveAPIView):
     def get(self, request, *args, **kwargs):
-        return JsonResponse(Notification.objects.filter(receiver=request.user, read=False).count(), safe=False)
+        return JsonResponse(Notification.objects.filter(receiver=request.user, is_read=False).count(), safe=False)

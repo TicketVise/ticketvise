@@ -14,14 +14,14 @@
       <nav class="m-3">
         <div class="divide-x divide-gray-400 flex items-center">
           <span @click="toggleAll" class="font-semibold text-center flex-grow cursor-pointer"
-                v-if="read === ''">All</span>
+                v-if="is_read === ''">All</span>
           <a @click="toggleAll" class="text-center flex-grow text-blue-500 cursor-pointer" v-else>All</a>
 
-          <span @click="toggleRead" class="text-center font-semibold flex-grow cursor-pointer" v-if="read === 'True'">Read</span>
+          <span @click="toggleRead" class="text-center font-semibold flex-grow cursor-pointer" v-if="is_read === 'True'">Read</span>
           <a @click="toggleRead" class="text-center flex-grow text-blue-500 cursor-pointer" v-else>Read</a>
 
           <span @click="toggleUnread" class="text-center font-semibold flex-grow cursor-pointer"
-                v-if="read === 'False'">Unread</span>
+                v-if="is_read === 'False'">Unread</span>
           <a @click="toggleUnread" class="text-center flex-grow text-blue-500 cursor-pointer" v-else>Unread</a>
 
           <submit-button text="Mark all as read" v-on:click.native="markAllAsRead"
@@ -55,7 +55,7 @@
     data() {
       return {
         notifications: [],
-        read: "",
+        is_read: "",
         pageNumber: 1,
         count: 0
       }
@@ -91,7 +91,7 @@
       getNotifications() {
         axios.get("/api/notifications", {
           params: {
-            read: this.read
+            is_read: this.is_read
           }
         }).then(response => {
           this.notifications = response.data
@@ -104,15 +104,15 @@
         })
       },
       toggleRead() {
-        this.read = "True";
+        this.is_read = "True";
         this.getNotifications()
       },
       toggleUnread() {
-        this.read = "False";
+        this.is_read = "False";
         this.getNotifications()
       },
       toggleAll() {
-        this.read = "";
+        this.is_read = "";
         this.getNotifications()
       },
       markAllAsRead() {
