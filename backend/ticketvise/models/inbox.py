@@ -85,8 +85,8 @@ class Inbox(models.Model):
         :return: All assistants and coordinators in the inbox.
         :rtype: QuerySet<:class:`User`>
         """
-        roles = [Role.MANAGER]
-        return User.objects.filter(inbox_relationship__inbox=self, inbox_relationship__role__in=roles)[0]
+        return User.objects.filter(inbox_relationship__inbox=self, inbox_relationship__role=Role.MANAGER)\
+            .order_by("-date_created").first()
 
     def get_tickets_by_assignee(self, assignee, status=None):
         """
