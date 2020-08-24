@@ -18,6 +18,7 @@ from rest_framework.generics import UpdateAPIView, ListAPIView, RetrieveAPIView,
 from rest_framework.serializers import ModelSerializer
 from rest_framework.views import APIView
 
+from ticketvise.middleware import CurrentUserMiddleware
 from ticketvise.models.inbox import Inbox
 from ticketvise.models.label import Label
 from ticketvise.models.ticket import Ticket, TicketAttachment, TicketEvent, Status, TicketStatusEvent, \
@@ -40,8 +41,16 @@ class TicketSerializer(ModelSerializer):
     Allows data to be converted into Python datatypes for the ticket.
     """
     author = UserSerializer(read_only=True)
-    assignee = UserSerializer(many=False, read_only=True)
+    assignee = serializers.SerializerMethodField()
     labels = LabelSerializer(many=True, read_only=True)
+
+    def get_assignee(self, obj):
+        user = CurrentUserMiddleware.get_current_user()
+
+        if user and (user.is_assistant_or_coordinator(obj.inbox) or obj.inbox.show_assignee_to_guest):
+            return UserSerializer(obj.assignee).data
+
+        return None
 
     class Meta:
         """
