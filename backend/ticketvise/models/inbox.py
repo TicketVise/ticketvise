@@ -123,15 +123,16 @@ class Inbox(models.Model):
     def __str__(self):
         return self.name
 
-    def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
-        # p = ''
-        # if not path.exists(f"ticketvise/{self.image}") or self.image == DEFAULT_INBOX_IMAGE_PATH:
-        #     p = self.image
-        #     self.image = Image.open(f"ticketvise{DEFAULT_INBOX_IMAGE_PATH}")
-        # else:
-        #     p = self.image
-        #     self.image = Image.open(f"ticketvise/{self.image}")
-
-        # self.image = crop_image(self.image)
-        # self.image.save(f"ticketvise/{p}", quality=60)
-        super().save(force_insert, force_update, using, update_fields)
+    # def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
+    #     p = ''
+    #     if not path.exists(f"ticketvise/{self.image}") or self.image == DEFAULT_INBOX_IMAGE_PATH:
+    #         p = self.image
+    #         self.image = Image.open(f"ticketvise{DEFAULT_INBOX_IMAGE_PATH}")
+    #     else:
+    #         p = self.image
+    #         self.image = Image.open(f"ticketvise/{self.image}")
+    #
+    #     self.image = crop_image(self.image)
+    #     self.image.save(f"ticketvise/{p}", quality=60)
+    #
+    #     super().save(force_insert, force_update, using, update_fields)
