@@ -63,6 +63,7 @@ class CreateTicketSerializer(ModelSerializer):
     Allows data to be converted into Python datatypes for the ticket.
     """
     labels = serializers.PrimaryKeyRelatedField(many=True, queryset=Label.objects.all())
+    shared_with = serializers.PrimaryKeyRelatedField(many=True, queryset=User.objects.all())
 
     class Meta:
         """
@@ -276,6 +277,8 @@ class TicketSharedWithRetrieveSerializer(ModelSerializer):
 
 
 class TicketSharedWithUpdateSerializer(ModelSerializer):
+    shared_with = serializers.PrimaryKeyRelatedField(many=True, queryset=User.objects.all())
+
     class Meta:
         model = Ticket
         fields = ["shared_with"]
@@ -333,6 +336,7 @@ class TicketEventsApiView(UserHasAccessToTicketMixin, ListAPIView):
         ticket = get_object_or_404(Ticket, inbox=inbox, ticket_inbox_id=self.kwargs["ticket_inbox_id"])
 
         return TicketEvent.objects.filter(ticket=ticket).select_subclasses()
+
 
 class TicketSharedAPIView(UserIsTicketAuthorOrInboxStaffMixin, RetrieveUpdateAPIView):
     def get_object(self):

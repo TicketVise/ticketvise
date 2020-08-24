@@ -8,3 +8,4 @@ django-csp==3.7
 psycopg2-binary==2.8.5
 coverage==5.2.1
 oauthlib==3.1.0
+tblib==1.6.0
