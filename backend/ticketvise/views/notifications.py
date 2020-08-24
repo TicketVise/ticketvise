@@ -32,7 +32,7 @@ def number_of_unread_notifications(user: User):
     :return: Number of unread notifications.
     :rtype: int
     """
-    return Notification.objects.filter(receiver=user, read=False).count()
+    return Notification.objects.filter(receiver=user, is_read=False).count()
 
 
 def get_notifications(user: User, read=""):
@@ -50,9 +50,9 @@ def get_notifications(user: User, read=""):
     """
 
     if read == "read":
-        return Notification.objects.filter(receiver=user, read=True).order_by("-date_created").select_subclasses()
+        return Notification.objects.filter(receiver=user, is_read=True).order_by("-date_created").select_subclasses()
     elif read == "unread":
-        return Notification.objects.filter(receiver=user, read=False).order_by("-date_created").select_subclasses()
+        return Notification.objects.filter(receiver=user, is_read=False).order_by("-date_created").select_subclasses()
 
     return Notification.objects.filter(receiver=user).order_by("-date_created").select_subclasses()
 
@@ -109,7 +109,7 @@ class NotificationsView(LoginRequiredMixin, TemplateView):
             notification.is_read = not notification.is_read
             notification.save()
         else:
-            Notification.objects.filter(receiver=self.request.user).update(read=True)
+            Notification.objects.filter(receiver=self.request.user).update(is_read=True)
 
         context = self.get_context_data()
 
@@ -136,6 +136,6 @@ def unread_related_ticket_notifications(ticket, user):
 
     :return: None.
     """
-    MentionNotification.objects.filter(comment__ticket=ticket, receiver=user).update(read=True)
-    TicketStatusChangedNotification.objects.filter(ticket=ticket, receiver=user).update(read=True)
-    CommentNotification.objects.filter(comment__ticket=ticket, receiver=user).update(read=True)
+    MentionNotification.objects.filter(comment__ticket=ticket, receiver=user).update(is_read=True)
+    TicketStatusChangedNotification.objects.filter(ticket=ticket, receiver=user).update(is_read=True)
+    CommentNotification.objects.filter(comment__ticket=ticket, receiver=user).update(is_read=True)

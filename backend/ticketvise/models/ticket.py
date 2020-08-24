@@ -118,14 +118,14 @@ class Ticket(models.Model):
 
         if self.assignee:
             message = TicketStatusChangedNotification(
-                receiver=self.assignee, read=False, ticket=self, old_status=old_status,
+                receiver=self.assignee, is_read=False, ticket=self, old_status=old_status,
                 new_status=self.get_status()
             )
             message.save()
         else:
             for receiver in self.inbox.get_assistants_and_coordinators():
                 message = TicketStatusChangedNotification(
-                    receiver=receiver, read=False, ticket=self, old_status=old_status,
+                    receiver=receiver, is_read=False, ticket=self, old_status=old_status,
                     new_status=self.get_status()
                 )
 
