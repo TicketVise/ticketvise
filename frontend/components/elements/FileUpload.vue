@@ -28,8 +28,7 @@
     <div @dragleave="dragleave" @dragover="dragover" @drop="drop"
          class="p-6 bg-gray-100 border border-dashed border-gray-300">
       <input :accept="accepted" @change="onChange" class="w-px h-px opacity-0 overflow-hidden absolute" id="attachment"
-             multiple name="fields[attachment][]" ref="file"
-             type="file"/>
+             multiple name="fields[attachment][]" ref="file" type="file"/>
 
       <label class="block cursor-pointer" for="attachment">
         <div>
@@ -51,6 +50,9 @@
     },
     methods: {
       onChange() {
+        this.files.push(...this.$refs.file.files)
+        this.$refs.file.value = ""
+
         this.$emit('input', this.files)
       },
       remove(i) {
@@ -71,7 +73,6 @@
         event.preventDefault();
         this.files.push(...event.dataTransfer.files)
 
-        // this.$refs.file.files.push(...event.dataTransfer.files);
         this.onChange();
         this.dragleave(event)
       }
