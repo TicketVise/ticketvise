@@ -1,8 +1,8 @@
 <template>
   <line-chart
-          v-if="data"
           :data="data"
-          :options="options"/>
+          :options="options"
+          v-if="data"/>
 </template>
 
 <script>

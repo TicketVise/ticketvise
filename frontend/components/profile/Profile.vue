@@ -4,7 +4,7 @@
     <div class="border-b shadow flex justify-center">
       <div class="container px-4 my-4 mt-2 xl:flex xl:items-center xl:justify-between">
         <div class="flex-1 min-w-0">
-          <a href="/inboxes" class="text-xs text-gray-700 hover:underline cursor-pointer">
+          <a class="text-xs text-gray-700 hover:underline cursor-pointer" href="/inboxes">
             <i class="fa fa-arrow-left mr-2"></i>
             Dashboard
           </a>

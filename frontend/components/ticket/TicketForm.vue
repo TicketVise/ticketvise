@@ -23,7 +23,7 @@
         </label>
         <input
                 class="appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none"
-                id="title" type="text" placeholder="Give your question a title" name="title" v-model="title">
+                id="title" name="title" placeholder="Give your question a title" type="text" v-model="title">
       </div>
       <error v-for="error in this.errors.title" :key="error" :message="error"></error>
 

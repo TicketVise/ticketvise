@@ -1,20 +1,20 @@
 <template>
   <div class="flex flex-column flex-wrap w-full pr-4">
     <div class="mt-3 w-full">
-      <div v-if="comments.length === 0" class="text-center mb-8">
-        <img src="/static/img/svg/undraw_a_moment_to_relax_bbpa.svg" alt="Nothing here"
-             class="w-1/2 md:w-1/4 mx-auto mb-8">
+      <div class="text-center mb-8" v-if="comments.length === 0">
+        <img alt="Nothing here" class="w-1/2 md:w-1/4 mx-auto mb-8"
+             src="/static/img/svg/undraw_a_moment_to_relax_bbpa.svg">
         <span class="text-gray-600 text-lg md:text-xl">There are no messages here yet...</span>
       </div>
-      <comment v-for="comment in comments" :key="comment.id" :comment="comment" :ticket="ticket"/>
+      <comment :comment="comment" :key="comment.id" :ticket="ticket" v-for="comment in comments"/>
     </div>
 
     <div class="flex w-full">
       <avatar :source="user.avatar_url" size="w-12 h-12 m-3"/>
       <div class="flex flex-col items-end flex-grow w-full mb-4">
-        <card outlined class="mb-2 w-full">
+        <card class="mb-2 w-full" outlined>
           <mention :ticket="ticket" :users="staff">
-            <editor ref="commentEditor" initialEditType="wysiwyg" previewStyle="tab"/>
+            <editor initialEditType="wysiwyg" previewStyle="tab" ref="commentEditor"/>
           </mention>
         </card>
         <button
