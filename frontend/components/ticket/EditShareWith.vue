@@ -1,6 +1,6 @@
 <template>
   <div class="w-full">
-    <div class="block text-gray-700 font-bold mb-2" for="username">
+    <div class="block text-gray-700 font-semibold mb-2" for="username">
       Share with
     </div>
     <div class="flex flex-wrap mb-2" v-if="shared_with.length > 0">
