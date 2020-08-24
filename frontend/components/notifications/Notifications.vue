@@ -5,7 +5,7 @@
       <div class="container px-4 my-4 xl:flex xl:items-center xl:justify-between">
         <div class="flex-1 min-w-0">
           <h2 class="text-2xl font-bold leading-7 text-gray-900 sm:text-3xl sm:leading-9 sm:truncate">
-            Notifications
+            <span class="font-semibold" v-if="this.count">{{ this.count }}</span> Notifications
           </h2>
         </div>
       </div>
@@ -13,11 +13,6 @@
     <div class="container mx-auto divide-y divide-gray-100">
       <nav class="m-3">
         <div class="divide-x divide-gray-400 flex items-center">
-          <div class="px-2">
-            <span class="font-semibold">{{ this.count }}</span>
-            <span class="text-xl" v-if="this.count === 1"> new notification</span>
-            <span class="text-xl" v-else> new notifications</span>
-          </div>
           <span @click="toggleAll" class="font-semibold text-center flex-grow cursor-pointer"
                 v-if="read === ''">All</span>
           <a @click="toggleAll" class="text-center flex-grow text-blue-500 cursor-pointer" v-else>All</a>
