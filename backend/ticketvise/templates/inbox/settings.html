@@ -78,16 +78,14 @@
           </dd>
         </div>
         <div class="bg-gray-50 px-4 py-3 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6 border-b-2">
-          <label for="is_visible_to_guest"
+          <label for="show_assignee_to_guest"
                  class="text-sm leading-5 font-medium text-gray-700 flex items-center">
             Assignee visible to students
           </label>
           <dd class="mt-1 text-sm leading-5 text-gray-900 sm:mt-0 sm:col-span-2">
-            <input type="checkbox"
+            <input type="checkbox" {% if form.show_assignee_to_guest.value %} checked {% endif %}
                    class="block appearance-none bg-white border border-gray-400 hover:border-gray-500 overflow-hidden rounded shadow-sm leading-tight focus:outline-none focus:shadow-outline"
-                   name="is_visible_to_guest" id="is_visible_to_guest"
-                    {% if form.is_visible_to_guest.value %}
-                   checked {% endif %}>
+                   name="show_assignee_to_guest" id="show_assignee_to_guest">
           </dd>
         </div>
         <div class="bg-gray-50 px-4 py-3 sm:gap-4 sm:px-6 border-b-2">
@@ -99,17 +97,17 @@
           </p>
         </div>
         <div class="bg-gray-50 px-4 py-3 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6 border-b-2">
-          <label for="is_visible_to_guest"
+          <label for="close_answered_weeks"
                  class="text-sm leading-5 font-medium text-gray-700 flex items-center">
             Close answered ticket automatically after
           </label>
           <dd class="text-sm leading-5 text-gray-900 sm:mt-0 sm:col-span-2">
-            <select name="close_answered_weeks"
+            <select name="close_answered_weeks" id="close_answered_weeks"
                     class="block appearance-none bg-white border border-gray-400 hover:border-gray-500 px-4 py-1 pr-8 rounded shadow-sm leading-tight focus:outline-none focus:shadow-outline">
               {{ form.close_answered_weeks.value }}
               {% for i in 5|times %}
-                <option value="{{ i }}" {% if form.close_answered_weeks.value == i|stringformat:"i" %}
-                        selected {% endif %}>
+                <option value="{{ i }}"
+                        {% if form.close_answered_weeks.value == i %} selected {% endif %}>
                   {% if i == 0 %}
                     Disabled
                   {% else %}
@@ -121,16 +119,16 @@
           </dd>
         </div>
         <div class="bg-gray-50 px-4 py-3 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6 border-b-2">
-          <label for="is_visible_to_guest"
+          <label for="alert_coordinator_unanswered_days"
                  class="text-sm leading-5 font-medium text-gray-700 flex items-center">
             Send alert email of unanswered tickets
           </label>
           <dd class="text-sm leading-5 text-gray-900 sm:mt-0 sm:col-span-2">
-            <select name="alert_coordinator_unanswered_days"
+            <select name="alert_coordinator_unanswered_days" id="alert_coordinator_unanswered_days"
                     class="block appearance-none bg-white border border-gray-400 hover:border-gray-500 px-4 py-1 pr-8 rounded shadow-sm leading-tight focus:outline-none focus:shadow-outline">
               {% for i in 8|times %}
                 <option value="{{ i }}"
-                        {% if form.alert_coordinator_unanswered_days.value == i|stringformat:"i" %}
+                        {% if form.alert_coordinator_unanswered_days.value == i %}
                         selected {% endif %}>
                   {% if i == 0 %}
                     Disabled
@@ -143,16 +141,15 @@
           </dd>
         </div>
         <div class="bg-gray-50 px-4 py-3 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6 border-b-2">
-          <label for="is_visible_to_guest"
+          <label for="scheduling_algorithm"
                  class="text-sm leading-5 font-medium text-gray-700 flex items-center">
             Scheduling algorithm
           </label>
           <dd class="text-sm leading-5 text-gray-900 sm:mt-0 sm:col-span-2">
-            <select name="scheduling_algorithm"
+            <select name="scheduling_algorithm" id="scheduling_algorithm"
                     class="block appearance-none bg-white border border-gray-400 hover:border-gray-500 px-4 py-1 pr-8 rounded shadow-sm leading-tight focus:outline-none focus:shadow-outline">
               {% for value, text in form.fields.scheduling_algorithm.choices %}
-                <option value="{{ value }}" {% if form.scheduling_algorithm.value == value %}
-                        selected {% endif %}>
+                <option value="{{ value }}" {% if form.scheduling_algorithm.value == value %} selected {% endif %}>
                   {{ text }}
                 </option>
               {% endfor %}

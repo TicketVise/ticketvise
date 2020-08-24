@@ -22,10 +22,12 @@
                 <i class="fa fa-code mr-1"></i>
                 {{ inbox.code }}
               </div>
-              <div class="mt-2 flex items-center text-sm leading-5 text-gray-500">
-                <i class="fa fa-user mr-1"></i>
-                {{ coordinator.first_name }} {{ coordinator.last_name }}
-              </div>
+                {% if coordinator %}
+                  <div class="mt-2 flex items-center text-sm leading-5 text-gray-500">
+                    <i class="fa fa-user mr-1"></i>
+                    {{ coordinator.first_name }} {{ coordinator.last_name }}
+                  </div>
+                {% endif %}
             </div>
           </div>
           <div class="mt-5 flex lg:mt-0 lg:ml-4 space-x-4">

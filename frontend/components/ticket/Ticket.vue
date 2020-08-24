@@ -1,7 +1,7 @@
 <template>
   <div v-if="ticket" class="h-full">
     <div class="lg:h-full flex flex-col-reverse lg:flex-row w-full">
-      <div class="w-screen lg:max-w-sm bg-gray-100 border-r border-t lg:border-t-0 h-full min-h-full">
+      <div class="w-screen lg:max-w-sm bg-gray-100 border-r border-t lg:border-t-0 h-full min-h-full space-y-2">
         <!-- <author-card class="hidden lg:block" :author="ticket.author" :inbox_id="ticket.inbox"/> -->
         <!-- Ticket Author -->
         <div class="p-6 flex space-x-4 border-b">
@@ -15,11 +15,11 @@
         </div>
 
         <!-- Recent question -->
-        <recent-questions class="m-4" :author="ticket.author" :inbox_id="ticket.inbox"></recent-questions>
+        <recent-questions :author="ticket.author" :inbox_id="ticket.inbox" class="mx-4" v-if="is_staff"/>
 
         <!-- Sharing -->
-        <div v-if="canShare" class="px-4 py-1">
-          <edit-share-with :shared_with="shared_with" :errors="errors" class="mb-2" :inbox_id="ticket.inbox"
+        <div class="px-4" v-if="canShare">
+          <edit-share-with :errors="errors" :inbox_id="ticket.inbox" :shared_with="shared_with"
                            v-on:input="updateSharedWith"></edit-share-with>
         </div>
 
@@ -42,7 +42,7 @@
         </div>
 
         <!-- Assignee -->
-        <div class="p-4 pt-0">
+        <div class="p-4 pt-0" v-if="staff">
           <h4 class="font-semibold text-gray-800 mb-2">Assignee</h4>
           <div class="mb-4">
             <user-dropdown :assignee="ticket.assignee" :staff="staff" v-if="staff" v-on:input="updateAssignee"/>
@@ -50,7 +50,7 @@
         </div>
 
         <!-- Participants -->
-        <div class="p-4 pt-2">
+        <div class="px-4 pt-2">
           <h4 class="font-semibold text-gray-800 mb-2">Participants</h4>
           <avatars :users="ticket.participants"/>
         </div>
@@ -60,8 +60,7 @@
         <div class="m-4 mt-2 xl:flex xl:items-center xl:justify-between">
           <div class="flex-1 min-w-0">
             <a :href="`/inboxes/${ticket.inbox}/tickets`" class="text-xs text-gray-700 hover:underline cursor-pointer">
-              <i
-                      class="fa fa-arrow-left mr-2"></i>
+              <i class="fa fa-arrow-left mr-2"></i>
               {{ inbox ? inbox.name : '' }}
             </a>
             <h2 class="text-2xl font-bold leading-7 text-gray-900 sm:text-3xl sm:leading-9 sm:truncate">
@@ -71,7 +70,7 @@
               <div class="mt-2 flex items-center text-sm leading-5 text-gray-500" title="Ticket Status">
                 <i
                         class="fa mr-1"
-                        :class="{ 'fa-envelope-open': ticket.status == 'PNDG' || ticket.status == 'ASGD', 'fa-envelope': ticket.status == 'ANSD' || ticket.status == 'CLSD' }"
+                        :class="{ 'fa-envelope-open': ticket.status === 'PNDG' || ticket.status === 'ASGD', 'fa-envelope': ticket.status === 'ANSD' || ticket.status === 'CLSD' }"
                 ></i>
                 {{ status[ticket.status] }}
               </div>
@@ -140,6 +139,7 @@
   import Avatars from "../elements/Avatars";
   import EditShareWith from "./EditShareWith";
   import UserDropdown from "../elements/dropdown/UserDropdown";
+  import RecentQuestions from "./RecentQuestions";
 
   export default {
     components: {
@@ -157,6 +157,7 @@
       Viewer,
       editor: Editor,
       VueTribute,
+      RecentQuestions,
       Tab,
       Card
     },

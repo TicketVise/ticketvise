@@ -46,7 +46,7 @@ class Inbox(models.Model):
     scheduling_algorithm = models.CharField(choices=SchedulingAlgorithm.choices, max_length=255,
                                             default=SchedulingAlgorithm.LEAST_ASSIGNED_FIRST)
     round_robin_parameter = models.PositiveIntegerField(default=0)
-    show_assignee = models.BooleanField(default=False)
+    show_assignee_to_guest = models.BooleanField(default=False)
     close_answered_weeks = models.PositiveIntegerField(default=0)
     alert_coordinator_unanswered_days = models.PositiveIntegerField(default=0)
     is_active = models.BooleanField(default=True)
@@ -85,8 +85,8 @@ class Inbox(models.Model):
         :return: All assistants and coordinators in the inbox.
         :rtype: QuerySet<:class:`User`>
         """
-        roles = [Role.MANAGER]
-        return User.objects.filter(inbox_relationship__inbox=self, inbox_relationship__role__in=roles)[0]
+        return User.objects.filter(inbox_relationship__inbox=self, inbox_relationship__role=Role.MANAGER)\
+            .order_by("-date_created").first()
 
     def get_tickets_by_assignee(self, assignee, status=None):
         """
@@ -123,15 +123,16 @@ class Inbox(models.Model):
     def __str__(self):
         return self.name
 
-    def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
-        # p = ''
-        # if not path.exists(f"ticketvise/{self.image}") or self.image == DEFAULT_INBOX_IMAGE_PATH:
-        #     p = self.image
-        #     self.image = Image.open(f"ticketvise{DEFAULT_INBOX_IMAGE_PATH}")
-        # else:
-        #     p = self.image
-        #     self.image = Image.open(f"ticketvise/{self.image}")
-
-        # self.image = crop_image(self.image)
-        # self.image.save(f"ticketvise/{p}", quality=60)
-        super().save(force_insert, force_update, using, update_fields)
+    # def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
+    #     p = ''
+    #     if not path.exists(f"ticketvise/{self.image}") or self.image == DEFAULT_INBOX_IMAGE_PATH:
+    #         p = self.image
+    #         self.image = Image.open(f"ticketvise{DEFAULT_INBOX_IMAGE_PATH}")
+    #     else:
+    #         p = self.image
+    #         self.image = Image.open(f"ticketvise/{self.image}")
+    #
+    #     self.image = crop_image(self.image)
+    #     self.image.save(f"ticketvise/{p}", quality=60)
+    #
+    #     super().save(force_insert, force_update, using, update_fields)

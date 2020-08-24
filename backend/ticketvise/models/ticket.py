@@ -132,7 +132,7 @@ class Ticket(models.Model):
                 message.save()
 
         if self.author.notification_ticket_status_change_mail:
-            if not (self.status == Status.ASSIGNED and not self.inbox.show_assignee):
+            if not (self.status == Status.ASSIGNED and not self.inbox.show_assignee_to_guest):
                 mail_vars = {"ticket": self}
 
                 send_email(
