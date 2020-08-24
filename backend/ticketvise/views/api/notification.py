@@ -1,6 +1,7 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db import models
-from rest_framework.generics import ListAPIView, UpdateAPIView, get_object_or_404
+from django.http import JsonResponse
+from rest_framework.generics import ListAPIView, UpdateAPIView, get_object_or_404, RetrieveAPIView
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.response import Response
 from rest_framework.serializers import ModelSerializer
@@ -122,3 +123,8 @@ class VisitTicketNotificationApi(UserHasAccessToTicketMixin, UpdateAPIView):
         TicketStatusChangedNotification.objects.filter(ticket=ticket, receiver=self.request.user).update(read=True)
         CommentNotification.objects.filter(comment__ticket=ticket, receiver=self.request.user).update(read=True)
         return Response()
+
+
+class NotificationUnreadCountAPI(LoginRequiredMixin, RetrieveAPIView):
+    def get(self, request, *args, **kwargs):
+        return JsonResponse(Notification.objects.filter(receiver=request.user, read=False).count(), safe=False)

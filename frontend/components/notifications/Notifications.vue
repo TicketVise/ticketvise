@@ -2,6 +2,11 @@
   <div class="container divide-y divide-gray-100">
     <nav class="m-3">
       <div class="divide-x divide-gray-400 flex">
+        <div class="px-2">
+          <span class="font-semibold">{{ this.count }}</span>
+          <span class="text-xl" v-if="this.count === 1"> new notification</span>
+          <span class="text-xl" v-else> new notifications</span>
+        </div>
         <span @click="toggleAll" class="font-semibold text-center flex-grow" v-if="read === ''">All</span>
         <a @click="toggleAll" class="text-center flex-grow text-blue-500" v-else>All</a>
 
@@ -41,12 +46,14 @@
       return {
         notifications: [],
         read: "",
-        pageNumber: 1
+        pageNumber: 1,
+        count: 0
       }
     },
     created() {
       axios.get("/api/notifications").then(response => {
-        this.notifications = response.data
+        this.notifications = response.data;
+
       })
     },
     methods: {
@@ -78,6 +85,11 @@
           }
         }).then(response => {
           this.notifications = response.data
+        })
+      },
+      getNotificationCount() {
+        axios.get("/api/notifications/unread").then(response => {
+          this.count = response.data
         })
       },
       toggleRead() {
