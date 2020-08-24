@@ -2,6 +2,11 @@ import $ from 'jquery';
 import 'jquery-ui';
 import 'jquery-ui/ui/widgets/sortable';
 import 'jquery-ui/ui/disable-selection';
+/**
+ * Import vue into our appliction.
+ */
+import Vue from 'vue'
+import 'alpinejs'
 
 window.jQuery = $;
 window.$ = $;
@@ -11,27 +16,21 @@ window.$ = $;
  */
 window.axios = require('axios')
 
-/**
- * Import vue into our appliction.
- */
-import Vue from 'vue'
 window.Vue = Vue
 Vue.config.productionTip = false
-
-import 'alpinejs'
 
 /**
  * Load every vue single file components.
  */
 const files = require.context('./components/', true, /\.vue$/i)
 files.keys().map(key =>
-  Vue.component(
-    key
-    .split('/')
-    .pop()
-    .split('.')[0],
-    files(key).default
-  )
+    Vue.component(
+        key
+            .split('/')
+            .pop()
+            .split('.')[0],
+        files(key).default
+    )
 )
 
 /**
@@ -62,12 +61,12 @@ let create_vue = (components) => {
  * The name of the vue component if the lowercase name with dashes in between.
  */
 let components = {
-    '/notifications': ['notifications'],
-    '/inboxes/*/tickets': ['ticket-overview'],
-    '/inboxes/*/tickets/new': ['ticket-form'],
-    '/inboxes/*/tickets/*': ['ticket'],
-    '/inboxes/*/statistics': ['inbox-statistics'],
-    '/profile': ['profile']
+  '/notifications': ['notifications'],
+  '/inboxes/*/tickets': ['ticket-overview'],
+  '/inboxes/*/tickets/new': ['ticket-form'],
+  '/inboxes/*/tickets/*': ['ticket'],
+  '/inboxes/*/statistics': ['inbox-statistics'],
+  '/profile': ['profile']
 }
 
 /* Now lets set them all up. */

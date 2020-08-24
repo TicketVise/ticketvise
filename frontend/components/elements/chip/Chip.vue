@@ -6,22 +6,22 @@
 </template>
 
 <script>
-    export default {
-        props: {
-            background: {
-                type: String,
-                default: null,
-                required: false
-            }
-        },
-        data() {
-            return {
-                bgColor: {
-                    backgroundColor: this.background
-                }
-            }
+  export default {
+    props: {
+      background: {
+        type: String,
+        default: null,
+        required: false
+      }
+    },
+    data() {
+      return {
+        bgColor: {
+          backgroundColor: this.background
         }
+      }
     }
+  }
 </script>
 
 <style>

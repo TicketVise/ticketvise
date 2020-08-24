@@ -2,18 +2,19 @@
   <div>
     <!-- Header -->
     <div class="border-b shadow flex justify-center">
-        <div class="container px-4 my-4 xl:flex xl:items-center xl:justify-between">
-          <div class="flex-1 min-w-0">
-            <h2 class="text-2xl font-bold leading-7 text-gray-900 sm:text-3xl sm:leading-9 sm:truncate">
-              Notifications
-            </h2>
-          </div>
+      <div class="container px-4 my-4 xl:flex xl:items-center xl:justify-between">
+        <div class="flex-1 min-w-0">
+          <h2 class="text-2xl font-bold leading-7 text-gray-900 sm:text-3xl sm:leading-9 sm:truncate">
+            Notifications
+          </h2>
         </div>
+      </div>
     </div>
     <div class="container mx-auto divide-y divide-gray-100">
       <nav class="m-3">
         <div class="divide-x divide-gray-400 flex items-center">
-          <span @click="toggleAll" class="font-semibold text-center flex-grow cursor-pointer" v-if="read === ''">All</span>
+          <span @click="toggleAll" class="font-semibold text-center flex-grow cursor-pointer"
+                v-if="read === ''">All</span>
           <a @click="toggleAll" class="text-center flex-grow text-blue-500 cursor-pointer" v-else>All</a>
 
           <span @click="toggleRead" class="text-center font-semibold flex-grow cursor-pointer" v-if="read === 'True'">Read</span>
@@ -24,19 +25,19 @@
           <a @click="toggleUnread" class="text-center flex-grow text-blue-500 cursor-pointer" v-else>Unread</a>
 
           <submit-button text="Mark all as read" v-on:click.native="markAllAsRead"
-                        class="bg-primary text-white border-none hover:bg-orange-500 flex-wrap md:flex-wrap-0"></submit-button>
+                         class="bg-primary text-white border-none hover:bg-orange-500 flex-wrap md:flex-wrap-0"></submit-button>
         </div>
       </nav>
 
       <notification-card v-for="notification in notifications.results" :key="notification.id"
-                        :notification="notification"></notification-card>
+                         :notification="notification"></notification-card>
 
       <div class="flex justify-center w-full">
         <submit-button v-on:click.native=prevPage() text="Prev" class="m-2"
-                      v-if="notifications.previous"></submit-button>
+                       v-if="notifications.previous"></submit-button>
         <span v-if="notifications.next || notifications.previous" class="m-3">{{pageNumber}}</span>
         <submit-button v-on:click.native=nextPage() text="Next" class="m-2"
-                      v-if="notifications.next"></submit-button>
+                       v-if="notifications.next"></submit-button>
       </div>
     </div>
   </div>
