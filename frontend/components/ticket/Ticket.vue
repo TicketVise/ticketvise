@@ -2,7 +2,6 @@
   <div v-if="ticket" class="h-full">
     <div class="lg:h-full flex flex-col-reverse lg:flex-row w-full">
       <div class="w-screen lg:max-w-sm bg-gray-100 border-r border-t lg:border-t-0 h-full min-h-full space-y-2">
-        <!-- <author-card class="hidden lg:block" :author="ticket.author" :inbox_id="ticket.inbox"/> -->
         <!-- Ticket Author -->
         <div class="p-6 flex space-x-4 border-b">
           <img class="h-12 w-12 rounded-full" :src="ticket.author.avatar_url" alt="User image">
@@ -118,18 +117,13 @@
 </template>
 
 <script>
-  import AuthorCard from "./AuthorCard";
   import Comment from "./Comment";
   import Avatar from "../elements/Avatar";
   import axios from "axios";
   import moment from "moment"
-  import '@toast-ui/editor/dist/toastui-editor-viewer.css';
   import 'codemirror/lib/codemirror.css';
   import VueTribute from 'vue-tribute';
 
-  import '@toast-ui/editor/dist/toastui-editor.css';
-  import {Editor, Viewer} from '@toast-ui/vue-editor';
-  import EditLabel from "./EditLabel";
   import Mention from "../elements/mention/Mention";
   import Tab from "../elements/Tab"
   import ExternalTab from "./ExternalTab";
@@ -139,6 +133,7 @@
   import Avatars from "../elements/Avatars";
   import EditShareWith from "./EditShareWith";
   import UserDropdown from "../elements/dropdown/UserDropdown";
+  import LabelDropdown from "../elements/dropdown/LabelDropdown";
   import RecentQuestions from "./RecentQuestions";
 
   export default {
@@ -150,12 +145,9 @@
       ExternalTab,
       Mention,
       UserDropdown,
-      EditLabel,
+      LabelDropdown,
       Avatar,
-      AuthorCard,
       Comment,
-      Viewer,
-      editor: Editor,
       VueTribute,
       RecentQuestions,
       Tab,
@@ -168,7 +160,6 @@
         replies: [],
         labels: [],
         comments: [],
-        commentEditor: "",
         staff: [],
         activeTab: 'external',
         user: null,
