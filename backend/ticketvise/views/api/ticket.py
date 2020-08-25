@@ -134,7 +134,14 @@ class TicketWithParticipantsSerializer(TicketSerializer):
 class AssigneeUpdateSerializer(ModelSerializer):
     class Meta:
         model = Ticket
-        fields = ["assignee"]
+        fields = ["assignee", "status"]
+
+    def update(self, instance, validated_data):
+        if instance.status == Status.PENDING and instance.assignee is None and validated_data:
+            instance.status = Status.ASSIGNED
+        if instance.status == Status.ASSIGNED and instance.assignee and validated_data["assignee"] is None:
+            instance.status = Status.PENDING
+        return super().update(instance, validated_data)
 
     def validate_assignee(self, assignee):
         inbox = self.instance.inbox
