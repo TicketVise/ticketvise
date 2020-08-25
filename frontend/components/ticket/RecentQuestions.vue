@@ -20,7 +20,7 @@
   import axios from "axios";
 
   export default {
-    name: "AuthorCard",
+    name: "RecentQuestions",
     components: {Card, Avatar},
     props: ["author", "inbox_id"],
     data() {

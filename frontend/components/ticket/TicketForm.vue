@@ -68,7 +68,6 @@
 </template>
 
 <script>
-  import EditLabel from "./EditLabel";
   import Chip from "../elements/chip/Chip";
   import LabelDropdown from "../elements/dropdown/LabelDropdown";
   import axios from "axios";
@@ -80,7 +79,7 @@
 
   export default {
     name: "Form",
-    components: {EditShareWith, Error, SubmitButton, FileUpload, EditLabel, LabelDropdown, Editor, Chip},
+    components: {EditShareWith, Error, SubmitButton, FileUpload, LabelDropdown, Editor, Chip},
     data() {
       return {
         inbox: null,
