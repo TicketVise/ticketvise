@@ -146,7 +146,9 @@ class AssigneeUpdateSerializer(ModelSerializer):
 
     def validate_assignee(self, assignee):
         inbox = self.instance.inbox
-        if not assignee.is_assistant_or_coordinator(inbox):
+        if not assignee:
+            return None
+        elif not assignee.is_assistant_or_coordinator(inbox):
             raise ValidationError("User doesn't have the right permissions to be assigned to this ticket")
         return assignee
 
