@@ -46,10 +46,11 @@ class TicketSerializer(ModelSerializer):
 
     def get_labels(self, obj):
         user = CurrentUserMiddleware.get_current_user()
+        labels = obj.labels.filter(is_active=True)
         if user and not user.is_assistant_or_coordinator(obj.inbox):
-            labels = obj.labels.filter(is_visible_to_guest=True)
+            labels = labels.filter(is_visible_to_guest=True)
             return LabelSerializer(labels, many=True, read_only=True).data
-        return LabelSerializer(obj.labels, many=True, read_only=True).data
+        return LabelSerializer(labels, many=True, read_only=True).data
 
     def get_assignee(self, obj):
         user = CurrentUserMiddleware.get_current_user()
