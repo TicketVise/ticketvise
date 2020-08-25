@@ -54,6 +54,10 @@ jobs:
           tag_with_ref: true
           tag_with_sha: true
 
+      - name: Get Git Short SHA
+        id: git-sha7
+        run: echo "::set-output name=sha7::$(echo ${{ github.sha }} | cut -c1-7)"
+
       - name: Deploy to Docker Swarm
         uses: sagebind/docker-swarm-deploy-action@v2
         if: github.event_name == 'push' && github.ref == 'refs/heads/master'
@@ -63,8 +67,8 @@ jobs:
           SQL_PASSWORD: ${{ secrets.SQL_PASSWORD }}
           LTI_KEY: ${{ secrets.LTI_KEY }}
           LTI_SECRET: ${{ secrets.LTI_SECRET }}
-          BACKEND_DIGEST: ${{ steps.build-push-backend.outputs.digest }}
-          PROXY_DIGEST: ${{ steps.build-push-proxy.outputs.digest }}
+          BACKEND_DIGEST: ${{ steps.git-sha7.outputs.sha7 }}
+          PROXY_DIGEST: ${{ steps.git-sha7.outputs.sha7 }}
         with:
           remote_host: ${{ secrets.DOCKER_SSH_HOST }}
           ssh_private_key: ${{ secrets.DOCKER_SSH_PRIVATE_KEY }}
