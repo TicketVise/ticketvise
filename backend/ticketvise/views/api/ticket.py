@@ -136,13 +136,6 @@ class AssigneeUpdateSerializer(ModelSerializer):
         model = Ticket
         fields = ["assignee", "status"]
 
-    def update(self, instance, validated_data):
-        if instance.status == Status.PENDING and instance.assignee is None and validated_data:
-            instance.status = Status.ASSIGNED
-        if instance.status == Status.ASSIGNED and instance.assignee and validated_data["assignee"] is None:
-            instance.status = Status.PENDING
-        return super().update(instance, validated_data)
-
     def validate_assignee(self, assignee):
         inbox = self.instance.inbox
         if not assignee:
