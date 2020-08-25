@@ -98,11 +98,6 @@ class Ticket(models.Model):
         if self.id:
             old_ticket = Ticket.objects.get(pk=self.id)
             old_status = old_ticket.get_status()
-
-            if old_ticket.status == Status.PENDING and old_ticket.assignee is None and self.assignee:
-                self.status = Status.ASSIGNED
-            if old_ticket.status == Status.ASSIGNED and old_ticket.assignee and not self.assignee:
-                self.status = Status.PENDING
         else:
             # + 1 so the ticket_inbox_id starts at 1 instead of 0.
             self.ticket_inbox_id = Ticket.objects.filter(inbox=self.inbox).count() + 1

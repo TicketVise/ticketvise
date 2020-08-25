@@ -14,7 +14,7 @@ services:
       - POSTGRES_PASSWORD=${SQL_PASSWORD}
 
   web:
-    image: "ticketvise/backend:sha-${BACKEND_DIGEST}"
+    image: ticketvise/backend
     command: >
       sh -c "env > /etc/environment && cron &&
              python manage.py wait_for_database &&
@@ -39,7 +39,7 @@ services:
       - LTI_SECRET=${LTI_SECRET}
 
   proxy:
-    image: "ticketvise/proxy:sha-${PROXY_DIGEST}"
+    image: ticketvise/proxy
     deploy:
       restart_policy:
         condition: on-failure

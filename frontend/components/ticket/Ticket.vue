@@ -281,10 +281,8 @@
           this.errors = error.response.data
         })
       },
-      updateAssignee(response) {
-        axios.get("/api" + window.location.pathname).then(response => {
-          this.ticket = response.data;
-        })
+      updateAssignee(assignee) {
+        this.ticket.assignee = assignee
       },
       updateLabels() {
         axios.defaults.xsrfCookieName = 'csrftoken';

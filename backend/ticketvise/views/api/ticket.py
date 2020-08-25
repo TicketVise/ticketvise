@@ -42,7 +42,15 @@ class TicketSerializer(ModelSerializer):
     """
     author = UserSerializer(read_only=True)
     assignee = serializers.SerializerMethodField()
-    labels = LabelSerializer(many=True, read_only=True)
+    labels = serializers.SerializerMethodField()
+
+    def get_labels(self, obj):
+        user = CurrentUserMiddleware.get_current_user()
+        labels = obj.labels.filter(is_active=True)
+        if user and not user.is_assistant_or_coordinator(obj.inbox):
+            labels = labels.filter(is_visible_to_guest=True)
+            return LabelSerializer(labels, many=True, read_only=True).data
+        return LabelSerializer(labels, many=True, read_only=True).data
 
     def get_assignee(self, obj):
         user = CurrentUserMiddleware.get_current_user()
@@ -134,7 +142,7 @@ class TicketWithParticipantsSerializer(TicketSerializer):
 class AssigneeUpdateSerializer(ModelSerializer):
     class Meta:
         model = Ticket
-        fields = ["assignee", "status"]
+        fields = ["assignee"]
 
     def validate_assignee(self, assignee):
         inbox = self.instance.inbox
