@@ -133,6 +133,7 @@
   import Avatars from "../elements/Avatars";
   import EditShareWith from "./EditShareWith";
   import UserDropdown from "../elements/dropdown/UserDropdown";
+  import LabelDropdown from "../elements/dropdown/LabelDropdown";
   import RecentQuestions from "./RecentQuestions";
 
   export default {
@@ -144,6 +145,7 @@
       ExternalTab,
       Mention,
       UserDropdown,
+      LabelDropdown,
       Avatar,
       Comment,
       VueTribute,

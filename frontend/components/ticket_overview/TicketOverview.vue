@@ -7,7 +7,7 @@
       <div class="flex space-x-2 md:col-span-2 items-center">
         <!--FILTER LABELS-->
         <div class="flex-grow">
-          <label-dropdown :values="inbox_labels" v-model="label" v-on:update="updateLabels"/>
+          <label-dropdown :selected="labels" :values="inbox_labels" v-model="labels" v-on:input="updateLabels"/>
         </div>
 
         <submit-button
@@ -38,10 +38,12 @@
   import SearchBar from "../elements/SearchBar";
   import SubmitButton from "../elements/buttons/SubmitButton";
   import TicketColumn from "./TicketColumn";
+  import LabelDropdown from "../elements/dropdown/LabelDropdown";
+
   import axios from "axios";
 
   export default {
-    components: {TicketColumn, SubmitButton, SearchBar},
+    components: {TicketColumn, LabelDropdown, SubmitButton, SearchBar},
     data: () => ({
       colors: ['#e76f51', '#e9c46a', '#2a9d8f', '#264653'],
       tickets: [],
