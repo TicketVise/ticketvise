@@ -49,11 +49,13 @@ class TicketTestCase(TransactionTestCase):
         self.assistant3.set_role_for_inbox(self.inbox, Role.AGENT)
 
         self.manager = User.objects.create(username="manager", password="test67891",
-                                              email="manager@ticketvise.com")
+                                           email="manager@ticketvise.com")
         self.manager.add_inbox(self.inbox)
         self.manager.set_role_for_inbox(self.inbox, Role.MANAGER)
 
         self.label = Label.objects.create(name="TestLabel", inbox=self.inbox)
+        self.invisible_label = Label.objects.create(name="invisible", inbox=self.inbox, is_visible_to_guest=False)
+        self.disabled_label = Label.objects.create(name="disabled", inbox=self.inbox, is_active=False)
 
         self.ticket = Ticket.objects.create(author=self.student, assignee=self.assistant, title="TestTicket",
                                             content="TestContent", inbox=self.inbox)
@@ -453,13 +455,39 @@ class TicketTestApi(APITestCase, TicketTestCase):
             self.ticket.assignee = self.assistant
             self.ticket.save()
 
-            response = self.client.get(f"/api/inboxes/{self.inbox.id}/tickets/{self.ticket.ticket_inbox_id}", follow=True)
+            response = self.client.get(f"/api/inboxes/{self.inbox.id}/tickets/{self.ticket.ticket_inbox_id}",
+                                       follow=True)
             self.assertEqual(response.status_code, 200)
             self.assertContains(response, self.ticket.assignee.username)
 
             self.inbox.show_assignee_to_guest = True
             self.inbox.save()
 
-            response = self.client.get(f"/api/inboxes/{self.inbox.id}/tickets/{self.ticket.ticket_inbox_id}", follow=True)
+            response = self.client.get(f"/api/inboxes/{self.inbox.id}/tickets/{self.ticket.ticket_inbox_id}",
+                                       follow=True)
             self.assertEqual(response.status_code, 200)
             self.assertContains(response, self.ticket.assignee.username)
+
+    def test_inbox_invisible_label_student(self):
+        self.client.force_login(self.student)
+
+        response = self.client.get(f"/api/inboxes/{self.inbox.id}/labels", content_type="application/json")
+
+        self.assertEqual(response.status_code, 200)
+        self.assertNotContains(response, self.invisible_label.name)
+
+    def test_inbox_invisible_label_agent(self):
+        self.client.force_login(self.assistant)
+
+        response = self.client.get(f"/api/inboxes/{self.inbox.id}/labels")
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, self.invisible_label.name)
+
+    def test_inbox_invisible_label_manager(self):
+        self.client.force_login(self.manager)
+
+        response = self.client.get(f"/api/inboxes/{self.inbox.id}/labels")
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, self.invisible_label.name)
