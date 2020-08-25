@@ -53,7 +53,7 @@ class TicketTestCase(TransactionTestCase):
         self.manager.add_inbox(self.inbox)
         self.manager.set_role_for_inbox(self.inbox, Role.MANAGER)
 
-        self.label = Label.objects.create(name="TestLabel", inbox=self.inbox)
+        self.label = Label.objects.create(name="TestLabel", inbox=self.inbox, is_visible_to_guest=True)
         self.invisible_label = Label.objects.create(name="invisible", inbox=self.inbox, is_visible_to_guest=False)
         self.disabled_label = Label.objects.create(name="disabled", inbox=self.inbox, is_active=False)
 
@@ -214,8 +214,7 @@ class TicketTestApi(APITestCase, TicketTestCase):
                                    follow=True)
         self.assertEqual(response.status_code, 200)
 
-        self.assertEqual(json.loads(response.content),
-                         [{"name": self.label.name, "color": self.label.color, "id": self.label.id}])
+        self.assertContains(response, self.label.name)
 
     def test_get_labels_as_ta_not_in_inbox(self):
         """
