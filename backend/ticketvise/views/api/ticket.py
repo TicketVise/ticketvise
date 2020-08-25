@@ -42,7 +42,14 @@ class TicketSerializer(ModelSerializer):
     """
     author = UserSerializer(read_only=True)
     assignee = serializers.SerializerMethodField()
-    labels = LabelSerializer(many=True, read_only=True)
+    labels = serializers.SerializerMethodField()
+
+    def get_labels(self, obj):
+        user = CurrentUserMiddleware.get_current_user()
+        if user and not user.is_assistant_or_coordinator(obj.inbox):
+            labels = obj.labels.filter(is_visible_to_guest=True)
+            return LabelSerializer(labels, many=True, read_only=True).data
+        return LabelSerializer(obj.labels, many=True, read_only=True).data
 
     def get_assignee(self, obj):
         user = CurrentUserMiddleware.get_current_user()
