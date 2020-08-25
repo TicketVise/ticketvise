@@ -6,7 +6,7 @@
                             class="cursor-pointer relative w-full rounded-md border border-gray-300 bg-white pl-3 pr-10 py-2 text-left focus:outline-none transition ease-in-out duration-150 sm:text-sm sm:leading-5"
                             tabindex="-1"
                             type="button">
-                        <div class="flex items-center space-x-3" v-if="assignee.id">
+                        <div class="flex items-center space-x-3" v-if="assignee && assignee.id">
                             <avatar :source="assignee.avatar_url" class="w-6 h-6"></avatar>
                             <span class="block truncate">{{ assignee.first_name }} {{ assignee.last_name }}</span>
                         </div>
