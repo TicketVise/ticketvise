@@ -134,7 +134,7 @@ class TicketWithParticipantsSerializer(TicketSerializer):
 class AssigneeUpdateSerializer(ModelSerializer):
     class Meta:
         model = Ticket
-        fields = ["assignee"]
+        fields = ["assignee", "status"]
 
     def validate_assignee(self, assignee):
         inbox = self.instance.inbox
