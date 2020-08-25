@@ -22,7 +22,7 @@ class InboxSerializer(ModelSerializer):
         if user and not user.is_assistant_or_coordinator(obj):
             labels = labels.filter(is_visible_to_guest=True)
 
-        return labels
+        return LabelSerializer(labels, many=True, read_only=False).data
 
     class Meta:
         model = Inbox
@@ -48,8 +48,8 @@ class InboxLabelsApiView(UserIsInInboxMixin, ListAPIView):
         labels = Label.objects.filter(inbox=inbox, is_active=True).order_by("name")
         if user and not user.is_assistant_or_coordinator(inbox):
             labels = labels.filter(is_visible_to_guest=True)
-            return LabelSerializer(labels, many=True, read_only=True).data
-        return LabelSerializer(labels, many=True, read_only=True).data
+
+        return labels
 
 
 class InboxApiView(UserIsInInboxMixin, RetrieveAPIView):
