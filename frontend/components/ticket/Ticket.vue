@@ -121,12 +121,9 @@
   import Avatar from "../elements/Avatar";
   import axios from "axios";
   import moment from "moment"
-  import '@toast-ui/editor/dist/toastui-editor-viewer.css';
   import 'codemirror/lib/codemirror.css';
   import VueTribute from 'vue-tribute';
 
-  import '@toast-ui/editor/dist/toastui-editor.css';
-  import {Editor, Viewer} from '@toast-ui/vue-editor';
   import Mention from "../elements/mention/Mention";
   import Tab from "../elements/Tab"
   import ExternalTab from "./ExternalTab";
@@ -149,8 +146,6 @@
       UserDropdown,
       Avatar,
       Comment,
-      Viewer,
-      editor: Editor,
       VueTribute,
       RecentQuestions,
       Tab,
@@ -163,7 +158,6 @@
         replies: [],
         labels: [],
         comments: [],
-        commentEditor: "",
         staff: [],
         activeTab: 'external',
         user: null,
