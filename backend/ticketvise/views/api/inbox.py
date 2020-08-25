@@ -42,7 +42,13 @@ class InboxLabelsApiView(UserIsInInboxMixin, ListAPIView):
 
     def get_queryset(self):
         inbox = get_object_or_404(Inbox, pk=self.kwargs[self.inbox_key])
-        return Label.objects.filter(inbox=inbox).order_by("name")
+        user = CurrentUserMiddleware.get_current_user()
+
+        labels = Label.objects.filter(inbox=inbox, is_active=True).order_by("name")
+        if user and not user.is_assistant_or_coordinator(inbox):
+            labels = labels.filter(is_visible_to_guest=True)
+            return LabelSerializer(labels, many=True, read_only=True).data
+        return LabelSerializer(labels, many=True, read_only=True).data
 
 
 class InboxApiView(UserIsInInboxMixin, RetrieveAPIView):
