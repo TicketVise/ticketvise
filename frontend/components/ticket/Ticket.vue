@@ -2,7 +2,6 @@
   <div v-if="ticket" class="h-full">
     <div class="lg:h-full flex flex-col-reverse lg:flex-row w-full">
       <div class="w-screen lg:max-w-sm bg-gray-100 border-r border-t lg:border-t-0 h-full min-h-full space-y-2">
-        <!-- <author-card class="hidden lg:block" :author="ticket.author" :inbox_id="ticket.inbox"/> -->
         <!-- Ticket Author -->
         <div class="p-6 flex space-x-4 border-b">
           <img class="h-12 w-12 rounded-full" :src="ticket.author.avatar_url" alt="User image">
@@ -118,7 +117,6 @@
 </template>
 
 <script>
-  import AuthorCard from "./AuthorCard";
   import Comment from "./Comment";
   import Avatar from "../elements/Avatar";
   import axios from "axios";
@@ -129,7 +127,6 @@
 
   import '@toast-ui/editor/dist/toastui-editor.css';
   import {Editor, Viewer} from '@toast-ui/vue-editor';
-  import EditLabel from "./EditLabel";
   import Mention from "../elements/mention/Mention";
   import Tab from "../elements/Tab"
   import ExternalTab from "./ExternalTab";
@@ -150,9 +147,7 @@
       ExternalTab,
       Mention,
       UserDropdown,
-      EditLabel,
       Avatar,
-      AuthorCard,
       Comment,
       Viewer,
       editor: Editor,

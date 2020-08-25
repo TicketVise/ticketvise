@@ -38,12 +38,10 @@
   import SearchBar from "../elements/SearchBar";
   import SubmitButton from "../elements/buttons/SubmitButton";
   import TicketColumn from "./TicketColumn";
-  import EditAssignee from "../ticket/EditAssignee";
-  import EditLabel from "../ticket/EditLabel";
   import axios from "axios";
 
   export default {
-    components: {EditLabel, EditAssignee, TicketColumn, SubmitButton, SearchBar},
+    components: {TicketColumn, SubmitButton, SearchBar},
     data: () => ({
       colors: ['#e76f51', '#e9c46a', '#2a9d8f', '#264653'],
       tickets: [],
