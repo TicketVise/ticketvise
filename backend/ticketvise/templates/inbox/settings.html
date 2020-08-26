@@ -7,14 +7,9 @@
     {% csrf_token %}
 
     <div>
-      <div class="hidden md:block bg-gray-50 px-4 py-3 sm:gap-4 sm:px-6 border-b-2">
-        <h3 class="text-lg leading-6 font-medium text-gray-900">
-          Inbox
-        </h3>
-        <p class="mt-1 max-w-2xl text-sm leading-5 text-gray-500">
-          Manager inbox properties.
-        </p>
-      </div>
+      <h3 class="text-xl leading-6 font-medium text-gray-900 p-2 pb-1">
+        Inbox
+      </h3>
       <div class="bg-gray-50 px-4 py-3 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6 border-b-2">
         <dt class="text-sm leading-5 font-medium text-gray-700 flex items-center">
           Name
@@ -87,14 +82,9 @@
             name="show_assignee_to_guest" id="show_assignee_to_guest">
         </dd>
       </div>
-      <div class="bg-gray-50 px-4 py-3 sm:gap-4 sm:px-6 border-b-2">
-        <h3 class="text-lg mt-4 leading-6 font-medium text-gray-900">
-          Tickets
-        </h3>
-        <p class="mt-1 max-w-2xl text-sm leading-5 text-gray-500">
-          Manager ticket settings.
-        </p>
-      </div>
+      <h3 class="text-xl mt-4 leading-6 font-medium text-gray-900 p-2 pb-1">
+        Tickets
+      </h3>
       <div class="bg-gray-50 px-4 py-3 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6 border-b-2">
         <label for="close_answered_weeks" class="text-sm leading-5 font-medium text-gray-700 flex items-center">
           Close answered ticket automatically after
