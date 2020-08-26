@@ -17,6 +17,7 @@ from ticketvise.email import send_email
 from ticketvise.middleware import CurrentUserMiddleware
 from ticketvise.models.label import Label
 from ticketvise.models.notification import Notification
+from ticketvise.scheduling import schedule_ticket
 
 
 class Status(models.TextChoices):
@@ -83,7 +84,6 @@ class Ticket(models.Model):
         """
         self.assignee = receiver
         self.status = Status.ASSIGNED
-        self.save()
 
     def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
         """
@@ -98,9 +98,16 @@ class Ticket(models.Model):
         if self.id:
             old_ticket = Ticket.objects.get(pk=self.id)
             old_status = old_ticket.get_status()
+
+            if old_ticket.status == Status.PENDING and old_ticket.assignee is None and self.assignee:
+                self.status = Status.ASSIGNED
+            if old_ticket.status == Status.ASSIGNED and old_ticket.assignee and not self.assignee:
+                self.status = Status.PENDING
         else:
             # + 1 so the ticket_inbox_id starts at 1 instead of 0.
             self.ticket_inbox_id = Ticket.objects.filter(inbox=self.inbox).count() + 1
+            if not self.assignee:
+                schedule_ticket(self)
 
         super().save(force_insert, force_update, using, update_fields)
 

@@ -47,7 +47,7 @@ def get_text_color(background_color):
     :rtype: str
     """
     r, g, b = ImageColor.getcolor(background_color, "RGB")
-    return "#000000" if (r * 0.299 + g * 0.587 + b * 0.114) > 186 else "#ffffff"
+    return "#374151" if (r * 0.299 + g * 0.587 + b * 0.114) > 186 else "#ffffff"
 
 
 def get_global_context():

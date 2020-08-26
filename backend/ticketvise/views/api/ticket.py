@@ -10,6 +10,7 @@ Contains classes for the API interface to dynamically load models using AJAX.
 * :class:`InboxUsersView`
 * :class:`InboxTicketView`
 """
+
 from django.core.exceptions import ValidationError
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
@@ -42,7 +43,15 @@ class TicketSerializer(ModelSerializer):
     """
     author = UserSerializer(read_only=True)
     assignee = serializers.SerializerMethodField()
-    labels = LabelSerializer(many=True, read_only=True)
+    labels = serializers.SerializerMethodField()
+
+    def get_labels(self, obj):
+        user = CurrentUserMiddleware.get_current_user()
+        labels = obj.labels.filter(is_active=True)
+        if user and not user.is_assistant_or_coordinator(obj.inbox):
+            labels = labels.filter(is_visible_to_guest=True)
+            return LabelSerializer(labels, many=True, read_only=True).data
+        return LabelSerializer(labels, many=True, read_only=True).data
 
     def get_assignee(self, obj):
         user = CurrentUserMiddleware.get_current_user()
@@ -168,12 +177,14 @@ class InboxTicketsApiView(UserIsInInboxMixin, APIView):
 
         inbox = get_object_or_404(Inbox, pk=inbox_id)
         tickets = Ticket.objects.filter(inbox=inbox, title__icontains=q) | Ticket.objects.filter(
-            inbox=inbox, ticket_inbox_id__icontains=q)
+            inbox=inbox, ticket_inbox_id__icontains=q).order_by("-date_created")
 
         if not request.user.is_assistant_or_coordinator(inbox):
             tickets = tickets.filter(author=request.user) | tickets.filter(shared_with__id__icontains=request.user.id)
         elif show_personal:
-            tickets = tickets.filter(assignee=request.user) | tickets.filter(author=request.user)
+            tickets = tickets.filter(assignee=request.user) | \
+                      tickets.filter(author=request.user) | \
+                      tickets.filter(assignee=None)
 
         if labels:
             tickets = tickets.filter(labels__id__in=labels).distinct()
@@ -198,6 +209,15 @@ class InboxTicketsApiView(UserIsInInboxMixin, APIView):
                 "tickets": TicketSerializer(query_set.filter(status=status), many=True).data
             } for status in Status
         ]
+
+        if not self.request.user.is_assistant_or_coordinator(inbox) \
+                and not inbox.show_assignee_to_guest:
+            columns[0] = {
+                "label": columns[0]["label"],
+                "tickets": columns[0]["tickets"] + columns[1]["tickets"]
+            }
+            del columns[1]
+        columns[0]["tickets"] = sorted(columns[0]["tickets"], key=lambda x: x["date_created"], reverse=True)
 
         return JsonResponse(data=columns, safe=False)
 

@@ -6,9 +6,8 @@ This file tests the scheduling algorithms to divide the workload amond TAs.
 from django.test import TestCase, Client
 
 from ticketvise.models.inbox import SchedulingAlgorithm
-from ticketvise.models.ticket import Ticket, TicketLabel
+from ticketvise.models.ticket import Ticket
 from ticketvise.models.user import User, UserInbox, Role
-from ticketvise.scheduling import schedule_ticket
 from ticketvise.tests.utils import create_inbox
 
 
@@ -38,7 +37,7 @@ class TicketTestCase(TestCase):
 
         self.assistants = [self.assistant1, self.assistant2, self.assistant3]
 
-        self.ticket1 = Ticket.objects.create(author=self.student, assignee=self.assistant1, title="Ticket1", content="",
+        self.ticket1 = Ticket.objects.create(author=self.student, assignee=self.assistant2, title="Ticket1", content="",
                                              inbox=self.inbox)
         self.ticket2 = Ticket.objects.create(author=self.student, assignee=self.assistant2, title="Ticket2", content="",
                                              inbox=self.inbox)
@@ -56,12 +55,12 @@ class TicketTestCase(TestCase):
 
         :return: None.
         """
-        self.client.force_login(self.assistant3)
         self.inbox.scheduling_algorithm = SchedulingAlgorithm.MANUAL
         self.inbox.save()
 
-        schedule_ticket(self.ticket4)
-        self.assertEqual(self.ticket4.assignee, None)
+        ticket = Ticket.objects.create(author=self.student, title="Ticket4", content="", inbox=self.inbox)
+
+        self.assertEqual(ticket.assignee, None)
 
     def test_inbox_least_assigned_first_scheduling(self):
         """
@@ -72,8 +71,9 @@ class TicketTestCase(TestCase):
         self.inbox.scheduling_algorithm = SchedulingAlgorithm.LEAST_ASSIGNED_FIRST
         self.inbox.save()
 
-        schedule_ticket(self.ticket4)
-        self.assertEqual(self.ticket4.assignee, self.assistant1)
+        ticket = Ticket.objects.create(author=self.student, title="Ticket4", content="", inbox=self.inbox)
+
+        self.assertEqual(ticket.assignee, self.assistant1)
 
     def test_round_robin_scheduling(self):
         """
@@ -87,11 +87,10 @@ class TicketTestCase(TestCase):
 
         for i in range(schedule_amount):
             for assistant in self.assistants:
-                TicketLabel.objects.filter(ticket=self.ticket4).delete()
-                self.ticket4.save()
+                ticket = Ticket.objects.create(author=self.student, title="Ticket4", content="", inbox=self.inbox)
 
-                schedule_ticket(self.ticket4)
-                self.assertEqual(self.ticket4.assignee, assistant)
+                self.assertEqual(ticket.assignee, assistant)
+                Ticket.objects.get(pk=ticket.id).delete()
 
         self.assertEqual(self.inbox.round_robin_parameter,
                          schedule_amount * len(self.assistants))
@@ -99,4 +98,4 @@ class TicketTestCase(TestCase):
     def test_not_implemented_algorithm(self):
         self.inbox.scheduling_algorithm = "Test"
         with self.assertRaises(NotImplementedError):
-            schedule_ticket(self.ticket1)
+            Ticket.objects.create(author=self.student, title="Ticket4", content="", inbox=self.inbox)

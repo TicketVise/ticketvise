@@ -1,7 +1,9 @@
 from django.shortcuts import get_object_or_404
+from rest_framework import serializers
 from rest_framework.generics import ListAPIView, RetrieveAPIView
 from rest_framework.serializers import ModelSerializer
 
+from ticketvise.middleware import CurrentUserMiddleware
 from ticketvise.models.inbox import Inbox
 from ticketvise.models.label import Label
 from ticketvise.models.user import User, Role
@@ -11,7 +13,16 @@ from ticketvise.views.api.user import UserSerializer
 
 
 class InboxSerializer(ModelSerializer):
-    labels = LabelSerializer(many=True, read_only=True)
+    labels = serializers.SerializerMethodField()
+
+    def get_labels(self, obj):
+        user = CurrentUserMiddleware.get_current_user()
+        labels = obj.labels.filter(is_active=True)
+
+        if user and not user.is_assistant_or_coordinator(obj):
+            labels = labels.filter(is_visible_to_guest=True)
+
+        return LabelSerializer(labels, many=True, read_only=False).data
 
     class Meta:
         model = Inbox
@@ -32,7 +43,13 @@ class InboxLabelsApiView(UserIsInInboxMixin, ListAPIView):
 
     def get_queryset(self):
         inbox = get_object_or_404(Inbox, pk=self.kwargs[self.inbox_key])
-        return Label.objects.filter(inbox=inbox).order_by("name")
+        user = CurrentUserMiddleware.get_current_user()
+
+        labels = Label.objects.filter(inbox=inbox, is_active=True).order_by("name")
+        if user and not user.is_assistant_or_coordinator(inbox):
+            labels = labels.filter(is_visible_to_guest=True)
+
+        return labels
 
 
 class InboxApiView(UserIsInInboxMixin, RetrieveAPIView):

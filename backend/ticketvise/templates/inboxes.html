@@ -54,18 +54,3 @@
     </div>
   </main>
 {% endblock content %}
-
-{% block javascript %}
-  <!-- RETAIN SCROLL POSITION FOR FLIPPING BOOKMARK -->
-  <script>
-    $(document).ready(function () {
-      $(window).on('beforeunload', function () {
-        sessionStorage.scrollTop = $(window).scrollTop();
-      });
-
-      if (sessionStorage.scrollTop) {
-        $(window).scrollTop(sessionStorage.scrollTop);
-      }
-    });
-  </script>
-{% endblock %}
