@@ -10,7 +10,7 @@
           {{ inbox.name }} | Users
         </a>
         <h2 class="text-2xl font-bold leading-7 text-gray-900 sm:text-3xl sm:leading-9 sm:truncate">
-          Settings
+          {{ user.get_full_name }}
         </h2>
       </div>
     </div>
@@ -79,14 +79,7 @@
         </dl>
       </div>
     </div>
-    <!-- <div class="p-4 mb-4 sm:flex">
-      <span class="flex w-full rounded-md shadow-sm sm:ml-3 sm:w-auto">
-        <button type="submit"
-          class="inline-flex justify-center w-full rounded-md border border-transparent px-4 py-2 bg-green-200 text-green-600 text-base leading-6 font-medium shadow-sm hover:bg-green-100 focus:outline-none focus:border-green-700 focus:shadow-outline-red transition ease-in-out duration-150 sm:text-sm sm:leading-5">
-          Save
-        </button>
-      </span>
-    </div> -->
+
     <div class="p-2 px-4 sm:max-w-xs sm:ml-auto sm:pr-0 flex space-x-2 sm:mx-4">
       <a href="{% url 'inbox_users' inbox.id %}"
         class="group relative w-full flex justify-center px-4 py-2 border border-transparent text-sm leading-5 font-medium rounded-md bg-red-200 text-red-700 hover:bg-red-100 focus:outline-none focus:shadow-outline-indigo focus:border-red-700 active:bg-red-700 ">
@@ -114,8 +107,7 @@
         Remove user
       </h3>
       <p class="mt-1 max-w-2xl text-sm leading-5 text-gray-500">
-        Remove a user from the inbox. The user will lose access to the inbox and will be unable to create
-        new tickets or answer tickets.
+        The user will lose access to the inbox and will be unable to create new tickets or answer tickets.
       </p>
       <button type="submit"
         class="w-full sm:w-auto mt-4 inline-flex justify-center items-center rounded-md border border-transparent px-4 py-2 bg-red-200 text-red-600 co text-base leading-6 font-medium shadow-sm hover:bg-red-100 focus:outline-none focus:border-red-700 focus:shadow-outline-red transition ease-in-out duration-150 sm:text-sm sm:leading-5">
