@@ -80,18 +80,18 @@
       </div>
     </div>
 
-    <div class="p-2 px-4 sm:max-w-xs sm:ml-auto sm:pr-0 flex space-x-2 sm:mx-4">
+    <div class="p-2 px-4 sm:pr-0 flex space-x-2 sm:mx-4 justify-end">
       <a href="{% url 'inbox_users' inbox.id %}"
-        class="group relative w-full flex justify-center px-4 py-2 border border-transparent text-sm leading-5 font-medium rounded-md bg-red-200 text-red-700 hover:bg-red-100 focus:outline-none focus:shadow-outline-indigo focus:border-red-700 active:bg-red-700 ">
-        <span class="absolute left-0 inset-y-0 flex items-center pl-3">
-          <i class="fa fa-times"></i>
+        class="group inline-flex items-center px-4 py-2 border border-gray-300 text-sm leading-5 font-medium rounded-md text-gray-700 bg-white hover:text-gray-500 focus:outline-none focus:shadow-outline-blue focus:border-blue-300 active:text-gray-800 active:bg-gray-50">
+        <span class="left-0 inset-y-0 flex items-center">
+          <i class="fa fa-times mr-2"></i>
         </span>
         Cancel
       </a>
       <button type="submit"
-        class="group relative w-full flex justify-center px-4 py-2 border border-transparent text-sm leading-5 font-medium rounded-md bg-green-200 text-green-700 hover:bg-green-100 focus:outline-none focus:shadow-outline-indigo focus:border-green-700 active:bg-green-700 ">
-        <span class="absolute left-0 inset-y-0 flex items-center pl-3">
-          <i class="fa fa-check"></i>
+        class="group inline-flex justify-center px-4 py-2 border border-transparent text-sm leading-5 font-medium rounded-md bg-green-200 text-green-700 hover:bg-green-100 focus:outline-none focus:shadow-outline-indigo focus:border-green-700 active:bg-green-700 ">
+        <span class="left-0 inset-y-0 flex items-center">
+          <i class="fa fa-check mr-2"></i>
         </span>
         Save
       </button>
