@@ -115,8 +115,8 @@
             <img class="h-10 w-10 rounded-full" src="{{ user.avatar_url }}" alt="Profile image">
           </div>
           <div class="ml-3">
-            <div class="text-base font-medium leading-none text-white">Tom Cook</div>
-            <div class="mt-1 text-sm font-medium leading-none text-gray-400">tom@example.com</div>
+            <div class="text-base font-medium leading-none text-white">{{ user.get_full_name }}</div>
+            <div class="mt-1 text-sm font-medium leading-none text-gray-400">{{ user.email }}</div>
           </div>
         </div>
         <div class="mt-3 px-2 space=y-1">
