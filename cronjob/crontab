@@ -1,0 +1,1 @@
+0 * * * * root cd /backend && /usr/local/bin/python manage.py run_timed_tasks

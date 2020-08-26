@@ -3,7 +3,6 @@ Test Login
 -------------------------------
 This file tests the login page of the website.
 """
-from urllib.parse import urlencode
 
 from django.test import TestCase, Client
 from django.urls import reverse
@@ -44,20 +43,20 @@ class LoginTestCase(TestCase):
         response = self.client.get(reverse("ticket_overview", args=(inbox.id,)))
         self.assertRedirects(response, "/login/?next=%2Finboxes%2F{}%2Ftickets".format(inbox.id))
 
-    def test_preserve_username_when_login_failed(self):
-        """
-        Check that the username is preserved when the login fails.
+    # def test_preserve_username_when_login_failed(self):
+    #     """
+    #     Check that the username is preserved when the login fails.
 
-        :return: None.
-        """
-        data = {
-            "username": "fout",
-            "password": "ook fout"
-        }
-        response = self.client.post('/login/', urlencode(data), follow=True,
-                                    content_type="application/x-www-form-urlencoded")
-        self.assertContains(response, "<input name=\"username\" placeholder=\"12345678\" class=\"input\" "
-                                      "required value=\"fout\">", html=True)
+    #     :return: None.
+    #     """
+    #     data = {
+    #         "username": "fout",
+    #         "password": "ook fout"
+    #     }
+    #     response = self.client.post('/login/', urlencode(data), follow=True,
+    #                                 content_type="application/x-www-form-urlencoded")
+    #     self.assertContains(response, "<input name=\"username\" placeholder=\"12345678\" class=\"input\" "
+    #                                   "required value=\"fout\">", html=True)
 
     def test_login(self):
         """
@@ -97,43 +96,3 @@ class LoginTestCase(TestCase):
         self.client.login(username="root", password="test1234")
         response = self.client.post("/logout/", follow=True)
         self.assertRedirects(response, "/login/?next=%2F")
-
-    def test_password_change_page_200(self):
-        """
-        Authorized users should be able to see the change password page.
-
-        :return: None.
-        """
-        self.client.login(username="root", password="test1234")
-        response = self.client.post(reverse("password_change"), follow=True)
-        self.assertEqual(response.status_code, 200)
-
-    def test_password_change_page_401(self):
-        """
-        Unauthorized users should be redirected to the login page. When logged in
-        it should redirect to the password_change page.
-
-        :return: None.
-        """
-        response = self.client.post(reverse("password_change"), follow=True)
-        self.assertRedirects(response, '/login/?next=' + reverse("password_change"))
-
-    def test_password_change_done_page_200(self):
-        """
-        Authorized users should be able to see the change password done page.
-
-        :return: None.
-        """
-        self.client.login(username="root", password="test1234")
-        response = self.client.post(reverse("password_change"), follow=True)
-        self.assertEqual(response.status_code, 200)
-
-    def test_password_change_done_page_401(self):
-        """
-        Unauthorized users should be redirected to the login page. When logged in
-        it should redirect to the password change done page.
-
-        :return: None.
-        """
-        response = self.client.post(reverse("password_change"), follow=True)
-        self.assertRedirects(response, '/login/?next=' + reverse("password_change"))

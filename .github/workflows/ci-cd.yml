@@ -33,40 +33,43 @@ jobs:
           npm run build
           npm test
 
-      - name: Build and push proxy Docker image to GitHub packages
+      - name: build-push-proxy
         uses: docker/build-push-action@v1
         with:
-          username: ${{ github.actor }}
-          password: ${{ github.token }}
-          registry: docker.pkg.github.com
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
           path: nginx
-          repository: ticketvise/ticketvise/proxy
-          build-push-action: true
+          repository: ticketvise/proxy
+          add_git_labels: true
           tag_with_ref: true
           tag_with_sha: true
 
-      - name: Build and push backend Docker image to GitHub packages
+      - name: build-push-backend
         uses: docker/build-push-action@v1
         with:
-          username: ${{ github.actor }}
-          password: ${{ github.token }}
-          registry: docker.pkg.github.com
-          repository: ticketvise/ticketvise/backend
-          build-push-action: true
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+          repository: ticketvise/backend
+          add_git_labels: true
           tag_with_ref: true
           tag_with_sha: true
+
+      - name: Get Git Short SHA
+        id: git-sha7
+        run: echo "::set-output name=sha7::$(echo ${{ github.sha }} | cut -c1-7)"
 
       - name: Deploy to Docker Swarm
         uses: sagebind/docker-swarm-deploy-action@v2
-        if: github.event_name == 'push'
+        if: github.event_name == 'push' && github.ref == 'refs/heads/master'
         env:
           DJANGO_SECRET: ${{ secrets.DJANGO_SECRET }}
           SQL_USER: ${{ secrets.SQL_USER }}
           SQL_PASSWORD: ${{ secrets.SQL_PASSWORD }}
           LTI_KEY: ${{ secrets.LTI_KEY }}
           LTI_SECRET: ${{ secrets.LTI_SECRET }}
+          GIT_DIGEST: ${{ steps.git-sha7.outputs.sha7 }}
         with:
           remote_host: ${{ secrets.DOCKER_SSH_HOST }}
           ssh_private_key: ${{ secrets.DOCKER_SSH_PRIVATE_KEY }}
           ssh_public_key: ${{ secrets.DOCKER_SSH_PUBLIC_KEY }}
-          args: stack deploy --with-registry-auth -c docker-compose.yml -c docker-compose.prod.yml ticketvise
+          args: stack deploy -c docker-compose.yml -c docker-compose.prod.yml ticketvise

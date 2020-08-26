@@ -8,7 +8,10 @@
 {% load ticketvise_extras %}
 
 {% if inbox.image %}
-    <div style="background-image: url('{{ inbox.image }}')"></div>
+  <div class="h-64 w-full rounded hover:shadow-lg transition-shadow ease-in-out duration-100"
+       style="background-color: {{ inbox.color }};">
+    <img class="h-64 w-full rounded object-cover opacity-75" src="{{ inbox.image }}">
+  </div>
 {% else %}
-    <img src="" alt="No image found.">
+  <img src="" alt="No image found.">
 {% endif %}

@@ -5,28 +5,56 @@
 {% load ticketvise_extras %}
 
 {% block content %}
-    <section class="p-6 flex flex-col flex-grow">        <!-- TICKET LIST BOARD. -->
-        <div id="ticket-overview" :title="1"></div>
+<div class="flex flex-col flex-grow max-h-full">
+    <header class="bg-white shadow">
+        <div class="max-w-7xl mx-auto p-4 pt-2">
+            <div class="lg:flex lg:items-center lg:justify-between">
+                <div class="flex-1 min-w-0">
+                    <a href="/inboxes" class="text-xs text-gray-700 hover:underline cursor-pointer">
+                        <i class="fa fa-arrow-left mr-2"></i>
+                        Dashboard
+                    </a>
+                    <h2 class="text-2xl font-bold leading-7 text-gray-900 sm:text-3xl sm:leading-9 sm:truncate">
+                        {{ inbox.name }}
+                    </h2>
+                    <div class="flex flex-row flex-wrap space-x-4 sm:space-x-6">
+                        <div class="mt-2 flex items-center text-sm leading-5 text-gray-500">
+                            <i class="fa fa-code mr-1"></i>
+                            {{ inbox.code }}
+                        </div>
+                        {% if coordinator %}
+                        <div class="mt-2 flex items-center text-sm leading-5 text-gray-500">
+                            <i class="fa fa-user mr-1"></i>
+                            {{ coordinator.first_name }} {{ coordinator.last_name }}
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="mt-5 flex lg:mt-0 lg:ml-4 space-x-4">
+                    {% user_is_coordinator user inbox as permission %}
+                    {% if permission %}
+                    <span class="shadow-sm rounded-md">
+                        <a href="{% url 'inbox_settings' inbox.id %}"
+                           class="inline-flex items-center px-4 py-2 border border-gray-300 text-sm leading-5 font-medium rounded-md text-gray-700 bg-white hover:text-gray-500 focus:outline-none focus:shadow-outline-blue focus:border-blue-300 active:text-gray-800 active:bg-gray-50 transition duration-150 ease-in-out">
+                            <i class="fa fa-cog mr-2"></i>
+                            Settings
+                        </a>
+                    </span>
+                    {% endif %}
 
-        <!-- ERROR MESSAGE FOR WHEN SOMETHING FAILS. -->
-        <div class="modal" id="error-message">
-            <div class="modal-background"></div>
-            <div class="modal-card">
-                <header class="modal-card-head">
-                    <p class="modal-card-title">Error</p>
-                    <button class="delete" aria-label="close" id="close-error"></button>
-                </header>
-                <section class="modal-card-body">
-                    Oops! Something went wrong. Please try again.
-                </section>
-                <footer class="modal-card-foot">
-                </footer>
+                    <span class="shadow-sm rounded-md">
+                        <a href="{% url 'new_ticket' inbox.id %}"
+                           class="inline-flex items-center px-4 py-2 border border-transparent text-sm leading-5 font-medium rounded-md text-white bg-primary hover:bg-orange-500 focus:outline-none focus:shadow-outline-orange focus:border-orange-700 active:bg-orange-700 transition duration-150 ease-in-out">
+                            <i class="fa fa-plus mr-2"></i>
+                            New Ticket
+                        </a>
+                    </span>
+                </div>
             </div>
         </div>
+    </header>
 
-        {% if role != ROLE_STUDENT %}
-            <!-- BULK EDIT MENU. -->
-            {% include "ticket_overview/bulk-edit-menu.html" %}
-        {% endif %}
-    </section>
+    <!-- TICKET LIST BOARD. -->
+    <div id="ticket-overview"></div>
+</div>
 {% endblock content %}

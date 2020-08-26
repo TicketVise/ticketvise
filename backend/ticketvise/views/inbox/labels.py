@@ -36,7 +36,7 @@ class InboxLabelsView(InboxCoordinatorRequiredMixin, TemplateView):
 class EditInboxLabelView(LabelCoordinatorRequiredMixin, UpdateView):
     template_name = "inbox/label.html"
     model = Label
-    fields = ["name", "color", "is_form_label", "is_active"]
+    fields = ["name", "color", "is_visible_to_guest", "is_active"]
 
     def get_success_url(self):
         return reverse("inbox_labels", args=(self.kwargs["inbox_id"],))
@@ -45,7 +45,7 @@ class EditInboxLabelView(LabelCoordinatorRequiredMixin, UpdateView):
 class CreateInboxLabelView(InboxCoordinatorRequiredMixin, CreateView):
     template_name = "inbox/label.html"
     model = Label
-    fields = ["name", "color", "is_form_label", "is_active"]
+    fields = ["name", "color", "is_visible_to_guest", "is_active"]
 
     def form_valid(self, form):
         form.instance.inbox = get_object_or_404(Inbox, pk=self.kwargs["pk"])

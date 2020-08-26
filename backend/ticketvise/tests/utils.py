@@ -65,7 +65,7 @@ def create_inbox(name="", code="", color=""):
     return Inbox.objects.create(name=name, code=code, color=color)
 
 
-def create_label(inbox=None, name="", color="", is_form_label=True, is_active=True):
+def create_label(inbox=None, name="", color="", is_visible_to_guest=True, is_active=True):
     """
     Create a new label with random color for testing.
 
@@ -74,7 +74,7 @@ def create_label(inbox=None, name="", color="", is_form_label=True, is_active=Tr
     :param str color: Colorcode of the label.
     :param str scheduling_algorithm: Associated algorithm for scheduling.
     :param int scheduling_priority: Associated scheduling priority.
-    :param bool is_form_label: Can a student use it in ticket submission.
+    :param bool is_visible_to_guest: Can a student use it in ticket submission.
     :param bool is_active: Can the label be used.
 
     :return: Label.
@@ -85,7 +85,7 @@ def create_label(inbox=None, name="", color="", is_form_label=True, is_active=Tr
     color = color or random_color()
 
     return Label.objects.create(inbox=inbox, name=name, color=color,
-                                is_form_label=is_form_label,
+                                is_visible_to_guest=is_visible_to_guest,
                                 is_active=is_active)
 
 
@@ -110,6 +110,7 @@ def create_user(username="", password="", email="", first_name="", last_name="")
     user.save()
 
     return user
+
 
 def create_ticket(author=None, assignee=None, inbox=None, title="",
                   status=Status.PENDING, content="", labels=[]):

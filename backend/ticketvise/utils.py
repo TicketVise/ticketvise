@@ -3,16 +3,12 @@ Utils
 -------------------------------
 Various utility functions for use in python files.
 """
-from base64 import b64encode
-from io import BytesIO
-from os import path
 
-import numpy as np
-from PIL import ImageColor, Image
+from PIL import ImageColor
 
-from .models.ticket import Ticket, Status
-from .models.user import User, Role
-from .settings import DEFAULT_AVATAR_PATH, DEFAULT_INBOX_IMAGE_PATH
+from .models.ticket import Status
+from .models.user import Role
+from .settings import DEFAULT_AVATAR_PATH
 
 
 def crop_image(image):
@@ -51,7 +47,7 @@ def get_text_color(background_color):
     :rtype: str
     """
     r, g, b = ImageColor.getcolor(background_color, "RGB")
-    return "#000000" if (r * 0.299 + g * 0.587 + b * 0.114) > 186 else "#ffffff"
+    return "#374151" if (r * 0.299 + g * 0.587 + b * 0.114) > 186 else "#ffffff"
 
 
 def get_global_context():

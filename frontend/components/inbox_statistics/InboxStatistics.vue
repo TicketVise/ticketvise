@@ -32,14 +32,14 @@
 </template>
 
 <script>
-import TicketsChart from "./TicketsChart";
-import AgentResponseTimeChart from "./AgentResponseTimeChart";
-import LabelsChart from "./LabelsChart";
-import Card from "../elements/card/Card";
+  import TicketsChart from "./TicketsChart";
+  import AgentResponseTimeChart from "./AgentResponseTimeChart";
+  import LabelsChart from "./LabelsChart";
+  import Card from "../elements/card/Card";
 
-export default {
-  components: {Card, LabelsChart, AgentResponseTimeChart, TicketsChart},
-}
+  export default {
+    components: {Card, LabelsChart, AgentResponseTimeChart, TicketsChart},
+  }
 </script>
 
 <style scoped>

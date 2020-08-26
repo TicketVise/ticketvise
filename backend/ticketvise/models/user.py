@@ -37,34 +37,19 @@ class User(AbstractUser):
                         * **notifications** -- Set of :class:`Notification` s belonging to the user.
     """
 
-    #: The user id for authentication using LTI. Maximum length of 150 characters. Nullable.
-    lti_id = models.CharField(max_length=150, verbose_name="LTI user ID", null=True)
-    #: Email address of the user, must be unique.
-    inboxes = models.ManyToManyField("ticketvise.Inbox", through="ticketvise.UserInbox", related_name="users")
-    #: URL to the avatar picture of the user. Defaults to :const:`ticketvise.settings.DEFAULT_AVATAR_PATH`.
+    lti_id = models.CharField(max_length=150, null=True)
+    inboxes = models.ManyToManyField("Inbox", through="UserInbox", related_name="users")
     avatar_url = models.URLField(default=DEFAULT_AVATAR_PATH)
-    #: Django groups that the user is part of. Unused.
-    groups = models.ManyToManyField(
-        blank=True,
-        help_text="The groups this user belongs to. A user will get all "
-                  + "permissions granted to each of their groups.",
-        related_name="user_set",
-        related_query_name="user",
-        to="auth.Group",
-        verbose_name="groups",
-    )
-    notification_mention_mail = models.BooleanField(_("Receive mail mention"), default=True)
-    notification_mention_app = models.BooleanField(_("Receive in-app mention notification"), default=True)
-    notification_ticket_status_change_mail = models.BooleanField(
-        _("Receive mail after ticket status change"), default=True
-    )
-    notification_ticket_status_change_app = models.BooleanField(
-        _("Receive in-app ticket status change notification"), default=True
-    )
-    notification_new_ticket_mail = models.BooleanField(_("Receive mail after new_ticket"), default=True)
-    notification_new_ticket_app = models.BooleanField(_("Receive in-app new_ticket notification"), default=True)
-    notification_comment_mail = models.BooleanField(_("Receive mail after comment"), default=True)
-    notification_comment_app = models.BooleanField(_("Receive in-app comment notification"), default=True)
+    notification_mention_mail = models.BooleanField(default=False)
+    notification_mention_app = models.BooleanField(default=True)
+    notification_ticket_status_change_mail = models.BooleanField(default=False)
+    notification_ticket_status_change_app = models.BooleanField(default=True)
+    notification_new_ticket_mail = models.BooleanField(default=False)
+    notification_new_ticket_app = models.BooleanField(default=True)
+    notification_comment_mail = models.BooleanField(default=False)
+    notification_comment_app = models.BooleanField(default=True)
+    date_edited = models.DateTimeField(auto_now=True)
+    date_created = models.DateTimeField(auto_now_add=True)
 
     REQUIRED_FIELDS = ["email", "first_name", "last_name"]
 
@@ -101,6 +86,17 @@ class User(AbstractUser):
         :rtype: str
         """
         return self.get_entry_by_inbox(inbox).role
+
+    def get_role_label_by_inbox(self, inbox):
+        """
+        Get the user's role for a inbox.
+
+        :param Inbox inbox: Inbox to get the role for.
+
+        :return: The role for the user in a specific inbox.
+        :rtype: str
+        """
+        return Role[self.get_role_by_inbox(inbox)].label
 
     def get_entries_by_role(self, role):
         """
@@ -226,14 +222,11 @@ class UserInbox(models.Model):
     """
 
     user = models.ForeignKey(User, related_name="inbox_relationship", on_delete=models.CASCADE)
-    inbox = models.ForeignKey("ticketvise.Inbox", related_name="user_relationship", on_delete=models.CASCADE)
-    #: Role that the user has in the inbox. Maximum length of 40 characters.
-    #: Must be one of the choices in the :class:`Role` class. Defaults to :attr:`Role.GUEST`.
+    inbox = models.ForeignKey("Inbox", related_name="user_relationship", on_delete=models.CASCADE)
     role = models.CharField(max_length=40, choices=Role.choices, default=Role.GUEST)
-    is_bookmarked = models.BooleanField(default=False,
-                                        help_text="Designates if the inbox is bookmarked by the user",
-                                        verbose_name="bookmarked",
-                                        )
+    is_bookmarked = models.BooleanField(default=False)
+    date_edited = models.DateTimeField(auto_now=True)
+    date_created = models.DateTimeField(auto_now_add=True)
 
     class Meta:
         unique_together = ("user", "inbox")

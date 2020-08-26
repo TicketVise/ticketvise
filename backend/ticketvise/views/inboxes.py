@@ -47,7 +47,8 @@ class InboxesView(LoginRequiredMixin, TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
-        context["inboxes"] = Inbox.objects.filter(user_relationship__user=self.request.user).order_by("-user_relationship__is_bookmarked")
+        context["inboxes"] = Inbox.objects.filter(user_relationship__user=self.request.user).order_by(
+            "-user_relationship__is_bookmarked")
         context['tiles_per_row'] = 3
         context['num_tiles_needed'] = context['tiles_per_row'] - context["inboxes"].count() % context['tiles_per_row']
         context['extra_tiles_list'] = list(range(context['num_tiles_needed']))

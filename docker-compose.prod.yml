@@ -14,12 +14,10 @@ services:
       - POSTGRES_PASSWORD=${SQL_PASSWORD}
 
   web:
-    image: docker.pkg.github.com/ticketvise/ticketvise/backend:develop
+    image: "ticketvise/backend:sha-${GIT_DIGEST}"
     command: >
-      sh -c "env > /etc/environment && cron &&
-             python manage.py wait_for_database &&
+      sh -c "python manage.py wait_for_database &&
              python manage.py migrate --no-input &&
-             python manage.py insert_demo_data &&
              gunicorn ticketvise.wsgi:application --bind 0.0.0.0:6000"
     deploy:
       restart_policy:
@@ -39,8 +37,26 @@ services:
       - LTI_KEY=${LTI_KEY}
       - LTI_SECRET=${LTI_SECRET}
 
+  cronjob:
+    image: "ticketvise/cronjob:sha-${GIT_DIGEST}"
+    command: sh -c "env > /etc/environment && cron -f"
+    deploy:
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 5
+        window: 10s
+    environment:
+      - DEBUG=0
+      - DJANGO_SECRET=${DJANGO_SECRET}
+      - EMAIL_PASSWORD=${EMAIL_PASSWORD}
+      - SQL_USER=${SQL_USER}
+      - SQL_PASSWORD=${SQL_PASSWORD}
+      - LTI_KEY=${LTI_KEY}
+      - LTI_SECRET=${LTI_SECRET}
+
   proxy:
-    image: docker.pkg.github.com/ticketvise/ticketvise/proxy:develop
+    image: "ticketvise/proxy:sha-${GIT_DIGEST}"
     deploy:
       restart_policy:
         condition: on-failure

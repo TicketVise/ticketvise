@@ -10,6 +10,7 @@ Contains classes for the API interface to dynamically load models using AJAX.
 * :class:`InboxUsersView`
 * :class:`InboxTicketView`
 """
+
 from django.core.exceptions import ValidationError
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
@@ -18,10 +19,11 @@ from rest_framework.generics import UpdateAPIView, ListAPIView, RetrieveAPIView,
 from rest_framework.serializers import ModelSerializer
 from rest_framework.views import APIView
 
+from ticketvise.middleware import CurrentUserMiddleware
 from ticketvise.models.inbox import Inbox
 from ticketvise.models.label import Label
 from ticketvise.models.ticket import Ticket, TicketAttachment, TicketEvent, Status, TicketStatusEvent, \
-    TicketAssigneeEvent, TicketLabelEvent, TicketTitleEvent
+    TicketAssigneeEvent, TicketLabelEvent
 from ticketvise.models.user import User, UserInbox
 from ticketvise.views.api import AUTOCOMPLETE_MAX_ENTRIES
 from ticketvise.views.api.security import UserHasAccessToTicketMixin, UserIsInboxStaffMixin, UserIsInInboxMixin, \
@@ -40,8 +42,24 @@ class TicketSerializer(ModelSerializer):
     Allows data to be converted into Python datatypes for the ticket.
     """
     author = UserSerializer(read_only=True)
-    assignee = UserSerializer(many=False, read_only=True)
-    labels = LabelSerializer(many=True, read_only=True)
+    assignee = serializers.SerializerMethodField()
+    labels = serializers.SerializerMethodField()
+
+    def get_labels(self, obj):
+        user = CurrentUserMiddleware.get_current_user()
+        labels = obj.labels.filter(is_active=True)
+        if user and not user.is_assistant_or_coordinator(obj.inbox):
+            labels = labels.filter(is_visible_to_guest=True)
+            return LabelSerializer(labels, many=True, read_only=True).data
+        return LabelSerializer(labels, many=True, read_only=True).data
+
+    def get_assignee(self, obj):
+        user = CurrentUserMiddleware.get_current_user()
+
+        if user and (user.is_assistant_or_coordinator(obj.inbox) or obj.inbox.show_assignee_to_guest):
+            return UserSerializer(obj.assignee).data
+
+        return None
 
     class Meta:
         """
@@ -63,6 +81,7 @@ class CreateTicketSerializer(ModelSerializer):
     Allows data to be converted into Python datatypes for the ticket.
     """
     labels = serializers.PrimaryKeyRelatedField(many=True, queryset=Label.objects.all())
+    shared_with = serializers.PrimaryKeyRelatedField(many=True, queryset=User.objects.all())
 
     class Meta:
         """
@@ -105,7 +124,10 @@ class TicketWithParticipantsSerializer(TicketSerializer):
 
     def get_participants(self, obj):
         participants = list(User.objects.filter(comments__ticket=obj).distinct())
-        participants.append(obj.author)
+
+        if obj.author not in participants:
+            participants.append(obj.author)
+
         for user in obj.shared_with.all():
             if user not in participants:
                 participants.append(user)
@@ -125,7 +147,9 @@ class AssigneeUpdateSerializer(ModelSerializer):
 
     def validate_assignee(self, assignee):
         inbox = self.instance.inbox
-        if not assignee.is_assistant_or_coordinator(inbox):
+        if not assignee:
+            return None
+        elif not assignee.is_assistant_or_coordinator(inbox):
             raise ValidationError("User doesn't have the right permissions to be assigned to this ticket")
         return assignee
 
@@ -153,12 +177,14 @@ class InboxTicketsApiView(UserIsInInboxMixin, APIView):
 
         inbox = get_object_or_404(Inbox, pk=inbox_id)
         tickets = Ticket.objects.filter(inbox=inbox, title__icontains=q) | Ticket.objects.filter(
-            inbox=inbox, ticket_inbox_id__icontains=q)
+            inbox=inbox, ticket_inbox_id__icontains=q).order_by("-date_created")
 
         if not request.user.is_assistant_or_coordinator(inbox):
             tickets = tickets.filter(author=request.user) | tickets.filter(shared_with__id__icontains=request.user.id)
         elif show_personal:
-            tickets = tickets.filter(assignee=request.user) | tickets.filter(author=request.user)
+            tickets = tickets.filter(assignee=request.user) | \
+                      tickets.filter(author=request.user) | \
+                      tickets.filter(assignee=None)
 
         if labels:
             tickets = tickets.filter(labels__id__in=labels).distinct()
@@ -183,6 +209,15 @@ class InboxTicketsApiView(UserIsInInboxMixin, APIView):
                 "tickets": TicketSerializer(query_set.filter(status=status), many=True).data
             } for status in Status
         ]
+
+        if not self.request.user.is_assistant_or_coordinator(inbox) \
+                and not inbox.show_assignee_to_guest:
+            columns[0] = {
+                "label": columns[0]["label"],
+                "tickets": columns[0]["tickets"] + columns[1]["tickets"]
+            }
+            del columns[1]
+        columns[0]["tickets"] = sorted(columns[0]["tickets"], key=lambda x: x["date_created"], reverse=True)
 
         return JsonResponse(data=columns, safe=False)
 
@@ -273,6 +308,8 @@ class TicketSharedWithRetrieveSerializer(ModelSerializer):
 
 
 class TicketSharedWithUpdateSerializer(ModelSerializer):
+    shared_with = serializers.PrimaryKeyRelatedField(many=True, queryset=User.objects.all())
+
     class Meta:
         model = Ticket
         fields = ["shared_with"]
@@ -304,14 +341,6 @@ class TicketLabelEventSerializer(ModelSerializer):
         fields = ["ticket", "initiator", "date_created", "label", "is_added"]
 
 
-class TicketTitleEventSerializer(ModelSerializer):
-    initiator = UserSerializer(read_only=True)
-
-    class Meta:
-        model = TicketTitleEvent
-        fields = ["ticket", "initiator", "date_created", "old_title", "new_title"]
-
-
 class TicketEventSerializer(ModelSerializer):
     initiator = UserSerializer(read_only=True)
 
@@ -322,8 +351,6 @@ class TicketEventSerializer(ModelSerializer):
             return TicketAssigneeEventSerializer(instance=instance).data
         elif isinstance(instance, TicketLabelEvent):
             return TicketLabelEventSerializer(instance=instance).data
-        elif isinstance(instance, TicketTitleEvent):
-            return TicketTitleEventSerializer(instance=instance).data
 
         return super().to_representation(instance)
 
@@ -340,6 +367,7 @@ class TicketEventsApiView(UserHasAccessToTicketMixin, ListAPIView):
         ticket = get_object_or_404(Ticket, inbox=inbox, ticket_inbox_id=self.kwargs["ticket_inbox_id"])
 
         return TicketEvent.objects.filter(ticket=ticket).select_subclasses()
+
 
 class TicketSharedAPIView(UserIsTicketAuthorOrInboxStaffMixin, RetrieveUpdateAPIView):
     def get_object(self):

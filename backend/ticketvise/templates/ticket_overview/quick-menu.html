@@ -4,70 +4,70 @@
 {% load ticketvise_extras %}
 
 <div class="modal" id="quick-menu-{{ ticket.id }}">
-    <div class="modal-background"></div>
-    <div class="modal-card">
-        <header class="modal-card-head">
-            <p class="modal-card-title">{{ ticket.title }}</p>
-            <button class="delete" aria-label="close" id="quick-menu-cancel"></button>
-        </header>
-        {% csrf_token %}
-        <form method="POST" class="quick-menu-form" id="form-quick-menu-{{ ticket.id }}">
-            <section class="modal-card-body">
-                <!-- SELECT TICKET ASSIGNEE. -->
-                <div class="field">
-                    <label class="label">Assignee</label>
-                    <div class="control">
-                        <div class="select">
-                            <select name="assignee-select">
-                                {% for assignee in assistants_coordinators %}
-                                    {% if ticket.assignee and assignee.id == ticket.assignee.id %}
-                                        <option value="{{ assignee.id }}" selected="selected">
-                                            {% else %}
-                                        <option value="{{ assignee.id }}">
-                                    {% endif %}
-                                {{ assignee.get_full_name }}
-                                </option>
-                                {% endfor %}
+  <div class="modal-background"></div>
+  <div class="modal-card">
+    <header class="modal-card-head">
+      <p class="modal-card-title">{{ ticket.title }}</p>
+      <button class="delete" aria-label="close" id="quick-menu-cancel"></button>
+    </header>
+    {% csrf_token %}
+    <form method="POST" class="quick-menu-form" id="form-quick-menu-{{ ticket.id }}">
+      <section class="modal-card-body">
+        <!-- SELECT TICKET ASSIGNEE. -->
+        <div class="field">
+          <label class="label">Assignee</label>
+          <div class="control">
+            <div class="select">
+              <select name="assignee-select">
+                {% for assignee in assistants_coordinators %}
+                  {% if ticket.assignee and assignee.id == ticket.assignee.id %}
+                    <option value="{{ assignee.id }}" selected="selected">
+                      {% else %}
+                    <option value="{{ assignee.id }}">
+                  {% endif %}
+                {{ assignee.get_full_name }}
+                </option>
+                {% endfor %}
 
-                                {% if not ticket.assignee %}
-                                    <option value="" selected="selected">
-                                        {% else %}
-                                    <option value="">
-                                {% endif %}
-                                None
-                                </option>
-                            </select>
-                        </div>
-                    </div>
-                </div>
-                <br>
+                {% if not ticket.assignee %}
+                  <option value="" selected="selected">
+                    {% else %}
+                  <option value="">
+                {% endif %}
+                None
+                </option>
+              </select>
+            </div>
+          </div>
+        </div>
+        <br>
 
-                <!-- ADD/DELETE LABELS OF THE TICKET. -->
-                <div class="field">
-                    <label class="label">Labels</label>
-                    <div class="control">
-                        <div class="select">
-                            <select name="label-selector" id="label-select-{{ ticket.id }}">
-                                <option value="none" disabled selected>
-                                    -- Select labels --
-                                </option>
-                                {% for label in labels %}
-                                    <option value="{{ ticket.id }}-{{ label.id }}"
-                                            {% if label in ticket.labels.all %} style="display:none" {% endif %}>
-                                        {{ label.name }}
-                                    </option>
-                                {% endfor %}
-                            </select>
-                        </div>
-                    </div>
-                </div>
+        <!-- ADD/DELETE LABELS OF THE TICKET. -->
+        <div class="field">
+          <label class="label">Labels</label>
+          <div class="control">
+            <div class="select">
+              <select name="label-selector" id="label-select-{{ ticket.id }}">
+                <option value="none" disabled selected>
+                  -- Select labels --
+                </option>
+                {% for label in labels %}
+                  <option value="{{ ticket.id }}-{{ label.id }}"
+                          {% if label in ticket.labels.all %} style="display:none" {% endif %}>
+                    {{ label.name }}
+                  </option>
+                {% endfor %}
+              </select>
+            </div>
+          </div>
+        </div>
 
-                <!-- SHOW SELECTED LABELS OF THE TICKET. -->
-                <div class="tags quick-menu-labels">
-                    {% for label in labels %}
-                        <span style="background-color: {{ label.color }}; color: {% get_label_text_color label %};
-                                display:{% if label in ticket.labels.all %} flex {% else %} none {% endif %}"
-                              class="tag is-warning is-medium" id="label-tag-{{ ticket.id }}-{{ label.id }}">
+        <!-- SHOW SELECTED LABELS OF THE TICKET. -->
+        <div class="tags quick-menu-labels">
+          {% for label in labels %}
+            <span style="background-color: {{ label.color }}; color: {% get_label_text_color label %};
+                    display:{% if label in ticket.labels.all %} flex {% else %} none {% endif %}"
+                  class="tag is-warning is-medium" id="label-tag-{{ ticket.id }}-{{ label.id }}">
                             {{ label.name }}
                             <button type="button" class="label-delete delete"
                                     id="label-delete-{{ ticket.id }}-{{ label.id }}">
@@ -76,16 +76,16 @@
                                    value="{{ label.id }}" type="checkbox"
                                     {% if label in ticket.labels.all %} checked {% endif %}>
                         </span>
-                    {% endfor %}
-                </div>
-            </section>
+          {% endfor %}
+        </div>
+      </section>
 
-            <footer class="modal-card-foot field">
-                <!-- SAVE ASSIGNEE AND LABEL CHANGES TO TICKET. -->
-                <button class="button level-item is-success">
-                    Save changes
-                </button>
-            </footer>
-        </form>
-    </div>
+      <footer class="modal-card-foot field">
+        <!-- SAVE ASSIGNEE AND LABEL CHANGES TO TICKET. -->
+        <button class="button level-item is-success">
+          Save changes
+        </button>
+      </footer>
+    </form>
+  </div>
 </div>

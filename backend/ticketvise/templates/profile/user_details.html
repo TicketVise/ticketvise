@@ -1,44 +1,43 @@
 <!-- USER DETAILS. -->
 <div class="column">
-    <fieldset disabled>
-        <div class="field">
-            <label class="label">First Name</label>
-            <div class="control">
-                <input class="input" type="text" value="{{ user.first_name }}" readonly>
-            </div>
-        </div>
+  <fieldset disabled>
+    <div class="field">
+      <label class="label">First Name</label>
+      <div class="control">
+        <input class="input" type="text" value="{{ user.first_name }}" readonly>
+      </div>
+    </div>
 
-        <div class="field">
-            <label class="label">Last Name</label>
-            <div class="control">
-                <input class="input" type="text" value="{{ user.last_name }}" readonly>
-            </div>
-        </div>
+    <div class="field">
+      <label class="label">Last Name</label>
+      <div class="control">
+        <input class="input" type="text" value="{{ user.last_name }}" readonly>
+      </div>
+    </div>
 
-        <div class="field">
-            <label class="label">Username</label>
-            <div class="control">
-                <input class="input" type="text" value="{{ user.get_username }}" readonly>
-            </div>
-        </div>
+    <div class="field">
+      <label class="label">Username</label>
+      <div class="control">
+        <input class="input" type="text" value="{{ user.get_username }}" readonly>
+      </div>
+    </div>
 
-        <div class="field">
-            <label class="label">Email</label>
-            <div class="control">
-                <input class="input" type="text" value="{{ user.email }}" readonly>
-            </div>
-        </div>
-    </fieldset>
-    <br>
-    <form method="post"
-          onsubmit="return confirm('This will delete your account and all your information for good. Are you sure?')">
-        {% csrf_token %}
-        <a class="button is-success" href="{% url "password_change" %}">Change password</a>
-        <input type="hidden" name="action" value="delete_account"/>
-        <button type="submit" class="button is-danger" name="delete_account">
-            Delete account
-        </button>
-    </form>
+    <div class="field">
+      <label class="label">Email</label>
+      <div class="control">
+        <input class="input" type="text" value="{{ user.email }}" readonly>
+      </div>
+    </div>
+  </fieldset>
+  <br>
+  <form method="post"
+        onsubmit="return confirm('This will delete your account and all your information for good. Are you sure?')">
+    {% csrf_token %}
+    <input type="hidden" name="action" value="delete_account"/>
+    <button type="submit" class="button is-danger" name="delete_account">
+      Delete account
+    </button>
+  </form>
 
 
 </div>

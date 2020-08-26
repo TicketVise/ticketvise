@@ -4,8 +4,8 @@ from django.shortcuts import get_object_or_404
 from django.views.generic import TemplateView
 
 from ticketvise.models.inbox import Inbox
-from ticketvise.models.ticket import Ticket, Status, TicketEvent, TicketStatusEvent
-from ticketvise.models.user import UserInbox, User, Role
+from ticketvise.models.ticket import Ticket, Status, TicketStatusEvent
+from ticketvise.models.user import UserInbox, Role
 from ticketvise.statistics import get_average_response_time
 from ticketvise.views.inbox.base import InboxCoordinatorRequiredMixin
 

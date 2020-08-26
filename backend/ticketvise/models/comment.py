@@ -10,7 +10,6 @@ Contains all entity sets for the comment database.
 import re
 
 from django.db import models
-from django.utils.translation import gettext_lazy as _
 
 from ticketvise.email import send_mentioned_mail
 from ticketvise.models.notification import MentionNotification, CommentNotification
@@ -29,22 +28,13 @@ class Comment(models.Model):
                           that are attached to the ticket.
     """
 
-    #: The :class:`Ticket` that the comment was posted on.
-    ticket = models.ForeignKey("Ticket", models.CASCADE, related_name="comments")
-    #: The :class:`User` who wrote the comment.
-    author = models.ForeignKey("User", models.CASCADE, related_name="comments")
-    #: Date that the comment was created. Automatically added on creation.
-    date_created = models.DateTimeField(_("Date created"), auto_now_add=True)
-    #: Date that the ticket was last edite. Automatically changed on attribute change.
-    #: Nullable and optional.
-    date_edited = models.DateTimeField(_("Date edited"), auto_now=True, blank=True, null=True)
-    #: The content inside the comment.
+    ticket = models.ForeignKey("Ticket", on_delete=models.CASCADE, related_name="comments")
+    author = models.ForeignKey("User", on_delete=models.CASCADE, related_name="comments")
     content = models.TextField()
-    #: If ``True``, the comment is a reply to the ticket. Otherwise, it is an assistant comment.
-    #: Defaults to ``False``.
-    is_reply = models.BooleanField(_("Is reply"), default=False)
-    #: Indicates if the instance is active or not. Defaults to ``True``.
-    is_active = models.BooleanField(_("Is active"), default=True)
+    is_reply = models.BooleanField(default=False)
+    date_edited = models.DateTimeField(auto_now=True)
+    date_created = models.DateTimeField(auto_now_add=True)
+
     _username_regex = re.compile("(?<=^|(?<=[^a-zA-Z0-9-_\\.]))@([A-Za-z]+[A-Za-z0-9-_]+)")
 
     def save(self, force_insert=False, force_update=False, using=None, update_fields=None):

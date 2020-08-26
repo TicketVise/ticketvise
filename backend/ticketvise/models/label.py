@@ -7,7 +7,6 @@ Contains all entity sets for the label database.
 * :class:`Label`
 """
 from django.db import models
-from django.utils.translation import gettext_lazy as _
 
 from ticketvise.models.validators import validate_hex_color
 
@@ -20,14 +19,10 @@ class Label(models.Model):
     :reverse relations: * **tickets** -- Set of :class:`Ticket` s that the label has been applied to.
     """
 
-    #: The :class:`Inbox` that the label is registered in.
-    inbox = models.ForeignKey("ticketvise.Inbox", on_delete=models.CASCADE, related_name="labels")
-    #: Label color, must be a valid hex color.
+    inbox = models.ForeignKey("Inbox", on_delete=models.CASCADE, related_name="labels")
     color = models.CharField(max_length=7, validators=[validate_hex_color], default="#ff0000")
-    #: Label name.
     name = models.CharField(max_length=50, default="")
-    #: If ``True``, the label is visible for students when creating a ticket. Defaults to ``False``.
-    is_form_label = models.BooleanField(default=False)
-    #: Indicates if the instance is active or not. Defaults to ``True``.
-    is_active = models.BooleanField(_("Is active"), default=True)
-
+    is_visible_to_guest = models.BooleanField(default=False)
+    is_active = models.BooleanField(default=True)
+    date_edited = models.DateTimeField(auto_now=True)
+    date_created = models.DateTimeField(auto_now_add=True)

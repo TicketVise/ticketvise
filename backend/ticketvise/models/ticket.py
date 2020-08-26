@@ -12,7 +12,6 @@ import uuid
 from django.db import models
 from django.db.models.signals import m2m_changed
 from django.dispatch import receiver
-from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
 from model_utils.managers import InheritanceManager
 
@@ -27,13 +26,9 @@ class Status(models.TextChoices):
     Choices for the :attr:`Ticket.status` field.
     """
 
-    #: Status when the ticket is first create and not automatically assigned.
     PENDING = "PNDG", _("Pending")
-    #: Status when the ticket is assigned to an assistant.
     ASSIGNED = "ASGD", _("Assigned")
-    #: Status when an assistant has replied to the ticket.
     ANSWERED = "ANSD", _("Answered")
-    #: Status when the ticket has been resolved.
     CLOSED = "CLSD", _("Closed")
 
 
@@ -47,34 +42,20 @@ class Ticket(models.Model):
                           that are attached to the ticket.
     """
 
-    #: The :class:`User` who created the ticket.
-    author = models.ForeignKey("User", models.CASCADE, related_name=_("author"))
-    #: The :class:`User` who the ticket is shared with.
-    shared_with = models.ManyToManyField("User", blank=True, related_name=_("participants"))
-    #: The :class:`User` to whom the ticket is assigned. Nullable and optional.
-    assignee = models.ForeignKey("User", models.CASCADE, blank=True, null=True, related_name=_("assignee"))
-    #: The :class:`Inbox` that the ticket is associated with.
-    inbox = models.ForeignKey("ticketvise.Inbox", models.CASCADE, related_name="tickets")
-    #: The title of the ticket.
+    author = models.ForeignKey("User", on_delete=models.CASCADE, related_name="tickets")
+    shared_with = models.ManyToManyField("User", blank=True, through="TicketSharedUser")
+    assignee = models.ForeignKey("User", on_delete=models.CASCADE, blank=True, null=True,
+                                 related_name="assigned_tickets")
+    inbox = models.ForeignKey("Inbox", on_delete=models.CASCADE, related_name="tickets")
     title = models.CharField(max_length=100)
-    #: Ticket ID for the inbox it is part of. Used in URLs and references.
     ticket_inbox_id = models.PositiveIntegerField()
-    #: Ticket status. Must be one of the choices in :class:`Ticket.Status`.
-    #: Defaults to :attr:`Ticket.Status.PENDING`.
     status = models.CharField(max_length=8, choices=Status.choices, default=Status.PENDING)
-    #: Date that the ticket was created. Automatically added on creation.
-    date_created = models.DateTimeField(_("Date created"), auto_now_add=True)
-    #: Date that the ticket was last edited. Automatically changed on attribute change.
-    #: Nullable and optional.
-    date_edited = models.DateTimeField(_("Date edited"), auto_now=True, blank=True, null=True)
-    #: The content inside the ticket.
     content = models.TextField()
-    #: The :class:`Label` s associated with the ticket. Optional.
     labels = models.ManyToManyField("Label", blank=True, related_name="tickets", through="TicketLabel")
-    #: Indicates if the instance is active or not. Defaults to ``True``.
-    is_active = models.BooleanField(_("Is active"), default=True)
     reply_message_id = models.UUIDField(default=uuid.uuid4, editable=False, unique=True, null=False)
     comment_message_id = models.UUIDField(default=uuid.uuid4, editable=False, unique=True, null=False)
+    date_edited = models.DateTimeField(auto_now=True)
+    date_created = models.DateTimeField(auto_now_add=True)
 
     class Meta:
         unique_together = ("ticket_inbox_id", "inbox")
@@ -120,7 +101,12 @@ class Ticket(models.Model):
 
         if self.id:
             old_ticket = Ticket.objects.get(pk=self.id)
-            old_status = old_ticket.status
+            old_status = old_ticket.get_status()
+
+            if old_ticket.status == Status.PENDING and old_ticket.assignee is None and self.assignee:
+                self.status = Status.ASSIGNED
+            if old_ticket.status == Status.ASSIGNED and old_ticket.assignee and not self.assignee:
+                self.status = Status.PENDING
         else:
             # + 1 so the ticket_inbox_id starts at 1 instead of 0.
             self.ticket_inbox_id = Ticket.objects.filter(inbox=self.inbox).count() + 1
@@ -132,10 +118,6 @@ class Ticket(models.Model):
                 TicketStatusEvent.objects.create(ticket=self, initiator=CurrentUserMiddleware.get_current_user(),
                                                  old_status=old_status, new_status=self.status)
 
-            if old_ticket.title != self.title:
-                TicketTitleEvent.objects.create(ticket=self, old_title=old_ticket.title, new_title=self.title,
-                                                initiator=CurrentUserMiddleware.get_current_user())
-
             if self.assignee and old_ticket.assignee != self.assignee:
                 TicketAssigneeEvent.objects.create(ticket=self, assignee=self.assignee,
                                                    initiator=CurrentUserMiddleware.get_current_user())
@@ -145,14 +127,14 @@ class Ticket(models.Model):
 
         if self.assignee:
             message = TicketStatusChangedNotification(
-                receiver=self.assignee, read=False, ticket=self, old_status=old_status,
+                receiver=self.assignee, is_read=False, ticket=self, old_status=old_status,
                 new_status=self.get_status()
             )
             message.save()
         else:
             for receiver in self.inbox.get_assistants_and_coordinators():
                 message = TicketStatusChangedNotification(
-                    receiver=receiver, read=False, ticket=self, old_status=old_status,
+                    receiver=receiver, is_read=False, ticket=self, old_status=old_status,
                     new_status=self.get_status()
                 )
 
@@ -178,11 +160,18 @@ class Ticket(models.Model):
             raise NotImplementedError(f"Status {self.status} not implemented")
 
 
+class TicketSharedUser(models.Model):
+    ticket = models.ForeignKey(Ticket, on_delete=models.CASCADE)
+    user = models.ForeignKey("User", on_delete=models.CASCADE)
+    date_edited = models.DateTimeField(auto_now=True)
+    date_created = models.DateTimeField(auto_now_add=True)
+
+
 class TicketLabel(models.Model):
     ticket = models.ForeignKey(Ticket, on_delete=models.CASCADE)
     label = models.ForeignKey(Label, on_delete=models.CASCADE)
-    date_created = models.DateTimeField(_("Date created"), auto_now_add=True)
-    date_edited = models.DateTimeField(_("Date edited"), auto_now=True, blank=True, null=True)
+    date_edited = models.DateTimeField(auto_now=True)
+    date_created = models.DateTimeField(auto_now_add=True)
 
     def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
         super().save(force_insert, force_update, using, update_fields)
@@ -216,6 +205,8 @@ def labels_changed_handler(sender, action, instance, model, **kwargs):
 class TicketAttachment(models.Model):
     ticket = models.ForeignKey(Ticket, on_delete=models.CASCADE, related_name="attachments")
     file = models.FileField(upload_to="media/tickets")
+    date_edited = models.DateTimeField(auto_now=True)
+    date_created = models.DateTimeField(auto_now_add=True)
 
 
 class TicketStatusChangedNotification(Notification):
@@ -223,32 +214,19 @@ class TicketStatusChangedNotification(Notification):
     Notification used for when the status of a :class:`Ticket` changes.
     """
 
-    #: The ticket that had its status changed.
-    ticket = models.ForeignKey("Ticket", models.CASCADE, related_name="ticket_notifications")
-    #: The ticket's status before it changed. Nullable.
+    ticket = models.ForeignKey(Ticket, on_delete=models.CASCADE, related_name="ticket_notifications")
     old_status = models.CharField(max_length=8, choices=Status.choices, null=True)
-    #: The ticket's status after it changed.
     new_status = models.CharField(max_length=8, choices=Status.choices)
 
-    def get_ticket_url(self):
-        """
-        :return: The ticket url of the notification.
-        """
-        return reverse("ticket", args=(self.ticket.inbox_id, self.ticket.ticket_inbox_id))
-
-    def get_title(self):
-        """
-        :return: The title of the ticket.
-        """
-        return self.ticket.title
-
-    def get_author(self):
+    @property
+    def author(self):
         """
         :return: The author of the ticket, prefixed by ``@``.
         """
         return f"@{self.ticket.author.username}"
 
-    def get_content(self):
+    @property
+    def content(self):
         """
         :return: The content of the notification.
         """
@@ -257,7 +235,8 @@ class TicketStatusChangedNotification(Notification):
 
         return "A new ticket has been opened"
 
-    def get_inbox(self):
+    @property
+    def inbox(self):
         """
         :return: URL of the inbox connected.
         """
@@ -275,7 +254,8 @@ class TicketStatusChangedNotification(Notification):
 class TicketEvent(models.Model):
     objects = InheritanceManager()
     ticket = models.ForeignKey(Ticket, on_delete=models.CASCADE)
-    initiator = models.ForeignKey("ticketvise.User", on_delete=models.CASCADE, null=True)
+    initiator = models.ForeignKey("User", on_delete=models.CASCADE, null=True)
+    date_edited = models.DateTimeField(auto_now=True)
     date_created = models.DateTimeField(auto_now_add=True)
 
 
@@ -285,14 +265,9 @@ class TicketStatusEvent(TicketEvent):
 
 
 class TicketAssigneeEvent(TicketEvent):
-    assignee = models.ForeignKey("ticketvise.User", on_delete=models.CASCADE)
+    assignee = models.ForeignKey("User", on_delete=models.CASCADE)
 
 
 class TicketLabelEvent(TicketEvent):
-    label = models.ForeignKey("ticketvise.Label", on_delete=models.CASCADE)
+    label = models.ForeignKey("Label", on_delete=models.CASCADE)
     is_added = models.BooleanField()
-
-
-class TicketTitleEvent(TicketEvent):
-    old_title = models.CharField(max_length=100)
-    new_title = models.CharField(max_length=100)

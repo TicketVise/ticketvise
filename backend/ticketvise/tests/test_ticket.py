@@ -6,15 +6,13 @@ This file tests the ticket page that show the information of a ticket.
 import json
 
 from django.db import transaction
-from django.db.transaction import atomic
-from django.test import TestCase, Client, TransactionTestCase
+from django.test import Client, TransactionTestCase
 from django.urls import reverse
 from rest_framework.test import APITestCase
 
-from ticketvise.models.comment import Comment, MAX_COMMENT_CHAR_LENGTH
 from ticketvise.models.inbox import Inbox
 from ticketvise.models.label import Label
-from ticketvise.models.ticket import Ticket
+from ticketvise.models.ticket import Ticket, Status
 from ticketvise.models.user import User, Role
 from ticketvise.views.api.user import UserSerializer
 
@@ -49,7 +47,15 @@ class TicketTestCase(TransactionTestCase):
                                               email="assistant3@ticketvise.com")
         self.assistant3.add_inbox(self.inbox)
         self.assistant3.set_role_for_inbox(self.inbox, Role.AGENT)
-        self.label = Label.objects.create(name="TestLabel", inbox=self.inbox)
+
+        self.manager = User.objects.create(username="manager", password="test67891",
+                                           email="manager@ticketvise.com")
+        self.manager.add_inbox(self.inbox)
+        self.manager.set_role_for_inbox(self.inbox, Role.MANAGER)
+
+        self.label = Label.objects.create(name="TestLabel", inbox=self.inbox, is_visible_to_guest=True)
+        self.invisible_label = Label.objects.create(name="invisible", inbox=self.inbox, is_visible_to_guest=False)
+        self.disabled_label = Label.objects.create(name="disabled", inbox=self.inbox, is_active=False)
 
         self.ticket = Ticket.objects.create(author=self.student, assignee=self.assistant, title="TestTicket",
                                             content="TestContent", inbox=self.inbox)
@@ -208,8 +214,7 @@ class TicketTestApi(APITestCase, TicketTestCase):
                                    follow=True)
         self.assertEqual(response.status_code, 200)
 
-        self.assertEqual(json.loads(response.content),
-                         [{"name": self.label.name, "color": self.label.color, "id": self.label.id}])
+        self.assertContains(response, self.label.name)
 
     def test_get_labels_as_ta_not_in_inbox(self):
         """
@@ -289,6 +294,39 @@ class TicketTestApi(APITestCase, TicketTestCase):
 
         ticket = Ticket.objects.get(pk=self.ticket.id)
         self.assertNotEqual(ticket.assignee, self.assistant3)
+
+    def test_put_assignee_change_status(self):
+        """
+        Test to verify an assistant of the inbox can change assignees
+        """
+        self.client.force_login(self.assistant)
+        self.ticket.status = Status.PENDING
+        self.ticket.assignee = None
+        self.ticket.save()
+
+        response = self.client.put(f"/api/inboxes/{self.inbox.id}/tickets/{self.ticket.ticket_inbox_id}/assignee",
+                                   data={"assignee": self.assistant3.id}, content_type="application/json")
+        self.assertEqual(response.status_code, 200)
+
+        ticket = Ticket.objects.get(pk=self.ticket.id)
+        self.assertEqual(ticket.assignee, self.assistant3)
+        self.assertEqual(ticket.status, "ASGD")
+
+    def test_put_assignee_unassign(self):
+        """
+        Test to verify an assistant of the inbox can change assignees
+        """
+        self.client.force_login(self.assistant)
+        self.ticket.status = Status.ASSIGNED
+        self.ticket.save()
+
+        response = self.client.put(f"/api/inboxes/{self.inbox.id}/tickets/{self.ticket.ticket_inbox_id}/assignee",
+                                   data={"assignee": None}, content_type="application/json")
+        self.assertEqual(response.status_code, 200)
+
+        ticket = Ticket.objects.get(pk=self.ticket.id)
+        self.assertEqual(ticket.assignee, None)
+        self.assertEqual(ticket.status, "PNDG")
 
     def test_put_shared_with_as_author(self):
         """
@@ -413,3 +451,99 @@ class TicketTestApi(APITestCase, TicketTestCase):
         with self.assertRaises(NotImplementedError):
             self.ticket.get_status()
 
+    def test_inbox_show_assignee_to_guest_as_guest(self):
+        """
+        Test to verify that the assignee is hidden to a guest when the manager has disabled it in the inbox settings.
+        """
+        self.client.force_login(self.student)
+
+        self.inbox.show_assignee_to_guest = False
+        self.inbox.save()
+
+        self.ticket.assignee = self.assistant
+        self.ticket.save()
+
+        response = self.client.get(f"/api/inboxes/{self.inbox.id}/tickets/{self.ticket.ticket_inbox_id}", follow=True)
+        self.assertEqual(response.status_code, 200)
+        self.assertNotContains(response, self.ticket.assignee.username)
+
+        self.inbox.show_assignee_to_guest = True
+        self.inbox.save()
+
+        response = self.client.get(f"/api/inboxes/{self.inbox.id}/tickets/{self.ticket.ticket_inbox_id}", follow=True)
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, self.ticket.assignee.username)
+
+    def test_inbox_show_assignee_to_guest_as_staff(self):
+        """
+        Test to verify that the assignee is always visible to a staff member.
+        """
+        for user in [self.assistant3, self.manager]:
+            self.client.force_login(user)
+
+            self.inbox.show_assignee_to_guest = False
+            self.inbox.save()
+
+            self.ticket.assignee = self.assistant
+            self.ticket.save()
+
+            response = self.client.get(f"/api/inboxes/{self.inbox.id}/tickets/{self.ticket.ticket_inbox_id}",
+                                       follow=True)
+            self.assertEqual(response.status_code, 200)
+            self.assertContains(response, self.ticket.assignee.username)
+
+            self.inbox.show_assignee_to_guest = True
+            self.inbox.save()
+
+            response = self.client.get(f"/api/inboxes/{self.inbox.id}/tickets/{self.ticket.ticket_inbox_id}",
+                                       follow=True)
+            self.assertEqual(response.status_code, 200)
+            self.assertContains(response, self.ticket.assignee.username)
+
+    def test_inbox_invisible_label_student(self):
+        self.client.force_login(self.student)
+
+        response = self.client.get(f"/api/inboxes/{self.inbox.id}/labels", content_type="application/json")
+
+        self.assertEqual(response.status_code, 200)
+        self.assertNotContains(response, self.invisible_label.name)
+
+    def test_inbox_invisible_label_agent(self):
+        self.client.force_login(self.assistant)
+
+        response = self.client.get(f"/api/inboxes/{self.inbox.id}/labels")
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, self.invisible_label.name)
+
+    def test_inbox_invisible_label_manager(self):
+        self.client.force_login(self.manager)
+
+        response = self.client.get(f"/api/inboxes/{self.inbox.id}/labels")
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, self.invisible_label.name)
+
+    def test_inbox_inactive_label_student(self):
+        self.client.force_login(self.student)
+
+        response = self.client.get(f"/api/inboxes/{self.inbox.id}/labels", content_type="application/json")
+
+        self.assertEqual(response.status_code, 200)
+        self.assertNotContains(response, self.disabled_label.name)
+
+    def test_inbox_inactive_label_agent(self):
+        self.client.force_login(self.assistant)
+
+        response = self.client.get(f"/api/inboxes/{self.inbox.id}/labels")
+
+        self.assertEqual(response.status_code, 200)
+        self.assertNotContains(response, self.disabled_label.name)
+
+    def test_inbox_inactive_label_manager(self):
+        self.client.force_login(self.manager)
+
+        response = self.client.get(f"/api/inboxes/{self.inbox.id}/labels")
+
+        self.assertEqual(response.status_code, 200)
+        self.assertNotContains(response, self.disabled_label.name)

@@ -7,6 +7,7 @@ from rest_framework.generics import RetrieveAPIView
 from rest_framework.serializers import ModelSerializer
 
 from ticketvise.models.inbox import Inbox
+from ticketvise.models.notification import Notification
 from ticketvise.models.user import User, Role
 from ticketvise.views.api.security import UserIsInboxStaffMixin, UserIsInInboxMixin
 
@@ -15,6 +16,12 @@ class UserSerializer(ModelSerializer):
     class Meta:
         model = User
         fields = ["first_name", "last_name", "email", "username", "avatar_url", "id"]
+
+
+class NotificationSerializer(ModelSerializer):
+    class Meta:
+        model = Notification
+        fields = ["receiver", "read"]
 
 
 class UserUsernameSerializer(ModelSerializer):
@@ -66,6 +73,13 @@ class UserGetFromUsernameApiView(UserIsInInboxMixin, RetrieveAPIView):
 
 class CurrentUserApiView(LoginRequiredMixin, RetrieveAPIView):
     serializer_class = UserSerializer
+
+    def get_object(self):
+        return self.request.user
+
+
+class NotificationsApiView(LoginRequiredMixin, RetrieveAPIView):
+    serializer_class = NotificationSerializer
 
     def get_object(self):
         return self.request.user

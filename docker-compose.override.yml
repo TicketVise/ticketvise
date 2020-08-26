@@ -2,12 +2,11 @@ version: '3.7'
 
 services:
   web:
-    image: ticketvise/ticketvise/backend:latest
+    image: ticketvise/backend
     build:
       context: .
     command: >
-      sh -c "env > /etc/environment && cron &&
-             python manage.py wait_for_database &&
+      sh -c "python manage.py wait_for_database &&
              python manage.py migrate --no-input &&
              python manage.py insert_demo_data &&
              python manage.py runserver 0.0.0.0:6000"
@@ -15,14 +14,14 @@ services:
       - ./backend:/backend
     environment:
       - DJANGO_SECRET=Welkom01
-      - EMAIL_PASSWORD=Welkom01
+      - EMAIL_PASSWORD=Welikom01
       - SQL_USER=ticketvise
       - SQL_PASSWORD=Welkom01
       - LTI_KEY=LtiKey01
       - LTI_SECRET=LtiSecret01
 
   proxy:
-    image: ticketvise/ticketvise/proxy:latest
+    image: ticketvise/proxy
     build: ./nginx
     ports:
       - 8000:8000
@@ -36,3 +35,8 @@ services:
       - POSTGRES_DB=ticketvise
       - POSTGRES_USER=ticketvise
       - POSTGRES_PASSWORD=Welkom01
+
+  cronjob:
+    image: ticketvise/cronjob
+    build: ./cronjob
+    command: sh -c "env > /etc/environment && cron -f"

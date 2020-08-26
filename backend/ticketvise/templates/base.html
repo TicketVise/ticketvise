@@ -1,34 +1,34 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    {% if user.is_authenticated %}
-        {% number_of_unread_notifications user as count %}
-    {% endif %}
-    {% if count %}
-        <title>({{ count }}) TicketVise</title>
-    {% else %}
-        <title>TicketVise</title>
-    {% endif %}
+  <meta charset="UTF-8">
+  {% if user.is_authenticated %}
+    {% number_of_unread_notifications user as count %}
+  {% endif %}
+  {% if count %}
+    <title>({{ count }}) TicketVise</title>
+  {% else %}
+    <title>TicketVise</title>
+  {% endif %}
 
-    <meta name="description" content="TicketVise, making assisting great again.">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    {% load static %}
-    <link rel="shortcut icon" type="image/png" href="{% static 'favicon.png' %}"/>
-    <link rel="stylesheet" type="text/css" href="{% static 'styles.css' %}">
+  <meta name="description" content="TicketVise, making assisting great again.">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  {% load static %}
+  <link rel="shortcut icon" type="image/png" href="{% static 'favicon.png' %}"/>
+  <link rel="stylesheet" type="text/css" href="{% static 'styles.css' %}">
 </head>
-<body>
+<body class="flex flex-col h-screen">
 
 {% block body %}
-if you see this, something is wrong!
+  if you see this, something is wrong!
 {% endblock body %}
 
 {% block navbar-javascript %}
 {% endblock navbar-javascript %}
 
-<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
 <script type="text/javascript" src="{% static 'bundle.js' %}"></script>
 {% block javascript %}
 {% endblock javascript %}
+
 </body>
 </html>
