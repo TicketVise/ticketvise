@@ -1,4 +1,4 @@
-FROM python:3.8
+FROM python:3.8-slim
 
 ENV PYTHONUNBUFFERED 1
 
@@ -10,7 +10,6 @@ RUN mkdir /backend
 COPY ./backend /backend
 COPY ./requirements.txt /backend/requirements.txt
 WORKDIR /backend
-
 
 # Install dependecies
 RUN python3 -m pip install -r requirements.txt

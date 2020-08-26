@@ -281,7 +281,7 @@
           this.errors = error.response.data
         })
       },
-      updateAssignee(response) {
+      updateAssignee() {
         axios.get("/api" + window.location.pathname).then(response => {
           this.ticket = response.data;
         })

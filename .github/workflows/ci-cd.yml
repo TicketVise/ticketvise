@@ -67,8 +67,7 @@ jobs:
           SQL_PASSWORD: ${{ secrets.SQL_PASSWORD }}
           LTI_KEY: ${{ secrets.LTI_KEY }}
           LTI_SECRET: ${{ secrets.LTI_SECRET }}
-          BACKEND_DIGEST: ${{ steps.git-sha7.outputs.sha7 }}
-          PROXY_DIGEST: ${{ steps.git-sha7.outputs.sha7 }}
+          GIT_DIGEST: ${{ steps.git-sha7.outputs.sha7 }}
         with:
           remote_host: ${{ secrets.DOCKER_SSH_HOST }}
           ssh_private_key: ${{ secrets.DOCKER_SSH_PRIVATE_KEY }}
