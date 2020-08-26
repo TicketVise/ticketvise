@@ -41,7 +41,7 @@
         </div>
 
         <!-- Assignee -->
-        <div class="p-4 pt-0" v-if="staff">
+        <div class="p-4 pt-0" v-if="is_staff">
           <h4 class="font-semibold text-gray-800 mb-2">Assignee</h4>
           <div class="mb-4">
             <user-dropdown :assignee="ticket.assignee" :staff="staff" v-if="staff" v-on:input="updateAssignee"/>
