@@ -22,9 +22,9 @@
                            class="px-3 py-2 rounded-md text-sm font-medium text-gray-300 hover:text-white hover:bg-gray-700 focus:outline-none focus:text-white focus:bg-gray-700"
                            :class="{ 'text-white bg-gray-900 ': url == '/inboxes'}">Inboxes</a>
                         {% if user.is_superuser %}
-                        <a href="/settings/lti"
+                        <a href="/admin/"
                            class="px-3 py-2 rounded-md text-sm font-medium text-gray-300 hover:text-white hover:bg-gray-700 focus:outline-none focus:text-white focus:bg-gray-700"
-                           :class="{ 'text-white bg-gray-900 ': url == '/settings/lti'}">LTI info</a>
+                           :class="{ 'text-white bg-gray-900 ': url == '/admin/'}">Admin</a>
                         {% endif %}
                     </div>
                 </div>
@@ -106,11 +106,11 @@
         <div class="px-2 pt-2 pb-3 sm:px-3 space-y-1">
             <a href="/inboxes"
                class="block px-3 py-2 rounded-md text-base font-medium text-gray-300 hover:text-white hover:bg-gray-700 focus:outline-none focus:text-white focus:bg-gray-700"
-               :class="{ 'text-white bg-gray-900 ': url == '/inboxes'}">Inboxes</a>
+               :class="{ 'text-white bg-gray-900 ': url === '/inboxes'}">Inboxes</a>
             {% if user.is_superuser %}
-            <a href="/settings/lti"
+            <a href="/admin/"
                class="block px-3 py-2 rounded-md text-sm font-medium text-gray-300 hover:text-white hover:bg-gray-700 focus:outline-none focus:text-white focus:bg-gray-700"
-               :class="{ 'text-white bg-gray-900 ': url == '/settings/lti'}">LTI info</a>
+               :class="{ 'text-white bg-gray-900 ': url === '/admin/'}">Admin</a>
             {% endif %}
         </div>
         <div class="pt-4 pb-3 border-t border-gray-700">
