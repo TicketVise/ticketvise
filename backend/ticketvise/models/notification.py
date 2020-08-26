@@ -12,7 +12,6 @@ from django.db import models
 from model_utils.managers import InheritanceManager
 
 from ticketvise.email import send_mentioned_mail, send_ticket_new_reply_mail, send_ticket_status_changed_mail
-from ticketvise.models.ticket import Status
 
 
 class Notification(models.Model):
@@ -147,47 +146,3 @@ class CommentNotification(Notification):
         if self.receiver.notification_comment_app:
             super().save(force_insert, force_update, using, update_fields)
 
-
-class TicketStatusChangedNotification(Notification):
-    """
-    Notification used for when the status of a :class:`Ticket` changes.
-    """
-
-    ticket = models.ForeignKey("Ticket", on_delete=models.CASCADE, related_name="ticket_notifications")
-    old_status = models.CharField(max_length=8, choices=Status.choices, null=True)
-    new_status = models.CharField(max_length=8, choices=Status.choices)
-
-    @property
-    def author(self):
-        """
-        :return: The author of the ticket, prefixed by ``@``.
-        """
-        return f"@{self.ticket.author.username}"
-
-    @property
-    def content(self):
-        """
-        :return: The content of the notification.
-        """
-        if self.old_status:
-            return f'Ticket status changed from "{self.old_status}" to "{self.new_status}"'
-
-        return "A new ticket has been opened"
-
-    @property
-    def inbox(self):
-        """
-        :return: URL of the inbox connected.
-        """
-        return self.ticket.inbox
-
-    def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
-        """
-        Override the Django ``save`` method to only save the notification if the receiver
-        has the setting enabled.
-        """
-        if self.receiver.notification_ticket_status_change_mail:
-            send_ticket_status_changed_mail(self.ticket, self.receiver)
-
-        if self.receiver.notification_ticket_status_change_app:
-            super().save(force_insert, force_update, using, update_fields)
