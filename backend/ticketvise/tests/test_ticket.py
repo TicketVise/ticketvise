@@ -92,7 +92,7 @@ class TicketTestCase(TransactionTestCase):
         """
         self.client.force_login(self.student)
         response = self.client.get(reverse("ticket", args=[self.ticket.inbox.id, self.ticket.ticket_inbox_id]))
-        self.assertTemplateUsed(response, 'ticket/ticket.html')
+        self.assertTemplateUsed(response, 'ticket.html')
 
     def test_error_dispatch(self):
         """
