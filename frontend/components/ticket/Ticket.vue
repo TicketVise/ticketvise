@@ -41,7 +41,7 @@
         </div>
 
         <!-- Assignee -->
-        <div class="p-4 pt-0" v-if="staff">
+        <div class="p-4 pt-0" v-if="is_staff">
           <h4 class="font-semibold text-gray-800 mb-2">Assignee</h4>
           <div class="mb-4">
             <user-dropdown :assignee="ticket.assignee" :staff="staff" v-if="staff" v-on:input="updateAssignee"/>
@@ -177,7 +177,7 @@
     created() {
       axios.get("/api" + window.location.pathname).then(response => {
         this.ticket = response.data;
-        this.labels = response.data.labels
+        this.labels = response.data.labels;
 
         axios.defaults.xsrfCookieName = 'csrftoken';
         axios.defaults.xsrfHeaderName = "X-CSRFTOKEN";
@@ -205,13 +205,11 @@
                 this.shared_with = response.data.shared_with;
               });
             }
-          })
-
+          });
           axios.get("/api/inboxes/" + this.ticket.inbox + "/users/" + this.ticket.author.id + "/roles").then(response => {
             this.$set(this.ticket.author, 'role', response.data)
           })
         });
-
         axios.get("/api/inboxes/" + this.ticket.inbox).then(response => {
           this.inbox = response.data
         })
@@ -228,7 +226,7 @@
         return this.isStaff()
       },
       staff_excluding_self: function () {
-        if (!this.staff || !this.user) return []
+        if (!this.staff || !this.user) return [];
 
         return this.staff.filter(user => user.id !== this.user.id)
       },
@@ -262,20 +260,20 @@
         axios.defaults.xsrfCookieName = 'csrftoken';
         axios.defaults.xsrfHeaderName = "X-CSRFTOKEN";
 
-        this.ticket.status = "CLSD"
+        this.ticket.status = "CLSD";
         axios.put("/api" + window.location.pathname + "/status", {
           "status": this.ticket.status
         }).then(_ => {
         })
       },
       updateSharedWith() {
-        let formData = new FormData()
-        this.shared_with.forEach(shared_with => formData.append("shared_with", shared_with.id))
+        let formData = new FormData();
+        this.shared_with.forEach(shared_with => formData.append("shared_with", shared_with.id));
 
         axios.defaults.xsrfCookieName = "csrftoken";
         axios.defaults.xsrfHeaderName = "X-CSRFTOKEN";
 
-        axios.put("/api" + window.location.pathname + "/shared", formData).then(response => {
+        axios.put("/api" + window.location.pathname + "/shared", formData).then(_ => {
 
         }).catch(error => {
           this.errors = error.response.data
@@ -293,7 +291,7 @@
         axios.put("/api" + window.location.pathname + "/labels",
             {
               "labels": this.labels.map(label => label.id)
-            }).then(response => {
+            }).then(_ => {
 
         });
       }

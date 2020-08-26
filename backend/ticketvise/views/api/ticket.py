@@ -10,6 +10,7 @@ Contains classes for the API interface to dynamically load models using AJAX.
 * :class:`InboxUsersView`
 * :class:`InboxTicketView`
 """
+
 from django.core.exceptions import ValidationError
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
@@ -176,7 +177,7 @@ class InboxTicketsApiView(UserIsInInboxMixin, APIView):
 
         inbox = get_object_or_404(Inbox, pk=inbox_id)
         tickets = Ticket.objects.filter(inbox=inbox, title__icontains=q) | Ticket.objects.filter(
-            inbox=inbox, ticket_inbox_id__icontains=q)
+            inbox=inbox, ticket_inbox_id__icontains=q).order_by("-date_created")
 
         if not request.user.is_assistant_or_coordinator(inbox):
             tickets = tickets.filter(author=request.user) | tickets.filter(shared_with__id__icontains=request.user.id)
@@ -206,6 +207,15 @@ class InboxTicketsApiView(UserIsInInboxMixin, APIView):
                 "tickets": TicketSerializer(query_set.filter(status=status), many=True).data
             } for status in Status
         ]
+
+        if not self.request.user.is_assistant_or_coordinator(inbox) \
+                and not inbox.show_assignee_to_guest:
+            columns[0] = {
+                "label": columns[0]["label"],
+                "tickets": columns[0]["tickets"] + columns[1]["tickets"]
+            }
+            del columns[1]
+        columns[0]["tickets"] = sorted(columns[0]["tickets"], key=lambda x: x["date_created"], reverse=True)
 
         return JsonResponse(data=columns, safe=False)
 

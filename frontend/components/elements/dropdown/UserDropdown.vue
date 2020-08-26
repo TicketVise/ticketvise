@@ -72,8 +72,8 @@
 
         axios.put("/api" + window.location.pathname + "/assignee", formData)
             .then(_ => {
-              this.assignee = id ? user : 0
-              this.$emit("input", this.assignee)
+              this.assignee = id ? user : 0;
+              this.$emit("input")
 
             });
         this.open = false
