@@ -98,7 +98,7 @@
           <ul class="flex border-b mb-2">
             <tab :active="activeTab === 'external'" @click="activeTab = 'external'" title="Question"
                  :badge="replies.length + 1"/>
-            <tab :active="activeTab === 'internal'" @click="activeTab = 'internal'" title="Discussion"
+            <tab :active="activeTab === 'internal'" @click="activeTab = 'internal'" title="Staff discussion"
                  :badge="comments.length" v-if="is_staff"/>
             <tab :active="activeTab === 'attachments'" @click="activeTab = 'attachments'" title="Attachments"
                  :badge="ticket.attachments.length"/>
