@@ -1,7 +1,10 @@
 <template>
   <span class="inline-block bg-gray-200 rounded-full px-2 py-1 text-xs font-semibold text-gray-700"
-        style="line-height: 1 !important;" :style="bgColor">
+        style="line-height: 1 !important;">
+    <div class="flex flex-row items-center">
+    <div :style="style" class="w-2 h-2 rounded-full flex-col mr-1" v-if="background"></div>
     <slot></slot>
+    </div>
   </span>
 </template>
 
@@ -16,9 +19,9 @@
     },
     data() {
       return {
-        bgColor: {
-          backgroundColor: this.background
-        }
+        style: {
+          backgroundColor: this.background,
+        },
       }
     }
   }
