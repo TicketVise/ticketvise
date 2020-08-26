@@ -12,7 +12,7 @@ from rest_framework.test import APITestCase
 
 from ticketvise.models.inbox import Inbox
 from ticketvise.models.label import Label
-from ticketvise.models.ticket import Ticket
+from ticketvise.models.ticket import Ticket, Status
 from ticketvise.models.user import User, Role
 from ticketvise.views.api.user import UserSerializer
 
@@ -294,6 +294,39 @@ class TicketTestApi(APITestCase, TicketTestCase):
 
         ticket = Ticket.objects.get(pk=self.ticket.id)
         self.assertNotEqual(ticket.assignee, self.assistant3)
+
+    def test_put_assignee_change_status(self):
+        """
+        Test to verify an assistant of the inbox can change assignees
+        """
+        self.client.force_login(self.assistant)
+        self.ticket.status = Status.PENDING
+        self.ticket.assignee = None
+        self.ticket.save()
+
+        response = self.client.put(f"/api/inboxes/{self.inbox.id}/tickets/{self.ticket.ticket_inbox_id}/assignee",
+                                   data={"assignee": self.assistant3.id}, content_type="application/json")
+        self.assertEqual(response.status_code, 200)
+
+        ticket = Ticket.objects.get(pk=self.ticket.id)
+        self.assertEqual(ticket.assignee, self.assistant3)
+        self.assertEqual(ticket.status, "ASGD")
+
+    def test_put_assignee_unassign(self):
+        """
+        Test to verify an assistant of the inbox can change assignees
+        """
+        self.client.force_login(self.assistant)
+        self.ticket.status = Status.ASSIGNED
+        self.ticket.save()
+
+        response = self.client.put(f"/api/inboxes/{self.inbox.id}/tickets/{self.ticket.ticket_inbox_id}/assignee",
+                                   data={"assignee": None}, content_type="application/json")
+        self.assertEqual(response.status_code, 200)
+
+        ticket = Ticket.objects.get(pk=self.ticket.id)
+        self.assertEqual(ticket.assignee, None)
+        self.assertEqual(ticket.status, "PNDG")
 
     def test_put_shared_with_as_author(self):
         """
