@@ -20,7 +20,7 @@ class TicketOverview(UserIsInInboxMixin, TemplateView):
     Page to show the overview of the tickets.
     """
 
-    template_name = "ticket_overview/ticket-overview.html"
+    template_name = "ticket-overview.html"
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
