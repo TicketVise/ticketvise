@@ -9,7 +9,7 @@ from django.forms import model_to_dict
 from django.test import TestCase, Client
 
 from ticketvise.models.comment import Comment
-from ticketvise.models.inbox import Inbox
+from ticketvise.models.inbox import Inbox, SchedulingAlgorithm
 from ticketvise.models.notification import MentionNotification, CommentNotification, Notification
 from ticketvise.models.ticket import Ticket, TicketStatusChangedNotification
 from ticketvise.models.user import User, Role
@@ -24,7 +24,8 @@ class NotificationsTestCase(TestCase):
         :return: None.
         """
         self.client = Client()
-        self.inbox = Inbox.objects.create(code="ABC", name="how to code")
+        self.inbox = Inbox.objects.create(code="ABC", name="how to code",
+                                          scheduling_algorithm=SchedulingAlgorithm.MANUAL)
 
         self.student = User.objects.create_user(
             username="student", email="student@ticketvise.com", password="test12345", is_staff=False,
