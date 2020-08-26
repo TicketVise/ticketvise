@@ -9,8 +9,7 @@
     </a>
 
     <div v-if="!small" class="space-x-1 select-none">
-      <chip :key="label.id"
-              v-for="label in ticket.labels"
+      <chip :background="label.color" :key="label.id" v-for="label in ticket.labels"
       >{{ label.name }}
       </chip>
     </div>
