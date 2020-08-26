@@ -10,11 +10,11 @@
             <div class="flex items-center">
                 <div class="flex-shrink-0">
                     {% load static %}
-                    <span class="flex items-center">
+                    <a href="/" class="flex items-center">
                         <img class="h-8 w-8" src="{% static 'img/logo/logo.svg' %}" alt="Logo">
                         <span class="text-2xl ml-2 text-white">Ticket</span><span
                             class="text-2xl text-orange-500 font-bold">Vise</span>
-                    </span>
+                    </a>
                 </div>
                 <div class="hidden md:block">
                     <div class="ml-10 flex items-baseline space-x-4">
@@ -22,16 +22,17 @@
                            class="px-3 py-2 rounded-md text-sm font-medium text-gray-300 hover:text-white hover:bg-gray-700 focus:outline-none focus:text-white focus:bg-gray-700"
                            :class="{ 'text-white bg-gray-900 ': url == '/inboxes'}">Inboxes</a>
                         {% if user.is_superuser %}
-                        <a href="/settings/lti"
+                        <a href="/admin/"
                            class="px-3 py-2 rounded-md text-sm font-medium text-gray-300 hover:text-white hover:bg-gray-700 focus:outline-none focus:text-white focus:bg-gray-700"
-                           :class="{ 'text-white bg-gray-900 ': url == '/settings/lti'}">LTI info</a>
+                           :class="{ 'text-white bg-gray-900 ': url == '/admin/'}">Admin</a>
                         {% endif %}
                     </div>
                 </div>
             </div>
             <div class="hidden md:block">
                 <div class="ml-4 flex items-center md:ml-6">
-                    <button type="button" class="relative cursor-pointer p-1 border-2 border-transparent text-gray-400 rounded-full hover:text-white focus:outline-none focus:text-white focus:bg-gray-700"
+                    <button type="button"
+                            class="relative cursor-pointer p-1 border-2 border-transparent text-gray-400 rounded-full hover:text-white focus:outline-none focus:text-white focus:bg-gray-700"
                             aria-label="Fullscreen" onclick="window.open(window.location.href, '_blank')"
                             x-show="window.self !== window.top">
                         <i class="fa fa-arrows-alt" aria-hidden="true"></i>
@@ -106,11 +107,11 @@
         <div class="px-2 pt-2 pb-3 sm:px-3 space-y-1">
             <a href="/inboxes"
                class="block px-3 py-2 rounded-md text-base font-medium text-gray-300 hover:text-white hover:bg-gray-700 focus:outline-none focus:text-white focus:bg-gray-700"
-               :class="{ 'text-white bg-gray-900 ': url == '/inboxes'}">Inboxes</a>
+               :class="{ 'text-white bg-gray-900 ': url === '/inboxes'}">Inboxes</a>
             {% if user.is_superuser %}
-            <a href="/settings/lti"
+            <a href="/admin/"
                class="block px-3 py-2 rounded-md text-sm font-medium text-gray-300 hover:text-white hover:bg-gray-700 focus:outline-none focus:text-white focus:bg-gray-700"
-               :class="{ 'text-white bg-gray-900 ': url == '/settings/lti'}">LTI info</a>
+               :class="{ 'text-white bg-gray-900 ': url === '/admin/'}">Admin</a>
             {% endif %}
         </div>
         <div class="pt-4 pb-3 border-t border-gray-700">
