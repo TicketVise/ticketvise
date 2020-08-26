@@ -84,7 +84,6 @@ class Ticket(models.Model):
         """
         self.assignee = receiver
         self.status = Status.ASSIGNED
-        self.save()
 
     def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
         """
@@ -107,6 +106,8 @@ class Ticket(models.Model):
         else:
             # + 1 so the ticket_inbox_id starts at 1 instead of 0.
             self.ticket_inbox_id = Ticket.objects.filter(inbox=self.inbox).count() + 1
+            if not self.assignee:
+                schedule_ticket(self)
 
         super().save(force_insert, force_update, using, update_fields)
 
@@ -118,9 +119,6 @@ class Ticket(models.Model):
             if self.assignee and old_ticket.assignee != self.assignee:
                 TicketAssigneeEvent.objects.create(ticket=self, assignee=self.assignee,
                                                    initiator=CurrentUserMiddleware.get_current_user())
-
-        else:
-            schedule_ticket(self)
 
         if old_status == self.get_status():
             return

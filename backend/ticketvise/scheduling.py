@@ -40,6 +40,7 @@ def schedule_round_robin(ticket):
                                       algorithm or the :class:`Label` scheduling algorithm.
 
     :return: None.
+
     """
     inbox = ticket.inbox
     inbox_assistants = inbox.get_assistants_and_coordinators()
