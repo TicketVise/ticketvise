@@ -11,7 +11,6 @@ import re
 
 from django.db import models
 
-from ticketvise.email import send_mentioned_mail
 from ticketvise.models.notification import MentionNotification, CommentNotification
 from ticketvise.models.user import User
 
@@ -49,11 +48,7 @@ class Comment(models.Model):
         usernames = [match.group(0).replace("@", "") for match in re.finditer(self._username_regex, self.content)]
 
         for receiver in User.objects.filter(username__in=usernames):
-            message = MentionNotification(receiver=receiver, comment=self)
-            message.save()
-
-            if self.author.notification_mention_mail:
-                send_mentioned_mail(self, receiver)
+            MentionNotification.objects.create(receiver=receiver, comment=self)
 
         if self.is_reply:
             if self.author.is_assistant_or_coordinator(self.ticket.inbox):

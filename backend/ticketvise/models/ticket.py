@@ -15,10 +15,10 @@ from django.dispatch import receiver
 from django.utils.translation import gettext_lazy as _
 from model_utils.managers import InheritanceManager
 
-from ticketvise.email import send_ticket_status_changed_mail
+from ticketvise.email import send_ticket_assigned_mail
 from ticketvise.middleware import CurrentUserMiddleware
 from ticketvise.models.label import Label
-from ticketvise.models.notification import Notification
+from ticketvise.models.notification import Notification, TicketStatusChangedNotification
 
 
 class Status(models.TextChoices):
@@ -122,27 +122,23 @@ class Ticket(models.Model):
                 TicketAssigneeEvent.objects.create(ticket=self, assignee=self.assignee,
                                                    initiator=CurrentUserMiddleware.get_current_user())
 
+                if self.assignee.notification_new_ticket_mail:
+                    send_ticket_assigned_mail(self, self.assignee)
+
         if old_status == self.get_status():
             return
 
         if self.assignee:
-            message = TicketStatusChangedNotification(
+            TicketStatusChangedNotification.objects.create(
                 receiver=self.assignee, is_read=False, ticket=self, old_status=old_status,
                 new_status=self.get_status()
             )
-            message.save()
         else:
             for receiver in self.inbox.get_assistants_and_coordinators():
-                message = TicketStatusChangedNotification(
+                TicketStatusChangedNotification.objects.create(
                     receiver=receiver, is_read=False, ticket=self, old_status=old_status,
                     new_status=self.get_status()
                 )
-
-                message.save()
-
-        if self.author.notification_ticket_status_change_mail:
-            if not (self.status == Status.ASSIGNED and not self.inbox.visibility_assignee):
-                send_ticket_status_changed_mail(self, self.author)
 
     def get_status(self):
         """
@@ -207,48 +203,6 @@ class TicketAttachment(models.Model):
     file = models.FileField(upload_to="media/tickets")
     date_edited = models.DateTimeField(auto_now=True)
     date_created = models.DateTimeField(auto_now_add=True)
-
-
-class TicketStatusChangedNotification(Notification):
-    """
-    Notification used for when the status of a :class:`Ticket` changes.
-    """
-
-    ticket = models.ForeignKey(Ticket, on_delete=models.CASCADE, related_name="ticket_notifications")
-    old_status = models.CharField(max_length=8, choices=Status.choices, null=True)
-    new_status = models.CharField(max_length=8, choices=Status.choices)
-
-    @property
-    def author(self):
-        """
-        :return: The author of the ticket, prefixed by ``@``.
-        """
-        return f"@{self.ticket.author.username}"
-
-    @property
-    def content(self):
-        """
-        :return: The content of the notification.
-        """
-        if self.old_status:
-            return f'Ticket status changed from "{self.old_status}" to "{self.new_status}"'
-
-        return "A new ticket has been opened"
-
-    @property
-    def inbox(self):
-        """
-        :return: URL of the inbox connected.
-        """
-        return self.ticket.inbox
-
-    def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
-        """
-        Override the Django ``save`` method to only save the notification if the receiver
-        has the setting enabled.
-        """
-        if self.receiver.notification_ticket_status_change_app or self.receiver.notification_ticket_status_change_mail:
-            super().save(force_insert, force_update, using, update_fields)
 
 
 class TicketEvent(models.Model):

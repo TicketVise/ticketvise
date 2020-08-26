@@ -8,6 +8,7 @@ class TicketViseConfig(AppConfig):
     smtp_server = SmtpServer()
 
     def ready(self):
-        self.smtp_server.start()
+        # self.smtp_server.start()
+        pass
 
 

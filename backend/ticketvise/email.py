@@ -5,6 +5,7 @@ Used to send an email to a user.
 """
 from email import policy
 from email.parser import BytesParser
+import threading
 
 from django.core.mail import send_mail, EmailMultiAlternatives
 from django.template.loader import render_to_string
@@ -13,6 +14,16 @@ from aiosmtpd.controller import Controller
 from email_reply_parser import EmailReplyParser
 
 from ticketvise import settings
+
+
+class EmailThread(threading.Thread):
+
+    def __init__(self, message):
+        self.message = message
+        threading.Thread.__init__(self)
+
+    def run(self):
+        self.message.send()
 
 
 def send_ticket_shared_mail(ticket, to):
@@ -142,7 +153,7 @@ def send_mail_template(subject, to, template, headers, context):
 
     email = EmailMultiAlternatives(subject=subject, body=plain_message, from_email=from_email, to=[to], headers=headers)
     email.attach_alternative(html_message, "text/html")
-    email.send()
+    EmailThread(email).start()
 
 
 class SmtpServer:
