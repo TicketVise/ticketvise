@@ -12,7 +12,6 @@ from django.db import models
 from django.utils.translation import gettext_lazy as _
 
 from ticketvise import settings
-from ticketvise.models.ticket import Ticket
 from ticketvise.settings import DEFAULT_AVATAR_PATH
 
 
@@ -122,12 +121,6 @@ class User(AbstractUser):
         inbox_ids = list(map(lambda entry: entry["inbox"], entries))
 
         return self.inboxes.filter(id__in=inbox_ids)
-
-    def get_tickets_by_inbox(self, inbox):
-        """
-        Gets all tickets of this user of this inbox
-        """
-        return Ticket.objects.filter(author=self, inbox=inbox).all()
 
     def has_inbox(self, inbox):
         """
