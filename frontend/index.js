@@ -1,21 +1,9 @@
-import $ from 'jquery';
-import 'jquery-ui';
-import 'jquery-ui/ui/widgets/sortable';
-import 'jquery-ui/ui/disable-selection';
-/**
- * Import vue into our appliction.
- */
+
 import Vue from 'vue'
 import 'alpinejs'
 
-window.jQuery = $;
-window.$ = $;
 
-/**
- * Import Axios for making api calls.
- */
 window.axios = require('axios')
-
 window.Vue = Vue
 Vue.config.productionTip = false
 
