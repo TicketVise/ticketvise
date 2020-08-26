@@ -158,7 +158,7 @@ class ProfileView(LoginRequiredMixin, FormView):
     :var str success_url: The success url.
     """
 
-    template_name = "profile/profile.html"
+    template_name = "profile.html"
     success_url = "/profile"
 
     def dispatch(self, request, *args, **kwargs):
