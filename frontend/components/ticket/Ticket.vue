@@ -23,33 +23,29 @@
         </div>
 
         <!-- Labels -->
-        <div class="p-4 pt-2">
-          <h4 class="block text-gray-700 font-bold mb-2">Labels</h4>
+        <div class="px-4">
+          <h4 class="block text-gray-800 font-semibold mb-2">Labels</h4>
           <error :key="error" :message="error" v-for="error in this.errors.labels"></error>
           <div class="flex flex-wrap mb-2" v-if="labels.length > 0">
-            <chip :background="label.color" :key="label.id" class="m-1" v-for="label in labels">
+            <chip :background="label.color" :key="label.id" class="mr-1 mb-1" v-for="label in labels">
               {{ label.name }}
             </chip>
           </div>
           <div class="flex flex-wrap mb-2" v-else>
             No labels selected
           </div>
-          <div class="mb-4">
             <label-dropdown :selected="labels" :values="inbox.labels" v-if="canShare" v-model="labels"
                             v-on:input="updateLabels"/>
-          </div>
         </div>
 
         <!-- Assignee -->
-        <div class="p-4 pt-0" v-if="is_staff">
+        <div class="px-4" v-if="is_staff">
           <h4 class="font-semibold text-gray-800 mb-2">Assignee</h4>
-          <div class="mb-4">
             <user-dropdown :assignee="ticket.assignee" :staff="staff" v-if="staff" v-on:input="updateAssignee"/>
-          </div>
         </div>
 
         <!-- Participants -->
-        <div class="px-4 pt-2">
+        <div class="px-4">
           <h4 class="font-semibold text-gray-800 mb-2">Participants</h4>
           <avatars :users="ticket.participants"/>
         </div>
