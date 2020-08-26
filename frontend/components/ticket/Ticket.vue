@@ -74,7 +74,7 @@
                 {{ status[ticket.status] }}
               </div>
               <div class="mt-2 flex items-center text-sm leading-5 text-gray-500" title="Assigned to"
-                   v-if="ticket.assignee">
+                   v-if="ticket.assignee && ticket.assignee.username">
                 <i class="fa fa-user mr-1"></i>
                 {{ ticket.assignee.first_name }} {{ ticket.assignee.last_name }}
               </div>
