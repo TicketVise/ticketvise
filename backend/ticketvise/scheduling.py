@@ -5,10 +5,9 @@ Schedules the ticket according to its labels or the scheduling policy of
 the inbox.
 """
 from ticketvise.models.inbox import SchedulingAlgorithm
-from ticketvise.models.ticket import Ticket
 
 
-def schedule_ticket(ticket: Ticket):
+def schedule_ticket(ticket):
     """
     Assign a :class:`Ticket` to the proper :class:`User`.
     To assign a ticket to the proper user, a scheduling algorithm is used that can be derived from the ticket.
@@ -29,7 +28,7 @@ def schedule_ticket(ticket: Ticket):
         raise NotImplementedError(f"Scheduling algorithm {ticket.inbox.scheduling_algorithm} not implemented.")
 
 
-def schedule_round_robin(ticket: Ticket):
+def schedule_round_robin(ticket):
     """
     Assign a ticket to the assistants in a round-robin fashion.
     The round-robin scheduling is done globally for the inbox: each label contributes
@@ -50,7 +49,7 @@ def schedule_round_robin(ticket: Ticket):
     ticket.assign_to(new_assignee)
 
 
-def schedule_least_assigned_first(ticket: Ticket):
+def schedule_least_assigned_first(ticket):
     """
     Assign a ticket to the assistant that is assigned the least number of tickets.
 

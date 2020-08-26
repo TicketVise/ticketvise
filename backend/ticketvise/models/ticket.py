@@ -17,6 +17,7 @@ from ticketvise.email import send_email
 from ticketvise.middleware import CurrentUserMiddleware
 from ticketvise.models.label import Label
 from ticketvise.models.notification import Notification
+from ticketvise.scheduling import schedule_ticket
 
 
 class Status(models.TextChoices):
@@ -117,6 +118,9 @@ class Ticket(models.Model):
             if self.assignee and old_ticket.assignee != self.assignee:
                 TicketAssigneeEvent.objects.create(ticket=self, assignee=self.assignee,
                                                    initiator=CurrentUserMiddleware.get_current_user())
+
+        else:
+            schedule_ticket(self)
 
         if old_status == self.get_status():
             return
