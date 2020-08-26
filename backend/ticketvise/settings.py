@@ -196,8 +196,8 @@ STATIC_ROOT = os.path.join(BASE_DIR, "ticketvise/static")
 
 SMTP_INBOUND_PORT = os.getenv("SMTP_INBOUND_PORT", 1337)
 
-# if DEBUG:
-#     EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+if not SEND_MAIL:
+    EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 EMAIL_HOST = os.getenv("SMTP_OUTBOUND_HOST", "smtp.sendgrid.net")
 EMAIL_PORT = os.getenv("SMTP_OUTBOUND_PORT", 587)
 EMAIL_HOST_USER = os.getenv("SMTP_OUTBOUND_USER", "apikey")

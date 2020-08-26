@@ -31,7 +31,7 @@ services:
     environment:
       - DEBUG=0
       - DJANGO_SECRET=${DJANGO_SECRET}
-      - EMAIL_PASSWORD=${EMAIL_PASSWORD}
+      - SMTP_OUTBOUND_PASSWORD=${EMAIL_PASSWORD}
       - SQL_USER=${SQL_USER}
       - SQL_PASSWORD=${SQL_PASSWORD}
       - LTI_KEY=${LTI_KEY}
@@ -49,7 +49,7 @@ services:
     environment:
       - DEBUG=0
       - DJANGO_SECRET=${DJANGO_SECRET}
-      - EMAIL_PASSWORD=${EMAIL_PASSWORD}
+      - SMTP_OUTBOUND_PASSWORD=${EMAIL_PASSWORD}
       - SQL_USER=${SQL_USER}
       - SQL_PASSWORD=${SQL_PASSWORD}
       - LTI_KEY=${LTI_KEY}
