@@ -312,8 +312,6 @@ class NotificationsTestCase(TestCase):
         """
         notification = Notification.objects.create(receiver=self.ta)
         with self.assertRaises(NotImplementedError):
-            notification.ticket
-        with self.assertRaises(NotImplementedError):
             notification.author
         with self.assertRaises(NotImplementedError):
             notification.content
