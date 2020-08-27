@@ -11,6 +11,16 @@
         <mj-image width="32px" src="https://ticketvise.com/img/logo.svg"></mj-image>
         <mj-divider border-width="2px" border-color="#dd6b20"></mj-divider>
         <mj-text font-size="20px" color="#1a202c" font-family="helvetica">{{ title }}</mj-text>
+        <mj-divider border-width="2px" border-color="#dd6b20"></mj-divider>
+        <mj-text font-size="20px" color="#1a202c" font-family="helvetica">
+          <mj-raw>{{ ticket.title }}</mj-raw>
+        </mj-text>
+        <mj-text padding-top="2px" font-size="12px " color="#1a202c" padding-bottom="4px" font-family="helvetica">
+          <mj-raw>{{ ticket.author.get_full_name }} - {{ ticket.date_created }}</mj-raw>
+        </mj-text>
+        <mj-text font-size="16px" color="#1a202c" font-family="helvetica">
+          <mj-raw>{{ ticket.content }}</mj-raw>
+        </mj-text>
       </mj-column>
     </mj-section>
 
@@ -35,6 +45,7 @@
     <mj-raw>
       {% if not forloop.last %}
     </mj-raw>
+    <mj-section padding-top="0px"></mj-section>
     <mj-raw>
       {% endif %}
     </mj-raw>
@@ -48,9 +59,9 @@
         <mj-button font-family="Helvetica" background-color="#dd6b20" color="white" href="{% url 'ticket' ticket.inbox.id ticket.ticket_inbox_id %}">
           View ticket
         </mj-button>
-        <mj-text align="center">
+        <!-- <mj-text align="center">
           You can reply directly to this ticket by replying to this email.
-        </mj-text>
+        </mj-text> -->
       </mj-column>
     </mj-section>
   </mj-body>
