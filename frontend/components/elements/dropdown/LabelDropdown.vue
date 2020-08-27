@@ -71,9 +71,8 @@
       },
       containsObject(list, id) {
         if (list) {
-          return !!list.some(e => e.id === id);
+          return list.some(e => e.id === id);
         }
-        return false
       }
     }
   }
