@@ -8,7 +8,7 @@
   <mj-body>
     <mj-section>
       <mj-column>
-        <mj-image width="32px" src="https://ticketvise.com/img/logo.svg"></mj-image>
+        <mj-image width="128px" src="https://ticketvise.com/img/banner.png"></mj-image>
         <mj-divider border-width="2px" border-color="#dd6b20"></mj-divider>
         <mj-text font-size="20px" color="#1a202c" font-family="helvetica">{{ title }}</mj-text>
         <mj-divider border-width="2px" border-color="#dd6b20"></mj-divider>
