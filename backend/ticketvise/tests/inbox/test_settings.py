@@ -18,7 +18,7 @@ class SettingsTestCase(InboxTestCase):
             "image": "",
             "close_answered_weeks": "1",
             "alert_coordinator_unanswered_days": "2",
-            "scheduling_algorithm": "manual"
+            "scheduling_algorithm": "fixed"
         }
 
         response = self.client.post(reverse("inbox_settings", args=(self.inbox.id,)), data, follow=True)
@@ -38,7 +38,7 @@ class SettingsTestCase(InboxTestCase):
             "image": "",
             "close_answered_weeks": "1",
             "alert_coordinator_unanswered_days": "2",
-            "scheduling_algorithm": "manual"
+            "scheduling_algorithm": "fixed"
         }
 
         response = self.client.post(reverse("inbox_settings", args=(self.inbox.id,)), data, follow=True)
@@ -58,7 +58,7 @@ class SettingsTestCase(InboxTestCase):
             "image": "",
             "close_answered_weeks": "1",
             "alert_coordinator_unanswered_days": "2",
-            "scheduling_algorithm": "manual"
+            "scheduling_algorithm": "fixed"
         }
 
         response = self.client.post(reverse("inbox_settings", args=(self.inbox.id,)), data, follow=True)
@@ -78,7 +78,7 @@ class SettingsTestCase(InboxTestCase):
             "image": "",
             "close_answered_weeks": "1",
             "alert_coordinator_unanswered_days": "2",
-            "scheduling_algorithm": "manual"
+            "scheduling_algorithm": "fixed"
         }
 
         response = self.client.post(reverse("inbox_settings", args=(self.inbox.id,)), data, follow=True)

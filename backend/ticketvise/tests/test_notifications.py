@@ -25,7 +25,7 @@ class NotificationsTestCase(TestCase):
         """
         self.client = Client()
         self.inbox = Inbox.objects.create(code="ABC", name="how to code",
-                                          scheduling_algorithm=SchedulingAlgorithm.MANUAL)
+                                          scheduling_algorithm=SchedulingAlgorithm.FIXED)
 
         self.student = User.objects.create_user(
             username="student", email="student@ticketvise.com", password="test12345", is_staff=False,
