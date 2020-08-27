@@ -548,6 +548,10 @@ class Command(BaseCommand):
             author=user_ana, ticket=ticket_10, is_reply=True, content="2 pages, however this is not a hard limit.",
         )
         add_date_to_comment(comment_10, datetime.timedelta(days=2, hours=14))
+        comment_10 = Comment.objects.create(
+            author=user_jelle, ticket=ticket_10, is_reply=True, content="I recommend 3 pages.",
+        )
+        add_date_to_comment(comment_10, datetime.timedelta(days=2, hours=15))
 
         comment_17 = Comment.objects.create(
             author=user_tom, ticket=ticket_17, is_reply=True, content="It should be working again!",
