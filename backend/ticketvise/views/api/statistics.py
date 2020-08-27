@@ -11,7 +11,7 @@ from ticketvise.models.comment import Comment
 from ticketvise.models.inbox import Inbox
 from ticketvise.models.label import Label
 from ticketvise.models.ticket import Ticket, TicketStatusEvent, Status
-from ticketvise.models.user import User
+from ticketvise.models.user import User, Role
 from ticketvise.views.api.security import UserIsInboxManagerMixin
 from ticketvise.views.api.ticket import LabelSerializer
 from ticketvise.views.api.user import UserSerializer
@@ -86,7 +86,8 @@ class InboxAverageAgentResponseTimeStatisticsApiView(UserIsInboxManagerMixin, AP
             .values("author") \
             .annotate(avg_response_time=Avg("response_time"))
 
-        users = User.objects.filter(inbox_relationship__inbox=inbox) \
+        roles = [Role.AGENT, Role.MANAGER]
+        users = User.objects.filter(inbox_relationship__inbox=inbox, inbox_relationship__role__in=roles) \
             .annotate(avg_response_time=Subquery(avg_response_time.values("avg_response_time")))
 
         return JsonResponse(InboxAverageAgentResponseTimeSerializer(users, many=True).data, safe=False)
