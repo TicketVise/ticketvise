@@ -31,7 +31,7 @@ class Command(BaseCommand):
             first_name="admin",
             last_name="admin",
             password=password,
-            email="admin@ticketvise.com",
+            email="info@ticketvise.com",
             is_staff=True,
             is_superuser=True,
         )
@@ -214,7 +214,8 @@ class Command(BaseCommand):
         line in that function. Can I leave the function as it is, or do I need to rewrite it myself?",
         )
         ticket_12.add_label(label_ip_quack)
-        ticket_12.status = ticket_12.assign_to(user_jelle)
+        ticket_12.assignee = user_jelle
+        ticket_12.save()
 
         ticket_13 = Ticket.objects.create(
             author=user_ivan,

@@ -11,7 +11,8 @@ import re
 
 from django.db import models
 
-from ticketvise.models.notification import MentionNotification, CommentNotification
+from ticketvise.models.notification.comment import CommentNotification
+from ticketvise.models.notification.mention import MentionNotification
 from ticketvise.models.user import User
 
 MAX_COMMENT_CHAR_LENGTH = 50
@@ -61,16 +62,13 @@ class Comment(models.Model):
 
             self.ticket.save()
 
-            message = CommentNotification(receiver=self.ticket.author, comment=self)
-            message.save()
+            CommentNotification.objects.create(receiver=self.ticket.author, comment=self)
 
         if self.ticket.assignee:
-            message = CommentNotification(receiver=self.ticket.assignee, comment=self)
-            message.save()
+            CommentNotification.objects.create(receiver=self.ticket.assignee, comment=self)
         else:
             for receiver in self.ticket.inbox.get_assistants_and_coordinators():
-                message = CommentNotification(receiver=receiver, comment=self)
-                message.save()
+                CommentNotification.objects.create(receiver=receiver, comment=self)
 
     def __str__(self):
         content = str(self.content)

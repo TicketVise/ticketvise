@@ -7,7 +7,7 @@ from email import policy
 from email.parser import BytesParser
 import threading
 
-from django.core.mail import send_mail, EmailMultiAlternatives
+from django.core.mail import EmailMultiAlternatives
 from django.template.loader import render_to_string
 from django.utils.html import strip_tags
 from aiosmtpd.controller import Controller
@@ -25,103 +25,13 @@ class EmailThread(threading.Thread):
     def run(self):
         self.message.send()
 
-
-def send_ticket_shared_mail(ticket, to):
-    title = f"#{ticket.ticket_inbox_id} - A ticket has been shared with you"
-
-    send_mail_template(
-        title,
-        to.email,
-        "comments",
-        {
-            "Message-Id": f"<{ticket.reply_message_id}@{settings.DOMAIN}>",
-        },
-        {
-            "title": title,
-            "ticket": ticket,
-            "comments": ticket.comments.filter(is_reply=True)
-        }
-    )
-
-
-def send_ticket_assigned_mail(ticket, to):
-    title = f"#{ticket.ticket_inbox_id} - A ticket has been assigned to you"
-
-    send_mail_template(
-        title,
-        to.email,
-        "comments",
-        {
-            "Message-Id": f"<{ticket.reply_message_id}@{settings.DOMAIN}>",
-        },
-        {
-            "title": title,
-            "ticket": ticket,
-            "comments": ticket.comments.filter(is_reply=True)
-        }
-    )
-
-
-def send_mentioned_mail(comment, to):
-    title = f"#{comment.ticket.ticket_inbox_id} - You have been mentioned by {comment.author.get_full_name()}"
-
-    send_mail_template(
-        title,
-        to.email,
-        "comments",
-        {
-            "Message-Id": f"<{comment.ticket.comment_message_id}@{settings.DOMAIN}>",
-        },
-        {
-            "title": title,
-            "ticket": comment.ticket,
-            "comments": comment.ticket.comments.filter(is_reply=False)
-        }
-    )
-
-
-def send_ticket_status_changed_mail(ticket, to):
-    title = f"#{ticket.ticket_inbox_id} - Status has been changed to {ticket.status}"
-
-    send_mail_template(
-        title,
-        to.email,
-        "comments",
-        {
-            "Message-Id": f"<{ticket.reply_message_id}@{settings.DOMAIN}>",
-        },
-        {
-            "title": title,
-            "ticket": ticket,
-            "comments": ticket.comments.filter(is_reply=True)
-        }
-    )
-
-
-def send_ticket_new_reply_mail(ticket, comment, to):
-    title = f"#{ticket.ticket_inbox_id} - {comment.author.get_full_name()} has send a reply"
-
-    send_mail_template(
-        title,
-        to.email,
-        "comments",
-        {
-            "Message-Id": f"<{ticket.reply_message_id}@{settings.DOMAIN}>",
-        },
-        {
-            "title": title,
-            "ticket": ticket,
-            "comments": ticket.comments.filter(is_reply=True)
-        }
-    )
-
-
 def send_ticket_reminder_email(ticket, to):
     alert_days = ticket.course.alert_coordinator_unanswered_days
-    title = f"#{ticket.ticket_inbox_id} - Ticket has been unanswered for {alert_days} days"
+    title = f"Ticket has been unanswered for {alert_days} days"
+    subject = f"#{ticket.ticket_inbox_id} - {title}"
 
     send_mail_template(
-        title,
+        subject,
         to.email,
         "comments",
         {

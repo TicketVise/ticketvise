@@ -15,10 +15,11 @@ from django.dispatch import receiver
 from django.utils.translation import gettext_lazy as _
 from model_utils.managers import InheritanceManager
 
-from ticketvise.email import send_ticket_assigned_mail, send_ticket_status_changed_mail
 from ticketvise.middleware import CurrentUserMiddleware
 from ticketvise.models.label import Label
 from ticketvise.models.notification import Notification
+from ticketvise.models.notification.assigned import TicketAssignedNotification
+from ticketvise.models.notification.new import NewTicketNotification
 from ticketvise.scheduling import schedule_ticket
 
 
@@ -53,8 +54,8 @@ class Ticket(models.Model):
     status = models.CharField(max_length=8, choices=Status.choices, default=Status.PENDING)
     content = models.TextField()
     labels = models.ManyToManyField("Label", blank=True, related_name="tickets", through="TicketLabel")
-    reply_message_id = models.UUIDField(default=uuid.uuid4, editable=False, unique=True, null=False)
-    comment_message_id = models.UUIDField(default=uuid.uuid4, editable=False, unique=True, null=False)
+    # reply_message_id = models.UUIDField(default=uuid.uuid4, editable=False, unique=True, null=False)
+    # comment_message_id = models.UUIDField(default=uuid.uuid4, editable=False, unique=True, null=False)
     date_edited = models.DateTimeField(auto_now=True)
     date_created = models.DateTimeField(auto_now_add=True)
 
@@ -96,13 +97,9 @@ class Ticket(models.Model):
         assignee. Also send an email to the student that submitted the ticket if the status has changed to assigned
         or closed. Only send the change to assigned email if show assignee is enabled for the inbox.
         """
-        old_ticket = None
-        old_status = None
+        old_ticket = Ticket.objects.filter(pk=self.id).first() if self.id else None
 
-        if self.id:
-            old_ticket = Ticket.objects.get(pk=self.id)
-            old_status = old_ticket.get_status()
-
+        if old_ticket:
             if old_ticket.status == Status.PENDING and old_ticket.assignee is None and self.assignee:
                 self.status = Status.ASSIGNED
             if old_ticket.status == Status.ASSIGNED and old_ticket.assignee and not self.assignee:
@@ -118,29 +115,16 @@ class Ticket(models.Model):
         if old_ticket:
             if old_ticket.status != self.status:
                 TicketStatusEvent.objects.create(ticket=self, initiator=CurrentUserMiddleware.get_current_user(),
-                                                 old_status=old_status, new_status=self.status)
+                                                 old_status=old_ticket.status, new_status=self.status)
 
             if self.assignee and old_ticket.assignee != self.assignee:
                 TicketAssigneeEvent.objects.create(ticket=self, assignee=self.assignee,
                                                    initiator=CurrentUserMiddleware.get_current_user())
+                TicketAssignedNotification.objects.create(ticket=self, receiver=self.assignee)
+            elif not self.assignee:
+                for user in self.inbox.get_assistants_and_coordinators():
+                    NewTicketNotification.objects.create(ticket=self, receiver=user)
 
-                if self.assignee.notification_new_ticket_mail:
-                    send_ticket_assigned_mail(self, self.assignee)
-
-        if old_status == self.get_status():
-            return
-
-        if self.assignee:
-            TicketStatusChangedNotification.objects.create(
-                receiver=self.assignee, is_read=False, ticket=self, old_status=old_status,
-                new_status=self.get_status()
-            )
-        else:
-            for receiver in self.inbox.get_assistants_and_coordinators():
-                TicketStatusChangedNotification.objects.create(
-                    receiver=receiver, is_read=False, ticket=self, old_status=old_status,
-                    new_status=self.get_status()
-                )
 
     def get_status(self):
         """
@@ -227,48 +211,3 @@ class TicketAssigneeEvent(TicketEvent):
 class TicketLabelEvent(TicketEvent):
     label = models.ForeignKey("Label", on_delete=models.CASCADE)
     is_added = models.BooleanField()
-
-
-class TicketStatusChangedNotification(Notification):
-    """
-    Notification used for when the status of a :class:`Ticket` changes.
-    """
-
-    ticket = models.ForeignKey("Ticket", on_delete=models.CASCADE, related_name="ticket_notifications")
-    old_status = models.CharField(max_length=8, choices=Status.choices, null=True)
-    new_status = models.CharField(max_length=8, choices=Status.choices)
-
-    @property
-    def author(self):
-        """
-        :return: The author of the ticket, prefixed by ``@``.
-        """
-        return f"@{self.ticket.author.username}"
-
-    @property
-    def content(self):
-        """
-        :return: The content of the notification.
-        """
-        if self.old_status:
-            return f'Ticket status changed from "{self.old_status}" to "{self.new_status}"'
-
-        return "A new ticket has been opened"
-
-    @property
-    def inbox(self):
-        """
-        :return: URL of the inbox connected.
-        """
-        return self.ticket.inbox
-
-    def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
-        """
-        Override the Django ``save`` method to only save the notification if the receiver
-        has the setting enabled.
-        """
-        if self.receiver.notification_ticket_status_change_mail:
-            send_ticket_status_changed_mail(self.ticket, self.receiver)
-
-        if self.receiver.notification_ticket_status_change_app:
-            super().save(force_insert, force_update, using, update_fields)
