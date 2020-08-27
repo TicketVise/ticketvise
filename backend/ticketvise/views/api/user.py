@@ -3,7 +3,7 @@ from django.http import JsonResponse, Http404
 from django.shortcuts import get_object_or_404
 from django.views import View
 from rest_framework import serializers
-from rest_framework.generics import RetrieveAPIView
+from rest_framework.generics import RetrieveUpdateAPIView, RetrieveAPIView
 from rest_framework.serializers import ModelSerializer
 
 from ticketvise.models.inbox import Inbox
@@ -15,16 +15,21 @@ from ticketvise.views.api.security import UserIsInboxStaffMixin, UserIsInInboxMi
 class UserProfileSerializer(ModelSerializer):
     class Meta:
         model = User
-        fields = ["first_name", "last_name", "email", "username", "avatar_url", "id", "notification_mention_mail",
-                  "notification_mention_app", "notification_ticket_status_change_mail", "notification_ticket_status_change_app",
-                  "notification_new_ticket_mail", "notification_new_ticket_app", "notification_comment_mail",
-                  "notification_comment_app"]
+        fields = ["first_name", "last_name", "email", "username", "avatar_url", "id"]
 
 
 class UserSerializer(ModelSerializer):
     class Meta:
         model = User
         fields = ["first_name", "last_name", "email", "username", "avatar_url", "id"]
+
+
+class UserNotificationSettingsSerializer(ModelSerializer):
+    class Meta:
+        model = User
+        fields = ["notification_mention_mail", "notification_mention_app", "notification_ticket_status_change_mail",
+                  "notification_ticket_status_change_app", "notification_new_ticket_mail",
+                  "notification_new_ticket_app", "notification_comment_mail", "notification_comment_app"]
 
 
 class NotificationSerializer(ModelSerializer):
@@ -62,7 +67,7 @@ class UserRoleApiView(UserIsInInboxMixin, View):
         return JsonResponse(data, safe=False)
 
 
-class UserGetFromUsernameApiView(UserIsInInboxMixin, RetrieveAPIView):
+class UserGetFromUsernameApiView(UserIsInInboxMixin, RetrieveUpdateAPIView):
     serializer_class = UserUsernameSerializer
 
     def get_object(self):
@@ -86,9 +91,17 @@ class CurrentUserApiView(LoginRequiredMixin, RetrieveAPIView):
     def get_object(self):
         return self.request.user
 
+
 class RoleSerializer(serializers.BaseSerializer):
     def to_representation(self, instance):
         return {
             'key': instance,
             'label': Role[instance].label
         }
+
+
+class NotificationsSettingsAPIView(LoginRequiredMixin, RetrieveUpdateAPIView):
+    serializer_class = UserNotificationSettingsSerializer
+
+    def get_object(self):
+        return self.request.user
