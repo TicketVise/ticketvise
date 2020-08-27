@@ -109,7 +109,7 @@ class NotificationsTestCase(TestCase):
                                        content="wat is 3+1?")
 
         for user in self.ticket.inbox.get_assistants_and_coordinators():
-            exists = TicketAssignedNotification.objects.filter(ticket=ticket, receiver=user).exists()
+            exists = NewTicketNotification.objects.filter(ticket=ticket, receiver=user).exists()
             self.assertTrue(exists)
 
     def test_mark_notification_read_toggle(self):

@@ -15,7 +15,7 @@
         <mj-text font-size="20px" color="#1a202c" font-family="helvetica">
           <mj-raw>{{ ticket.title }}</mj-raw>
         </mj-text>
-        <mj-text padding-top="2px" font-size="12px " color="#1a202c" padding-bottom="4px" font-family="helvetica">
+        <mj-text padding-top="0px" font-size="12px " color="#1a202c" padding-bottom="4px" font-family="helvetica">
           <mj-raw>{{ ticket.author.get_full_name }} - {{ ticket.date_created }}</mj-raw>
         </mj-text>
         <mj-text font-size="16px" color="#1a202c" font-family="helvetica">

@@ -112,19 +112,17 @@ class Ticket(models.Model):
 
         super().save(force_insert, force_update, using, update_fields)
 
-        if old_ticket:
-            if old_ticket.status != self.status:
-                TicketStatusEvent.objects.create(ticket=self, initiator=CurrentUserMiddleware.get_current_user(),
-                                                 old_status=old_ticket.status, new_status=self.status)
+        if old_ticket and old_ticket.status != self.status:
+            TicketStatusEvent.objects.create(ticket=self, initiator=CurrentUserMiddleware.get_current_user(),
+                                             old_status=old_ticket.status, new_status=self.status)
 
-            if self.assignee and old_ticket.assignee != self.assignee:
-                TicketAssigneeEvent.objects.create(ticket=self, assignee=self.assignee,
-                                                   initiator=CurrentUserMiddleware.get_current_user())
-                TicketAssignedNotification.objects.create(ticket=self, receiver=self.assignee)
-            elif not self.assignee:
-                for user in self.inbox.get_assistants_and_coordinators():
-                    NewTicketNotification.objects.create(ticket=self, receiver=user)
-
+        if self.assignee and (not old_ticket or old_ticket.assignee != self.assignee):
+            TicketAssigneeEvent.objects.create(ticket=self, assignee=self.assignee,
+                                               initiator=CurrentUserMiddleware.get_current_user())
+            TicketAssignedNotification.objects.create(ticket=self, receiver=self.assignee)
+        elif not self.assignee:
+            for user in self.inbox.get_assistants_and_coordinators():
+                NewTicketNotification.objects.create(ticket=self, receiver=user)
 
     def get_status(self):
         """
