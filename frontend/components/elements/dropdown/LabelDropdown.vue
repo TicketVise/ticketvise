@@ -70,9 +70,7 @@
         this.open = false
       },
       containsObject(list, id) {
-        if (list) {
-          return list.some(e => e.id === id);
-        }
+        return list && list.some(e => e.id === id);
       }
     }
   }
