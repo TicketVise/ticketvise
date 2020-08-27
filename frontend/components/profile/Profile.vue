@@ -51,19 +51,64 @@
                   </tr>
                   </thead>
                   <tbody class="bg-white divide-y divide-gray-200">
-                  <tr v-for="notification_setting in notification_settings">
+                  <tr>
                     <td class="px-4 py-2 whitespace-no-wrap">
                       <div class="flex items-center">
                         <div class="text-sm leading-5 font-medium text-gray-900">
-                          {{ notification_setting.title }}
+                          New ticket
                         </div>
                       </div>
                     </td>
                     <td class="px-4 py-2 whitespace-no-wrap">
-                      <input @change="updateNotifications" type="checkbox" v-model="notification_setting.app">
+                      <input @change="updateNotifications()" type="checkbox" v-model="settings.notification_new_ticket_app">
                     </td>
                     <td class="px-4 py-2 whitespace-no-wrap">
-                      <input @change="updateNotifications" type="checkbox" v-model="notification_setting.mail">
+                      <input @change="updateNotifications" type="checkbox" v-model="settings.notification_new_ticket_mail">
+                    </td>
+                  </tr>
+                  <tr>
+                    <td class="px-4 py-2 whitespace-no-wrap">
+                      <div class="flex items-center">
+                        <div class="text-sm leading-5 font-medium text-gray-900">
+                          Ticket status changed
+                        </div>
+                      </div>
+                    </td>
+                    <td class="px-4 py-2 whitespace-no-wrap">
+                      <input @change="updateNotifications()" type="checkbox" v-model="settings.notification_ticket_status_change_app">
+                    </td>
+                    <td class="px-4 py-2 whitespace-no-wrap">
+                      <input @change="updateNotifications" type="checkbox" v-model="settings.notification_ticket_status_change_mail">
+                    </td>
+                  </tr>
+                  <tr>
+                    <td class="px-4 py-2 whitespace-no-wrap">
+                      <div class="flex items-center">
+                        <div class="text-sm leading-5 font-medium text-gray-900">
+                          Mention
+                        </div>
+                      </div>
+                    </td>
+                    <td class="px-4 py-2 whitespace-no-wrap">
+                      <input @change="updateNotifications()" type="checkbox" v-model="settings.notification_mention_app">
+                    </td>
+                    <td class="px-4 py-2 whitespace-no-wrap">
+                      <input @change="updateNotifications" type="checkbox" v-model="settings.notification_mention_mail">
+                    </td>
+                  </tr>
+                  <tr>
+                    <td class="px-4 py-2 whitespace-no-wrap">
+                      <div class="flex items-center">
+                        <div class="text-sm leading-5 font-medium text-gray-900">
+                          Mention
+                        </div>
+                      </div>
+                    </td>
+                    <td class="px-4 py-2 whitespace-no-wrap">
+                      <input @change="updateNotifications()" type="checkbox" v-model="settings.notification_comment_app">
+                    </td>
+                    <td class="px-4 py-2 whitespace-no-wrap">
+                      <input @change="updateNotifications" type="checkbox" v-model="settings.notification_comment_mail">
                     </td>
                   </tr>
                   </tbody>
@@ -83,38 +128,27 @@
   export default {
     data: () => ({
       user: null,
-      notification_settings: [],
+      settings: [],
 
     }),
     mounted() {
       axios.get('/api/me').then(response => {
-        this.user = response.data
-
-        this.notification_settings = [
-          {
-            "title": "Mentions",
-            "mail": this.user.notification_mention_mail,
-            "app": this.user.notification_mention_app
-          },
-          {
-            "title": "Status changes",
-            "mail": this.user.notification_ticket_status_change_mail,
-            "app": this.user.notification_ticket_status_change_app
-          },
-          {
-            "title": "New tickets",
-            "mail": this.user.notification_new_ticket_mail,
-            "app": this.user.notification_new_ticket_app
-          },
-          {
-            "title": "Comment",
-            "mail": this.user.notification_comment_mail,
-            "app": this.user.notification_comment_app
-          },
-        ]
+        this.user = response.data;
+        axios.get('/api/me/settings').then(response => {
+          this.settings = response.data
+        })
       })
     },
     methods: {
+      updateNotifications() {
+
+        axios.defaults.xsrfCookieName = "csrftoken";
+        axios.defaults.xsrfHeaderName = "X-CSRFTOKEN";
+
+        axios.put('/api/me/settings', this.settings).then(response => {
+          this.settings = response.data
+        })
+      }
     }
   }
 </script>
