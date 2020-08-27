@@ -24,8 +24,6 @@ def schedule_ticket(ticket):
         schedule_least_assigned_first(ticket)
     elif ticket.inbox.scheduling_algorithm == SchedulingAlgorithm.FIXED:
         return ticket.assign_to(ticket.inbox.fixed_scheduling_assignee)
-    elif ticket.inbox.scheduling_algorithm == SchedulingAlgorithm.MANUAL:
-        return
     else:
         raise NotImplementedError(f"Scheduling algorithm {ticket.inbox.scheduling_algorithm} not implemented.")
 
