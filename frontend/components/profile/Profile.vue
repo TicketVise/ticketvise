@@ -298,9 +298,9 @@
 </template>
 
 <script>
-import axios from "axios"
+  import axios from "axios"
 
-export default {
+  export default {
   data: () => ({
     user: null,
     notification_settings: [
@@ -313,12 +313,8 @@ export default {
 
   }),
   mounted() {
-    axios.get('/api/user').then(response => {
+    axios.get('/api/me').then(response => {
       this.user = response.data
-
-      axios.get('/api/user/notifications').then(response => {
-        this.notifications = response.data
-      })
     })
   }
 }

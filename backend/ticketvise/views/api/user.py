@@ -86,14 +86,6 @@ class CurrentUserApiView(LoginRequiredMixin, RetrieveAPIView):
     def get_object(self):
         return self.request.user
 
-
-class NotificationsApiView(LoginRequiredMixin, RetrieveAPIView):
-    serializer_class = NotificationSerializer
-
-    def get_object(self):
-        return self.request.user
-
-
 class RoleSerializer(serializers.BaseSerializer):
     def to_representation(self, instance):
         return {
