@@ -9,6 +9,7 @@ from django.contrib.auth.tokens import default_token_generator
 from django.template.defaultfilters import stringfilter
 from django.utils.http import urlsafe_base64_encode
 
+from ..models.user import User, Role
 from ..utils import get_text_color
 
 register = template.Library()
@@ -44,6 +45,21 @@ def get_user_role(user, inbox):
     :rtype: Role
     """
     return user.get_role_label_by_inbox(inbox)
+
+
+@register.simple_tag
+def get_staff(inbox):
+    """
+    Get all staff members of inbox.
+
+    :param Inbox inbox: The inbox.
+
+    :return: all staff members of inbox.
+    :rtype: list
+    """
+    staff_roles = [Role.AGENT, Role.MANAGER]
+
+    return User.objects.filter(inbox_relationship__role__in=staff_roles, inbox_relationship__inbox=inbox)
 
 
 @register.simple_tag

@@ -155,6 +155,24 @@
               {% endfor %}
             </select>
           </dd>
+          <label for="fixed_scheduling_assignee"
+                 class="text-sm leading-5 font-medium text-gray-700 flex items-center">
+            Fixed scheduling assignee
+          </label>
+          <dd class="text-sm leading-5 text-gray-900 sm:mt-0 sm:col-span-2">
+            <select name="fixed_scheduling_assignee" id="fixed_scheduling_assignee"
+                    class="block appearance-none bg-white border border-gray-400 hover:border-gray-500 px-4 py-1 pr-8 rounded shadow-sm leading-tight focus:outline-none focus:shadow-outline">
+              <option value="" {% if form.fixed_scheduling_assignee.value == None %} selected {% endif %}>
+                None
+              </option>
+              {% get_staff inbox as staff %}
+              {% for user in staff %}
+                <option value="{{ user.id }}" {% if form.fixed_scheduling_assignee.value == user.id %} selected {% endif %}>
+                  {{ user.get_full_name }}
+                </option>
+              {% endfor %}
+            </select>
+          </dd>
         </div>
       </div>
 
