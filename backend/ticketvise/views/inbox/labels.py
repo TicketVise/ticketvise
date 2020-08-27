@@ -78,3 +78,11 @@ class DeleteInboxLabelView(LabelCoordinatorRequiredMixin, DeleteView):
 
     def get_success_url(self):
         return reverse("inbox_labels", args=(self.kwargs["inbox_id"],))
+
+    def get_context_data(self, **kwargs):
+        inbox = get_object_or_404(Inbox, pk=self.kwargs.get("inbox_id"))
+
+        context = super(DeleteView, self).get_context_data(**kwargs)
+        context['inbox'] = inbox
+
+        return context
