@@ -40,15 +40,15 @@
                   <thead>
                   <tr>
                     <th
-                            class="px-4 py-3 bg-gray-50 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
+                        class="px-4 py-3 bg-gray-50 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
                       Notification
                     </th>
                     <th
-                            class="px-4 py-3 bg-gray-50 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
+                        class="px-4 py-3 bg-gray-50 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
                       In-app
                     </th>
                     <th
-                            class="px-4 py-3 bg-gray-50 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
+                        class="px-4 py-3 bg-gray-50 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
                       Email
                     </th>
                   </tr>
@@ -63,16 +63,13 @@
                       </div>
                     </td>
                     <td class="px-4 py-2 whitespace-no-wrap">
-                                                <span
-                                                        class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
-                                                    Active
-                                                </span>
+                        <input type="checkbox">
                     </td>
                     <td class="px-4 py-2 whitespace-no-wrap">
-                                                <span
-                                                        class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
-                                                    Active
-                                                </span>
+                      <span
+                          class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+                        Active
+                      </span>
                     </td>
                   </tr>
                   <tr>
@@ -84,16 +81,16 @@
                       </div>
                     </td>
                     <td class="px-4 py-2 whitespace-no-wrap">
-                                                <span
-                                                        class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
-                                                    Active
-                                                </span>
+                      <span
+                          class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+                        Active
+                      </span>
                     </td>
                     <td class="px-4 py-2 whitespace-no-wrap">
-                                                <span
-                                                        class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
-                                                    Active
-                                                </span>
+                      <span
+                          class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+                        Active
+                      </span>
                     </td>
                   </tr>
                   <tr>
@@ -105,16 +102,16 @@
                       </div>
                     </td>
                     <td class="px-4 py-2 whitespace-no-wrap">
-                                                <span
-                                                        class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
-                                                    Active
-                                                </span>
+                      <span
+                          class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+                        Active
+                      </span>
                     </td>
                     <td class="px-4 py-2 whitespace-no-wrap">
-                                                <span
-                                                        class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
-                                                    Active
-                                                </span>
+                      <span
+                          class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+                        Active
+                      </span>
                     </td>
                   </tr>
                   <tr>
@@ -126,16 +123,16 @@
                       </div>
                     </td>
                     <td class="px-4 py-2 whitespace-no-wrap">
-                                                <span
-                                                        class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
-                                                    Active
-                                                </span>
+                      <span
+                          class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+                        Active
+                      </span>
                     </td>
                     <td class="px-4 py-2 whitespace-no-wrap">
-                                                <span
-                                                        class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
-                                                    Active
-                                                </span>
+                      <span
+                          class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+                        Active
+                      </span>
                     </td>
                   </tr>
                   </tbody>
@@ -193,15 +190,15 @@
               <thead>
               <tr>
                 <th
-                        class="px-4 py-3 bg-gray-50 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
+                    class="px-4 py-3 bg-gray-50 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
                   Notification
                 </th>
                 <th
-                        class="px-4 py-3 bg-gray-50 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
+                    class="px-4 py-3 bg-gray-50 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
                   In-app
                 </th>
                 <th
-                        class="px-4 py-3 bg-gray-50 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
+                    class="px-4 py-3 bg-gray-50 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
                   Email
                 </th>
               </tr>
@@ -216,16 +213,16 @@
                   </div>
                 </td>
                 <td class="px-4 py-2 whitespace-no-wrap">
-                                        <span
-                                                class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
-                                            Active
-                                        </span>
+                  <span
+                      class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+                    Active
+                  </span>
                 </td>
                 <td class="px-4 py-2 whitespace-no-wrap">
-                                        <span
-                                                class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
-                                            Active
-                                        </span>
+                  <span
+                      class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+                    Active
+                  </span>
                 </td>
               </tr>
               <tr>
@@ -237,16 +234,16 @@
                   </div>
                 </td>
                 <td class="px-4 py-2 whitespace-no-wrap">
-                                        <span
-                                                class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
-                                            Active
-                                        </span>
+                  <span
+                      class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+                    Active
+                  </span>
                 </td>
                 <td class="px-4 py-2 whitespace-no-wrap">
-                                        <span
-                                                class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
-                                            Active
-                                        </span>
+                  <span
+                      class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+                    Active
+                  </span>
                 </td>
               </tr>
               <tr>
@@ -258,16 +255,16 @@
                   </div>
                 </td>
                 <td class="px-4 py-2 whitespace-no-wrap">
-                                        <span
-                                                class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
-                                            Active
-                                        </span>
+                  <span
+                      class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+                    Active
+                  </span>
                 </td>
                 <td class="px-4 py-2 whitespace-no-wrap">
-                                        <span
-                                                class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
-                                            Active
-                                        </span>
+                  <span
+                      class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+                    Active
+                  </span>
                 </td>
               </tr>
               <tr>
@@ -279,16 +276,16 @@
                   </div>
                 </td>
                 <td class="px-4 py-2 whitespace-no-wrap">
-                                        <span
-                                                class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
-                                            Active
-                                        </span>
+                  <span
+                      class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+                    Active
+                  </span>
                 </td>
                 <td class="px-4 py-2 whitespace-no-wrap">
-                                        <span
-                                                class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
-                                            Active
-                                        </span>
+                  <span
+                      class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+                    Active
+                  </span>
                 </td>
               </tr>
               </tbody>
@@ -301,21 +298,28 @@
 </template>
 
 <script>
-  import axios from "axios"
+import axios from "axios"
 
-  export default {
-    data: () => ({
-      user: null,
-      notifications: []
-    }),
-    mounted() {
-      axios.get('/api/user').then(response => {
-        this.user = response.data
+export default {
+  data: () => ({
+    user: null,
+    notification_settings: [
+      {
+        "title": "",
+        "name": "notification_mention_mail",
+        "value": "notification_mention_mail"
+      }
+    ],
 
-        axios.get('/api/user/notifications').then(response => {
-          this.notifications = response.data
-        })
+  }),
+  mounted() {
+    axios.get('/api/user').then(response => {
+      this.user = response.data
+
+      axios.get('/api/user/notifications').then(response => {
+        this.notifications = response.data
       })
-    }
+    })
   }
+}
 </script>
