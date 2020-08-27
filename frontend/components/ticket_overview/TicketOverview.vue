@@ -11,12 +11,10 @@
         </div>
 
         <submit-button
-                :class="{ 'bg-orange-500': showPersonal }"
+                :class="showPersonal ? `bg-orange-500 text-white` : `bg-gray-100 text-black shadow` "
                 @click="showPersonal = !showPersonal; get_tickets()"
-                class="bg-primary text-white px-2 md:m-0"
-                text="My Tickets"
-                v-if="is_staff"
-        ></submit-button>
+                class="px-2 md:m-0"
+                v-if="is_staff"> My Tickets </submit-button>
       </div>
     </div>
 

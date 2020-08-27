@@ -17,4 +17,4 @@ class TicketView(UserHasAccessToTicketMixin, TemplateView):
     Page to show information of a ticket.
     """
 
-    template_name = "ticket/ticket.html"
+    template_name = "ticket.html"

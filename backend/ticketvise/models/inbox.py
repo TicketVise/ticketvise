@@ -83,11 +83,11 @@ class Inbox(models.Model):
 
     def get_coordinator(self):
         """
-        :return: All assistants and coordinators in the inbox.
+        :return: Get the first coordinator of the course
         :rtype: QuerySet<:class:`User`>
         """
         return User.objects.filter(inbox_relationship__inbox=self, inbox_relationship__role=Role.MANAGER)\
-            .order_by("-date_created").first()
+            .order_by("date_created").first()
 
     def get_tickets_by_assignee(self, assignee, status=None):
         """
