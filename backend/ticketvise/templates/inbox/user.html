@@ -1,99 +1,124 @@
 {% extends "navigation.html" %}
 
 {% block content %}
-  <div class="container mx-auto max-w-3xl" x-data="{ modal: false }">
-    <form method="post">
-      {% csrf_token %}
+<header class="bg-white shadow">
+  <div class="max-w-7xl mx-auto p-4 py-2">
+    <div class="lg:flex lg:items-center lg:justify-between">
+      <div class="flex-1 min-w-0">
+        <a href="{% url 'inbox_users' inbox.id %}" class="text-xs text-gray-700 hover:underline cursor-pointer">
+          <i class="fa fa-arrow-left mr-2"></i>
+          {{ inbox.name }} | Users
+        </a>
+        <h2 class="text-2xl font-bold leading-7 text-gray-900 sm:text-3xl sm:leading-9 sm:truncate">
+          {{ user.get_full_name }}
+        </h2>
+      </div>
+    </div>
+  </div>
+</header>
 
-      <div class="bg-white shadow overflow-hidden sm:rounded-lg mt-4 mb-4">
-        <div class="px-4 py-5 border-b border-gray-200 sm:px-6 flex">
-          <div class="flex-shrink-0 h-10 w-10 mr-4">
-            <img class="h-10 w-10 rounded-full" src="{{ user.avatar_url }}" alt=""/>
-          </div>
-          <div>
-            <h3 class="text-lg leading-6 font-medium text-gray-900">
-              User Information
-            </h3>
-            <p class="mt-1 max-w-2xl text-sm leading-5 text-gray-500">
-              Personal details and inbox related settings.
-            </p>
-          </div>
+<div class="container mx-auto max-w-3xl" x-data="{ modal: false }">
+  <form method="post">
+    {% csrf_token %}
+
+    <div class="bg-white shadow overflow-hidden sm:rounded-lg sm:mt-4 sm:mx-4">
+      <div class="px-4 py-5 border-b border-gray-200 sm:px-6 flex">
+        <div class="flex-shrink-0 h-10 w-10 mr-4">
+          <img class="h-10 w-10 rounded-full" src="{{ user.avatar_url }}" alt="" />
         </div>
         <div>
-          <dl>
-            <div class="bg-gray-50 px-4 py-3 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
-              <dt class="text-sm leading-5 font-medium text-gray-500">
-                Full name
-              </dt>
-              <dd class="mt-1 text-sm leading-5 text-gray-900 sm:mt-0 sm:col-span-2">
-                {{ user.get_full_name }}
-              </dd>
-            </div>
-            <div class="bg-white px-4 py-3 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
-              <dt class="text-sm leading-5 font-medium text-gray-500">
-                Email address
-              </dt>
-              <dd class="mt-1 text-sm leading-5 text-gray-900 sm:mt-0 sm:col-span-2">
-                {{ user.email }}
-              </dd>
-            </div>
-            <div class="bg-gray-50 px-4 py-3 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
-              <dt class="text-sm leading-5 font-medium text-gray-500">
-                Username
-              </dt>
-              <dd class="mt-1 text-sm leading-5 text-gray-900 sm:mt-0 sm:col-span-2">
-                @{{ user.username }}
-              </dd>
-            </div>
-            <div class="bg-white px-4 py-3 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6 ">
-              <dt class="text-sm leading-5 font-medium text-gray-500">
-                Role
-              </dt>
-              <dd class="text-sm leading-5 text-gray-900 sm:mt-0 sm:col-span-2">
-                <select name="role"
-                        class="block appearance-none bg-white border border-gray-400 hover:border-gray-500 px-4 py-1 pr-8 rounded shadow-sm leading-tight focus:outline-none focus:shadow-outline">
-                  {% for value, text in form.fields.role.choices %}
-                    <option value="{{ value }}" {% if object.role == value %} selected {% endif %}>
-                      {{ text }}
-                    </option>
-                  {% endfor %}
-                </select>
-              </dd>
-            </div>
-          </dl>
+          <h3 class="text-lg leading-6 font-medium text-gray-900">
+            User Information
+          </h3>
+          <p class="mt-1 max-w-2xl text-sm leading-5 text-gray-500">
+            Personal details and inbox related settings.
+          </p>
         </div>
       </div>
-      <div class="bg-gray-50 py-3 sm:flex">
-            <span class="flex w-full rounded-md shadow-sm sm:ml-3 sm:w-auto">
-                <button type="submit"
-                        class="inline-flex justify-center w-full rounded-md border border-transparent px-4 py-2 bg-green-200 text-green-600 text-base leading-6 font-medium text-white shadow-sm hover:bg-green-100 focus:outline-none focus:border-green-700 focus:shadow-outline-red transition ease-in-out duration-150 sm:text-sm sm:leading-5">
-                    Save
-                </button>
-            </span>
+      <div>
+        <dl>
+          <div class="bg-gray-50 px-4 py-3 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+            <dt class="text-sm leading-5 font-medium text-gray-500">
+              Full name
+            </dt>
+            <dd class="mt-1 text-sm leading-5 text-gray-900 sm:mt-0 sm:col-span-2">
+              {{ user.get_full_name }}
+            </dd>
+          </div>
+          <div class="bg-white px-4 py-3 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+            <dt class="text-sm leading-5 font-medium text-gray-500">
+              Email address
+            </dt>
+            <dd class="mt-1 text-sm leading-5 text-gray-900 sm:mt-0 sm:col-span-2">
+              {{ user.email }}
+            </dd>
+          </div>
+          <div class="bg-gray-50 px-4 py-3 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+            <dt class="text-sm leading-5 font-medium text-gray-500">
+              Username
+            </dt>
+            <dd class="mt-1 text-sm leading-5 text-gray-900 sm:mt-0 sm:col-span-2">
+              @{{ user.username }}
+            </dd>
+          </div>
+          <div class="bg-white px-4 py-3 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6 ">
+            <dt class="text-sm leading-5 font-medium text-gray-500">
+              Role
+            </dt>
+            <dd class="text-sm leading-5 text-gray-900 sm:mt-0 sm:col-span-2">
+              <select name="role"
+                class="block appearance-none bg-white border border-gray-400 hover:border-gray-500 px-4 py-1 pr-8 rounded shadow-sm leading-tight focus:outline-none focus:shadow-outline">
+                {% for value, text in form.fields.role.choices %}
+                <option value="{{ value }}" {% if object.role == value %} selected {% endif %}>
+                  {{ text }}
+                </option>
+                {% endfor %}
+              </select>
+            </dd>
+          </div>
+        </dl>
       </div>
-    </form>
+    </div>
 
-    <form action="{% url 'inbox_user_delete' inbox_id=inbox.id pk=user.id %}" method="post"
-          onsubmit="return confirm('Are you sure?')">
-      {% csrf_token %}
+    <div class="p-2 px-4 sm:pr-0 flex space-x-2 sm:mx-4 justify-end">
+      <a href="{% url 'inbox_users' inbox.id %}"
+        class="group inline-flex items-center px-4 py-2 border border-gray-300 text-sm leading-5 font-medium rounded-md text-gray-700 bg-white hover:text-gray-500 focus:outline-none focus:shadow-outline-blue focus:border-blue-300 active:text-gray-800 active:bg-gray-50">
+        <span class="left-0 inset-y-0 flex items-center">
+          <i class="fa fa-times mr-2"></i>
+        </span>
+        Cancel
+      </a>
+      <button type="submit"
+        class="group inline-flex justify-center px-4 py-2 border border-transparent text-sm leading-5 font-medium rounded-md bg-green-200 text-green-700 hover:bg-green-100 focus:outline-none focus:shadow-outline-indigo focus:border-green-700 active:bg-green-700 ">
+        <span class="left-0 inset-y-0 flex items-center">
+          <i class="fa fa-check mr-2"></i>
+        </span>
+        Save
+      </button>
+    </div>
+  </form>
 
-      <div class="bg-white shadow overflow-hidden sm:rounded-lg mt-4 mb-4 px-4 py-5">
-        <h3 class="text-lg leading-6 font-medium text-gray-900">
-          Remove user
-        </h3>
-        <p class="mt-1 max-w-2xl text-sm leading-5 text-gray-500">
-          Remove a user from the inbox. The user will lose access to the inbox and will be unable to create
-          new tickets or answer tickets.
-        </p>
-        <button type="submit"
-                class="mt-4 inline-flex justify-center rounded-md border border-transparent px-4 py-2 bg-red-200 text-red-600 co text-base leading-6 font-medium shadow-sm hover:bg-red-100 focus:outline-none focus:border-red-700 focus:shadow-outline-red transition ease-in-out duration-150 sm:text-sm sm:leading-5">
-          Remove
-        </button>
-      </div>
-    </form>
+  <form action="{% url 'inbox_user_delete' inbox_id=inbox.id pk=user.id %}" method="post"
+    onsubmit="return confirm('Are you sure?')">
+    {% csrf_token %}
 
-    <div class="fixed bottom-0 inset-x-0 px-4 pb-4 sm:inset-0 sm:flex sm:items-center sm:justify-center" x-show="modal">
-      <!--
+    <div class="bg-white shadow overflow-hidden sm:rounded-lg mt-8 mb-4 px-4 py-5 sm:mx-4">
+      <h3 class="text-lg leading-6 font-medium text-gray-900">
+        Remove user
+      </h3>
+      <p class="mt-1 max-w-2xl text-sm leading-5 text-gray-500">
+        The user will lose access to the inbox and will be unable to create new tickets or answer tickets.
+      </p>
+      <button type="submit"
+        class="w-full sm:w-auto mt-4 inline-flex justify-center items-center rounded-md border border-transparent px-4 py-2 bg-red-200 text-red-600 co text-base leading-6 font-medium shadow-sm hover:bg-red-100 focus:outline-none focus:border-red-700 focus:shadow-outline-red transition ease-in-out duration-150 sm:text-sm sm:leading-5">
+        <i class="fa fa-trash mr-3"></i>
+        Remove
+      </button>
+    </div>
+  </form>
+
+  <div class="fixed bottom-0 inset-x-0 px-4 pb-4 sm:inset-0 sm:flex sm:items-center sm:justify-center" x-show="modal">
+    <!--
         Background overlay, show/hide based on modal state.
 
         Entering: "ease-out duration-300"
@@ -103,11 +128,11 @@
           From: "opacity-100"
           To: "opacity-0"
       -->
-      <div class="fixed inset-0 transition-opacity">
-        <div class="absolute inset-0 bg-gray-500 opacity-75"></div>
-      </div>
+    <div class="fixed inset-0 transition-opacity">
+      <div class="absolute inset-0 bg-gray-500 opacity-75"></div>
+    </div>
 
-      <!--
+    <!--
         Modal panel, show/hide based on modal state.
 
         Entering: "ease-out duration-300"
@@ -117,46 +142,46 @@
           From: "opacity-100 translate-y-0 sm:scale-100"
           To: "opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
       -->
-      <div class="bg-white rounded-lg overflow-hidden shadow-xl transform transition-all sm:max-w-lg sm:w-full"
-           role="dialog" aria-modal="true" aria-labelledby="modal-headline">
-        <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
-          <div class="sm:flex sm:items-start">
-            <div
-                    class="mx-auto flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-red-100 sm:mx-0 sm:h-10 sm:w-10">
-              <svg class="h-6 w-6 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                      d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
-              </svg>
-            </div>
-            <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
-              <h3 class="text-lg leading-6 font-medium text-gray-900" id="modal-headline">
-                Remove user
-              </h3>
-              <div class="mt-2">
-                <p class="text-sm leading-5 text-gray-500">
-                  Are you sure you want to remove a user from this inbox. The user will lose access to the inbox and
-                  will be unable to create new tickets or answer tickets.
-                </p>
-              </div>
+    <div class="bg-white rounded-lg overflow-hidden shadow-xl transform transition-all sm:max-w-lg sm:w-full"
+      role="dialog" aria-modal="true" aria-labelledby="modal-headline">
+      <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+        <div class="sm:flex sm:items-start">
+          <div
+            class="mx-auto flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-red-100 sm:mx-0 sm:h-10 sm:w-10">
+            <svg class="h-6 w-6 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+            </svg>
+          </div>
+          <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
+            <h3 class="text-lg leading-6 font-medium text-gray-900" id="modal-headline">
+              Remove user
+            </h3>
+            <div class="mt-2">
+              <p class="text-sm leading-5 text-gray-500">
+                Are you sure you want to remove a user from this inbox. The user will lose access to the inbox and
+                will be unable to create new tickets or answer tickets.
+              </p>
             </div>
           </div>
         </div>
-        <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
-                <span class="flex w-full rounded-md shadow-sm sm:ml-3 sm:w-auto">
-                    <button type="button"
-                            class="inline-flex justify-center w-full rounded-md border border-transparent px-4 py-2 bg-red-600 text-base leading-6 font-medium text-white shadow-sm hover:bg-red-500 focus:outline-none focus:border-red-700 focus:shadow-outline-red transition ease-in-out duration-150 sm:text-sm sm:leading-5">
-                        Deactivate
-                    </button>
-                </span>
-          <span class="mt-3 flex w-full rounded-md shadow-sm sm:mt-0 sm:w-auto">
-                    <button type="button"
-                            class="inline-flex justify-center w-full rounded-md border border-gray-300 px-4 py-2 bg-white text-base leading-6 font-medium text-gray-700 shadow-sm hover:text-gray-500 focus:outline-none focus:border-blue-300 focus:shadow-outline-blue transition ease-in-out duration-150 sm:text-sm sm:leading-5">
-                        Cancel
-                    </button>
-                </span>
-        </div>
+      </div>
+      <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
+        <span class="flex w-full rounded-md shadow-sm sm:ml-3 sm:w-auto">
+          <button type="button"
+            class="inline-flex justify-center w-full rounded-md border border-transparent px-4 py-2 bg-red-600 text-base leading-6 font-medium text-white shadow-sm hover:bg-red-500 focus:outline-none focus:border-red-700 focus:shadow-outline-red transition ease-in-out duration-150 sm:text-sm sm:leading-5">
+            Deactivate
+          </button>
+        </span>
+        <span class="mt-3 flex w-full rounded-md shadow-sm sm:mt-0 sm:w-auto">
+          <button type="button"
+            class="inline-flex justify-center w-full rounded-md border border-gray-300 px-4 py-2 bg-white text-base leading-6 font-medium text-gray-700 shadow-sm hover:text-gray-500 focus:outline-none focus:border-blue-300 focus:shadow-outline-blue transition ease-in-out duration-150 sm:text-sm sm:leading-5">
+            Cancel
+          </button>
+        </span>
       </div>
     </div>
-
   </div>
+
+</div>
 {% endblock content %}

@@ -18,6 +18,7 @@ build:
 	npm run watch
 
 build-demo: clean
+	cd ./backend/ && python3 manage.py makemigrations ticketvise
 	cd ./backend/ && python3 manage.py migrate
 	cd ./backend/ && python3 manage.py collectstatic --no-input
 	cd ./backend/ && python3 manage.py insert_demo_data
