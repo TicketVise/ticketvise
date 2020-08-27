@@ -269,3 +269,9 @@ styles.css.map
 
 # Ignore generated emails
 backend/ticketvise/templates/email/*.html
+
+# Ignoring static content
+backend/ticketvise/static/admin
+backend/ticketvise/static/rest_framework
+
+
