@@ -6,8 +6,8 @@ Periodic tsks for changing ticket statuses and sending emails.
 from django.db.models import Q
 from django.utils import timezone
 
-from .email import send_ticket_reminder_email
 from .models.inbox import Inbox
+from .models.notification.reminder import TicketReminderNotification
 from .models.ticket import Ticket
 from .models.user import Role
 
@@ -44,4 +44,4 @@ def alert_unanswered_tickets():
 
             for ticket in tickets:
                 for coordinator in ticket.inbox.get_users_by_role(Role.MANAGER):
-                    send_ticket_reminder_email(ticket, coordinator)
+                    TicketReminderNotification.objects.create(receiver=coordinator, ticket=ticket)
