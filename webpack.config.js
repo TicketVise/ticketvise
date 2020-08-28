@@ -67,6 +67,27 @@ module.exports = {
             {
                 test: /\.vue$/,
                 loader: 'vue-loader'
+            },
+            {
+                test: /\.mjml$/,
+                use: [
+                    {
+                        loader: 'file-loader',
+                        options: {
+                            name: '../templates/email/[name].html',
+                            esModule: false,
+                        },
+                    },
+                    {
+                        loader: "extract-loader"
+                    },
+                    {
+                        loader: 'webpack-mjml-loader',
+                        options: {
+                            minify: process.env.NODE_ENV === "production"
+                        }
+                    }
+                ]
             }
         ]
     },

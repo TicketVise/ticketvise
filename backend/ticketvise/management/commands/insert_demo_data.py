@@ -31,7 +31,7 @@ class Command(BaseCommand):
             first_name="admin",
             last_name="admin",
             password=password,
-            email="admin@ticketvise.com",
+            email="info@ticketvise.com",
             is_staff=True,
             is_superuser=True,
         )
@@ -214,7 +214,8 @@ class Command(BaseCommand):
         line in that function. Can I leave the function as it is, or do I need to rewrite it myself?",
         )
         ticket_12.add_label(label_ip_quack)
-        ticket_12.status = ticket_12.assign_to(user_jelle)
+        ticket_12.assignee = user_jelle
+        ticket_12.save()
 
         ticket_13 = Ticket.objects.create(
             author=user_ivan,
@@ -548,6 +549,10 @@ class Command(BaseCommand):
             author=user_ana, ticket=ticket_10, is_reply=True, content="2 pages, however this is not a hard limit.",
         )
         add_date_to_comment(comment_10, datetime.timedelta(days=2, hours=14))
+        comment_10 = Comment.objects.create(
+            author=user_jelle, ticket=ticket_10, is_reply=True, content="I recommend 3 pages.",
+        )
+        add_date_to_comment(comment_10, datetime.timedelta(days=2, hours=15))
 
         comment_17 = Comment.objects.create(
             author=user_tom, ticket=ticket_17, is_reply=True, content="It should be working again!",

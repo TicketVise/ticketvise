@@ -1,5 +1,6 @@
 import Vue from 'vue'
 import 'alpinejs'
+import './email/index.js'
 
 
 window.axios = require('axios')

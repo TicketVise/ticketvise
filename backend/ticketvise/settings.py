@@ -18,7 +18,10 @@ DEBUG = int(os.environ.get("DEBUG", True))
 #: If ``True``, mails are sent when calling :func:`email.send_email`.
 SEND_MAIL = int(os.environ.get("SEND_MAIL", False))
 
+DOMAIN = "uva.ticketvise.com"
+
 ALLOWED_HOSTS = ["*"]
+
 
 #: Application definition
 #: ~~~~~~~~~~~~~~~~~~~~~~
@@ -28,7 +31,7 @@ AUTH_USER_MODEL = "ticketvise.User"
 
 #: Apps used for Django.
 INSTALLED_APPS = [
-    "ticketvise",
+    "ticketvise.config.TicketViseConfig",
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
@@ -108,7 +111,7 @@ SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
 LTI_KEY = os.environ.get("LTI_KEY", "<LTI_KEY_DEFAULT>")
 LTI_SECRET = os.environ.get("LTI_SECRET", "<LTI_SECRET_DEFAULT>")
-LTI_HOST = os.environ.get("LTI_HOST", "https://uva.ticketvise.com")
+LTI_HOST = os.environ.get("LTI_HOST", "https://" + DOMAIN)
 LTI_XML_CONFIG_URL = LTI_HOST + "/lti/config.xml"
 
 #: Database to use.
@@ -191,35 +194,19 @@ STATIC_ROOT = os.path.join(BASE_DIR, "ticketvise/static")
 #: Email settings
 #: ~~~~~~~~~~~~~~~~~~~
 
-#: Email host.
-EMAIL_HOST = "smtp.zoho.com"
-#: Email port to use.
-EMAIL_PORT = 465
-#: Email address to use.
-EMAIL_HOST_USER = "noreply@ticketvise.com"
-EMAIL_HOST_PASSWORD = os.getenv("EMAIL_PASSWORD")
-EMAIL_USE_TLS = False
-EMAIL_USE_SSL = True
-DEFAULT_FROM_EMAIL = "noreply@ticketvise.com"
+SMTP_INBOUND_PORT = os.getenv("SMTP_INBOUND_PORT", 1337)
 
-# Global settings:
-#: These settings can be used when importing "from django.conf import settings".
-GLOBAL_SETTINGS = {
-    "email_address": EMAIL_HOST_USER,
-}
-
-#: Celery and Redis settings
-#: ~~~~~~~~~~~~~~~~~~~~~~~~~
-
-#: Broker URL.
-CELERY_BROKER_URL = "redis://redis:6379"
-#: Result backend.
-CELERY_RESULT_BACKEND = "django-db"
-#: Cache backend.
-CELERY_CACHE_BACKEND = "django-cache"
-CELERY_ACCEPT_CONTENT = ["application/json"]
-CELERY_TASK_SERIALIZER = "json"
-CELERY_RESULT_SERIALIZER = "json"
+if SEND_MAIL:
+    EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+else:
+    EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+EMAIL_HOST = os.getenv("SMTP_OUTBOUND_HOST", "smtp.sendgrid.net")
+EMAIL_PORT = os.getenv("SMTP_OUTBOUND_PORT", 587)
+EMAIL_HOST_USER = os.getenv("SMTP_OUTBOUND_USER", "apikey")
+EMAIL_HOST_PASSWORD = os.getenv("SMTP_OUTBOUND_PASSWORD", "Welkom01")
+EMAIL_USE_TLS = os.getenv("SMTP_TLS", True)
+EMAIL_USE_SSL = os.getenv("SMTP_SSL", False)
+EMAIL_FROM = os.getenv("SMTP_OUTBOUND_FROM", "ticket@" + DOMAIN)
 
 PAGE_SIZE = 25
 
