@@ -72,6 +72,6 @@ it("card content small", () => {
   const wrapper = shallowMount(TicketCard, {propsData: {ticket: ticketData, small: true}});
 
   expect(wrapper.find("span").text()).toBe(`#${ticketData.ticket_inbox_id}`);
-  expect(wrapper.find("div").html()).toBeFalsy()
+  expect(wrapper.contains("div")).toBeFalsy()
 });
 
