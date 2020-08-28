@@ -28,7 +28,7 @@ const ticketData = {
     "id": 8
   },
   "shared_with": []
-}
+};
 
 
 it("card content with assignee", () => {

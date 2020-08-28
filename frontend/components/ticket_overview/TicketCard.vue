@@ -44,9 +44,6 @@
     computed: {
       link: function () {
         return window.location.href + '/' + this.ticket.ticket_inbox_id
-      },
-      full_name: function () {
-        return this.ticket.author.first_name + ' ' + this.ticket.author.last_name
       }
     }
   }
