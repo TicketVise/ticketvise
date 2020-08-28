@@ -56,7 +56,7 @@
 
     <mj-section>
       <mj-column>
-        <mj-button font-family="Helvetica" background-color="#dd6b20" color="white" href="{% url 'ticket' ticket.inbox.id ticket.ticket_inbox_id %}">
+        <mj-button font-family="Helvetica" background-color="#dd6b20" color="white" href="{{ url }}">
           View ticket
         </mj-button>
         <!-- <mj-text align="center">

@@ -1,4 +1,5 @@
 from django.db import models
+from django.urls import reverse
 from model_utils.managers import InheritanceManager
 
 from ticketvise import settings
@@ -30,6 +31,8 @@ class Notification(models.Model):
     def get_email_comments(self):
         return self.ticket.comments.filter(is_reply=True)
 
+
+
     def send_mail(self):
         send_mail_template(
             self.get_email_subject(),
@@ -41,6 +44,7 @@ class Notification(models.Model):
             {
                 "title": self.content,
                 "ticket": self.ticket,
-                "comments": self.get_email_comments()
+                "comments": self.get_email_comments(),
+                "url": f"https://{settings.DOMAIN}{reverse('ticket', self.ticket.inbox.id. self.ticket.ticket_inbox_id)}"
             }
         )
