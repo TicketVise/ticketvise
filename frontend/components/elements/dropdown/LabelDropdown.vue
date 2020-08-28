@@ -55,7 +55,7 @@
       labels: []
     }),
     created() {
-      this.labels = this.selected
+      this.labels = this.selected ? this.selected : []
     },
     methods: {
       switchItem(value) {
@@ -70,8 +70,7 @@
         this.open = false
       },
       containsObject(list, id) {
-        return !!list.some(e => e.id === id);
-
+        return list && list.some(e => e.id === id);
       }
     }
   }

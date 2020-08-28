@@ -78,8 +78,7 @@
         </label>
         <dd class="mt-1 text-sm leading-5 text-gray-900 sm:mt-0 sm:col-span-2">
           <input type="checkbox" {% if form.show_assignee_to_guest.value %} checked {% endif %}
-            class="block appearance-none bg-white border border-gray-400 hover:border-gray-500 overflow-hidden rounded shadow-sm leading-tight focus:outline-none focus:shadow-outline"
-            name="show_assignee_to_guest" id="show_assignee_to_guest">
+            class="block" name="show_assignee_to_guest" id="show_assignee_to_guest">
         </dd>
       </div>
       <h3 class="text-xl mt-4 leading-6 font-medium text-gray-900 p-2 pb-1">
@@ -135,6 +134,25 @@
             {% for value, text in form.fields.scheduling_algorithm.choices %}
             <option value="{{ value }}" {% if form.scheduling_algorithm.value == value %} selected {% endif %}>
               {{ text }}
+                </option>
+              {% endfor %}
+            </select>
+          </dd>
+          <label for="fixed_scheduling_assignee"
+                 class="text-sm leading-5 font-medium text-gray-700 flex items-center">
+            Fixed scheduling assignee
+          </label>
+          <dd class="text-sm leading-5 text-gray-900 sm:mt-0 sm:col-span-2">
+            <select name="fixed_scheduling_assignee" id="fixed_scheduling_assignee"
+                    class="block appearance-none bg-white border border-gray-400 hover:border-gray-500 px-4 py-1 pr-8 rounded shadow-sm leading-tight focus:outline-none focus:shadow-outline">
+              <option value="" {% if form.fixed_scheduling_assignee.value == None %} selected {% endif %}>
+                None
+              </option>
+              {% get_staff inbox as staff %}
+              {% for user in staff %}
+                <option value="{{ user.id }}" {% if form.fixed_scheduling_assignee.value == user.id %} selected {% endif %}>
+                  {{ user.get_full_name }}
+
             </option>
             {% endfor %}
           </select>
@@ -151,7 +169,7 @@
         Cancel
       </a>
       <button type="submit"
-        class="group inline-flex justify-center px-4 py-2 border border-transparent text-sm leading-5 font-medium rounded-md bg-green-200 text-green-700 hover:bg-green-100 focus:outline-none focus:shadow-outline-indigo focus:border-green-700 active:bg-green-700">
+        class="group inline-flex justify-center items-center px-4 py-2 border border-transparent text-sm leading-5 font-medium rounded-md bg-green-200 text-green-700 hover:bg-green-100 focus:outline-none focus:shadow-outline-indigo focus:border-green-700 active:bg-green-700">
         <span class="left-0 inset-y-0 flex items-center">
           <i class="fa fa-check mr-2"></i>
         </span>

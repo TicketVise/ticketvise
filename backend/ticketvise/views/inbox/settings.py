@@ -10,7 +10,7 @@ class InboxSettingsView(InboxCoordinatorRequiredMixin, UpdateView):
     model = Inbox
     inbox_key = "pk"
     fields = ["name", "code", "color", "close_answered_weeks", "show_assignee_to_guest",
-              "alert_coordinator_unanswered_days", "scheduling_algorithm", "image"]
+              "alert_coordinator_unanswered_days", "scheduling_algorithm", "fixed_scheduling_assignee", "image"]
 
     def get_success_url(self):
         return reverse("inbox_settings", args=(self.kwargs["pk"],))

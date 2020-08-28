@@ -5,10 +5,9 @@ This file tests the scheduling algorithms to divide the workload amond TAs.
 """
 from django.test import TestCase, Client
 
-from ticketvise.models.inbox import SchedulingAlgorithm
+from ticketvise.models.inbox import SchedulingAlgorithm, Inbox
 from ticketvise.models.ticket import Ticket
 from ticketvise.models.user import User, UserInbox, Role
-from ticketvise.tests.utils import create_inbox
 
 
 class TicketTestCase(TestCase):
@@ -20,8 +19,7 @@ class TicketTestCase(TestCase):
         """
         self.client = Client()
 
-        self.inbox = create_inbox("inbox1", "code1", "#000000")
-        self.inbox.save()
+        self.inbox = Inbox.objects.create(name="TestInbox", code="TestCode", color="#FF6600")
 
         self.student = User.objects.create(username="student", email="student@test.com")
         UserInbox.objects.create(user=self.student, inbox=self.inbox, role=Role.GUEST)
@@ -37,25 +35,14 @@ class TicketTestCase(TestCase):
 
         self.assistants = [self.assistant1, self.assistant2, self.assistant3]
 
-        self.ticket1 = Ticket.objects.create(author=self.student, assignee=self.assistant2, title="Ticket1", content="",
-                                             inbox=self.inbox)
-        self.ticket2 = Ticket.objects.create(author=self.student, assignee=self.assistant2, title="Ticket2", content="",
-                                             inbox=self.inbox)
-        Ticket.objects.create(author=self.student, assignee=self.assistant2, title="Ticket2", content="",
-                              inbox=self.inbox)
-        self.ticket3 = Ticket.objects.create(author=self.student, assignee=self.assistant3, title="Ticket3", content="",
-                                             inbox=self.inbox)
-        Ticket.objects.create(author=self.student, assignee=self.assistant3, title="Ticket3", content="",
-                              inbox=self.inbox)
-        self.ticket4 = Ticket.objects.create(author=self.student, title="Ticket4", content="", inbox=self.inbox)
-
-    def test_inbox_manual_scheduling(self):
+    def test_inbox_fixed_none_scheduling(self):
         """
         Test if scheduling is using the inbox when no labels are assigned to the ticket.
 
         :return: None.
         """
-        self.inbox.scheduling_algorithm = SchedulingAlgorithm.MANUAL
+        self.inbox.scheduling_algorithm = SchedulingAlgorithm.FIXED
+        self.inbox.fixed_scheduling_assignee = None
         self.inbox.save()
 
         ticket = Ticket.objects.create(author=self.student, title="Ticket4", content="", inbox=self.inbox)
@@ -74,6 +61,22 @@ class TicketTestCase(TestCase):
         ticket = Ticket.objects.create(author=self.student, title="Ticket4", content="", inbox=self.inbox)
 
         self.assertEqual(ticket.assignee, self.assistant1)
+
+    def test_inbox_fixed_scheduling(self):
+        """
+        Assign to fixed assistant using inbox.
+
+        :return: None.
+        """
+        self.inbox.scheduling_algorithm = SchedulingAlgorithm.FIXED
+        self.inbox.fixed_scheduling_assignee = self.assistant1
+        self.inbox.save()
+
+        ticket1 = Ticket.objects.create(author=self.student, title="Ticket4", content="", inbox=self.inbox)
+        ticket2 = Ticket.objects.create(author=self.student, title="Foo", content="", inbox=self.inbox)
+
+        self.assertEqual(ticket1.assignee, self.assistant1)
+        self.assertEqual(ticket2.assignee, self.assistant1)
 
     def test_round_robin_scheduling(self):
         """
