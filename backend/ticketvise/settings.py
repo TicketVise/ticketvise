@@ -208,19 +208,6 @@ EMAIL_USE_TLS = os.getenv("SMTP_TLS", True)
 EMAIL_USE_SSL = os.getenv("SMTP_SSL", False)
 EMAIL_FROM = os.getenv("SMTP_OUTBOUND_FROM", "ticket@" + DOMAIN)
 
-#: Celery and Redis settings
-#: ~~~~~~~~~~~~~~~~~~~~~~~~~
-
-#: Broker URL.
-CELERY_BROKER_URL = "redis://redis:6379"
-#: Result backend.
-CELERY_RESULT_BACKEND = "django-db"
-#: Cache backend.
-CELERY_CACHE_BACKEND = "django-cache"
-CELERY_ACCEPT_CONTENT = ["application/json"]
-CELERY_TASK_SERIALIZER = "json"
-CELERY_RESULT_SERIALIZER = "json"
-
 PAGE_SIZE = 25
 
 LOGGING = {
