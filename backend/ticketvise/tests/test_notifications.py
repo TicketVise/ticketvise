@@ -5,7 +5,6 @@ This file tests the notification functionality on the website.
 """
 from urllib.parse import urlencode
 
-from django.forms import model_to_dict
 from django.test import TestCase, Client
 
 from ticketvise.models.comment import Comment

@@ -1,6 +1,5 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.db import models
-from django.db.models import F, Q
+from django.db.models import Q
 from django.http import JsonResponse
 from rest_framework.generics import ListAPIView, UpdateAPIView, get_object_or_404, RetrieveAPIView
 from rest_framework.pagination import PageNumberPagination
@@ -9,9 +8,7 @@ from rest_framework.serializers import ModelSerializer
 
 from ticketvise.models.inbox import Inbox
 from ticketvise.models.notification import Notification
-from ticketvise.models.notification.comment import CommentNotification
-from ticketvise.models.ticket import Ticket, Status
-from ticketvise.views.api.comment import CommentSerializer
+from ticketvise.models.ticket import Ticket
 from ticketvise.views.api.inbox import InboxSerializer
 from ticketvise.views.api.security import UserHasAccessToTicketMixin
 from ticketvise.views.api.ticket import TicketSerializer

@@ -14,7 +14,6 @@ from typing import Union
 
 import django.forms as forms
 from PIL import Image
-from django.contrib.auth import logout
 from django.contrib.auth.forms import PasswordChangeForm
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import HttpResponseRedirect

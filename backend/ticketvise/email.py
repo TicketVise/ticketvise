@@ -3,15 +3,14 @@ Email
 -------------------------------
 Used to send an email to a user.
 """
+import threading
 from email import policy
 from email.parser import BytesParser
-import threading
 
+from aiosmtpd.controller import Controller
 from django.core.mail import EmailMultiAlternatives
 from django.template.loader import render_to_string
-from django.urls import reverse
 from django.utils.html import strip_tags
-from aiosmtpd.controller import Controller
 from email_reply_parser import EmailReplyParser
 
 from ticketvise import settings

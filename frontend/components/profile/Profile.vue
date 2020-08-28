@@ -146,9 +146,9 @@
 </template>
 
 <script>
-import axios from "axios"
+  import axios from "axios"
 
-export default {
+  export default {
   data: () => ({
     user: null,
     settings: [],

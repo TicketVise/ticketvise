@@ -1,6 +1,5 @@
 from django.db import models
 
-from ticketvise import settings
 from ticketvise.models.notification import Notification
 
 

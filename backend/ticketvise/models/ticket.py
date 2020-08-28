@@ -7,7 +7,6 @@ Contains all entity sets for the ticket database and TicketStatusChangedNotifica
 * :class:`Ticket`
 * :class:`TicketStatuscChangedNotification`
 """
-import uuid
 
 from django.db import models, transaction
 from django.db.models import Max
@@ -18,7 +17,6 @@ from model_utils.managers import InheritanceManager
 
 from ticketvise.middleware import CurrentUserMiddleware
 from ticketvise.models.label import Label
-from ticketvise.models.notification import Notification
 from ticketvise.models.notification.assigned import TicketAssignedNotification
 from ticketvise.models.notification.new import NewTicketNotification
 from ticketvise.scheduling import schedule_ticket
