@@ -547,3 +547,15 @@ class TicketTestApi(APITestCase, TicketTestCase):
 
         self.assertEqual(response.status_code, 200)
         self.assertNotContains(response, self.disabled_label.name)
+
+    def test_ticket_inbox_id_unique_removal_bug(self):
+        """Tests for issue #157."""
+        Ticket.objects.create(author=self.student, assignee=self.assistant, title="TestTicket",
+                                        content="TestContent", inbox=self.inbox)
+        ticket = Ticket.objects.create(author=self.student, assignee=self.assistant, title="TestTicket",
+                                        content="TestContent", inbox=self.inbox)
+        Ticket.objects.create(author=self.student, assignee=self.assistant, title="TestTicket",
+                                        content="TestContent", inbox=self.inbox)
+        ticket.delete()
+        Ticket.objects.create(author=self.student, assignee=self.assistant, title="TestTicket",
+                                        content="TestContent", inbox=self.inbox)
