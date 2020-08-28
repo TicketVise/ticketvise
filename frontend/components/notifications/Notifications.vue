@@ -22,7 +22,7 @@
         </div>
       </div>
       <div class="container max-w-7xl mx-auto overflow-x-auto xl:px-4">
-        <ul class="flex border-b" v-if="notifications.results">
+        <ul class="flex" v-if="notifications.results">
           <tab :active="is_read == 'False'" @click="is_read = 'False'" title="Unread"
             :badge="count"/>
           <tab :active="is_read == 'True'" @click="is_read = 'True'" title="Read"/>
