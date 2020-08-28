@@ -26,7 +26,7 @@ services:
     ports:
       - 8000:8000
     volumes:
-      - ./nginx/nginx.dev.conf:/etc/nginx/conf.d/nginx.conf:ro
+      - ./nginx/nginx.dev.conf:/etc/nginx/conf.d/nginx.template.conf:ro
       - ./backend/ticketvise/media:/home/media:ro
       - ./backend/ticketvise/static:/home/static:ro
 
