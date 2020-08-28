@@ -16,12 +16,6 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Setup test environment
-        run: docker-compose up -d --build
-
-      - name: Test backend
-        run: docker-compose exec -T web sh -c "python manage.py wait_for_database && python manage.py test --parallel --failfast --no-input"
-
       - name: Set up Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v1
         with:
@@ -33,7 +27,13 @@ jobs:
           npm run build
           npm test
 
-      - name: build-push-proxy
+      - name: Setup test environment
+        run: docker-compose up -d --build
+
+      - name: Test backend
+        run: docker-compose exec -T web sh -c "python manage.py wait_for_database && python manage.py test --parallel --failfast --no-input"
+
+      - name: Build and push proxy Docker image to Docker Hub
         uses: docker/build-push-action@v1
         with:
           username: ${{ secrets.DOCKER_USERNAME }}
@@ -44,7 +44,7 @@ jobs:
           tag_with_ref: true
           tag_with_sha: true
 
-      - name: build-push-backend
+      - name: Build and push backend Docker image to Docker Hub
         uses: docker/build-push-action@v1
         with:
           username: ${{ secrets.DOCKER_USERNAME }}

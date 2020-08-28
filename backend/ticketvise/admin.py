@@ -10,8 +10,13 @@ from django.contrib.auth.admin import UserAdmin
 from ticketvise.models.comment import Comment
 from ticketvise.models.inbox import Inbox
 from ticketvise.models.label import Label
-from ticketvise.models.notification import Notification, MentionNotification
-from ticketvise.models.ticket import Ticket, TicketStatusChangedNotification, TicketEvent, TicketStatusEvent, \
+from ticketvise.models.notification import Notification
+from ticketvise.models.notification.assigned import TicketAssignedNotification
+from ticketvise.models.notification.comment import CommentNotification
+from ticketvise.models.notification.mention import MentionNotification
+from ticketvise.models.notification.new import NewTicketNotification
+from ticketvise.models.notification.reminder import TicketReminderNotification
+from ticketvise.models.ticket import Ticket, TicketEvent, TicketStatusEvent, \
     TicketAssigneeEvent, TicketLabelEvent
 from ticketvise.models.user import User, UserInbox
 
@@ -48,5 +53,8 @@ admin.site.register(TicketAssigneeEvent)
 admin.site.register(TicketLabelEvent)
 admin.site.register(Comment)
 admin.site.register(Notification)
+admin.site.register(TicketAssignedNotification)
+admin.site.register(CommentNotification)
 admin.site.register(MentionNotification)
-admin.site.register(TicketStatusChangedNotification)
+admin.site.register(NewTicketNotification)
+admin.site.register(TicketReminderNotification)
