@@ -196,7 +196,10 @@ STATIC_ROOT = os.path.join(BASE_DIR, "ticketvise/static")
 
 SMTP_INBOUND_PORT = os.getenv("SMTP_INBOUND_PORT", 1337)
 
-EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+if SEND_MAIL:
+    EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+else:
+    EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 EMAIL_HOST = os.getenv("SMTP_OUTBOUND_HOST", "smtp.sendgrid.net")
 EMAIL_PORT = os.getenv("SMTP_OUTBOUND_PORT", 587)
 EMAIL_HOST_USER = os.getenv("SMTP_OUTBOUND_USER", "apikey")
@@ -204,9 +207,6 @@ EMAIL_HOST_PASSWORD = os.getenv("SMTP_OUTBOUND_PASSWORD", "Welkom1")
 EMAIL_USE_TLS = os.getenv("SMTP_TLS", True)
 EMAIL_USE_SSL = os.getenv("SMTP_SSL", False)
 EMAIL_FROM = os.getenv("SMTP_OUTBOUND_FROM", "ticket@" + DOMAIN)
-
-if SEND_MAIL:
-    EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 
 #: Celery and Redis settings
 #: ~~~~~~~~~~~~~~~~~~~~~~~~~
