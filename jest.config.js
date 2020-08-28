@@ -3,7 +3,7 @@ module.exports = {
   roots: ["<rootDir>/frontend/components", "<rootDir>/frontend/tests"],
   moduleFileExtensions: ['js', 'vue'],
   moduleNameMapper: {
-    '^@/(.*)$': '<rootDir>/frontend/tests/$1',
+    '^@/(.*)$': '<rootDir>/frontend/components/$1',
   },
   transform: {
     "^.+\\.js$": "babel-jest",

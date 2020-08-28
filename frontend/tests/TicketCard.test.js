@@ -1,5 +1,5 @@
 import {shallowMount} from '@vue/test-utils'
-import TicketCard from "../components/ticket_overview/TicketCard";
+import TicketCard from "@/ticket_overview/TicketCard";
 import moment from "moment";
 
 const ticketData = {
@@ -71,7 +71,7 @@ it("card content without labels", () => {
 it("card content small", () => {
   const wrapper = shallowMount(TicketCard, {propsData: {ticket: ticketData, small: true}});
 
-  expect(wrapper.findAll("h3").text()).toBe(`#${ticketData.ticket_inbox_id}`);
+  expect(wrapper.find("span").text()).toBe(`#${ticketData.ticket_inbox_id}`);
   expect(wrapper.find("div").html()).toBeFalsy()
 });
 
