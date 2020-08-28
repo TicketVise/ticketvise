@@ -55,42 +55,13 @@
                     <td class="px-4 py-2 whitespace-no-wrap">
                       <div class="flex items-center">
                         <div class="text-sm leading-5 font-medium text-gray-900">
-                          New ticket
-                        </div>
-                      </div>
-                    </td>
-                    <td class="px-4 py-2 whitespace-no-wrap">
-                      <input @change="updateNotifications()" type="checkbox" v-model="settings.notification_new_ticket_app">
-                    </td>
-                    <td class="px-4 py-2 whitespace-no-wrap">
-                      <input @change="updateNotifications" type="checkbox" v-model="settings.notification_new_ticket_mail">
-                    </td>
-                  </tr>
-                  <tr>
-                    <td class="px-4 py-2 whitespace-no-wrap">
-                      <div class="flex items-center">
-                        <div class="text-sm leading-5 font-medium text-gray-900">
-                          Ticket status changed
-                        </div>
-                      </div>
-                    </td>
-                    <td class="px-4 py-2 whitespace-no-wrap">
-                      <input @change="updateNotifications()" type="checkbox" v-model="settings.notification_ticket_status_change_app">
-                    </td>
-                    <td class="px-4 py-2 whitespace-no-wrap">
-                      <input @change="updateNotifications" type="checkbox" v-model="settings.notification_ticket_status_change_mail">
-                    </td>
-                  </tr>
-                  <tr>
-                    <td class="px-4 py-2 whitespace-no-wrap">
-                      <div class="flex items-center">
-                        <div class="text-sm leading-5 font-medium text-gray-900">
                           Mention
                         </div>
                       </div>
                     </td>
                     <td class="px-4 py-2 whitespace-no-wrap">
-                      <input @change="updateNotifications()" type="checkbox" v-model="settings.notification_mention_app">
+                      <input @change="updateNotifications()" type="checkbox"
+                             v-model="settings.notification_mention_app">
                     </td>
                     <td class="px-4 py-2 whitespace-no-wrap">
                       <input @change="updateNotifications" type="checkbox" v-model="settings.notification_mention_mail">
@@ -100,15 +71,67 @@
                     <td class="px-4 py-2 whitespace-no-wrap">
                       <div class="flex items-center">
                         <div class="text-sm leading-5 font-medium text-gray-900">
-                          Mention
+                          New ticket
                         </div>
                       </div>
                     </td>
                     <td class="px-4 py-2 whitespace-no-wrap">
-                      <input @change="updateNotifications()" type="checkbox" v-model="settings.notification_comment_app">
+                      <input @change="updateNotifications()" type="checkbox"
+                             v-model="settings.notification_new_ticket_app">
+                    </td>
+                    <td class="px-4 py-2 whitespace-no-wrap">
+                      <input @change="updateNotifications" type="checkbox"
+                             v-model="settings.notification_new_ticket_mail">
+                    </td>
+                  </tr>
+                  <tr>
+                    <td class="px-4 py-2 whitespace-no-wrap">
+                      <div class="flex items-center">
+                        <div class="text-sm leading-5 font-medium text-gray-900">
+                          Comment/Reply
+                        </div>
+                      </div>
+                    </td>
+                    <td class="px-4 py-2 whitespace-no-wrap">
+                      <input @change="updateNotifications()" type="checkbox"
+                             v-model="settings.notification_comment_app">
                     </td>
                     <td class="px-4 py-2 whitespace-no-wrap">
                       <input @change="updateNotifications" type="checkbox" v-model="settings.notification_comment_mail">
+                    </td>
+                  </tr>
+                  <tr>
+                    <td class="px-4 py-2 whitespace-no-wrap">
+                      <div class="flex items-center">
+                        <div class="text-sm leading-5 font-medium text-gray-900">
+                          Ticket assigned
+                        </div>
+                      </div>
+                    </td>
+                    <td class="px-4 py-2 whitespace-no-wrap">
+                      <input @change="updateNotifications()" type="checkbox"
+                             v-model="settings.notification_assigned_app">
+                    </td>
+                    <td class="px-4 py-2 whitespace-no-wrap">
+                      <input @change="updateNotifications" type="checkbox"
+                             v-model="settings.notification_assigned_mail">
+                    </td>
+                  </tr>
+                  <tr>
+                    <td class="px-4 py-2 whitespace-no-wrap">
+                      <div class="flex items-center">
+                        <div class="text-sm leading-5 font-medium text-gray-900">
+                          Ticket reminder
+                        </div>
+                      </div>
+                    </td>
+                    <td class="px-4 py-2 whitespace-no-wrap">
+                      <input @change="updateNotifications()" type="checkbox"
+                             v-model="settings.notification_ticket_reminder_app">
+                    </td>
+                    <td class="px-4 py-2 whitespace-no-wrap">
+                      <input @change="updateNotifications" type="checkbox"
+                             v-model="settings.notification_ticket_reminder_mail">
                     </td>
                   </tr>
                   </tbody>
@@ -123,32 +146,32 @@
 </template>
 
 <script>
-  import axios from "axios"
+import axios from "axios"
 
-  export default {
-    data: () => ({
-      user: null,
-      settings: [],
+export default {
+  data: () => ({
+    user: null,
+    settings: [],
 
-    }),
-    mounted() {
-      axios.get('/api/me').then(response => {
-        this.user = response.data;
-        axios.get('/api/me/settings').then(response => {
-          this.settings = response.data
-        })
+  }),
+  mounted() {
+    axios.get('/api/me').then(response => {
+      this.user = response.data;
+      axios.get('/api/me/settings').then(response => {
+        this.settings = response.data
       })
-    },
-    methods: {
-      updateNotifications() {
+    })
+  },
+  methods: {
+    updateNotifications() {
 
-        axios.defaults.xsrfCookieName = "csrftoken";
-        axios.defaults.xsrfHeaderName = "X-CSRFTOKEN";
+      axios.defaults.xsrfCookieName = "csrftoken";
+      axios.defaults.xsrfHeaderName = "X-CSRFTOKEN";
 
-        axios.put('/api/me/settings', this.settings).then(response => {
-          this.settings = response.data
-        })
-      }
+      axios.put('/api/me/settings', this.settings).then(response => {
+        this.settings = response.data
+      })
     }
   }
+}
 </script>
