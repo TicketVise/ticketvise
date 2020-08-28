@@ -1,33 +1,41 @@
 <template>
   <div>
     <!-- Header -->
-    <div class="border-b shadow flex justify-center">
-      <div class="container px-4 my-4 xl:flex xl:items-center xl:justify-between">
+    <header class="bg-white shadow">
+      <div class="max-w-7xl mx-auto p-4 py-2 sm:flex sm:items-center sm:justify-between">
         <div class="flex-1 min-w-0">
+          <a href="/inboxes" class="text-xs text-gray-700 hover:underline cursor-pointer">
+            <i class="fa fa-arrow-left mr-2"></i>
+            Dashboard
+          </a>
           <h2 class="text-2xl font-bold leading-7 text-gray-900 sm:text-3xl sm:leading-9 sm:truncate">
-            <span class="font-semibold" v-if="this.count">{{ this.count }}</span> Notifications
+            Notifications
           </h2>
         </div>
-      </div>
-    </div>
-    <div class="container mx-auto divide-y divide-gray-100">
-      <nav class="m-3">
-        <div class="divide-x divide-gray-400 flex items-center">
-          <span @click="toggleAll" class="font-semibold text-center flex-grow cursor-pointer"
-                v-if="is_read === ''">All</span>
-          <a @click="toggleAll" class="text-center flex-grow text-blue-500 cursor-pointer" v-else>All</a>
-
-          <span @click="toggleRead" class="text-center font-semibold flex-grow cursor-pointer" v-if="is_read === 'True'">Read</span>
-          <a @click="toggleRead" class="text-center flex-grow text-blue-500 cursor-pointer" v-else>Read</a>
-
-          <span @click="toggleUnread" class="text-center font-semibold flex-grow cursor-pointer"
-                v-if="is_read === 'False'">Unread</span>
-          <a @click="toggleUnread" class="text-center flex-grow text-blue-500 cursor-pointer" v-else>Unread</a>
-
-          <submit-button text="Mark all as read" v-on:click.native="markAllAsRead"
-                         class="bg-primary text-white border-none hover:bg-orange-500 flex-wrap md:flex-wrap-0"></submit-button>
+        <div class="mt-2 flex xl:mt-0 xl:ml-4 space-x-4">
+          <span class="shadow-sm rounded-md">
+            <button v-on:click="markAllAsRead"
+              class="inline-flex items-center px-4 py-2 border border-transparent text-sm leading-5 font-medium rounded-md text-white bg-primary hover:bg-orange-500 focus:outline-none focus:shadow-outline-orange focus:border-orange-700 active:bg-orange-700 transition duration-150 ease-in-out">
+              Mark all as read
+            </button>
+          </span>
         </div>
-      </nav>
+      </div>
+      <div class="container max-w-7xl mx-auto overflow-x-auto xl:px-4">
+        <ul class="flex border-b" v-if="notifications.results">
+          <tab :active="is_read == 'False'" @click="is_read = 'False'" title="Unread"
+            :badge="count"/>
+          <tab :active="is_read == 'True'" @click="is_read = 'True'" title="Read"/>
+          <tab :active="is_read == ''" @click="is_read = ''" title="All"/>
+        </ul>
+      </div>
+    </header>
+
+    <div class="container mx-auto p-4 flex flex-col space-y-2">
+      <div v-if="!notifications.results" class="text-center py-8">
+        <img src="/static/img/svg/undraw_complete_task_u2c3.svg" alt="Nothing here" class="w-1/2 md:w-1/4 mx-auto mb-8">
+        <span class="text-gray-600 text-lg md:text-xl">You have no notifications</span>
+      </div>
 
       <notification-card v-for="notification in notifications.results" :key="notification.id"
                          :notification="notification" v-on:input="getNotificationCount"></notification-card>
@@ -45,25 +53,31 @@
 
 <script>
   import axios from "axios";
-  import NotificationCard from "./NotificationCard";
-  import SubmitButton from "../elements/buttons/SubmitButton";
-  import SearchBar from "../elements/SearchBar";
 
   export default {
     name: "Notifications",
-    components: {SearchBar, SubmitButton, NotificationCard},
     data() {
       return {
         notifications: [],
-        is_read: "",
+        is_read: "False",
         pageNumber: 1,
         count: 0
       }
     },
+    watch: {
+      is_read: function() {
+        this.getNotifications()
+      }
+    },
     created() {
-      axios.get("/api/notifications").then(response => {
+      axios.get("/api/notifications", {
+        params: {
+          is_read: this.is_read
+        }
+      }).then(response => {
         this.notifications = response.data;
         this.getNotificationCount()
+        console.log(this.notifications)
       })
     },
     methods: {
@@ -103,18 +117,6 @@
           this.count = response.data
         })
       },
-      toggleRead() {
-        this.is_read = "True";
-        this.getNotifications()
-      },
-      toggleUnread() {
-        this.is_read = "False";
-        this.getNotifications()
-      },
-      toggleAll() {
-        this.is_read = "";
-        this.getNotifications()
-      },
       markAllAsRead() {
         axios.defaults.xsrfCookieName = 'csrftoken';
         axios.defaults.xsrfHeaderName = "X-CSRFTOKEN";
@@ -126,7 +128,3 @@
     }
   }
 </script>
-
-<style scoped>
-
-</style>
