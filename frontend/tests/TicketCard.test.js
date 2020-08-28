@@ -67,3 +67,11 @@ it("card content without labels", () => {
 
   expect(wrapper.find("div").html()).toBe("<div class=\"space-x-1 select-none\"></div>")
 });
+
+it("card content small", () => {
+  const wrapper = shallowMount(TicketCard, {propsData: {ticket: ticketData, small: true}});
+
+  expect(wrapper.findAll("h3").text()).toBe(`#${ticketData.ticket_inbox_id}`);
+  expect(wrapper.find("div").html()).toBeFalsy()
+});
+
