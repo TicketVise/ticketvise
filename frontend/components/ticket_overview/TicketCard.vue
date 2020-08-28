@@ -22,6 +22,8 @@
 </template>
 
 <script>
+  import Card from "../elements/card/Card";
+
   const moment = require('moment')
 
   export default {
@@ -35,6 +37,9 @@
         required: false,
         default: false
       }
+    },
+    components: {
+      Card
     },
     methods: {
       date: function (date) {
