@@ -1,7 +1,7 @@
 <template>
-  <div v-if="ticket" class="h-full">
-    <div class="lg:h-full flex flex-col-reverse lg:flex-row w-full">
-      <div class="w-screen lg:max-w-sm bg-gray-100 border-r border-t lg:border-t-0 h-full min-h-full space-y-2">
+  <div v-if="ticket" class="min-h-full flex flex-1 flex-col">
+    <div class="lg:h-full flex-1 flex flex-col-reverse items-stretch lg:flex-row w-full">
+      <div class="w-screen lg:max-w-sm bg-gray-100 border-r border-t lg:border-t-0 space-y-2">
         <!-- Ticket Author -->
         <div class="p-6 flex space-x-4 border-b">
           <img class="h-12 w-12 rounded-full" :src="ticket.author.avatar_url" alt="User image">
@@ -19,7 +19,7 @@
         <!-- Sharing -->
         <div class="px-4" v-if="canShare">
           <edit-share-with :errors="errors" :inbox_id="ticket.inbox" :shared_with="shared_with"
-                           v-on:input="updateSharedWith"></edit-share-with>
+            v-on:input="updateSharedWith"></edit-share-with>
         </div>
 
         <!-- Labels -->

@@ -1,7 +1,7 @@
 {
   "name": "ticketvise",
   "version": "1.0.0",
-  "description": "Assitly, making assisting great again.",
+  "description": "TicketVise, let's focus on the things that matter!",
   "main": "index.js",
   "directories": {
     "doc": "docs",
