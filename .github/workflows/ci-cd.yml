@@ -74,6 +74,22 @@ jobs:
           ssh_public_key: ${{ secrets.DOCKER_SSH_PUBLIC_KEY_DEV }}
           args: stack deploy -c docker-compose.yml -c docker-compose.prod.yml ticketvise
 
+      - name: Deploy to Docker Swarm (development)
+        uses: sagebind/docker-swarm-deploy-action@v2
+        if: github.event_name == 'push'
+        env:
+          DJANGO_SECRET: ${{ secrets.DJANGO_SECRET_DEV }}
+          SQL_USER: ${{ secrets.SQL_USER_DEV }}
+          SQL_PASSWORD: ${{ secrets.SQL_PASSWORD_DEV }}
+          LTI_KEY: ${{ secrets.LTI_KEY_DEV }}
+          LTI_SECRET: ${{ secrets.LTI_SECRET_DEV }}
+          GIT_DIGEST: ${{ steps.git-sha7.outputs.sha7 }}
+        with:
+          remote_host: ${{ secrets.DOCKER_SSH_HOST_DEV }}
+          ssh_private_key: ${{ secrets.DOCKER_SSH_PRIVATE_KEY_DEV }}
+          ssh_public_key: ${{ secrets.DOCKER_SSH_PUBLIC_KEY_DEV }}
+          args: stack deploy -c docker-compose.yml -c docker-compose.prod.yml ticketvise
+
       - name: Deploy to Docker Swarm (production)
         uses: sagebind/docker-swarm-deploy-action@v2
         if: github.event_name == 'push' && github.ref == 'refs/heads/master'
