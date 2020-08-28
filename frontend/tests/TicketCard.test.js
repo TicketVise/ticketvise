@@ -48,5 +48,22 @@ it("card content with assignee", () => {
   for (let i = 0; i < ticketData.labels.length; i++) {
     expect(wrapper.find("div").html()).toContain(ticketData.labels[i].name)
   }
-})
-;
+});
+
+ticketData.assignee = {"first_name": "", "last_name": "", "email": "", "username": "", "avatar_url": ""};
+
+it("card content without assignee", () => {
+  const wrapper = shallowMount(TicketCard, {propsData: {ticket: ticketData}});
+
+  let headers = wrapper.findAll("h3");
+  expect(headers.length).toBe(2);
+  expect(headers.at(1).text()).toContain("Assignee: None");
+});
+
+ticketData.labels = [];
+
+it("card content without labels", () => {
+  const wrapper = shallowMount(TicketCard, {propsData: {ticket: ticketData}});
+
+  expect(wrapper.find("div").html()).toBe("<div class=\"space-x-1 select-none\"></div>")
+});
