@@ -16,12 +16,6 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Setup test environment
-        run: docker-compose up -d --build
-
-      - name: Test backend
-        run: docker-compose exec -T web sh -c "python manage.py wait_for_database && python manage.py test --parallel --failfast --no-input"
-
       - name: Set up Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v1
         with:
@@ -32,6 +26,12 @@ jobs:
           npm ci
           npm run build
           npm test
+
+      - name: Setup test environment
+        run: docker-compose up -d --build
+
+      - name: Test backend
+        run: docker-compose exec -T web sh -c "python manage.py wait_for_database && python manage.py test --parallel --failfast --no-input"
 
       - name: build-push-proxy
         uses: docker/build-push-action@v1
