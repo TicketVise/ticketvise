@@ -45,6 +45,6 @@ class Notification(models.Model):
                 "title": self.content,
                 "ticket": self.ticket,
                 "comments": self.get_email_comments(),
-                "url": f"https://{settings.DOMAIN}{reverse('ticket', self.ticket.inbox.id. self.ticket.ticket_inbox_id)}"
+                "url": f"https://{settings.DOMAIN}{reverse('ticket', args=(self.inbox.id, self.ticket.ticket_inbox_id))}"
             }
         )
