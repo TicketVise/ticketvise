@@ -1,27 +1,50 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  {% if user.is_authenticated %}
+    <meta charset="UTF-8">
+    {% if user.is_authenticated %}
     {% number_of_unread_notifications user as count %}
-  {% endif %}
-  {% if count %}
+    {% endif %}
+    {% if count %}
     <title>({{ count }}) TicketVise</title>
-  {% else %}
+    {% else %}
     <title>TicketVise</title>
-  {% endif %}
+    {% endif %}
 
-  <meta name="description" content="TicketVise, making assisting great again.">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  {% load static %}
-  <link rel="shortcut icon" type="image/png" href="{% static 'favicon.png' %}"/>
-  <link rel="stylesheet" type="text/css" href="{% static 'styles.css' %}">
+    <meta name="description" content="TicketVise, making assisting great again.">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    {% load static %}
+    <link rel="shortcut icon" type="image/png" href="{% static 'favicon.png' %}"/>
+    <link rel="stylesheet" type="text/css" href="{% static 'styles.css' %}">
+    <noscript>
+        <style>
+            .js-only {
+                display: none !important;
+            }
+        </style>
+    </noscript>
 </head>
-<body class="flex flex-col min-h-screen">
+<body>
 
+
+<noscript>
+    <div class="grid grid-rows-2 lg:grid-cols-2 lg:grid-rows-1 h-full">
+        <div class="flex flex-col justify-center items-center h-full w-full">
+            <div class="text-6xl font-thin text-gray-800 -mb-4">JavaScript is disabled</div>
+            <div class="text-3xl font-bold text-gray-800">TicketVise required JavaScript to function properlly. Please enable JavaScrip in your browser and revisited TicketVise.</div>
+            <a href="https://enablejavascript.co/" class="text-xl text-gray-600 underline">Enable JavaScript</a>
+        </div>
+        <div class="flex flex-col justify-end lg:justify-center items-center h-full w-full pb-4">
+            <img class="h-11/12 lg:max-h-6/12" src="{% static 'img/svg/undraw_not_found_60pq.svg' %}" alt="Error photo">
+        </div>
+    </div>
+</noscript>
+
+<main class="flex flex-col min-h-screen js-only">
 {% block body %}
-  if you see this, something is wrong!
+if you see this, something is wrong!
 {% endblock body %}
+</main>
 
 {% block navbar-javascript %}
 {% endblock navbar-javascript %}
