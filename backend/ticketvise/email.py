@@ -25,25 +25,6 @@ class EmailThread(threading.Thread):
     def run(self):
         self.message.send()
 
-def send_ticket_reminder_email(ticket, to):
-    alert_days = ticket.course.alert_coordinator_unanswered_days
-    title = f"Ticket has been unanswered for {alert_days} days"
-    subject = f"#{ticket.ticket_inbox_id} - {title}"
-
-    send_mail_template(
-        subject,
-        to.email,
-        "comments",
-        {
-            "Message-Id": f"<{ticket.reply_message_id}@{settings.DOMAIN}>",
-        },
-        {
-            "title": title,
-            "ticket": ticket,
-            "comments": ticket.comments.filter(is_reply=True)
-        }
-    )
-
 
 def send_mail_template(subject, to, template, headers, context):
     """
