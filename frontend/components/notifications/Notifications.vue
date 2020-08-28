@@ -32,7 +32,7 @@
     </header>
 
     <div class="container mx-auto p-4 flex flex-col space-y-2">
-      <div v-if="!notifications.results" class="text-center py-8">
+      <div v-if="notifications.results && notifications.results.length == 0" class="text-center py-8">
         <img src="/static/img/svg/undraw_complete_task_u2c3.svg" alt="Nothing here" class="w-1/2 md:w-1/4 mx-auto mb-8">
         <span class="text-gray-600 text-lg md:text-xl">You have no notifications</span>
       </div>
