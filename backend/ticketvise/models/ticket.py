@@ -9,7 +9,8 @@ Contains all entity sets for the ticket database and TicketStatusChangedNotifica
 """
 import uuid
 
-from django.db import models
+from django.db import models, transaction
+from django.db.models import Max
 from django.db.models.signals import m2m_changed
 from django.dispatch import receiver
 from django.utils.translation import gettext_lazy as _
@@ -90,6 +91,7 @@ class Ticket(models.Model):
         self.assignee = receiver
         self.status = Status.ASSIGNED
 
+    @transaction.atomic
     def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
         """
         Override the Django ``save`` method to send a :class:`TicketStatusChangedNotification`
@@ -106,7 +108,8 @@ class Ticket(models.Model):
                 self.status = Status.PENDING
         else:
             # + 1 so the ticket_inbox_id starts at 1 instead of 0.
-            self.ticket_inbox_id = Ticket.objects.filter(inbox=self.inbox).count() + 1
+            self.ticket_inbox_id = (Ticket.objects.filter(inbox=self.inbox)
+                                    .aggregate(Max('ticket_inbox_id'))["ticket_inbox_id__max"] or 0) + 1
             if not self.assignee:
                 schedule_ticket(self)
 
