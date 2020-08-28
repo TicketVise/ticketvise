@@ -31,8 +31,6 @@ class Notification(models.Model):
     def get_email_comments(self):
         return self.ticket.comments.filter(is_reply=True)
 
-
-
     def send_mail(self):
         send_mail_template(
             self.get_email_subject(),
