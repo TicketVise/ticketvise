@@ -104,7 +104,8 @@ class NotificationsTestCase(TestCase):
         """
         self.client.force_login(self.ta)
 
-        self.ticket.inbox.scheduling_algorithm = SchedulingAlgorithm.MANUAL
+        self.ticket.inbox.scheduling_algorithm = SchedulingAlgorithm.FIXED
+        self.ticket.inbox.fixed_scheduling_assignee = None
         self.ticket.inbox.save()
 
         ticket = Ticket.objects.create(author=self.student, assignee=None, title="How to code v3?", inbox=self.inbox,
