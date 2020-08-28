@@ -22,8 +22,8 @@ class TicketAssignedNotification(Notification):
         if self.receiver == self.ticket.author:
             return
 
-        if self.receiver.notification_comment_mail:
+        if self.receiver.notification_assigned_mail:
             self.send_mail()
 
-        if self.receiver.notification_comment_app:
+        if self.receiver.notification_assigned_app:
             super().save(force_insert, force_update, using, update_fields)

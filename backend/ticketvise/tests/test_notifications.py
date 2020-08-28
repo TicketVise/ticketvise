@@ -50,6 +50,8 @@ class NotificationsTestCase(TestCase):
         self.ticket = Ticket.objects.create(author=self.student, assignee=self.ta,
                                             title="How to code?",
                                             inbox=self.inbox, content="wat is 1+1?")
+        self.comment = Comment.objects.create(ticket=self.ticket, author=self.ta2, content="Hello World")
+
         self.ticket_2 = Ticket.objects.create(author=self.student, assignee=self.ta,
                                               title="How to code v2?",
                                               inbox=self.inbox, content="wat is 2+1?")
@@ -202,37 +204,7 @@ class NotificationsTestCase(TestCase):
 
         self.assertTrue(CommentNotification.objects.filter(receiver=self.student).exists())
 
-    def test_notification_settings_form(self):
-        """
-        If a comment is placed under a ticket, the student author should not get a notification.
-        If a reply is placed under a ticket, the studen author should get a notification.
-
-        :return: None.
-        """
-        self.client.force_login(self.ta)
-
-        settings = ["notification_mention_mail",
-                    "notification_mention_app",
-                    "notification_ticket_status_change_mail",
-                    "notification_ticket_status_change_app",
-                    "notification_new_ticket_mail",
-                    "notification_new_ticket_app",
-                    "notification_comment_mail",
-                    "notification_comment_app"]
-
-        for setting in settings:
-            for b in [False, True]:
-                data = dict.fromkeys(settings, True)
-                data["action"] = "notifications"
-                data[setting] = b
-
-                self.client.post("/profile", urlencode(data), follow=True,
-                                 content_type="application/x-www-form-urlencoded")
-                user_dict = model_to_dict(User.objects.get(username="admin"))
-
-                self.assertEqual(user_dict[setting], b)
-
-    def test_disabled_mention_notification(self):
+    def test_notification_settings(self):
         """
         If a user has disabled notifications, he should not receive any
         notifications in the notification panel.
@@ -241,37 +213,41 @@ class NotificationsTestCase(TestCase):
         """
         self.client.force_login(self.ta)
 
-        MentionNotification.objects.all().delete()
-        CommentNotification.objects.all().delete()
-        Notification.objects.all().delete()
+        notifications = [
+            (TicketAssignedNotification, "notification_assigned"),
+            (TicketReminderNotification, "notification_ticket_reminder"),
+            (NewTicketNotification, "notification_new_ticket"),
+            (MentionNotification, "notification_mention"),
+            (CommentNotification, "notification_comment"),
+        ]
 
-        settings = ["notification_mention_mail",
-                    "notification_mention_app",
-                    "notification_ticket_status_change_mail",
-                    "notification_ticket_status_change_app",
-                    "notification_new_ticket_mail",
-                    "notification_new_ticket_app",
-                    "notification_comment_mail",
-                    "notification_comment_app"]
+        for b in [True, False]:
 
-        data = dict.fromkeys(settings, False)
-        data["action"] = "notifications"
+            data = {"action": "notifications"}
+            for _, key in notifications:
+                for suffix in ["mail", "app"]:
+                    data[key + "_" + suffix] = b
 
-        self.client.post("/profile", urlencode(data), follow=True,
-                         content_type="application/x-www-form-urlencoded")
+            response = self.client.post("/profile", urlencode(data), follow=True,
+                                        content_type="application/x-www-form-urlencoded")
+            self.assertEqual(response.status_code, 200)
+            updated_user = User.objects.get(pk=self.ta.id)
+            self.ticket.author = self.ta2
 
-        no_notifications_ticket = Ticket.objects.create(author=self.student,
-                                                        title="How to code v2?",
-                                                        inbox=self.inbox, content="wat is 2+1?")
-        comment = Comment.objects.create(ticket=no_notifications_ticket, author=self.ta2,
-                                         content="@admin")
+            for notification, key in notifications:
+                Notification.objects.all().delete()
 
-        receiver = User.objects.get(pk=self.ta.id)
-        MentionNotification(receiver=receiver, comment=comment).save()
-        self.assertFalse(MentionNotification.objects.filter(receiver=receiver).exists())
+                for suffix in ["mail", "app"]:
+                    self.assertEqual(getattr(updated_user, key + "_" + suffix), b)
 
-        CommentNotification(receiver=receiver, comment=comment).save()
-        self.assertFalse(CommentNotification.objects.filter(receiver=receiver).exists())
+                if hasattr(notification, "comment"):
+                    notification(receiver=updated_user, comment=self.comment).save()
+                elif hasattr(notification, "ticket"):
+                    notification(receiver=updated_user, ticket=self.ticket).save()
+
+                bla = list(Notification.objects.filter(receiver=updated_user).select_subclasses())
+                self.assertEqual(notification.objects.filter(receiver=updated_user).exists(), b)
+
 
     def test_getters_comment_notifications(self):
         """

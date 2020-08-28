@@ -41,12 +41,15 @@ class User(AbstractUser):
     avatar_url = models.URLField(default=DEFAULT_AVATAR_PATH)
     notification_mention_mail = models.BooleanField(default=False)
     notification_mention_app = models.BooleanField(default=True)
-    notification_ticket_status_change_mail = models.BooleanField(default=False)
-    notification_ticket_status_change_app = models.BooleanField(default=True)
     notification_new_ticket_mail = models.BooleanField(default=False)
     notification_new_ticket_app = models.BooleanField(default=True)
     notification_comment_mail = models.BooleanField(default=False)
     notification_comment_app = models.BooleanField(default=True)
+    notification_assigned_mail = models.BooleanField(default=False)
+    notification_assigned_app = models.BooleanField(default=True)
+    notification_ticket_reminder_mail = models.BooleanField(default=False)
+    notification_ticket_reminder_app = models.BooleanField(default=True)
+
     date_edited = models.DateTimeField(auto_now=True)
     date_created = models.DateTimeField(auto_now_add=True)
 

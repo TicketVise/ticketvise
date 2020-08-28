@@ -27,9 +27,18 @@ class UserSerializer(ModelSerializer):
 class UserNotificationSettingsSerializer(ModelSerializer):
     class Meta:
         model = User
-        fields = ["notification_mention_mail", "notification_mention_app", "notification_ticket_status_change_mail",
-                  "notification_ticket_status_change_app", "notification_new_ticket_mail",
-                  "notification_new_ticket_app", "notification_comment_mail", "notification_comment_app"]
+        fields = [
+            "notification_mention_mail",
+            "notification_mention_app",
+            "notification_new_ticket_mail",
+            "notification_new_ticket_app",
+            "notification_comment_mail",
+            "notification_comment_app",
+            "notification_assigned_mail",
+            "notification_assigned_app",
+            "notification_ticket_reminder_mail",
+            "notification_ticket_reminder_app"
+        ]
 
 
 class NotificationSerializer(ModelSerializer):

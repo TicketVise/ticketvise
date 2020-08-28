@@ -12,7 +12,7 @@ class TicketReminderNotification(Notification):
 
     @property
     def content(self):
-        alert_days = self.ticket.course.alert_coordinator_unanswered_days
+        alert_days = self.ticket.inbox.alert_coordinator_unanswered_days
         return f"Ticket ${self.ticket.ticket_inbox_id} has been unanswered for {alert_days} days"
 
     @property
@@ -23,8 +23,8 @@ class TicketReminderNotification(Notification):
         if self.receiver == self.ticket.author:
             return
 
-        if self.receiver.notification_comment_mail:
+        if self.receiver.notification_ticket_reminder_mail:
             self.send_mail()
 
-        if self.receiver.notification_comment_app:
+        if self.receiver.notification_ticket_reminder_app:
             super().save(force_insert, force_update, using, update_fields)
