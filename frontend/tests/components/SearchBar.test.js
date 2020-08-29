@@ -1,4 +1,4 @@
-import SearchBar from "../../components/elements/SearchBar";
+import SearchBar from "@/elements/SearchBar";
 import {mount} from '@vue/test-utils'
 
 test("search value emit", () => {
