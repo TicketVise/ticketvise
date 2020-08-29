@@ -15,7 +15,7 @@ const selected = [
   {"name": "Laptop", "color": "#150a1a", "id": 8}
 ];
 
-test("Labeldropdown displays data", async () => {
+test("Labeldropdown displays data and opens", async () => {
   const wrapper = shallowMount(LabelDropdown, {
     propsData: {values: labelsData, selected: selected},
     data() {
@@ -40,8 +40,19 @@ test("Labeldropdown displays data", async () => {
   // Test label attributes
   expect(option.text()).toContain(labelsData[0].name);
   expect(option.html()).toContain("class=\"w-2 h-2 rounded-full\" style=\"background-color: rgb(255, 0, 0)");
+});
 
-  // Check if clicking the items adds to the list and emit
+test("Labeldropdown adds and removes labels on click", async () => {
+  const wrapper = shallowMount(LabelDropdown, {
+    propsData: {values: labelsData, selected: selected},
+    data() {
+      return {open: true}
+    }
+  });
+  let options = wrapper.findAll("li");
+  let option = options.at(0);
+
+  // Check click adds from list and emits
   await option.trigger("click");
   await wrapper.vm.$nextTick();
 
