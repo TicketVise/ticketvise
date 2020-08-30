@@ -87,7 +87,7 @@ class Ticket(models.Model):
         :param User user: User to assign the ticket to.
         """
         self.assignee = receiver
-        self.status = Status.ASSIGNED
+        self.status = Status.ASSIGNED if receiver else Status.PENDING
 
     @transaction.atomic
     def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
