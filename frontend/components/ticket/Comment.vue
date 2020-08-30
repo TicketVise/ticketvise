@@ -1,6 +1,6 @@
 <template>
   <div class="flex w-full">
-    <avatar :source="comment.author.avatar_url" size="w-12 h-12 m-3"/>
+    <avatar :source="comment.author.avatar_url" class="w-12 h-12 m-3"/>
     <div class="flex flex-col flex-grow">
       <card class="flex-grow w-full" outlined>
         <div class="flex bg-gray-100 pl-2 pr-1 py-1 border-b border-gray-400 items-center">
