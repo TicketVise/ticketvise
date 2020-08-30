@@ -25,6 +25,12 @@ class CommentNotification(Notification):
     def inbox(self):
         return self.comment.ticket.inbox
 
+    def get_email_comments(self):
+        if self.comment.is_reply == False:
+            return self.ticket.comments.filter(is_reply=False)
+
+        return super().get_email_comments()
+
     def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
         """
         Override the Django ``save`` method to only save the notification if the receiver
