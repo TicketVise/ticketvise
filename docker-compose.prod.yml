@@ -73,7 +73,7 @@ services:
       - 443:8443
     volumes:
       - media:/home/media:ro
-      - static:/home/static:ro
+      - static:/home/static
       - cert_conf:/etc/letsencrypt
       - cert_www:/var/www/certbot
 
