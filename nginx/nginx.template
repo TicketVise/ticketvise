@@ -38,15 +38,16 @@ server {
     proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
     proxy_set_header X-Forwarded-Proto https;
 
-    proxy_cache_valid 200 302 10m;
-    proxy_cache_valid 404      1m;
-
     location / {
         proxy_pass http://web:6000;
     }
 
     location /static/ {
         alias /home/static/;
+            # don't cache it
+            proxy_no_cache 1;
+            # even if cached, don't try to use it
+            proxy_cache_bypass 1; (
     }
 
     location /media/ {
