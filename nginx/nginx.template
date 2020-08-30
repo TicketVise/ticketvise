@@ -12,11 +12,11 @@ server {
 server {
     listen 8443 ssl http2;
     listen [::]:8443 ssl http2;
-    server_name $NGINX_DOMAIN;
+    server_name ${NGINX_DOMAIN};
 
-    ssl_certificate /etc/letsencrypt/live/$NGINX_DOMAIN/fullchain.pem;
-    ssl_certificate_key /etc/letsencrypt/live/$NGINX_DOMAIN/privkey.pem;
-    ssl_trusted_certificate /etc/letsencrypt/live/$NGINX_DOMAIN/chain.pem;
+    ssl_certificate /etc/letsencrypt/live/${NGINX_DOMAIN}/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/${NGINX_DOMAIN}/privkey.pem;
+    ssl_trusted_certificate /etc/letsencrypt/live/${NGINX_DOMAIN}/chain.pem;
 
     ssl_session_timeout 1d;
     ssl_session_cache shared:MozSSL:10m;  # about 40000 sessions
@@ -54,7 +54,7 @@ server {
 }
 
 #mail {
-#    server_name $NGINX_DOMAIN;
+#    server_name ${NGINX_DOMAIN};
 #    proxy_pass_error_message on;
 #
 #    starttls            on;

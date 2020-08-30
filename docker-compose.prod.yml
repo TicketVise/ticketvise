@@ -73,7 +73,6 @@ services:
       - static:/home/static:ro
       - cert_conf:/etc/letsencrypt
       - cert_www:/var/www/certbot
-    command: /bin/sh -c "envsubst '\$NGINX_DOMAIN' < /etc/nginx/conf.d/nginx.template > /etc/nginx/conf.d/nginx.conf && nginx -g 'daemon off;'"
 
   certbot:
     image: certbot/certbot
