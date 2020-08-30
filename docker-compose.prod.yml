@@ -9,9 +9,9 @@ services:
         max_attempts: 5
         window: 10s
     environment:
-      - POSTGRES_DB=ticketvise
-      - POSTGRES_USER=${SQL_USER}
-      - POSTGRES_PASSWORD=${SQL_PASSWORD}
+      POSTGRES_DB: ticketvise
+      POSTGRES_USER: ${SQL_USER}
+      POSTGRES_PASSWORD: ${SQL_PASSWORD}
 
   web:
     image: "ticketvise/backend:sha-${GIT_DIGEST}"
@@ -29,13 +29,13 @@ services:
       - media:/backend/ticketvise/media
       - static:/backend/ticketvise/static
     environment:
-      - DEBUG=0
-      - DJANGO_SECRET=${DJANGO_SECRET}
-      - SMTP_OUTBOUND_PASSWORD=${EMAIL_PASSWORD}
-      - SQL_USER=${SQL_USER}
-      - SQL_PASSWORD=${SQL_PASSWORD}
-      - LTI_KEY=${LTI_KEY}
-      - LTI_SECRET=${LTI_SECRET}
+      DEBUG: 0
+      DJANGO_SECRET: ${DJANGO_SECRET}
+      SMTP_OUTBOUND_PASSWORD: ${EMAIL_PASSWORD}
+      SQL_USER: ${SQL_USER}
+      SQL_PASSWORD: ${SQL_PASSWORD}
+      LTI_KEY: ${LTI_KEY}
+      LTI_SECRET: ${LTI_SECRET}
 
   cronjob:
     image: "ticketvise/cronjob:sha-${GIT_DIGEST}"
@@ -47,13 +47,13 @@ services:
         max_attempts: 5
         window: 10s
     environment:
-      - DEBUG=0
-      - DJANGO_SECRET=${DJANGO_SECRET}
-      - SMTP_OUTBOUND_PASSWORD=${EMAIL_PASSWORD}
-      - SQL_USER=${SQL_USER}
-      - SQL_PASSWORD=${SQL_PASSWORD}
-      - LTI_KEY=${LTI_KEY}
-      - LTI_SECRET=${LTI_SECRET}
+      DEBUG: 0
+      DJANGO_SECRET: ${DJANGO_SECRET}
+      SMTP_OUTBOUND_PASSWORD: ${EMAIL_PASSWORD}
+      SQL_USER: ${SQL_USER}
+      SQL_PASSWORD: ${SQL_PASSWORD}
+      LTI_KEY: ${LTI_KEY}
+      LTI_SECRET: ${LTI_SECRET}
 
   proxy:
     image: "ticketvise/proxy:sha-${GIT_DIGEST}"
@@ -64,7 +64,7 @@ services:
         max_attempts: 5
         window: 10s
     environment:
-      - $NGINX_DOMAIN=${DOMAIN}
+      NGINX_DOMAIN: ${DOMAIN}
     ports:
       - 80:8080
       - 443:8443

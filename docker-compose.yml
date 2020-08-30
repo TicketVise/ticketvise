@@ -11,9 +11,9 @@ services:
     ports:
       - 6000:6000
     environment:
-      - SQL_ENGINE=django.db.backends.postgresql_psycopg2
-      - SQL_DATABASE=ticketvise
-      - SQL_HOST=database
+      SQL_ENGINE: django.db.backends.postgresql_psycopg2
+      SQL_DATABASE: ticketvise
+      SQL_HOST: database
 
 volumes:
   static:

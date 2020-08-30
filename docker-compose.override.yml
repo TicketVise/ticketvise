@@ -13,12 +13,12 @@ services:
     volumes:
       - ./backend:/backend
     environment:
-      - DJANGO_SECRET=Welkom01
-      - EMAIL_PASSWORD=Welikom01
-      - SQL_USER=ticketvise
-      - SQL_PASSWORD=Welkom01
-      - LTI_KEY=LtiKey01
-      - LTI_SECRET=LtiSecret01
+      DJANGO_SECRET: Welkom01
+      EMAIL_PASSWORD: Welikom01
+      SQL_USER: ticketvise
+      SQL_PASSWORD: Welkom01
+      LTI_KEY: LtiKey01
+      LTI_SECRET: LtiSecret01
 
   proxy:
     image: ticketvise/proxy
@@ -32,9 +32,9 @@ services:
 
   database:
     environment:
-      - POSTGRES_DB=ticketvise
-      - POSTGRES_USER=ticketvise
-      - POSTGRES_PASSWORD=Welkom01
+      POSTGRES_DB: ticketvise
+      POSTGRES_USER: ticketvise
+      POSTGRES_PASSWORD: Welkom01
 
   cronjob:
     image: ticketvise/cronjob
