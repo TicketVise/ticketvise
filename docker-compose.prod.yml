@@ -30,6 +30,7 @@ services:
       - static:/backend/ticketvise/static
     environment:
       DEBUG: 0
+      SEND_MAIL: 1
       DJANGO_SECRET: ${DJANGO_SECRET}
       SMTP_OUTBOUND_PASSWORD: ${EMAIL_PASSWORD}
       SQL_USER: ${SQL_USER}
@@ -48,6 +49,7 @@ services:
         window: 10s
     environment:
       DEBUG: 0
+      SEND_MAIL: 1
       DJANGO_SECRET: ${DJANGO_SECRET}
       SMTP_OUTBOUND_PASSWORD: ${EMAIL_PASSWORD}
       SQL_USER: ${SQL_USER}
