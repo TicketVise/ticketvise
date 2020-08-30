@@ -47,7 +47,7 @@ server {
             # don't cache it
             proxy_no_cache 1;
             # even if cached, don't try to use it
-            proxy_cache_bypass 1; (
+            proxy_cache_bypass 1;
     }
 
     location /media/ {
