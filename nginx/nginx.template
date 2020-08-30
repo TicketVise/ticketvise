@@ -1,6 +1,7 @@
 server {
     listen 8080;
     listen [::]:8080;
+    server_name ${NGINX_DOMAIN};
 
     location /.well-known/acme-challenge/ {
         root /var/www/certbot;
