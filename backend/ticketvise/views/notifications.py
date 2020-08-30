@@ -16,8 +16,12 @@ from django.shortcuts import get_object_or_404
 from django.template.defaultfilters import register
 from django.views.generic import TemplateView
 
-from ticketvise.models.notification import Notification, MentionNotification, CommentNotification
-from ticketvise.models.ticket import TicketStatusChangedNotification
+from ticketvise.models.notification import Notification
+from ticketvise.models.notification.assigned import TicketAssignedNotification
+from ticketvise.models.notification.comment import CommentNotification
+from ticketvise.models.notification.mention import MentionNotification
+from ticketvise.models.notification.new import NewTicketNotification
+from ticketvise.models.notification.reminder import TicketReminderNotification
 from ticketvise.models.user import User
 
 
@@ -136,6 +140,8 @@ def unread_related_ticket_notifications(ticket, user):
 
     :return: None.
     """
-    MentionNotification.objects.filter(comment__ticket=ticket, receiver=user).update(is_read=True)
-    TicketStatusChangedNotification.objects.filter(ticket=ticket, receiver=user).update(is_read=True)
+    TicketAssignedNotification.objects.filter(ticket=ticket, receiver=user).update(is_read=True)
     CommentNotification.objects.filter(comment__ticket=ticket, receiver=user).update(is_read=True)
+    MentionNotification.objects.filter(comment__ticket=ticket, receiver=user).update(is_read=True)
+    NewTicketNotification.objects.filter(ticket=ticket, receiver=user).update(is_read=True)
+    TicketReminderNotification.objects.filter(ticket=ticket, receiver=user).update(is_read=True)

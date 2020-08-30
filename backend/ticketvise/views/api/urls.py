@@ -13,7 +13,7 @@ from ticketvise.views.api.ticket import TicketApiView, TicketUpdateAssignee, \
     RecentTicketApiView, InboxTicketsApiView, TicketLabelApiView, TicketCreateApiView, TicketSharedAPIView, \
     TicketEventsApiView
 from ticketvise.views.api.user import UserRoleApiView, CurrentUserApiView, UserGetFromUsernameApiView, \
-    UserRoleByIdApiView, NotificationsApiView
+    UserRoleByIdApiView, NotificationsSettingsAPIView
 
 urlpatterns = [
     path("inboxes/<int:inbox_id>", InboxApiView.as_view()),
@@ -47,6 +47,5 @@ urlpatterns = [
          VisitTicketNotificationApi.as_view()),
     path("notifications/<int:pk>/read", NotificationFlipRead.as_view()),
     path("me", CurrentUserApiView.as_view()),
-    path("user", CurrentUserApiView.as_view()),
-    path("user/notifications", NotificationsApiView.as_view()),
+    path("me/settings", NotificationsSettingsAPIView.as_view()),
 ]

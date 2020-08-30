@@ -14,7 +14,6 @@ from typing import Union
 
 import django.forms as forms
 from PIL import Image
-from django.contrib.auth import logout
 from django.contrib.auth.forms import PasswordChangeForm
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import HttpResponseRedirect
@@ -97,12 +96,15 @@ class ProfileNotificationsForm(forms.ModelForm):
         fields = [
             "notification_mention_mail",
             "notification_mention_app",
-            "notification_ticket_status_change_mail",
-            "notification_ticket_status_change_app",
             "notification_new_ticket_mail",
             "notification_new_ticket_app",
             "notification_comment_mail",
             "notification_comment_app",
+            "notification_assigned_mail",
+            "notification_assigned_app",
+            "notification_ticket_reminder_mail",
+            "notification_ticket_reminder_app"
+
         ]
 
 
@@ -158,16 +160,8 @@ class ProfileView(LoginRequiredMixin, FormView):
     :var str success_url: The success url.
     """
 
-    template_name = "profile/profile.html"
+    template_name = "profile.html"
     success_url = "/profile"
-
-    def dispatch(self, request, *args, **kwargs):
-        if self.request.POST and self.request.POST["action"] == "delete_account":
-            self.request.user.delete()
-            logout(self.request)
-            return HttpResponseRedirect("/")
-
-        return super().dispatch(request, *args, **kwargs)
 
     def get_form(self, **kwargs) -> Union[ProfileAvatarForm, ProfileNotificationsForm, PasswordChangeForm]:
         """
@@ -180,7 +174,7 @@ class ProfileView(LoginRequiredMixin, FormView):
         :rtype: HttpResponse
         """
         if not self.request.user.is_anonymous and self.request.method == "POST":
-            action = self.request.POST["action"]
+            action = self.request.POST.get("action")
 
             if action == "avatar":
                 return ProfileAvatarForm(**self.get_form_kwargs(), instance=self.request.user)

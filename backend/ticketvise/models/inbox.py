@@ -23,8 +23,8 @@ class SchedulingAlgorithm(models.TextChoices):
     ROUND_ROBIN = ("round-robin", "Round Robin")
     #: Assigns tickets to the assistant with the least assigned tickets.
     LEAST_ASSIGNED_FIRST = ("least-assigned-first", "Least Assigned First")
-    #: Does not use any custom scheduling method.
-    MANUAL = ("manual", "Manual")
+    # Schedule all to one assistant
+    FIXED = ("fixed", "Fixed")
 
 
 class Inbox(models.Model):
@@ -46,6 +46,7 @@ class Inbox(models.Model):
     scheduling_algorithm = models.CharField(choices=SchedulingAlgorithm.choices, max_length=255,
                                             default=SchedulingAlgorithm.LEAST_ASSIGNED_FIRST)
     round_robin_parameter = models.PositiveIntegerField(default=0)
+    fixed_scheduling_assignee = models.ForeignKey("User", on_delete=models.CASCADE, blank=True, null=True)
     show_assignee_to_guest = models.BooleanField(default=False)
     close_answered_weeks = models.PositiveIntegerField(default=0)
     alert_coordinator_unanswered_days = models.PositiveIntegerField(default=0)
@@ -82,11 +83,11 @@ class Inbox(models.Model):
 
     def get_coordinator(self):
         """
-        :return: All assistants and coordinators in the inbox.
+        :return: Get the first coordinator of the course
         :rtype: QuerySet<:class:`User`>
         """
         return User.objects.filter(inbox_relationship__inbox=self, inbox_relationship__role=Role.MANAGER)\
-            .order_by("-date_created").first()
+            .order_by("date_created").first()
 
     def get_tickets_by_assignee(self, assignee, status=None):
         """

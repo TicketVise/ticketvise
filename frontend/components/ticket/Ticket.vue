@@ -1,7 +1,7 @@
 <template>
-  <div v-if="ticket" class="h-full">
-    <div class="lg:h-full flex flex-col-reverse lg:flex-row w-full">
-      <div class="w-screen lg:max-w-sm bg-gray-100 border-r border-t lg:border-t-0 h-full min-h-full space-y-2">
+  <div v-if="ticket" class="min-h-full flex flex-1 flex-col">
+    <div class="lg:h-full flex-1 flex flex-col-reverse items-stretch lg:flex-row w-full">
+      <div class="w-screen lg:max-w-sm bg-gray-100 border-r border-t lg:border-t-0 space-y-2">
         <!-- Ticket Author -->
         <div class="p-6 flex space-x-4 border-b">
           <img class="h-12 w-12 rounded-full" :src="ticket.author.avatar_url" alt="User image">
@@ -19,37 +19,33 @@
         <!-- Sharing -->
         <div class="px-4" v-if="canShare">
           <edit-share-with :errors="errors" :inbox_id="ticket.inbox" :shared_with="shared_with"
-                           v-on:input="updateSharedWith"></edit-share-with>
+            v-on:input="updateSharedWith"></edit-share-with>
         </div>
 
         <!-- Labels -->
-        <div class="p-4 pt-2">
-          <h4 class="block text-gray-700 font-bold mb-2">Labels</h4>
+        <div class="px-4">
+          <h4 class="block text-gray-800 font-semibold mb-2">Labels</h4>
           <error :key="error" :message="error" v-for="error in this.errors.labels"></error>
           <div class="flex flex-wrap mb-2" v-if="labels.length > 0">
-            <chip :background="label.color" :key="label.id" class="m-1" v-for="label in labels">
+            <chip :background="label.color" :key="label.id" class="mr-1 mb-1" v-for="label in labels">
               {{ label.name }}
             </chip>
           </div>
           <div class="flex flex-wrap mb-2" v-else>
             No labels selected
           </div>
-          <div class="mb-4">
             <label-dropdown :selected="labels" :values="inbox.labels" v-if="canShare" v-model="labels"
                             v-on:input="updateLabels"/>
-          </div>
         </div>
 
         <!-- Assignee -->
-        <div class="p-4 pt-0" v-if="staff">
+        <div class="px-4" v-if="is_staff">
           <h4 class="font-semibold text-gray-800 mb-2">Assignee</h4>
-          <div class="mb-4">
             <user-dropdown :assignee="ticket.assignee" :staff="staff" v-if="staff" v-on:input="updateAssignee"/>
-          </div>
         </div>
 
         <!-- Participants -->
-        <div class="px-4 pt-2">
+        <div class="px-4">
           <h4 class="font-semibold text-gray-800 mb-2">Participants</h4>
           <avatars :users="ticket.participants"/>
         </div>
@@ -98,7 +94,7 @@
           <ul class="flex border-b mb-2">
             <tab :active="activeTab === 'external'" @click="activeTab = 'external'" title="Question"
                  :badge="replies.length + 1"/>
-            <tab :active="activeTab === 'internal'" @click="activeTab = 'internal'" title="Discussion"
+            <tab :active="activeTab === 'internal'" @click="activeTab = 'internal'" title="Staff discussion"
                  :badge="comments.length" v-if="is_staff"/>
             <tab :active="activeTab === 'attachments'" @click="activeTab = 'attachments'" title="Attachments"
                  :badge="ticket.attachments.length"/>
@@ -177,7 +173,7 @@
     created() {
       axios.get("/api" + window.location.pathname).then(response => {
         this.ticket = response.data;
-        this.labels = response.data.labels
+        this.labels = response.data.labels;
 
         axios.defaults.xsrfCookieName = 'csrftoken';
         axios.defaults.xsrfHeaderName = "X-CSRFTOKEN";
@@ -205,13 +201,11 @@
                 this.shared_with = response.data.shared_with;
               });
             }
-          })
-
+          });
           axios.get("/api/inboxes/" + this.ticket.inbox + "/users/" + this.ticket.author.id + "/roles").then(response => {
             this.$set(this.ticket.author, 'role', response.data)
           })
         });
-
         axios.get("/api/inboxes/" + this.ticket.inbox).then(response => {
           this.inbox = response.data
         })
@@ -228,7 +222,7 @@
         return this.isStaff()
       },
       staff_excluding_self: function () {
-        if (!this.staff || !this.user) return []
+        if (!this.staff || !this.user) return [];
 
         return this.staff.filter(user => user.id !== this.user.id)
       },
@@ -262,27 +256,29 @@
         axios.defaults.xsrfCookieName = 'csrftoken';
         axios.defaults.xsrfHeaderName = "X-CSRFTOKEN";
 
-        this.ticket.status = "CLSD"
+        this.ticket.status = "CLSD";
         axios.put("/api" + window.location.pathname + "/status", {
           "status": this.ticket.status
         }).then(_ => {
         })
       },
       updateSharedWith() {
-        let formData = new FormData()
-        this.shared_with.forEach(shared_with => formData.append("shared_with", shared_with.id))
+        let formData = new FormData();
+        this.shared_with.forEach(shared_with => formData.append("shared_with", shared_with.id));
 
         axios.defaults.xsrfCookieName = "csrftoken";
         axios.defaults.xsrfHeaderName = "X-CSRFTOKEN";
 
-        axios.put("/api" + window.location.pathname + "/shared", formData).then(response => {
+        axios.put("/api" + window.location.pathname + "/shared", formData).then(_ => {
 
         }).catch(error => {
           this.errors = error.response.data
         })
       },
-      updateAssignee(assignee) {
-        this.ticket.assignee = assignee
+      updateAssignee() {
+        axios.get("/api" + window.location.pathname).then(response => {
+          this.ticket = response.data;
+        })
       },
       updateLabels() {
         axios.defaults.xsrfCookieName = 'csrftoken';
@@ -291,7 +287,7 @@
         axios.put("/api" + window.location.pathname + "/labels",
             {
               "labels": this.labels.map(label => label.id)
-            }).then(response => {
+            }).then(_ => {
 
         });
       }

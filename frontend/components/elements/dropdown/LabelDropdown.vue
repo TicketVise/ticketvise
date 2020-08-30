@@ -1,22 +1,22 @@
 <template>
   <div class="space-y-1">
     <div class="relative">
-                <span class="inline-block w-full rounded-md shadow-sm" @click="open = !open">
-                    <button aria-expanded="true" aria-haspopup="listbox" aria-labelledby="listbox-label"
-                            class="cursor-pointer relative w-full rounded-md border border-gray-300 bg-white pl-3 pr-10 py-2 text-left focus:outline-none transition ease-in-out duration-150 sm:text-sm sm:leading-5"
-                            tabindex="-1"
-                            type="button">
-                        <div class="flex items-center space-x-3">
-                            <span class="block truncate">Select labels</span>
-                        </div>
-                        <span class="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none">
-                            <svg class="h-5 w-5 text-gray-400" viewBox="0 0 20 20" fill="none" stroke="currentColor">
-                                <path d="M7 7l3-3 3 3m0 6l-3 3-3-3" stroke-linecap="round" stroke-linejoin="round"
-                                      stroke-width="1.5"/>
-                            </svg>
-                        </span>
-                    </button>
-                </span>
+      <span class="inline-block w-full rounded-md shadow-sm" @click="open = !open">
+        <button aria-expanded="true" aria-haspopup="listbox" aria-labelledby="listbox-label"
+                class="cursor-pointer relative w-full rounded-md border border-gray-300 bg-white pl-3 pr-10 py-2 text-left focus:outline-none transition ease-in-out duration-150 sm:text-sm sm:leading-5"
+                tabindex="-1"
+                type="button">
+          <div class="flex items-center space-x-3">
+            <span class="block truncate">Select labels</span>
+          </div>
+          <span class="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none">
+            <svg class="h-5 w-5 text-gray-400" viewBox="0 0 20 20" fill="none" stroke="currentColor">
+                <path d="M7 7l3-3 3 3m0 6l-3 3-3-3" stroke-linecap="round" stroke-linejoin="round"
+                      stroke-width="1.5"/>
+            </svg>
+          </span>
+        </button>
+      </span>
 
       <div class="absolute mt-1 w-full rounded-md bg-white shadow-lg z-50" v-if="open">
         <ul aria-activedescendant="listbox-item-3" aria-labelledby="listbox-label"
@@ -55,7 +55,7 @@
       labels: []
     }),
     created() {
-      this.labels = this.selected
+      this.labels = this.selected ? this.selected : []
     },
     methods: {
       switchItem(value) {
@@ -70,8 +70,7 @@
         this.open = false
       },
       containsObject(list, id) {
-        return !!list.some(e => e.id === id);
-
+        return list && list.some(e => e.id === id);
       }
     }
   }

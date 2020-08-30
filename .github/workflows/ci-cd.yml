@@ -16,12 +16,6 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Setup test environment
-        run: docker-compose up -d --build
-
-      - name: Test backend
-        run: docker-compose exec -T web sh -c "python manage.py wait_for_database && python manage.py test --parallel --failfast --no-input"
-
       - name: Set up Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v1
         with:
@@ -33,7 +27,13 @@ jobs:
           npm run build
           npm test
 
-      - name: build-push-proxy
+      - name: Setup test environment
+        run: docker-compose up -d --build
+
+      - name: Test backend
+        run: docker-compose exec -T web sh -c "python manage.py wait_for_database && python manage.py test --parallel --failfast --no-input"
+
+      - name: Build and push proxy Docker image to Docker Hub
         uses: docker/build-push-action@v1
         with:
           username: ${{ secrets.DOCKER_USERNAME }}
@@ -44,7 +44,18 @@ jobs:
           tag_with_ref: true
           tag_with_sha: true
 
-      - name: build-push-backend
+      - name: Build and push cronjob Docker image to Docker Hub
+        uses: docker/build-push-action@v1
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+          path: cronjob
+          repository: ticketvise/cronjob
+          add_git_labels: true
+          tag_with_ref: true
+          tag_with_sha: true
+
+      - name: Build and push backend Docker image to Docker Hub
         uses: docker/build-push-action@v1
         with:
           username: ${{ secrets.DOCKER_USERNAME }}
@@ -54,11 +65,29 @@ jobs:
           tag_with_ref: true
           tag_with_sha: true
 
-      - name: Get Git Short SHA
+      - name: Generate Short Git SHA
         id: git-sha7
         run: echo "::set-output name=sha7::$(echo ${{ github.sha }} | cut -c1-7)"
 
-      - name: Deploy to Docker Swarm
+      - name: Deploy to Docker Swarm (development)
+        uses: sagebind/docker-swarm-deploy-action@v2
+        if: github.event_name == 'push'
+        env:
+          DJANGO_SECRET: ${{ secrets.DJANGO_SECRET_DEV }}
+          SQL_USER: ${{ secrets.SQL_USER_DEV }}
+          SQL_PASSWORD: ${{ secrets.SQL_PASSWORD_DEV }}
+          LTI_KEY: ${{ secrets.LTI_KEY_DEV }}
+          LTI_SECRET: ${{ secrets.LTI_SECRET_DEV }}
+          GIT_DIGEST: ${{ steps.git-sha7.outputs.sha7 }}
+          EMAIL_PASSWORD: ${{ secrets.EMAIL_PASSWORD }}
+          DOMAIN: dev.ticketvise.com
+        with:
+          remote_host: ${{ secrets.DOCKER_SSH_HOST_DEV }}
+          ssh_private_key: ${{ secrets.DOCKER_SSH_PRIVATE_KEY_DEV }}
+          ssh_public_key: ${{ secrets.DOCKER_SSH_PUBLIC_KEY_DEV }}
+          args: stack deploy -c docker-compose.yml -c docker-compose.prod.yml ticketvise
+
+      - name: Deploy to Docker Swarm (production)
         uses: sagebind/docker-swarm-deploy-action@v2
         if: github.event_name == 'push' && github.ref == 'refs/heads/master'
         env:
@@ -67,8 +96,9 @@ jobs:
           SQL_PASSWORD: ${{ secrets.SQL_PASSWORD }}
           LTI_KEY: ${{ secrets.LTI_KEY }}
           LTI_SECRET: ${{ secrets.LTI_SECRET }}
-          BACKEND_DIGEST: ${{ steps.git-sha7.outputs.sha7 }}
-          PROXY_DIGEST: ${{ steps.git-sha7.outputs.sha7 }}
+          GIT_DIGEST: ${{ steps.git-sha7.outputs.sha7 }}
+          EMAIL_PASSWORD: ${{ secrets.EMAIL_PASSWORD }}
+          DOMAIN: uva.ticketvise.com
         with:
           remote_host: ${{ secrets.DOCKER_SSH_HOST }}
           ssh_private_key: ${{ secrets.DOCKER_SSH_PRIVATE_KEY }}

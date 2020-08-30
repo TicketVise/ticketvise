@@ -11,8 +11,8 @@ import re
 
 from django.db import models
 
-from ticketvise.email import send_email
-from ticketvise.models.notification import MentionNotification, CommentNotification
+from ticketvise.models.notification.comment import CommentNotification
+from ticketvise.models.notification.mention import MentionNotification
 from ticketvise.models.user import User
 
 MAX_COMMENT_CHAR_LENGTH = 50
@@ -49,15 +49,7 @@ class Comment(models.Model):
         usernames = [match.group(0).replace("@", "") for match in re.finditer(self._username_regex, self.content)]
 
         for receiver in User.objects.filter(username__in=usernames):
-            message = MentionNotification(receiver=receiver, comment=self)
-            message.save()
-
-            if self.author.notification_mention_mail:
-                mail_vars = {"ticket": self.ticket, "comment": self}
-
-                send_email(
-                    "Mention in ticket #%s" % self.ticket.ticket_inbox_id, receiver.email, "ticket_mention", mail_vars
-                )
+            MentionNotification.objects.create(receiver=receiver, comment=self)
 
         if self.is_reply:
             if self.author.is_assistant_or_coordinator(self.ticket.inbox):
@@ -70,16 +62,13 @@ class Comment(models.Model):
 
             self.ticket.save()
 
-            message = CommentNotification(receiver=self.ticket.author, comment=self)
-            message.save()
+            CommentNotification.objects.create(receiver=self.ticket.author, comment=self)
 
         if self.ticket.assignee:
-            message = CommentNotification(receiver=self.ticket.assignee, comment=self)
-            message.save()
+            CommentNotification.objects.create(receiver=self.ticket.assignee, comment=self)
         else:
             for receiver in self.ticket.inbox.get_assistants_and_coordinators():
-                message = CommentNotification(receiver=receiver, comment=self)
-                message.save()
+                CommentNotification.objects.create(receiver=receiver, comment=self)
 
     def __str__(self):
         content = str(self.content)

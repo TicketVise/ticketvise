@@ -25,8 +25,6 @@ from ticketvise.views.ticket import TicketView
 from ticketvise.views.ticket_form import TicketFormView
 from ticketvise.views.ticket_overview import TicketOverview
 
-#: Contains the url paths for the website.
-
 urlpatterns = [
                   path("admin/", admin.site.urls),
                   path("lti", LtiView.as_view()),

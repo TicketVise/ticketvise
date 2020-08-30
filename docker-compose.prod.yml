@@ -9,15 +9,14 @@ services:
         max_attempts: 5
         window: 10s
     environment:
-      - POSTGRES_DB=ticketvise
-      - POSTGRES_USER=${SQL_USER}
-      - POSTGRES_PASSWORD=${SQL_PASSWORD}
+      POSTGRES_DB: ticketvise
+      POSTGRES_USER: ${SQL_USER}
+      POSTGRES_PASSWORD: ${SQL_PASSWORD}
 
   web:
-    image: ticketvise/backend
+    image: "ticketvise/backend:sha-${GIT_DIGEST}"
     command: >
-      sh -c "env > /etc/environment && cron &&
-             python manage.py wait_for_database &&
+      sh -c "python manage.py wait_for_database &&
              python manage.py migrate --no-input &&
              gunicorn ticketvise.wsgi:application --bind 0.0.0.0:6000"
     deploy:
@@ -30,22 +29,44 @@ services:
       - media:/backend/ticketvise/media
       - static:/backend/ticketvise/static
     environment:
-      - DEBUG=0
-      - DJANGO_SECRET=${DJANGO_SECRET}
-      - EMAIL_PASSWORD=${EMAIL_PASSWORD}
-      - SQL_USER=${SQL_USER}
-      - SQL_PASSWORD=${SQL_PASSWORD}
-      - LTI_KEY=${LTI_KEY}
-      - LTI_SECRET=${LTI_SECRET}
+      DEBUG: 0
+      SEND_MAIL: 1
+      DJANGO_SECRET: ${DJANGO_SECRET}
+      SMTP_OUTBOUND_PASSWORD: ${EMAIL_PASSWORD}
+      SQL_USER: ${SQL_USER}
+      SQL_PASSWORD: ${SQL_PASSWORD}
+      LTI_KEY: ${LTI_KEY}
+      LTI_SECRET: ${LTI_SECRET}
 
-  proxy:
-    image: ticketvise/proxy
+  cronjob:
+    image: "ticketvise/cronjob:sha-${GIT_DIGEST}"
+    command: sh -c "env > /etc/environment && cron -f"
     deploy:
       restart_policy:
         condition: on-failure
         delay: 5s
         max_attempts: 5
         window: 10s
+    environment:
+      DEBUG: 0
+      SEND_MAIL: 1
+      DJANGO_SECRET: ${DJANGO_SECRET}
+      SMTP_OUTBOUND_PASSWORD: ${EMAIL_PASSWORD}
+      SQL_USER: ${SQL_USER}
+      SQL_PASSWORD: ${SQL_PASSWORD}
+      LTI_KEY: ${LTI_KEY}
+      LTI_SECRET: ${LTI_SECRET}
+
+  proxy:
+    image: "ticketvise/proxy:sha-${GIT_DIGEST}"
+    deploy:
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 5
+        window: 10s
+    environment:
+      NGINX_DOMAIN: ${DOMAIN}
     ports:
       - 80:8080
       - 443:8443

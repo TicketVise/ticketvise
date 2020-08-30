@@ -5,9 +5,9 @@
        v-bind:class="{ 'border-b-2 border-orange-400 text-gray-700': active}">
       {{ title }}
       <span class="ml-1 px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-gray-200 text-gray-800"
-            v-if="badge">
-                {{ badge }}
-            </span>
+        v-if="badge">
+        {{ badge }}
+      </span>
     </a>
   </li>
 </template>
