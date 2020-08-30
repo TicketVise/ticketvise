@@ -80,7 +80,7 @@ jobs:
           LTI_SECRET: ${{ secrets.LTI_SECRET_DEV }}
           GIT_DIGEST: ${{ steps.git-sha7.outputs.sha7 }}
           EMAIL_PASSWORD: ${{ secrets.EMAIL_PASSWORD }}
-          DOMAIN: "ticketvise.com"
+          DOMAIN: dev.ticketvise.com
         with:
           remote_host: ${{ secrets.DOCKER_SSH_HOST_DEV }}
           ssh_private_key: ${{ secrets.DOCKER_SSH_PRIVATE_KEY_DEV }}
@@ -98,7 +98,7 @@ jobs:
           LTI_SECRET: ${{ secrets.LTI_SECRET }}
           GIT_DIGEST: ${{ steps.git-sha7.outputs.sha7 }}
           EMAIL_PASSWORD: ${{ secrets.EMAIL_PASSWORD }}
-          DOMAIN: "uva.ticketvise.com"
+          DOMAIN: uva.ticketvise.com
         with:
           remote_host: ${{ secrets.DOCKER_SSH_HOST }}
           ssh_private_key: ${{ secrets.DOCKER_SSH_PRIVATE_KEY }}
