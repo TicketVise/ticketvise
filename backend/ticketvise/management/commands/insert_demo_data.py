@@ -31,7 +31,7 @@ class Command(BaseCommand):
             first_name="admin",
             last_name="admin",
             password=password,
-            email="info@ticketvise.com",
+            email="admin@ticketvise.com",
             is_staff=True,
             is_superuser=True,
         )
@@ -67,7 +67,7 @@ class Command(BaseCommand):
             first_name="Ana",
             last_name="Coordinator",
             password=password,
-            email="anacoordinator@ticketvise.com",
+            email="info@ticketvise.com",
             is_staff=True,
             is_superuser=True,
         )
