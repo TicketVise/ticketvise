@@ -1,5 +1,5 @@
 <template>
-  <section class="max-h-full">
+  <section class="flex flex-col h-full flex-grow">
     <div class="flex flex-col md:grid md:grid-cols-5 md:gap-2 p-4 space-y-2 md:space-y-0">
       <search-bar v-model="search" v-on:input="get_tickets" class="flex-grow px-2 md:col-span-3"></search-bar>
 
