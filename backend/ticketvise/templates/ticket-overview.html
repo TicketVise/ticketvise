@@ -76,9 +76,10 @@
     >
         <a
             href="{% url 'new_ticket' inbox.id %}"
-            class="inline-flex items-center h-10 px-4 py-2 border border-transparent text-sm leading-5 font-medium rounded-full text-white bg-primary hover:bg-orange-500 focus:outline-none focus:shadow-outline-orange focus:border-orange-700 active:bg-orange-700 transition duration-150 ease-in-out"
+            class="inline-flex justify-center items-center h-10 w-10 border border-transparent text-sm leading-5 font-medium rounded-full text-white bg-primary hover:bg-orange-500 focus:outline-none focus:shadow-outline-orange focus:border-orange-700 active:bg-orange-700 transition duration-150 ease-in-out"
+            :class="{ 'w-auto px-4': atTop }"
         >
-            <i class="fa fa-plus" :class="{ 'mr-2': atTop }"></i>
+            <i class="fa fa-plus text-base" :class="{ 'mr-2': atTop }"></i>
             <span x-show="atTop">New Ticket</span>
         </a>
     </span>
