@@ -10,10 +10,25 @@
         <div class="max-w-7xl mx-auto p-4 pt-2">
             <div class="lg:flex lg:items-center lg:justify-between">
                 <div class="flex-1 min-w-0">
-                    <a href="/inboxes" class="text-xs text-gray-700 hover:underline cursor-pointer">
-                        <i class="fa fa-arrow-left mr-2"></i>
-                        Dashboard
-                    </a>
+                    <div class="flex justify-between items-center">
+                        <a href="/inboxes" class="text-xs text-gray-700 hover:underline cursor-pointer">
+                            <i class="fa fa-arrow-left mr-2"></i>
+                            Dashboard
+                        </a>
+    
+                        {% user_is_coordinator user inbox as permission %}
+                        {% if permission %}
+                        <span class="md:hidden">
+                            <a
+                                href="{% url 'inbox_settings' inbox.id %}"
+                                class="inline-flex items-center py-2 text-sm leading-5 font-medium text-gray-700 hover:text-gray-500 focus:outline-none active:text-gray-800 active:bg-gray-50 transition duration-150 ease-in-out"
+                            >
+                                <i class="fa fa-cog"></i>
+                            </a>
+                        </span>
+                        {% endif %}
+                    </div>
+
                     <h2 class="text-2xl font-bold leading-7 text-gray-900 sm:text-3xl sm:leading-9 sm:truncate">
                         {{ inbox.name }}
                     </h2>
@@ -30,7 +45,7 @@
                         {% endif %}
                     </div>
                 </div>
-                <div class="mt-5 flex lg:mt-0 lg:ml-4 space-x-4">
+                <div class="mt-5 lg:mt-0 lg:ml-4 space-x-4 hidden md:flex">
                     {% user_is_coordinator user inbox as permission %}
                     {% if permission %}
                     <span class="shadow-sm rounded-md">
@@ -53,6 +68,20 @@
             </div>
         </div>
     </header>
+
+    <span
+        class="fixed bottom-4 right-4 shadow-xl rounded-full md:hidden"
+        x-data="{ atTop: (window.pageYOffset > 0) ? false : true }"
+        x-on:scroll.window="atTop = (window.pageYOffset > 0) ? false : true"
+    >
+        <a
+            href="{% url 'new_ticket' inbox.id %}"
+            class="inline-flex items-center h-10 px-4 py-2 border border-transparent text-sm leading-5 font-medium rounded-full text-white bg-primary hover:bg-orange-500 focus:outline-none focus:shadow-outline-orange focus:border-orange-700 active:bg-orange-700 transition duration-150 ease-in-out"
+        >
+            <i class="fa fa-plus" :class="{ 'mr-2': atTop }"></i>
+            <span x-show="atTop">New Ticket</span>
+        </a>
+    </span>
 
     <!-- TICKET LIST BOARD. -->
     <div id="ticket-overview"></div>
