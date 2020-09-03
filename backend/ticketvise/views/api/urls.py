@@ -9,7 +9,7 @@ from ticketvise.views.api.statistics import InboxTicketsPerDateTypeStatisticsApi
     InboxAverageAgentResponseTimeStatisticsApiView, InboxAverageTimeToCloseStatisticsApiView, \
     LabelsCountStatisticsApiView
 from ticketvise.views.api.ticket import TicketApiView, TicketUpdateAssignee, \
-    TicketStatusUpdateApiView, \
+    TicketStatusUpdateApiView, TicketAttachmentsApiView, \
     RecentTicketApiView, InboxTicketsApiView, TicketLabelApiView, TicketCreateApiView, TicketSharedAPIView, \
     TicketEventsApiView
 from ticketvise.views.api.user import UserRoleApiView, CurrentUserApiView, UserGetFromUsernameApiView, \
@@ -20,6 +20,7 @@ urlpatterns = [
     path("inboxes/<int:inbox_id>/tickets", InboxTicketsApiView.as_view()),
     path("inboxes/<int:inbox_id>/tickets/new", TicketCreateApiView.as_view()),
     path("inboxes/<int:inbox_id>/tickets/<int:ticket_inbox_id>", TicketApiView.as_view()),
+    path("inboxes/<int:inbox_id>/tickets/<int:ticket_inbox_id>/attachments", TicketAttachmentsApiView.as_view()),
     path("inboxes/<int:inbox_id>/tickets/<int:ticket_inbox_id>/comments", TicketCommentsApiView.as_view()),
     path("inboxes/<int:inbox_id>/tickets/<int:ticket_inbox_id>/comments/post", CreateCommentApiView.as_view()),
     path("inboxes/<int:inbox_id>/tickets/<int:ticket_inbox_id>/labels", TicketLabelApiView.as_view()),

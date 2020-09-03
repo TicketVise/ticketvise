@@ -1,7 +1,7 @@
 <template>
   <div v-if="ticket" class="min-h-full flex flex-1 flex-col">
     <div class="lg:h-full flex-1 flex flex-col-reverse items-stretch lg:flex-row w-full">
-      <div class="w-screen lg:max-w-sm bg-gray-100 border-r border-t lg:border-t-0 space-y-2">
+      <div class="max-w-screen lg:max-w-sm bg-gray-100 md:border-r border-t lg:border-t-0 space-y-2 pb-4">
         <!-- Ticket Author -->
         <div class="p-6 flex space-x-4 border-b">
           <img class="h-12 w-12 rounded-full" :src="ticket.author.avatar_url" alt="User image">
@@ -91,7 +91,7 @@
           </div>
         </div>
         <div class="flex flex-col">
-          <ul class="flex border-b mb-2">
+          <ul class="flex border-b mb-2 text-sm">
             <tab :active="activeTab === 'external'" @click="activeTab = 'external'" title="Question"
                  :badge="replies.length + 1"/>
             <tab :active="activeTab === 'internal'" @click="activeTab = 'internal'" title="Staff discussion"
@@ -157,7 +157,7 @@
         labels: [],
         comments: [],
         staff: [],
-        activeTab: 'external',
+        activeTab: 'attachments',
         user: null,
         role: "",
         shared_with: [],

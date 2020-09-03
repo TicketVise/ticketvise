@@ -267,6 +267,19 @@ class TicketLabelApiView(UserIsInboxStaffMixin, UpdateAPIView):
         return Ticket.objects.get(inbox=inbox, ticket_inbox_id=self.kwargs["ticket_inbox_id"])
 
 
+class TicketAttachmentsApiView(UpdateAPIView):
+    serializer_class = TicketSerializer
+
+    def get_object(self):
+        inbox = get_object_or_404(Inbox, pk=self.kwargs["inbox_id"])
+        ticket = get_object_or_404(Ticket, inbox=inbox, ticket_inbox_id=self.kwargs["ticket_inbox_id"])
+
+        for file in self.request.FILES.getlist('files'):
+            TicketAttachment(ticket=ticket, file=file).save()
+        
+        return ticket
+            
+
 class TicketStatusUpdateSerializer(ModelSerializer):
     class Meta:
         model = Ticket
