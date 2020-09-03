@@ -48,6 +48,10 @@ def get_user_role(user, inbox):
 
 
 @register.simple_tag
+def get_simple_role_name(role):
+    return Role[role].label
+
+@register.simple_tag
 def get_staff(inbox):
     """
     Get all staff members of inbox.
