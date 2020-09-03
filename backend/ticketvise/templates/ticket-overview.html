@@ -29,7 +29,7 @@
                         {% endif %}
                     </div>
 
-                    <h2 class="text-2xl font-bold leading-7 text-gray-900 sm:text-3xl sm:leading-9 sm:truncate">
+                    <h2 class="text-2xl font-bold leading-7 text-gray-900 sm:text-3xl sm:leading-9 truncate">
                         {{ inbox.name }}
                     </h2>
                     <div class="flex flex-row flex-wrap space-x-4 sm:space-x-6">
@@ -76,9 +76,10 @@
     >
         <a
             href="{% url 'new_ticket' inbox.id %}"
-            class="inline-flex items-center h-10 px-4 py-2 border border-transparent text-sm leading-5 font-medium rounded-full text-white bg-primary hover:bg-orange-500 focus:outline-none focus:shadow-outline-orange focus:border-orange-700 active:bg-orange-700 transition duration-150 ease-in-out"
+            class="inline-flex justify-center items-center h-10 w-10 border border-transparent text-sm leading-5 font-medium rounded-full text-white bg-primary hover:bg-orange-500 focus:outline-none focus:shadow-outline-orange focus:border-orange-700 active:bg-orange-700 transition duration-150 ease-in-out"
+            :class="{ 'w-auto px-4': atTop }"
         >
-            <i class="fa fa-plus" :class="{ 'mr-2': atTop }"></i>
+            <i class="fa fa-plus text-base" :class="{ 'mr-2': atTop }"></i>
             <span x-show="atTop">New Ticket</span>
         </a>
     </span>
