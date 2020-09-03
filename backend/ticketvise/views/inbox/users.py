@@ -1,12 +1,13 @@
 from django.core.exceptions import PermissionDenied
 from django.core.paginator import Paginator
+from django.db.models import Case, BooleanField, When
 from django.shortcuts import get_object_or_404
 from django.urls import reverse
 from django.views.generic import TemplateView, UpdateView, DeleteView
 
 from ticketvise import settings
 from ticketvise.models.inbox import Inbox
-from ticketvise.models.user import User, UserInbox
+from ticketvise.models.user import User, UserInbox, Role
 from ticketvise.views.inbox.base import InboxCoordinatorRequiredMixin, UserCoordinatorRequiredMixin
 
 
@@ -25,20 +26,29 @@ class InboxUsersView(InboxCoordinatorRequiredMixin, TemplateView):
         if not page_number.isnumeric():
             page_number = 1
 
-        users = (User.objects.filter(inboxes=inbox, username__icontains=q)
-                 | User.objects.filter(inboxes=inbox, first_name__icontains=q)
-                 | User.objects.filter(inboxes=inbox, last_name__icontains=q)
-                 | User.objects.filter(inboxes=inbox, email__contains=q)).order_by("first_name")
+        inbox_users = (UserInbox.objects.filter(inbox=inbox, user__username__icontains=q)
+                       | UserInbox.objects.filter(inbox=inbox, user__first_name__icontains=q)
+                       | UserInbox.objects.filter(inbox=inbox, user__last_name__icontains=q)
+                       | UserInbox.objects.filter(inbox=inbox, user__email__contains=q)) \
+            .annotate(sort_staff=Case(
+                When(role=Role.GUEST, then=True),
+                default=False,
+                output_field=BooleanField()
+            )) \
+            .select_related("user") \
+            .order_by("sort_staff", "role", "user__first_name")
+
+        test = list(inbox_users)
 
         context = super(TemplateView, self).get_context_data(**kwargs)
 
-        page = Paginator(users, settings.PAGE_SIZE).get_page(page_number)
+        page = Paginator(inbox_users, settings.PAGE_SIZE).get_page(page_number)
 
         context['inbox'] = inbox
         context["index_start"] = (int(page_number) - 1) * settings.PAGE_SIZE + 1
         context["index_end"] = context["index_start"] - 1 + len(page)
-        context["total_count"] = users.count()
-        context['users'] = page
+        context["total_count"] = inbox_users.count()
+        context['inbox_users'] = page
 
         return context
 
