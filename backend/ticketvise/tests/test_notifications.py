@@ -248,7 +248,6 @@ class NotificationsTestCase(TestCase):
                 bla = list(Notification.objects.filter(receiver=updated_user).select_subclasses())
                 self.assertEqual(notification.objects.filter(receiver=updated_user).exists(), b)
 
-
     def test_getters_comment_notifications(self):
         """
         Test all getters of the CommentNotifications.
@@ -302,11 +301,12 @@ class NotificationsTestCase(TestCase):
         Notification.objects.all().delete()
 
         ticket = Ticket.objects.create(author=self.student, assignee=self.ta,
-                                            title="How to code?",
-                                            inbox=self.inbox, content="wat is 1+1?")
+                                       title="How to code?",
+                                       inbox=self.inbox, content="wat is 1+1?")
         comment = Comment.objects.create(ticket=ticket, author=self.ta2, content="@admin", is_reply=False)
         self.assertTrue(MentionNotification.objects.filter(comment=comment, receiver=self.ta).exists())
         self.assertFalse(CommentNotification.objects.filter(comment=comment, receiver=self.ta).exists())
+
 
 class NotificationsAPITestCase(NotificationsTestCase):
 
