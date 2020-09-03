@@ -2,12 +2,12 @@ from datetime import datetime
 
 from django.core.management.base import BaseCommand
 
-from ticketvise.tasks import update_tickets, alert_unanswered_tickets
+from ticketvise.tasks import close_expired_answered_tickets, alert_unanswered_tickets
 
 
 class Command(BaseCommand):
     """Django command that runs timed tasks"""
-    tasks = [update_tickets, alert_unanswered_tickets]
+    tasks = [close_expired_answered_tickets, alert_unanswered_tickets]
 
     def handle(self, *args, **options):
         print("Starting tasks at", datetime.now())
