@@ -65,7 +65,9 @@ class Comment(models.Model):
             CommentNotification.objects.create(receiver=self.ticket.author, comment=self)
 
         if self.ticket.assignee:
-            CommentNotification.objects.create(receiver=self.ticket.assignee, comment=self)
+            # Preventing sending a comment and mention notification if assignee is being mentioned.
+            if self.ticket.assignee.username not in usernames:
+                CommentNotification.objects.create(receiver=self.ticket.assignee, comment=self)
         else:
             for receiver in self.ticket.inbox.get_assistants_and_coordinators():
                 CommentNotification.objects.create(receiver=receiver, comment=self)

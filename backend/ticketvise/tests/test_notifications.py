@@ -46,7 +46,7 @@ class NotificationsTestCase(TestCase):
         )
         self.ta2.add_inbox(self.inbox, Role.AGENT)
 
-        self.ticket = Ticket.objects.create(author=self.student, assignee=self.ta,
+        self.ticket = Ticket.objects.create(author=self.student, assignee=self.ta2,
                                             title="How to code?",
                                             inbox=self.inbox, content="wat is 1+1?")
         self.comment = Comment.objects.create(ticket=self.ticket, author=self.ta2, content="Hello World")
@@ -294,6 +294,19 @@ class NotificationsTestCase(TestCase):
         with self.assertRaises(NotImplementedError):
             notification.inbox
 
+    def test_duplicate_notification_on_mention(self):
+        """
+        Test to verify that the person being mentioned only receive a single mention notification, and not also a
+        new comment notification. This test checks for issue #176.
+        """
+        Notification.objects.all().delete()
+
+        ticket = Ticket.objects.create(author=self.student, assignee=self.ta,
+                                            title="How to code?",
+                                            inbox=self.inbox, content="wat is 1+1?")
+        comment = Comment.objects.create(ticket=ticket, author=self.ta2, content="@admin", is_reply=False)
+        self.assertTrue(MentionNotification.objects.filter(comment=comment, receiver=self.ta).exists())
+        self.assertFalse(CommentNotification.objects.filter(comment=comment, receiver=self.ta).exists())
 
 class NotificationsAPITestCase(NotificationsTestCase):
 
