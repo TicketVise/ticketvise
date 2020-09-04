@@ -14,12 +14,13 @@
         </div>
 
         <!-- Recent question -->
-        <recent-questions :author="ticket.author" :inbox_id="ticket.inbox" class="mx-4" v-if="is_staff"/>
+        <recent-questions :author="ticket.author" :inbox_id="ticket.inbox" :role="ticket.author.role" class="mx-4"
+                          v-if="is_staff"/>
 
         <!-- Sharing -->
         <div class="px-4" v-if="canShare">
           <edit-share-with :errors="errors" :inbox_id="ticket.inbox" :shared_with="shared_with"
-            v-on:input="updateSharedWith"></edit-share-with>
+                           v-on:input="updateSharedWith"></edit-share-with>
         </div>
 
         <!-- Labels -->
@@ -34,14 +35,14 @@
           <div class="flex flex-wrap mb-2" v-else>
             No labels selected
           </div>
-            <label-dropdown :selected="labels" :values="inbox.labels" v-if="canShare" v-model="labels"
-                            v-on:input="updateLabels"/>
+          <label-dropdown :selected="labels" :values="inbox.labels" v-if="canShare" v-model="labels"
+                          v-on:input="updateLabels"/>
         </div>
 
         <!-- Assignee -->
         <div class="px-4" v-if="is_staff">
           <h4 class="font-semibold text-gray-800 mb-2">Assignee</h4>
-            <user-dropdown :assignee="ticket.assignee" :staff="staff" v-if="staff" v-on:input="updateAssignee"/>
+          <user-dropdown :assignee="ticket.assignee" :staff="staff" v-if="staff" v-on:input="updateAssignee"/>
         </div>
 
         <!-- Participants -->
@@ -195,6 +196,10 @@
               axios.get("/api/inboxes/" + this.ticket.inbox + "/staff").then(response => {
                 this.staff = response.data;
               });
+
+              axios.get("/api/inboxes/" + this.ticket.inbox + "/users/" + this.ticket.author.id + "/roles").then(response => {
+                this.$set(this.ticket.author, 'role', response.data)
+              })
             }
             if (this.isStaff() || (this.ticket.author && this.ticket.author.id === this.user.id)) {
               axios.get("/api" + window.location.pathname + "/shared").then(response => {
@@ -202,9 +207,6 @@
               });
             }
           });
-          axios.get("/api/inboxes/" + this.ticket.inbox + "/users/" + this.ticket.author.id + "/roles").then(response => {
-            this.$set(this.ticket.author, 'role', response.data)
-          })
         });
         axios.get("/api/inboxes/" + this.ticket.inbox).then(response => {
           this.inbox = response.data

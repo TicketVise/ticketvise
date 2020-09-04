@@ -185,11 +185,9 @@ DATE_FORMAT = "j N, Y"
 
 #: Static paths
 #: ~~~~~~~~~~~~~~~~~~~
-
-#: URL path to the static folder.
 STATIC_URL = "/static/"
-#: File path to the static root.
-STATIC_ROOT = os.path.join(BASE_DIR, "ticketvise/static")
+STATIC_ROOT = os.path.join(BASE_DIR, "static")
+STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.ManifestStaticFilesStorage'
 
 #: Email settings
 #: ~~~~~~~~~~~~~~~~~~~
