@@ -15,7 +15,8 @@ server {
     listen [::]:8443 ssl http2;
     server_name ${NGINX_DOMAIN};
 
-    gzip on;
+    # Enable gzip compression.
+    include compression.conf;
 
     ssl_certificate /etc/letsencrypt/live/${NGINX_DOMAIN}/fullchain.pem;
     ssl_certificate_key /etc/letsencrypt/live/${NGINX_DOMAIN}/privkey.pem;
@@ -46,10 +47,6 @@ server {
 
     location /static/ {
         alias /home/static/;
-            # don't cache it
-            proxy_no_cache 1;
-            # even if cached, don't try to use it
-            proxy_cache_bypass 1;
     }
 
     location /media/ {
