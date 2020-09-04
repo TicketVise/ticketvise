@@ -18,7 +18,7 @@ services:
     command: >
       sh -c "python manage.py wait_for_database &&
              python manage.py migrate --no-input &&
-             python manage.py collectstatic --no-input &&
+             python manage.py collectstatic --no-input --clear &&
              gunicorn ticketvise.wsgi:application --bind 0.0.0.0:6000"
     deploy:
       restart_policy:
@@ -28,7 +28,7 @@ services:
         window: 10s
     volumes:
       - media:/backend/ticketvise/media
-      - static:/backend/ticketvise/static
+      - static:/backend/static
     environment:
       DEBUG: 0
       SEND_MAIL: 1

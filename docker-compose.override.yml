@@ -6,7 +6,8 @@ services:
     build:
       context: .
     command: >
-      sh -c "python manage.py wait_for_database &&
+      sh -c "python manage.py collectstatic --no-input --clear &&
+             python manage.py wait_for_database &&
              python manage.py migrate --no-input &&
              python manage.py insert_demo_data &&
              python manage.py runserver 0.0.0.0:6000"
