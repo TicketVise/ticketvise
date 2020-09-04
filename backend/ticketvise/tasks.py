@@ -8,11 +8,11 @@ from django.utils import timezone
 
 from .models.inbox import Inbox
 from .models.notification.reminder import TicketReminderNotification
-from .models.ticket import Ticket
+from .models.ticket import Ticket, Status
 from .models.user import Role
 
 
-def update_tickets():
+def close_expired_answered_tickets():
     """
     Update the status of all answered tickets older than the amount of days
     specified in inbox.close_answered_weeks to closed.
@@ -23,8 +23,8 @@ def update_tickets():
         if inbox.close_answered_weeks > 0:
             min_age = timezone.now() - timezone.timedelta(weeks=inbox.close_answered_weeks)
 
-            tickets = Ticket.objects.filter(inbox=inbox, status=Ticket.Status.ANSWERED, date_edited__lt=min_age)
-            tickets.update(status=Ticket.Status.CLOSED)
+            tickets = Ticket.objects.filter(inbox=inbox, status=Status.ANSWERED, date_created__lt=min_age)
+            tickets.update(status=Status.CLOSED)
 
 
 def alert_unanswered_tickets():
@@ -35,13 +35,15 @@ def alert_unanswered_tickets():
     :return: None.
     """
     for inbox in Inbox.objects.all():
-        if inbox.close_answered_weeks > 0:
+        if inbox.alert_coordinator_unanswered_days > 0:
             min_age = timezone.now() - timezone.timedelta(days=inbox.alert_coordinator_unanswered_days)
-
-            tickets = Ticket.objects.filter(
-                Q(status=Ticket.Status.PENDING) | Q(status=Ticket.Status.ASSIGNED), date_edited__lt=min_age
-            )
+            tickets = Ticket.objects.filter(Q(status=Status.PENDING) | Q(status=Status.ASSIGNED),
+                                            inbox=inbox, date_created__lt=min_age)
 
             for ticket in tickets:
+                if ticket.assignee:
+                    TicketReminderNotification.objects.create(receiver=ticket.assignee, ticket=ticket)
+
                 for coordinator in ticket.inbox.get_users_by_role(Role.MANAGER):
-                    TicketReminderNotification.objects.create(receiver=coordinator, ticket=ticket)
+                    if coordinator is not ticket.assignee:
+                        TicketReminderNotification.objects.create(receiver=coordinator, ticket=ticket)
