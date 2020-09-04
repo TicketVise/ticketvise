@@ -1,3 +1,5 @@
+include cache.conf;
+
 server {
     listen 8080;
     listen [::]:8080;
@@ -24,7 +26,7 @@ server {
     include compression.conf;
 
     # Specify file cache expiration.
-    include cache.conf;
+    expires $expires;
 
     ssl_certificate /etc/letsencrypt/live/${NGINX_DOMAIN}/fullchain.pem;
     ssl_certificate_key /etc/letsencrypt/live/${NGINX_DOMAIN}/privkey.pem;
