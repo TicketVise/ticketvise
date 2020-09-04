@@ -15,8 +15,16 @@ server {
     listen [::]:8443 ssl http2;
     server_name ${NGINX_DOMAIN};
 
+
+    keepalive_timeout 20s;
+    sendfile on;
+    tcp_nopush on;
+
     # Enable gzip compression.
     include compression.conf;
+
+    # Specify file cache expiration.
+    include cache.conf;
 
     ssl_certificate /etc/letsencrypt/live/${NGINX_DOMAIN}/fullchain.pem;
     ssl_certificate_key /etc/letsencrypt/live/${NGINX_DOMAIN}/privkey.pem;
