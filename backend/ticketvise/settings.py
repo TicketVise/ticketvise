@@ -18,8 +18,7 @@ DEBUG = int(os.environ.get("DEBUG", True))
 #: If ``True``, mails are sent when calling :func:`email.send_email`.
 SEND_MAIL = int(os.environ.get("SEND_MAIL", False))
 
-DOMAIN = "uva.ticketvise.com"
-
+DOMAIN = os.environ.get("DOMAIN", "uva.ticketvise.com")
 ALLOWED_HOSTS = ["*"]
 
 
