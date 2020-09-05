@@ -94,6 +94,8 @@ CSRF_COOKIE_SECURE = not DEBUG
 SESSION_COOKIE_SAMESITE = "None"
 SESSION_COOKIE_SECURE = not DEBUG
 
+X_FRAME_OPTIONS = 'ALLOW-FROM ' + ', '.join(CSP_FRAME_ANCESTORS).strip()
+
 #: WSGI application path.
 WSGI_APPLICATION = "ticketvise.wsgi.application"
 
