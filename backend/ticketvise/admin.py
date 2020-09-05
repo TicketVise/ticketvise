@@ -17,7 +17,7 @@ from ticketvise.models.notification.mention import MentionNotification
 from ticketvise.models.notification.new import NewTicketNotification
 from ticketvise.models.notification.reminder import TicketReminderNotification
 from ticketvise.models.ticket import Ticket, TicketEvent, TicketStatusEvent, \
-    TicketAssigneeEvent, TicketLabelEvent
+    TicketAssigneeEvent, TicketLabelEvent, TicketAttachment
 from ticketvise.models.user import User, UserInbox
 
 
@@ -47,6 +47,7 @@ admin.site.register(Inbox)
 admin.site.register(UserInbox)
 admin.site.register(Label)
 admin.site.register(Ticket)
+admin.site.register(TicketAttachment)
 admin.site.register(TicketEvent)
 admin.site.register(TicketStatusEvent)
 admin.site.register(TicketAssigneeEvent)
