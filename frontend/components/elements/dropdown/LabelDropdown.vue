@@ -7,7 +7,7 @@
                 tabindex="-1"
                 type="button">
           <div class="flex items-center space-x-3">
-            <span class="block truncate">Select labels</span>
+            <span class="block truncate">{{ labels && labels.length ? "Select labels" : "No labels available" }}</span>
           </div>
           <span class="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none">
             <svg class="h-5 w-5 text-gray-400" viewBox="0 0 20 20" fill="none" stroke="currentColor">
@@ -18,7 +18,7 @@
         </button>
       </span>
 
-      <div class="absolute mt-1 w-full rounded-md bg-white shadow-lg z-50" v-if="open">
+      <div class="absolute mt-1 w-full rounded-md bg-white shadow-lg z-50" v-if="open && labels && labels.length">
         <ul aria-activedescendant="listbox-item-3" aria-labelledby="listbox-label"
             class="max-h-56 rounded-md py-1 text-base leading-6 shadow-xs overflow-auto focus:outline-none sm:text-sm sm:leading-5"
             role="listbox"
