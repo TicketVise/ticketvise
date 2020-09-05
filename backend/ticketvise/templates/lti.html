@@ -84,7 +84,6 @@
         }).catch(_ => requestFullWindowLaunch())
       })
 
-      document.getElementById("cancel-button").addEventListener("click", requestFullWindowLaunch)
     } else if (next_url !== "") {
       window.location.href = next_url
     }
