@@ -37,6 +37,11 @@ services:
       POSTGRES_USER: ticketvise
       POSTGRES_PASSWORD: Welkom01
 
+  s3:
+    environment:
+      MINIO_ACCESS_KEY: minio
+      MINIO_SECRET_KEY: Welkom01
+
   cronjob:
     image: ticketvise/cronjob
     build: ./cronjob
