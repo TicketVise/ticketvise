@@ -258,7 +258,7 @@ class CommentTestCase(TicketTestCase):
         self.assertEqual(response.status_code, 201)
         self.assertNotEqual(Comment.objects.count(), count)
         self.assertEqual(Ticket.objects.get(pk=self.ticket.id).status, Status.ANSWERED)
-        self.assertEqual(Ticket.objects.get(pk=self.ticket.id).assignee, self.assistant)
+        self.assertEqual(Ticket.objects.get(pk=self.ticket.id).assignee, self.assistant3)
 
     def test_post_replies_as_ta_in_inbox_unassigned(self):
         """
