@@ -10,14 +10,14 @@ const labelsData = [
   {"name": "Assignment", "color": "#00ffcd", "id": 9}
 ];
 
-const selected = [
+const selectedData = [
   {"name": "E-Journal", "color": "#fbf06d", "id": 7},
   {"name": "Laptop", "color": "#150a1a", "id": 8}
 ];
 
 test("Labeldropdown displays data and opens", async () => {
   const wrapper = shallowMount(LabelDropdown, {
-    propsData: {values: labelsData, selected: selected},
+    propsData: {values: labelsData, selected: selectedData},
     data() {
       return {open: false}
     }
@@ -44,7 +44,7 @@ test("Labeldropdown displays data and opens", async () => {
 
 test("Labeldropdown adds and removes labels on click", async () => {
   const wrapper = shallowMount(LabelDropdown, {
-    propsData: {values: labelsData, selected: selected},
+    propsData: {values: labelsData, selected: selectedData},
     data() {
       return {open: true}
     }
@@ -56,8 +56,8 @@ test("Labeldropdown adds and removes labels on click", async () => {
   await option.trigger("click");
   await wrapper.vm.$nextTick();
 
-  expect(selected).toContain(labelsData[0]);
-  expect(selected.length).toBe(3);
+  expect(wrapper.vm.selected).toContain(labelsData[0]);
+  expect(wrapper.vm.selected.length).toBe(3);
   expect(wrapper.emitted().input).toBeTruthy();
 
   // Test selected label attributes
@@ -68,7 +68,7 @@ test("Labeldropdown adds and removes labels on click", async () => {
   await option.trigger("click");
   await wrapper.vm.$nextTick();
 
-  expect(selected.length).toBe(2);
+  expect(wrapper.vm.selected.length).toBe(2);
   expect(wrapper.emitted().input).toBeTruthy();
 
 });
@@ -84,5 +84,43 @@ test("No labels in dropdown", async () => {
   expect(title.html()).toContain("No labels available");
 
   let options = wrapper.findAll("li");
-  expect(options.length).toBe(0)
+  expect(options.length).toBe(0);
+  expect(wrapper.vm.selected.length).toBe(0);
+});
+
+test("Add labels when no labels selected", async () => {
+  const wrapper = shallowMount(LabelDropdown, {
+    propsData: {
+      values: labelsData,
+      selected: []
+    },
+    data() {
+      return {
+        open: true,
+        labels: []
+      }
+    }
+  });
+  const title = wrapper.find("span");
+  expect(title.html()).toContain("Select labels");
+
+  let options = wrapper.findAll("li");
+  let option = options.at(0);
+
+  expect(options.length).toBe(labelsData.length)
+
+  // Check click adds from list and emits
+  await option.trigger("click");
+  await wrapper.vm.$nextTick();
+
+  expect(wrapper.vm.selected).toContain(labelsData[0]);
+  expect(wrapper.vm.selected.length).toBe(1);
+  expect(wrapper.emitted().input).toBeTruthy();
+
+  // Check click removes from list and emits
+  await option.trigger("click");
+  await wrapper.vm.$nextTick();
+
+  expect(wrapper.vm.selected.length).toBe(0);
+  expect(wrapper.emitted().input).toBeTruthy();
 });
