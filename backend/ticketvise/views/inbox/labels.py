@@ -85,4 +85,4 @@ class DeleteInboxLabelView(LabelCoordinatorRequiredMixin, DeleteView):
         context = super(DeleteView, self).get_context_data(**kwargs)
         context['inbox'] = inbox
 
-        return
+        return context
