@@ -8,7 +8,7 @@
     <div class="flex w-full">
       <avatar :source="user.avatar_url" class="w-12 h-12 m-3"/>
       <div class="flex flex-col items-end flex-grow w-full mb-4">
-        <card class="mb-4 w-full" flat>
+        <card class="mb-2 w-full" outlined>
           <editor initialEditType="wysiwyg" previewStyle="tab" ref="replyEditor"/>
         </card>
         <button @click="submitReply"

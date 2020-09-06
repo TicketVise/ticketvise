@@ -18,8 +18,7 @@ DEBUG = int(os.environ.get("DEBUG", True))
 #: If ``True``, mails are sent when calling :func:`email.send_email`.
 SEND_MAIL = int(os.environ.get("SEND_MAIL", False))
 
-DOMAIN = "uva.ticketvise.com"
-
+DOMAIN = os.environ.get("DOMAIN", "uva.ticketvise.com")
 ALLOWED_HOSTS = ["*"]
 
 
@@ -50,7 +49,6 @@ MIDDLEWARE = [
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
-    "django.middleware.clickjacking.XFrameOptionsMiddleware",
     "csp.middleware.CSPMiddleware",
     "ticketvise.middleware.CurrentUserMiddleware",
 ]
@@ -77,15 +75,8 @@ TEMPLATES = [
 ]
 
 CSP_FRAME_ANCESTORS = ["https://uvadlo-tes.instructure.com", "https://*.uva.nl"]
-CSP_STYLE_SRC = [
-    "'self'",
-    "'unsafe-inline'",
-]
-CSP_SCRIPT_SRC = [
-    "'self'",
-    "'unsafe-inline'",
-    "'unsafe-eval'",
-]
+CSP_STYLE_SRC = ["'self'", "'unsafe-inline'"]
+CSP_SCRIPT_SRC = ["'self'", "'unsafe-inline'", "'unsafe-eval'"]
 CSP_IMG_SRC = ["*", "data:"]
 CSP_DEFAULT_SRC = ["'self'", "'unsafe-inline'", "'unsafe-eval'"]
 
@@ -204,7 +195,7 @@ EMAIL_HOST_USER = os.getenv("SMTP_OUTBOUND_USER", "apikey")
 EMAIL_HOST_PASSWORD = os.getenv("SMTP_OUTBOUND_PASSWORD", "Welkom01")
 EMAIL_USE_TLS = os.getenv("SMTP_TLS", True)
 EMAIL_USE_SSL = os.getenv("SMTP_SSL", False)
-EMAIL_FROM = os.getenv("SMTP_OUTBOUND_FROM", "ticket@" + DOMAIN)
+EMAIL_FROM = os.getenv("SMTP_OUTBOUND_FROM", "TicketVise <ticket@{}>".format(DOMAIN))
 
 PAGE_SIZE = 25
 

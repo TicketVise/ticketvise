@@ -72,3 +72,17 @@ test("Labeldropdown adds and removes labels on click", async () => {
   expect(wrapper.emitted().input).toBeTruthy();
 
 });
+
+test("No labels in dropdown", async () => {
+  const wrapper = shallowMount(LabelDropdown, {
+    propsData: {values: [], selected: []},
+    data() {
+      return {open: true}
+    }
+  });
+  const title = wrapper.find("span");
+  expect(title.html()).toContain("No labels available");
+
+  let options = wrapper.findAll("li");
+  expect(options.length).toBe(0)
+});
