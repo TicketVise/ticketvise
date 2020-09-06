@@ -21,6 +21,10 @@ services:
              python manage.py collectstatic --no-input --clear &&
              gunicorn ticketvise.wsgi:application --bind 0.0.0.0:6000"
     deploy:
+      update_config:
+        parallelism: 1
+        delay: 10s
+        order: start-first
       restart_policy:
         condition: on-failure
         delay: 5s
@@ -62,6 +66,10 @@ services:
   proxy:
     image: "ticketvise/proxy:sha-${GIT_DIGEST}"
     deploy:
+      update_config:
+        parallelism: 1
+        delay: 10s
+        order: start-first
       restart_policy:
         condition: on-failure
         delay: 5s
