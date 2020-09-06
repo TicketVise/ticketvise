@@ -131,7 +131,7 @@ class Inbox(models.Model):
         # Set default labels
         Label.objects.create(inbox=self, color="#d73a4a", name="Assignment")
         Label.objects.create(inbox=self, color="#a2eeef", name="Exam")
-        Label.objects.create(inbox=self, color="#0366d6", name="Lectures")
+        Label.objects.create(inbox=self, color="#0366d6", name="Lecture")
         Label.objects.create(inbox=self, color="#008672", name="Course material")
 
     # def save(self, force_insert=False, force_update=False, using=None, update_fields=None):

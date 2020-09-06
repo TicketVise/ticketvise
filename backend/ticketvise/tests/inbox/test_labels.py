@@ -1,10 +1,18 @@
 from django.urls import reverse
 
+from ticketvise.models.inbox import Inbox
 from ticketvise.models.label import Label
 from ticketvise.tests.inbox.utils import InboxTestCase
 
 
 class LabelsTest(InboxTestCase):
+    def test_default_labels(self):
+        """
+        Test to verify an inbox is created with default labels.
+        """
+        inbox = Inbox.objects.create(name="NewInbox", code="NI")
+        names = Label.objects.filter(inbox=inbox).values("name")
+        self.assertContains(names, ["Assignment", "Lecture", "Exam", "Course material"])
 
     def test_delete_label_as_coordinator(self):
         """
