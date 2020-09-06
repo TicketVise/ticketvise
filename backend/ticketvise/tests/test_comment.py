@@ -5,7 +5,7 @@ This file tests the comments functionality.
 """
 
 from ticketvise.models.comment import Comment, MAX_COMMENT_CHAR_LENGTH
-from ticketvise.models.ticket import Ticket
+from ticketvise.models.ticket import Ticket, Status
 from ticketvise.tests.test_ticket import TicketTestCase
 
 
@@ -187,7 +187,7 @@ class CommentTestCase(TicketTestCase):
 
     def test_post_replies_as_student(self):
         """
-        Test to verify a student cannot get replies
+        Test to verify a student without permissions cannot post replies
         """
         self.client.force_login(self.student2)
 
@@ -205,6 +205,8 @@ class CommentTestCase(TicketTestCase):
         Test to verify a shared_with can get replies
         """
         self.client.force_login(self.student2)
+        self.ticket2.status = Status.ANSWERED
+        self.ticket2.save()
         count = Comment.objects.count()
 
         data = {
@@ -216,12 +218,15 @@ class CommentTestCase(TicketTestCase):
             follow=True)
         self.assertEqual(response.status_code, 201)
         self.assertNotEqual(Comment.objects.count(), count)
+        self.assertEqual(Ticket.objects.get(pk=self.ticket2.id).status, Status.ASSIGNED)
 
     def test_post_replies_as_author(self):
         """
-        Test to verify an author cannot get replies
+        Test to verify an author can post replies
         """
         self.client.force_login(self.student)
+        self.ticket.status = Status.ANSWERED
+        self.ticket.save()
         count = Comment.objects.count()
 
         data = {
@@ -232,12 +237,16 @@ class CommentTestCase(TicketTestCase):
             f"/api/inboxes/{self.inbox.id}/tickets/{self.ticket.ticket_inbox_id}/replies/post", data, follow=True)
         self.assertEqual(response.status_code, 201)
         self.assertNotEqual(Comment.objects.count(), count)
+        self.assertEqual(Ticket.objects.get(pk=self.ticket.id).status, Status.ASSIGNED)
 
-    def test_post_replies_as_ta_in_inbox(self):
+    def test_post_replies_as_ta_in_inbox_assigned(self):
         """
         Test to verify an assistant of the inbox can get replies
         """
         self.client.force_login(self.assistant)
+        self.ticket.status = Status.ASSIGNED
+        self.ticket.assignee = self.assistant3
+        self.ticket.save()
         count = Comment.objects.count()
 
         data = {
@@ -248,6 +257,29 @@ class CommentTestCase(TicketTestCase):
             f"/api/inboxes/{self.inbox.id}/tickets/{self.ticket.ticket_inbox_id}/replies/post", data, follow=True)
         self.assertEqual(response.status_code, 201)
         self.assertNotEqual(Comment.objects.count(), count)
+        self.assertEqual(Ticket.objects.get(pk=self.ticket.id).status, Status.ANSWERED)
+        self.assertEqual(Ticket.objects.get(pk=self.ticket.id).assignee, self.assistant)
+
+    def test_post_replies_as_ta_in_inbox_unassigned(self):
+        """
+        Test to verify an assistant of the inbox can get replies
+        """
+        self.client.force_login(self.assistant)
+        self.ticket.status = Status.PENDING
+        self.ticket.assignee = None
+        self.ticket.save()
+        count = Comment.objects.count()
+
+        data = {
+            "content": "Testcontent"
+        }
+
+        response = self.client.post(
+            f"/api/inboxes/{self.inbox.id}/tickets/{self.ticket.ticket_inbox_id}/replies/post", data, follow=True)
+        self.assertEqual(response.status_code, 201)
+        self.assertNotEqual(Comment.objects.count(), count)
+        self.assertTrue(Ticket.objects.get(pk=self.ticket.id).assignee, self.assistant)
+        self.assertTrue(Ticket.objects.get(pk=self.ticket.id).status, Status.ANSWERED)
 
     def test_post_replies_as_ta_not_in_inbox(self):
         """
