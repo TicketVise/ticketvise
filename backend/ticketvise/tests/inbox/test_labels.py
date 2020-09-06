@@ -6,13 +6,6 @@ from ticketvise.tests.inbox.utils import InboxTestCase
 
 
 class LabelsTest(InboxTestCase):
-    def test_default_labels(self):
-        """
-        Test to verify an inbox is created with default labels.
-        """
-        inbox = Inbox.objects.create(name="NewInbox", code="NI")
-        names = Label.objects.filter(inbox=inbox).values("name")
-        self.assertContains(names, ["Assignment", "Lecture", "Exam", "Course material"])
 
     def test_delete_label_as_coordinator(self):
         """
@@ -197,3 +190,11 @@ class LabelsTest(InboxTestCase):
                                     follow=True)
         self.assertEqual(response.status_code, 403)
         self.assertNotEqual(Label.objects.get(pk=self.label.id).name, data["name"])
+
+    def test_default_labels(self):
+        """
+        Test to verify an inbox is created with default labels.
+        """
+        inbox = Inbox.objects.create(name="NewInbox", code="NI")
+        names = Label.objects.filter(inbox=inbox).values_list("name", flat=True)
+        self.assertEqual(list(names), ['Assignment', 'Exam', 'Lecture', 'Course material'])
