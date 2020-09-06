@@ -8,6 +8,7 @@ Contains all entity sets for the inbox database.
 """
 from django.db import models
 
+from ticketvise.models.label import Label
 from ticketvise.models.user import User, Role
 from ticketvise.models.validators import validate_hex_color
 from ticketvise.settings import INBOX_IMAGE_DIRECTORY, DEFAULT_INBOX_IMAGE_PATH
@@ -86,7 +87,7 @@ class Inbox(models.Model):
         :return: Get the first coordinator of the course
         :rtype: QuerySet<:class:`User`>
         """
-        return User.objects.filter(inbox_relationship__inbox=self, inbox_relationship__role=Role.MANAGER)\
+        return User.objects.filter(inbox_relationship__inbox=self, inbox_relationship__role=Role.MANAGER) \
             .order_by("date_created").first()
 
     def get_tickets_by_assignee(self, assignee, status=None):
@@ -123,6 +124,15 @@ class Inbox(models.Model):
 
     def __str__(self):
         return self.name
+
+    def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
+        super().save(force_insert, force_update, using, update_fields)
+
+        # Set default labels
+        Label.objects.create(inbox=self, color="#d73a4a", name="Assignment")
+        Label.objects.create(inbox=self, color="#a2eeef", name="Exam")
+        Label.objects.create(inbox=self, color="#0366d6", name="Lectures")
+        Label.objects.create(inbox=self, color="#008672", name="Course material")
 
     # def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
     #     p = ''
