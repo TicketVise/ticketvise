@@ -3,7 +3,6 @@ Test Ticket
 -------------------------------
 This file tests the ticket page that show the information of a ticket.
 """
-import json
 
 from django.db import transaction
 from django.test import Client, TransactionTestCase
@@ -201,8 +200,7 @@ class TicketTestApi(APITestCase, TicketTestCase):
         response = self.client.get(f"/api/inboxes/{self.inbox.id}/labels",
                                    follow=True)
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(json.loads(response.content),
-                         [{"name": self.label.name, "color": self.label.color, "id": self.label.id}])
+        self.assertContains(response, self.label.name)
 
     def test_get_labels_as_ta_in_inbox(self):
         """
@@ -551,11 +549,11 @@ class TicketTestApi(APITestCase, TicketTestCase):
     def test_ticket_inbox_id_unique_removal_bug(self):
         """Tests for issue #157."""
         Ticket.objects.create(author=self.student, assignee=self.assistant, title="TestTicket",
-                                        content="TestContent", inbox=self.inbox)
+                              content="TestContent", inbox=self.inbox)
         ticket = Ticket.objects.create(author=self.student, assignee=self.assistant, title="TestTicket",
-                                        content="TestContent", inbox=self.inbox)
+                                       content="TestContent", inbox=self.inbox)
         Ticket.objects.create(author=self.student, assignee=self.assistant, title="TestTicket",
-                                        content="TestContent", inbox=self.inbox)
+                              content="TestContent", inbox=self.inbox)
         ticket.delete()
         Ticket.objects.create(author=self.student, assignee=self.assistant, title="TestTicket",
-                                        content="TestContent", inbox=self.inbox)
+                              content="TestContent", inbox=self.inbox)
