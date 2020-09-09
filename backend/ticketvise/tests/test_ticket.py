@@ -444,11 +444,6 @@ class TicketTestApi(APITestCase, TicketTestCase):
         self.ticket.delete_label(self.label)
         self.assertEqual(old_labels_count, Ticket.objects.get(pk=self.ticket.pk).labels.count())
 
-    def test_empty_status(self):
-        self.ticket.status = "Test"
-        with self.assertRaises(NotImplementedError):
-            self.ticket.get_status()
-
     def test_inbox_show_assignee_to_guest_as_guest(self):
         """
         Test to verify that the assignee is hidden to a guest when the manager has disabled it in the inbox settings.
@@ -497,54 +492,6 @@ class TicketTestApi(APITestCase, TicketTestCase):
                                        follow=True)
             self.assertEqual(response.status_code, 200)
             self.assertContains(response, self.ticket.assignee.username)
-
-    def test_inbox_invisible_label_student(self):
-        self.client.force_login(self.student)
-
-        response = self.client.get(f"/api/inboxes/{self.inbox.id}/labels", content_type="application/json")
-
-        self.assertEqual(response.status_code, 200)
-        self.assertNotContains(response, self.invisible_label.name)
-
-    def test_inbox_invisible_label_agent(self):
-        self.client.force_login(self.assistant)
-
-        response = self.client.get(f"/api/inboxes/{self.inbox.id}/labels")
-
-        self.assertEqual(response.status_code, 200)
-        self.assertContains(response, self.invisible_label.name)
-
-    def test_inbox_invisible_label_manager(self):
-        self.client.force_login(self.manager)
-
-        response = self.client.get(f"/api/inboxes/{self.inbox.id}/labels")
-
-        self.assertEqual(response.status_code, 200)
-        self.assertContains(response, self.invisible_label.name)
-
-    def test_inbox_inactive_label_student(self):
-        self.client.force_login(self.student)
-
-        response = self.client.get(f"/api/inboxes/{self.inbox.id}/labels", content_type="application/json")
-
-        self.assertEqual(response.status_code, 200)
-        self.assertNotContains(response, self.disabled_label.name)
-
-    def test_inbox_inactive_label_agent(self):
-        self.client.force_login(self.assistant)
-
-        response = self.client.get(f"/api/inboxes/{self.inbox.id}/labels")
-
-        self.assertEqual(response.status_code, 200)
-        self.assertNotContains(response, self.disabled_label.name)
-
-    def test_inbox_inactive_label_manager(self):
-        self.client.force_login(self.manager)
-
-        response = self.client.get(f"/api/inboxes/{self.inbox.id}/labels")
-
-        self.assertEqual(response.status_code, 200)
-        self.assertNotContains(response, self.disabled_label.name)
 
     def test_ticket_inbox_id_unique_removal_bug(self):
         """Tests for issue #157."""

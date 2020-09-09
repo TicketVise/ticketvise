@@ -190,3 +190,51 @@ class LabelsTest(InboxTestCase):
                                     follow=True)
         self.assertEqual(response.status_code, 403)
         self.assertNotEqual(Label.objects.get(pk=self.label.id).name, data["name"])
+
+    def test_inbox_invisible_label_student(self):
+        self.client.force_login(self.student)
+
+        response = self.client.get(f"/api/inboxes/{self.inbox.id}/labels", content_type="application/json")
+
+        self.assertEqual(response.status_code, 200)
+        self.assertNotContains(response, self.invisible_label.name)
+
+    def test_inbox_invisible_label_agent(self):
+        self.client.force_login(self.assistant)
+
+        response = self.client.get(f"/api/inboxes/{self.inbox.id}/labels")
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, self.invisible_label.name)
+
+    def test_inbox_invisible_label_manager(self):
+        self.client.force_login(self.manager)
+
+        response = self.client.get(f"/api/inboxes/{self.inbox.id}/labels")
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, self.invisible_label.name)
+
+    def test_inbox_inactive_label_student(self):
+        self.client.force_login(self.student)
+
+        response = self.client.get(f"/api/inboxes/{self.inbox.id}/labels", content_type="application/json")
+
+        self.assertEqual(response.status_code, 200)
+        self.assertNotContains(response, self.disabled_label.name)
+
+    def test_inbox_inactive_label_agent(self):
+        self.client.force_login(self.assistant)
+
+        response = self.client.get(f"/api/inboxes/{self.inbox.id}/labels")
+
+        self.assertEqual(response.status_code, 200)
+        self.assertNotContains(response, self.disabled_label.name)
+
+    def test_inbox_inactive_label_manager(self):
+        self.client.force_login(self.manager)
+
+        response = self.client.get(f"/api/inboxes/{self.inbox.id}/labels")
+
+        self.assertEqual(response.status_code, 200)
+        self.assertNotContains(response, self.disabled_label.name)

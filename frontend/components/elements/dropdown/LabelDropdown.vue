@@ -1,5 +1,5 @@
 <template>
-  <div class="space-y-1">
+  <div class="space-y-1" @click="open = !open">
     <div class="relative">
       <span class="inline-block w-full rounded-md shadow-sm" @click="open = !open">
         <button aria-expanded="true" aria-haspopup="listbox" aria-labelledby="listbox-label"
