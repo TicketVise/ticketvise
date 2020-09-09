@@ -10,6 +10,7 @@ from django.views.decorators.csrf import csrf_exempt
 
 from ticketvise import settings
 from ticketvise.models.inbox import Inbox
+from ticketvise.models.label import Label
 from ticketvise.models.user import User, UserInbox, Role
 from ticketvise.views.lti.validation import LtiLaunchForm
 
@@ -61,6 +62,12 @@ class LtiView(View):
             if "instructor" in user_roles:
                 inbox_name = form.cleaned_data["custom_course_name"]
                 inbox = Inbox.objects.create(code=inbox_code, name=inbox_name)
+
+                # Set default labels
+                Label.objects.create(inbox=inbox, color="#d73a4a", name="Assignment")
+                Label.objects.create(inbox=inbox, color="#a2eeef", name="Exam")
+                Label.objects.create(inbox=inbox, color="#0366d6", name="Lecture")
+                Label.objects.create(inbox=inbox, color="#008672", name="Course material")
             else:
                 raise Http404("Course does not have a ticket system (yet). Please contact your instructor.")
 

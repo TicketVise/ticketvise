@@ -1,5 +1,6 @@
 from django.urls import reverse
 
+from ticketvise.models.inbox import Inbox
 from ticketvise.models.label import Label
 from ticketvise.tests.inbox.utils import InboxTestCase
 
@@ -21,6 +22,7 @@ class LabelsTest(InboxTestCase):
         """
         Test to verify a assistant is unable to delete a label.
         """
+
         self.client.force_login(self.assistant)
 
         response = self.client.post(reverse("delete_inbox_label", args=(self.label.inbox.id, self.label.id)),
