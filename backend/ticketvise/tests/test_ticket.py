@@ -3,6 +3,7 @@ Test Ticket
 -------------------------------
 This file tests the ticket page that show the information of a ticket.
 """
+import json
 
 from django.db import transaction
 from django.test import Client, TransactionTestCase
@@ -53,14 +54,14 @@ class TicketTestCase(TransactionTestCase):
         self.manager.set_role_for_inbox(self.inbox, Role.MANAGER)
 
         self.label = Label.objects.create(name="TestLabel", inbox=self.inbox, is_visible_to_guest=True)
-        self.invisible_label = Label.objects.create(name="invisible", inbox=self.inbox, is_visible_to_guest=False)
-        self.disabled_label = Label.objects.create(name="disabled", inbox=self.inbox, is_active=False)
 
-        self.ticket = Ticket.objects.create(author=self.student, assignee=self.assistant, title="TestTicket",
+        self.ticket = Ticket.objects.create(author=self.student, assignee=self.assistant, title="Ticket1",
                                             content="TestContent", inbox=self.inbox)
-        self.ticket2 = Ticket.objects.create(author=self.student, assignee=self.assistant, title="TestTicket",
+        self.ticket2 = Ticket.objects.create(author=self.student, assignee=self.assistant, title="Ticket2",
                                              content="TestContent", inbox=self.inbox)
         self.ticket2.shared_with.set([self.student2])
+        self.ticket3 = Ticket.objects.create(author=self.student2, assignee=self.assistant2, title="Ticket3",
+                                             content="TestContent", inbox=self.inbox)
 
     def test_ticket_page_200(self):
         """
@@ -504,3 +505,160 @@ class TicketTestApi(APITestCase, TicketTestCase):
         ticket.delete()
         Ticket.objects.create(author=self.student, assignee=self.assistant, title="TestTicket",
                               content="TestContent", inbox=self.inbox)
+
+    def test_get_tickets_guest(self):
+        """
+        Test InboxTicketsApiView for guest
+        """
+        self.client.force_login(self.student)
+
+        data = {
+            "columns": False
+        }
+
+        response = self.client.get(f"/api/inboxes/{self.inbox.id}/tickets", data=data)
+        self.assertEqual(response.status_code, 200)
+        self.assertIsInstance(json.loads(response.content)[0], dict)
+        self.assertContains(response, "Ticket1")
+        self.assertNotContains(response, "Ticket3")
+
+    def test_get_tickets_agent(self):
+        """
+        Test InboxTicketsApiView for agent
+        """
+        self.client.force_login(self.assistant)
+
+        data = {
+            "columns": False
+        }
+
+        response = self.client.get(f"/api/inboxes/{self.inbox.id}/tickets", data=data)
+        self.assertEqual(response.status_code, 200)
+        self.assertIsInstance(json.loads(response.content)[0], dict)
+        self.assertContains(response, "Ticket1")
+        self.assertContains(response, "Ticket3")
+
+    def test_get_tickets_manager(self):
+        """
+        Test InboxTicketsApiView for manager
+        """
+        self.client.force_login(self.assistant)
+
+        data = {
+            "columns": False
+        }
+
+        response = self.client.get(f"/api/inboxes/{self.inbox.id}/tickets", data=data)
+        self.assertEqual(response.status_code, 200)
+        self.assertIsInstance(json.loads(response.content)[0], dict)
+        self.assertContains(response, "Ticket1")
+        self.assertContains(response, "Ticket3")
+
+    def test_get_personal_tickets_agent(self):
+        """
+        Test InboxTicketsApiView for agent
+        """
+        self.client.force_login(self.assistant)
+
+        data = {
+            "show_personal": "true"
+        }
+
+        response = self.client.get(f"/api/inboxes/{self.inbox.id}/tickets", data=data)
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Ticket1")
+        self.assertNotContains(response, "Ticket3")
+
+    def test_get_non_personal_tickets_agent(self):
+        """
+        Test InboxTicketsApiView for agent
+        """
+        self.client.force_login(self.assistant)
+
+        data = {
+            "show_personal": "false"
+        }
+
+        response = self.client.get(f"/api/inboxes/{self.inbox.id}/tickets", data=data)
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Ticket1")
+        self.assertContains(response, "Ticket3")
+
+    def test_get_column_three_tickets_guest(self):
+        """
+        Test InboxTicketsApiView for guest
+        """
+        self.client.force_login(self.student)
+        self.inbox.show_assignee_to_guest = False
+        self.inbox.save()
+        Ticket.objects.create(inbox=self.inbox, status=Status.CLOSED, content="CLOSED", title="CLOSED", author=self.student)
+
+        data = {
+            "columns": "true"
+        }
+
+        response = self.client.get(f"/api/inboxes/{self.inbox.id}/tickets", data=data)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(json.loads(response.content)), 3)
+        self.assertContains(response, "label")
+        self.assertContains(response, "Ticket1")
+        self.assertNotContains(response, "Ticket3")
+
+
+    def test_get_column_four_tickets_guest(self):
+        """
+        Test InboxTicketsApiView for guest
+        """
+        self.client.force_login(self.student)
+        self.inbox.show_assignee_to_guest = True
+        self.inbox.save()
+        Ticket.objects.create(inbox=self.inbox, status=Status.CLOSED, content="CLOSED", title="CLOSED", author=self.student)
+        Ticket.objects.create(inbox=self.inbox, status=Status.ASSIGNED, content="ASSIGNED", title="ASSIGNED", author=self.student)
+
+        data = {
+            "columns": "true"
+        }
+
+        response = self.client.get(f"/api/inboxes/{self.inbox.id}/tickets", data=data)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(json.loads(response.content)), 4)
+        self.assertContains(response, "label")
+        self.assertContains(response, "Ticket1")
+        self.assertNotContains(response, "Ticket3")
+
+    def test_get_column_tickets_agent(self):
+        """
+        Test InboxTicketsApiView for agent
+        """
+        self.client.force_login(self.assistant)
+        Ticket.objects.create(inbox=self.inbox, status=Status.CLOSED, content="CLOSED", title="CLOSED", author=self.student)
+
+        data = {
+            "columns": "true"
+        }
+
+        response = self.client.get(f"/api/inboxes/{self.inbox.id}/tickets", data=data)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(json.loads(response.content)), 4)
+        self.assertContains(response, "label")
+        self.assertContains(response, "Ticket1")
+        self.assertContains(response, "Ticket3")
+
+    def test_get_column_tickets_manager(self):
+        """
+        Test InboxTicketsApiView for manager
+        """
+        self.client.force_login(self.assistant)
+        Ticket.objects.create(inbox=self.inbox, status=Status.CLOSED, content="CLOSED", title="CLOSED", author=self.student)
+
+        data = {
+            "columns": "true"
+        }
+
+        response = self.client.get(f"/api/inboxes/{self.inbox.id}/tickets", data=data)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(json.loads(response.content)), 4)
+        self.assertContains(response, "label")
+        self.assertContains(response, "Ticket1")
+        self.assertContains(response, "Ticket3")
+

@@ -208,7 +208,7 @@ class LabelsTest(InboxTestCase):
         self.assertContains(response, self.invisible_label.name)
 
     def test_inbox_invisible_label_manager(self):
-        self.client.force_login(self.manager)
+        self.client.force_login(self.coordinator)
 
         response = self.client.get(f"/api/inboxes/{self.inbox.id}/labels")
 
@@ -232,7 +232,7 @@ class LabelsTest(InboxTestCase):
         self.assertNotContains(response, self.disabled_label.name)
 
     def test_inbox_inactive_label_manager(self):
-        self.client.force_login(self.manager)
+        self.client.force_login(self.coordinator)
 
         response = self.client.get(f"/api/inboxes/{self.inbox.id}/labels")
 
