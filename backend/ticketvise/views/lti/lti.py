@@ -94,8 +94,6 @@ class LtiView(View):
             return render(request, "lti-relaunch.html", context={"url": redirect_url})
 
         next_url = reverse("ticket_overview", args=[inbox.id])
-        if user.has_role_in_inbox(inbox, Role.GUEST):
-            next_url = reverse("new_ticket", args=[inbox.id])
 
         user_agent = request.META.get("HTTP_USER_AGENT", "").lower()
         if "chrome" in user_agent or "firefox" in user_agent:
