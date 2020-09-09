@@ -38,8 +38,6 @@ class InboxUsersView(InboxCoordinatorRequiredMixin, TemplateView):
             .select_related("user") \
             .order_by("sort_staff", "role", "user__first_name")
 
-        test = list(inbox_users)
-
         context = super(TemplateView, self).get_context_data(**kwargs)
 
         page = Paginator(inbox_users, settings.PAGE_SIZE).get_page(page_number)

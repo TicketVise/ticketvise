@@ -64,6 +64,7 @@ services:
       SQL_PASSWORD: ${SQL_PASSWORD}
       LTI_KEY: ${LTI_KEY}
       LTI_SECRET: ${LTI_SECRET}
+      DOMAIN: ${DOMAIN}
 
   proxy:
     image: "ticketvise/proxy:sha-${GIT_DIGEST}"
