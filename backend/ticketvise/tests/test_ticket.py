@@ -14,6 +14,7 @@ from ticketvise.models.inbox import Inbox
 from ticketvise.models.label import Label
 from ticketvise.models.ticket import Ticket, Status
 from ticketvise.models.user import User, Role
+from ticketvise.views.api.ticket import LabelSerializer
 from ticketvise.views.api.user import UserSerializer
 
 
@@ -62,6 +63,7 @@ class TicketTestCase(TransactionTestCase):
         self.ticket2.shared_with.set([self.student2])
         self.ticket3 = Ticket.objects.create(author=self.student2, assignee=self.assistant2, title="Ticket3",
                                              content="TestContent", inbox=self.inbox)
+        self.ticket3.add_label(self.label)
 
     def test_ticket_page_200(self):
         """
@@ -660,5 +662,22 @@ class TicketTestApi(APITestCase, TicketTestCase):
         self.assertEqual(len(json.loads(response.content)), 4)
         self.assertContains(response, "label")
         self.assertContains(response, "Ticket1")
+        self.assertContains(response, "Ticket3")
+
+
+    def test_filter_labels(self):
+        """
+        Test InboxTicketsApiView for manager
+        """
+        self.client.force_login(self.assistant)
+        Ticket.objects.create(inbox=self.inbox, status=Status.CLOSED, content="CLOSED", title="CLOSED", author=self.student)
+
+        data = {
+            "labels[]": self.label.id
+        }
+
+        response = self.client.get(f"/api/inboxes/{self.inbox.id}/tickets", data=data)
+        self.assertEqual(response.status_code, 200)
+        self.assertNotContains(response, "Ticket1")
         self.assertContains(response, "Ticket3")
 
