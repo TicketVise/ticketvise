@@ -32,11 +32,16 @@
             <div class="hidden md:block">
                 <div class="ml-4 flex items-center md:ml-6">
                     <button type="button"
-                            class="relative cursor-pointer p-1 border-2 border-transparent text-gray-400 rounded-full hover:text-white focus:outline-none focus:text-white focus:bg-gray-700"
+                            class="relative cursor-pointer px-2 py-1 border-2 border-transparent text-gray-400 rounded-full hover:text-white focus:outline-none focus:text-white focus:bg-gray-700"
                             aria-label="Fullscreen" onclick="window.open(window.location.href, '_blank')"
                             x-show="window.self !== window.top">
                         <i class="fa fa-arrows-alt" aria-hidden="true"></i>
                     </button>
+                    <a href="mailto:info@ticketvise.com"
+                            class="relative cursor-pointer px-2 py-1 border-2 border-transparent text-gray-400 rounded-full hover:text-white focus:outline-none focus:text-white focus:bg-gray-700"
+                            aria-label="Report bug">
+                        <i class="fa fa-bug" aria-hidden="true"></i>
+                    </a>
                     <a href="{% url 'notifications' %}"
                        class="relative cursor-pointer p-1 border-2 border-transparent text-gray-400 rounded-full hover:text-white focus:outline-none focus:text-white focus:bg-gray-700"
                        aria-label="Notifications">
@@ -62,6 +67,7 @@
                                      src="{{ user.avatar_url }}"
                                      alt="User profile">
                             </button>
+
                         </div>
                         <div class="origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg" x-show="open"
                              @click.away="open = false" x-transition:enter="transition ease-out duration-100"
