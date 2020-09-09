@@ -128,12 +128,6 @@ class Inbox(models.Model):
     def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
         super().save(force_insert, force_update, using, update_fields)
 
-        # Set default labels
-        Label.objects.create(inbox=self, color="#d73a4a", name="Assignment")
-        Label.objects.create(inbox=self, color="#a2eeef", name="Exam")
-        Label.objects.create(inbox=self, color="#0366d6", name="Lecture")
-        Label.objects.create(inbox=self, color="#008672", name="Course material")
-
     # def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
     #     p = ''
     #     if not path.exists(f"ticketvise/{self.image}") or self.image == DEFAULT_INBOX_IMAGE_PATH:
