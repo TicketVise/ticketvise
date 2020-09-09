@@ -117,7 +117,7 @@ module.exports = {
     },
     plugins: [
         new webpack.DefinePlugin({
-            SENTRY_DSN: process.env.SENTRY_DSN,
+            SENTRY_DSN: JSON.stringify(process.env.SENTRY_DSN),
         }),
         new MiniCssExtractPlugin({
             filename: "styles.css",
