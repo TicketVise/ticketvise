@@ -8,7 +8,6 @@ Contains all entity sets for the inbox database.
 """
 from django.db import models
 
-from ticketvise.models.label import Label
 from ticketvise.models.user import User, Role
 from ticketvise.models.validators import validate_hex_color
 from ticketvise.settings import INBOX_IMAGE_DIRECTORY, DEFAULT_INBOX_IMAGE_PATH
@@ -124,9 +123,6 @@ class Inbox(models.Model):
 
     def __str__(self):
         return self.name
-
-    def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
-        super().save(force_insert, force_update, using, update_fields)
 
     # def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
     #     p = ''
