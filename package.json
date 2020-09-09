@@ -20,6 +20,9 @@
   "author": "",
   "license": "",
   "dependencies": {
+    "@sentry/browser": "^5.23.0",
+    "@sentry/integrations": "^5.23.0",
+    "@sentry/tracing": "^5.23.0",
     "@tailwindcss/ui": "^0.3.1",
     "@toast-ui/vue-editor": "^2.3.1",
     "alpinejs": "^2.6.0",

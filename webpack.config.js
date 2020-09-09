@@ -6,6 +6,7 @@ const tailwindcss = require('tailwindcss');
 const VueLoaderPlugin = require('vue-loader/lib/plugin');
 const path = require('path');
 const purgecss = require('@fullhuman/postcss-purgecss')
+const webpack = require("webpack");
 
 module.exports = {
     entry: ['./frontend/index.js', './frontend/styles/index.scss'],
@@ -115,6 +116,9 @@ module.exports = {
         ]
     },
     plugins: [
+        new webpack.DefinePlugin({
+            SENTRY_DSN: process.env.SENTRY_DSN,
+        }),
         new MiniCssExtractPlugin({
             filename: "styles.css",
             chunkFilename: '[id].css'
