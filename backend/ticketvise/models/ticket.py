@@ -125,22 +125,6 @@ class Ticket(models.Model):
             for user in self.inbox.get_assistants_and_coordinators():
                 NewTicketNotification.objects.create(ticket=self, receiver=user)
 
-    def get_status(self):
-        """
-        :return: Ticket status in human-readable format.
-        """
-        if self.status == Status.PENDING:
-            return "Pending"
-        elif self.status == Status.ASSIGNED:
-            return "Assigned"
-        elif self.status == Status.ANSWERED:
-            return "Answered"
-        elif self.status == Status.CLOSED:
-            return "Closed"
-        else:
-            raise NotImplementedError(f"Status {self.status} not implemented")
-
-
 class TicketSharedUser(models.Model):
     ticket = models.ForeignKey(Ticket, on_delete=models.CASCADE)
     user = models.ForeignKey("User", on_delete=models.CASCADE)

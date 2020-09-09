@@ -171,7 +171,7 @@ class InboxTicketsApiView(UserIsInInboxMixin, APIView):
         """
         q = request.GET.get("q", "")
         size = int(request.GET.get("size", AUTOCOMPLETE_MAX_ENTRIES))
-        columns = bool(request.GET.get("columns", False))
+        columns = str(request.GET.get("columns", False)) == "true"
         show_personal = str(request.GET.get("show_personal", False)) == "true"
         labels = list(map(int, request.GET.getlist("labels[]", [])))
 
