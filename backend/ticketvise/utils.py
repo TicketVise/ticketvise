@@ -8,8 +8,22 @@ import random
 from PIL import ImageColor
 
 
-def random_color():
-    return "#%06x" % random.randint(0, 0xFFFFFF)
+def random_preselected_color():
+    """Randomly selected a color from a pre-defined list. The colors are the 500 colors from tailwind."""
+
+    return random.choice([
+        "#686F7D",
+        "#6B7280",
+        "#EC5050",
+        "#F05252",
+        "#FF5A1F",
+        "#C27803",
+        "#0E9F6E",
+        "#0694A2",
+        "#3F83F8",
+        "#6875F5",
+        "#9061F9"
+    ])
 
 
 def crop_image(image):
