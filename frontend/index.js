@@ -6,7 +6,7 @@ import {Vue as VueIntegration} from "@sentry/integrations";
 import {Integrations} from '@sentry/tracing';
 
 // global is declared using DefinePlugin in the webpack.config.js
-if (SENTRY_DSN) {
+if (typeof SENTRY_DSN !== 'undefined') {
     Sentry.init({
         dsn: SENTRY_DSN,
         integrations: [

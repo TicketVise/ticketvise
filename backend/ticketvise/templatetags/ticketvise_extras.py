@@ -9,6 +9,16 @@ from ..models.user import User, Role
 
 register = template.Library()
 
+@register.simple_tag
+def user_is_coordinator(user, inbox):
+    """
+    Check if a user is a coordinator.
+    :param User user: The user.
+    :param Inbox inbox: The inbox.
+    :return: If the user is assistant or coordinator in the inbox.
+    :rtype: bool
+    """
+    return user.is_coordinator_for_inbox(inbox)
 
 @register.simple_tag
 def abs_value(value):
