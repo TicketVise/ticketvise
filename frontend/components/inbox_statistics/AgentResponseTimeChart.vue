@@ -31,6 +31,9 @@ export default {
           scaleLabel: {
             display: true,
             labelString: 'Hours'
+          },
+          ticks: {
+            suggestedMin: 0,
           }
         }],
       }
@@ -45,7 +48,7 @@ export default {
           fill: false,
           label: "Response time",
           backgroundColor: '#ed8936',
-          data: response.data.map(item => moment.duration(item.avg_response_time).asHours())
+          data: response.data.map(item => moment.duration(item.avg_response_time).asHours().toFixed(2))
         }
       ]
     }
