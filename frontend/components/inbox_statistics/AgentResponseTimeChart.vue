@@ -30,7 +30,7 @@ export default {
           display: true,
           scaleLabel: {
             display: true,
-            labelString: 'Minutes'
+            labelString: 'Hours'
           }
         }],
       }
@@ -45,7 +45,7 @@ export default {
           fill: false,
           label: "Response time",
           backgroundColor: '#ed8936',
-          data: response.data.map(item => moment.duration(item.avg_response_time).minutes())
+          data: response.data.map(item => moment.duration(item.avg_response_time).asHours())
         }
       ]
     }
