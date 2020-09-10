@@ -108,50 +108,6 @@ class ProfileNotificationsForm(forms.ModelForm):
         ]
 
 
-def password_change(
-        request,
-        template_name="registration/password_change.html",
-        post_change_redirect=None,
-        password_change_form=PasswordChangeForm,
-        current_app="ticketvise",
-        extra_context=None,
-):
-    """
-    Change the password of a user.
-
-    :param HttpRequest request: The request.
-    :param str template_name: The name of the file.
-    :param str post_change_redirect: The redirect URL after the password change is done.
-    :param Form password_change_form: The form to change the password.
-    :param str current_app: The current app.
-    :param Dict extra_context: Extra context.
-
-    :return: Template response.
-    :rtype: HttpResponse
-    """
-    if post_change_redirect is None:
-        post_change_redirect = reverse("django.contrib.auth.views.password_change_done")
-
-    if request.method == "POST":
-        form = password_change_form(user=request.user, data=request.POST)
-
-        if form.is_valid():
-            form.save()
-
-            return HttpResponseRedirect(post_change_redirect)
-    else:
-        form = password_change_form(user=request.user)
-
-    context = {
-        "form": form,
-    }
-
-    if extra_context is not None:
-        context.update(extra_context)
-
-    return TemplateResponse(request, template_name, context, current_app=current_app)
-
-
 class ProfileView(LoginRequiredMixin, FormView):
     """
     View of the profile page, which requires a logged in user.
