@@ -10,6 +10,7 @@ from django.contrib import admin
 from django.contrib.auth.views import LoginView, LogoutView
 from django.urls import path, re_path
 
+from ticketvise.views.admin import AdminView
 from ticketvise.views.error import ErrorHandler
 from ticketvise.views.inbox.labels import InboxLabelsView, CreateInboxLabelView, EditInboxLabelView, \
     DeleteInboxLabelView
@@ -26,7 +27,8 @@ from ticketvise.views.ticket_form import TicketFormView
 from ticketvise.views.ticket_overview import TicketOverview
 
 urlpatterns = [
-                  path("admin/", admin.site.urls),
+                  path("admin/django", admin.site.urls),
+                  path("admin", AdminView.as_view()),
                   path("lti", LtiView.as_view()),
                   path("lti/config.xml", LtiConfigView.as_view()),
                   path("", InboxesView.as_view(), name="home"),

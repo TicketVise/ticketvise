@@ -15,6 +15,10 @@
       type: {
         type: String,
         default: "date"
+      },
+      inboxId: {
+        type: Number,
+        required: true
       }
     },
     data: () => ({
@@ -41,7 +45,7 @@
       }
     }),
     async mounted() {
-      const response = await axios.get("/api" + window.location.pathname + "/tickets/count", {
+      const response = await axios.get(`/api/inboxes/${this.inboxId}/statistics/tickets/count`, {
         params: {
           "date_type": this.type
         }
@@ -61,7 +65,3 @@
     },
   }
 </script>
-
-<style scoped>
-
-</style>

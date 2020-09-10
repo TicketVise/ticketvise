@@ -54,7 +54,8 @@ let components = {
   '/inboxes/*/tickets/new': ['ticket-form'],
   '/inboxes/*/tickets/*': ['ticket'],
   '/inboxes/*/statistics': ['inbox-statistics'],
-  '/profile': ['profile']
+  '/profile': ['profile'],
+  '/admin': ['admin']
 }
 
 /* Now lets set them all up. */

@@ -9,6 +9,7 @@ Contains all entity sets for the inbox database.
 from django.db import models
 
 from ticketvise.models.user import User, Role
+from ticketvise.models.label import Label
 from ticketvise.models.validators import validate_hex_color
 from ticketvise.settings import INBOX_IMAGE_DIRECTORY, DEFAULT_INBOX_IMAGE_PATH
 
@@ -120,6 +121,24 @@ class Inbox(models.Model):
             return self.tickets.filter(author=author)
 
         return self.tickets.filter(author=author, status=status)
+
+    def get_number_of_tickets(self):
+        """
+        Get the number of tickets of a course.
+        """
+        return len(self.tickets.all())
+
+    def get_number_of_users(self):
+        """
+        Get the number of users in a course.
+        """
+        return len(User.objects.filter(inbox_relationship__inbox=self))
+
+    def get_number_of_labels(self):
+        """
+        Get the number of users in a course.
+        """
+        return len(Label.objects.filter(inbox=self))
 
     def __str__(self):
         return self.name

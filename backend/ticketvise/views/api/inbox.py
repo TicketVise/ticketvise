@@ -26,7 +26,10 @@ class InboxSerializer(ModelSerializer):
 
     class Meta:
         model = Inbox
-        fields = ["name", "id", "color", "labels"]
+        fields = [
+            "name", "id", "color", "labels", "image", "scheduling_algorithm", 
+            "is_active", "date_created"
+        ]
 
 
 class InboxStaffApiView(UserIsInboxStaffMixin, ListAPIView):
@@ -56,3 +59,10 @@ class InboxApiView(UserIsInInboxMixin, RetrieveAPIView):
     serializer_class = InboxSerializer
     queryset = Inbox
     lookup_url_kwarg = "inbox_id"
+
+
+class InboxesApiView(ListAPIView):
+    serializer_class = InboxSerializer
+    
+    def get_queryset(self):
+        return Inbox.objects.all()
