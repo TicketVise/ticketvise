@@ -108,6 +108,7 @@ LTI_XML_CONFIG_URL = LTI_HOST + "/lti/config.xml"
 #: Database to use.
 DATABASES = {
     "default": {
+        # postgres: django.db.backends.postgresql_psycopg2
         "ENGINE": os.environ.get("SQL_ENGINE", "django.db.backends.sqlite3"),
         "NAME": os.environ.get("SQL_DATABASE", 'ticketvise.sqlite3'),
         "USER": os.environ.get("SQL_USER", "ticketvise"),
