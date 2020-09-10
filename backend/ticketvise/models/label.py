@@ -9,6 +9,7 @@ Contains all entity sets for the label database.
 from django.db import models
 
 from ticketvise.models.validators import validate_hex_color
+from ticketvise.utils import random_preselected_color
 
 
 class Label(models.Model):
@@ -20,7 +21,7 @@ class Label(models.Model):
     """
 
     inbox = models.ForeignKey("Inbox", on_delete=models.CASCADE, related_name="labels")
-    color = models.CharField(max_length=7, validators=[validate_hex_color], default="#ff0000")
+    color = models.CharField(max_length=7, validators=[validate_hex_color], default=random_preselected_color)
     name = models.CharField(max_length=50, default="")
     is_visible_to_guest = models.BooleanField(default=True)
     is_active = models.BooleanField(default=True)
