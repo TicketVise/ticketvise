@@ -3,6 +3,7 @@ Statistics
 -------------------------------
 Various utility functions used for displaying statistics to users.
 """
+import datetime
 from datetime import timedelta
 
 from django.db.models import Count, Avg, Subquery, OuterRef, F
@@ -177,10 +178,8 @@ def get_average_response_time(inbox):
         .annotate(response_time=F('date_created') - F('ticket__date_created')) \
         .aggregate(avg_response_time=Avg("response_time"))
 
-    print("hier")
-    print(avg_response_time["avg_response_time"])
-
-    return calculate_timedelta_hours(avg_response_time["avg_response_time"])
+    result = avg_response_time["avg_response_time"] if avg_response_time["avg_response_time"] else datetime.timedelta()
+    return calculate_timedelta_hours(result)
 
 
 def get_amount_ticket_assigned_answered_closed(inbox):
