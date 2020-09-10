@@ -56,16 +56,10 @@ class Comment(models.Model):
                 self.ticket.status = "ANSD"
                 if not self.ticket.assignee:
                     self.ticket.assignee = self.author
-            elif self.ticket.status == "CLSD":
-                if self.ticket.assignee:
-                    self.ticket.status = "ASGD"
-                else:
-                    self.ticket.status = "PNDG"
             elif self.ticket.assignee:
-                if self.ticket.assignee:
-                    self.ticket.status = "ASGD"
-                else:
-                    self.ticket.status = "PNDG"
+                self.ticket.status = "ASGD"
+            else:
+                self.ticket.status = "PNDG"
 
             self.ticket.save()
 
