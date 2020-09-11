@@ -281,15 +281,9 @@ class TicketAttachmentsApiView(UpdateAPIView):
         return ticket
 
 
-class AttachmentViewApiView(DestroyAPIView): # UserIsTicketAuthorOrInboxStaffMixin
+class AttachmentViewApiView(UserIsTicketAuthorOrInboxStaffMixin, DestroyAPIView):
     serializer_class = TicketAttachment
-
-    def get_object(self):
-        attachment = TicketAttachment.objects.filter(pk=self.kwargs["pk"])
-        for a in attachment:
-            a.delete()
-
-        return attachment
+    queryset = TicketAttachment
 
 
 class TicketStatusUpdateSerializer(ModelSerializer):

@@ -78,7 +78,7 @@ export default {
     },
     remove(attachment) {
       this.menu = false
-      axios.delete('/api/attachments/' + attachment.id)
+      axios.delete('/api' + window.location.pathname + '/attachments/' + attachment.id)
       this.$emit('remove')
     },
     away() {

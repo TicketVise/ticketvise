@@ -21,6 +21,7 @@ urlpatterns = [
     path("inboxes/<int:inbox_id>/tickets/new", TicketCreateApiView.as_view()),
     path("inboxes/<int:inbox_id>/tickets/<int:ticket_inbox_id>", TicketApiView.as_view()),
     path("inboxes/<int:inbox_id>/tickets/<int:ticket_inbox_id>/attachments", TicketAttachmentsApiView.as_view()),
+    path("inboxes/<int:inbox_id>/tickets/<int:ticket_inbox_id>/attachments/<int:pk>", AttachmentViewApiView.as_view()),
     path("inboxes/<int:inbox_id>/tickets/<int:ticket_inbox_id>/comments", TicketCommentsApiView.as_view()),
     path("inboxes/<int:inbox_id>/tickets/<int:ticket_inbox_id>/comments/post", CreateCommentApiView.as_view()),
     path("inboxes/<int:inbox_id>/tickets/<int:ticket_inbox_id>/labels", TicketLabelApiView.as_view()),
@@ -47,7 +48,6 @@ urlpatterns = [
     path("notifications/read/inboxes/<int:inbox_id>/tickets/<int:ticket_inbox_id>",
          VisitTicketNotificationApi.as_view()),
     path("notifications/<int:pk>/read", NotificationFlipRead.as_view()),
-    path("attachments/<int:pk>", AttachmentViewApiView.as_view()),
     path("me", CurrentUserApiView.as_view()),
     path("me/settings", NotificationsSettingsAPIView.as_view()),
 ]
