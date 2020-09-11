@@ -3,7 +3,7 @@
     <!-- Link to inbox -->
     <div class="flex justify-between">
       <span class="flex flex-1 space-x-1 items-center">
-        <span class="relative h-2 w-2 rounded-full mb-1" :style="`background-color: ${notification.inbox.color};`"></span>
+        <span class="relative h-2 w-2 rounded-full" :style="`background-color: ${notification.inbox.color};`"></span>
         <a class="text-xs hover:underline" :href="`/inboxes/${notification.inbox.id}/tickets`">{{ notification.inbox.name }}</a>
       </span>
       <button @click="flipRead()" class="text-xs fa focus:outline-none" :class="{ 'fa-envelope': !read, 'fa-envelope-open-o': read }"></button>
