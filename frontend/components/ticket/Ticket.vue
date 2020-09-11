@@ -1,7 +1,7 @@
 <template>
   <div v-if="ticket" class="min-h-full flex flex-1 flex-col">
     <div class="lg:h-full flex-1 flex flex-col-reverse items-stretch lg:flex-row w-full">
-      <div class="w-screen lg:max-w-sm bg-gray-100 border-r border-t lg:border-t-0 space-y-2">
+      <div class="max-w-screen lg:max-w-sm bg-gray-100 md:border-r border-t lg:border-t-0 space-y-2 pb-4">
         <!-- Ticket Author -->
         <div class="p-6 flex space-x-4 border-b">
           <img class="h-12 w-12 rounded-full" :src="ticket.author.avatar_url" alt="User image">
@@ -92,7 +92,7 @@
           </div>
         </div>
         <div class="flex flex-col">
-          <ul class="flex border-b mb-2">
+          <ul class="flex border-b mb-2 text-sm">
             <tab :active="activeTab === 'external'" @click="activeTab = 'external'" title="Question"
                  :badge="replies.length + 1"/>
             <tab :active="activeTab === 'internal'" @click="activeTab = 'internal'" title="Staff discussion"
@@ -106,7 +106,7 @@
           <internal-tab v-if="ticket && user && comments && is_staff && activeTab === 'internal'" :ticket="ticket"
                         :comments="comments"
                         v-on:post="onCommentPost" :user="user" :staff="staff_excluding_self"/>
-          <attachments-tab v-if="ticket && activeTab === 'attachments'" :ticket="ticket"/>
+          <attachments-tab v-if="ticket && activeTab === 'attachments'" :ticket="ticket" @uploaded="updateTicket"/>
         </div>
       </div>
     </div>
@@ -166,7 +166,7 @@
         status: {
           PNDG: 'Pending',
           ASGD: 'Assigned',
-          ANSD: 'Answered',
+          ANSD: 'Awaiting response',
           CLSD: 'Closed'
         }
       }
@@ -292,6 +292,11 @@
             }).then(_ => {
 
         });
+      },
+      updateTicket() {
+        axios.get("/api" + window.location.pathname).then(response => {
+          this.ticket = response.data;
+        })
       }
     }
   }

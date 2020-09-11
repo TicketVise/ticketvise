@@ -11,6 +11,7 @@ from django.db import models
 from ticketvise.models.user import User, Role
 from ticketvise.models.validators import validate_hex_color
 from ticketvise.settings import INBOX_IMAGE_DIRECTORY, DEFAULT_INBOX_IMAGE_PATH
+from ticketvise.utils import random_preselected_color
 
 
 class SchedulingAlgorithm(models.TextChoices):
@@ -41,7 +42,7 @@ class Inbox(models.Model):
 
     code = models.CharField(max_length=50, unique=True)
     name = models.CharField(max_length=100)
-    color = models.CharField(max_length=7, validators=[validate_hex_color])
+    color = models.CharField(max_length=7, validators=[validate_hex_color], default=random_preselected_color)
     image = models.ImageField(upload_to=INBOX_IMAGE_DIRECTORY, default=DEFAULT_INBOX_IMAGE_PATH)
     scheduling_algorithm = models.CharField(choices=SchedulingAlgorithm.choices, max_length=255,
                                             default=SchedulingAlgorithm.LEAST_ASSIGNED_FIRST)

@@ -3,9 +3,10 @@ Statistics
 -------------------------------
 Various utility functions used for displaying statistics to users.
 """
+import datetime
 from datetime import timedelta
 
-from django.db.models import Count
+from django.db.models import Count, Avg, Subquery, OuterRef, F
 
 from ticketvise.models.comment import Comment
 from ticketvise.models.label import Label
@@ -168,17 +169,17 @@ def get_average_response_time(inbox):
     :return: The average response time in a inbox on the tickets.
     :rtype: float
     """
-    teachers = inbox.get_assistants_and_coordinators()
-    tickets = Ticket.objects.filter(inbox=inbox, comments__author__in=teachers, comments__is_reply=True)
+    recent_comment_ids = Comment.objects.filter(ticket__inbox=inbox, is_reply=True) \
+        .order_by("ticket", "-date_created") \
+        .distinct("ticket") \
+        .values("id")
 
-    if tickets.count() == 0:
-        return 0
+    avg_response_time = Comment.objects.filter(id__in=Subquery(recent_comment_ids)) \
+        .annotate(response_time=F('date_created') - F('ticket__date_created')) \
+        .aggregate(avg_response_time=Avg("response_time"))
 
-    average_response_time = (
-            sum([get_response_time_ticket(ticket) for ticket in tickets], timedelta(0)) / tickets.count()
-    )
-
-    return calculate_timedelta_hours(average_response_time)
+    result = avg_response_time["avg_response_time"] if avg_response_time["avg_response_time"] else datetime.timedelta()
+    return calculate_timedelta_hours(result)
 
 
 def get_amount_ticket_assigned_answered_closed(inbox):

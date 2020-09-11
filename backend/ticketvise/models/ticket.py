@@ -7,6 +7,7 @@ Contains all entity sets for the ticket database and TicketStatusChangedNotifica
 * :class:`Ticket`
 * :class:`TicketStatuscChangedNotification`
 """
+import os
 
 from django.db import models, transaction
 from django.db.models import Max
@@ -15,6 +16,7 @@ from django.dispatch import receiver
 from django.utils.translation import gettext_lazy as _
 from model_utils.managers import InheritanceManager
 
+from ticketvise import settings
 from ticketvise.middleware import CurrentUserMiddleware
 from ticketvise.models.label import Label
 from ticketvise.models.notification.assigned import TicketAssignedNotification
@@ -29,7 +31,7 @@ class Status(models.TextChoices):
 
     PENDING = "PNDG", _("Pending")
     ASSIGNED = "ASGD", _("Assigned")
-    ANSWERED = "ANSD", _("Answered")
+    ANSWERED = "ANSD", _("Awaiting response")
     CLOSED = "CLSD", _("Closed")
 
 
@@ -170,8 +172,19 @@ def labels_changed_handler(sender, action, instance, model, **kwargs):
 class TicketAttachment(models.Model):
     ticket = models.ForeignKey(Ticket, on_delete=models.CASCADE, related_name="attachments")
     file = models.FileField(upload_to="media/tickets")
+    uploader = models.ForeignKey("User", on_delete=models.CASCADE, null=True)
     date_edited = models.DateTimeField(auto_now=True)
     date_created = models.DateTimeField(auto_now_add=True)
+
+    def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
+        if not self.id:
+            self.uploader = CurrentUserMiddleware.get_current_user()
+
+        super().save(force_insert, force_update, using, update_fields)
+
+    def delete(self, *args, **kwargs):
+        os.remove(os.path.join(settings.MEDIA_ROOT, self.file.name))
+        super(TicketAttachment, self).delete()
 
 
 class TicketEvent(models.Model):

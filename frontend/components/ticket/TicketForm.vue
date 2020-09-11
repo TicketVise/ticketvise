@@ -22,8 +22,13 @@
           Title
         </label>
         <input
-                class="appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none"
-                id="title" name="title" placeholder="Give your question a title" type="text" v-model="title">
+          class="appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none"
+          id="title"
+          name="title"
+          placeholder="Give your question a title"
+          type="text"
+          v-model="title"
+        >
       </div>
       <error v-for="error in this.errors.title" :key="error" :message="error"></error>
 

@@ -4,7 +4,7 @@
 
 {% block body %}
 
-<nav class="bg-gray-800 sticky top-0 z-10" x-data="{ open: false, mobile: false, url: location.pathname }">
+<nav class="bg-gray-800 sticky top-0 z-20" x-data="{ open: false, mobile: false, url: location.pathname }">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex items-center justify-between h-16">
             <div class="flex items-center">
@@ -13,7 +13,7 @@
                     <a href="/" class="flex items-center">
                         <img class="h-8 w-8" src="{% static 'img/logo/logo.svg' %}" alt="Logo">
                         <span class="text-2xl ml-2 text-white">Ticket</span><span
-                            class="text-2xl text-orange-500 font-bold">Vise</span>
+                            class="text-2xl text-primary font-bold">Vise</span>
                     </a>
                 </div>
                 <div class="hidden md:block">
@@ -34,7 +34,7 @@
                     <button type="button"
                             class="relative cursor-pointer px-2 py-1 border-2 border-transparent text-gray-400 rounded-full hover:text-white focus:outline-none focus:text-white focus:bg-gray-700"
                             aria-label="Fullscreen" onclick="window.open(window.location.href, '_blank')"
-                            x-show="window.self !== window.top">
+                            x-show="window.self !== window.top" style="display: none">
                         <i class="fa fa-arrows-alt" aria-hidden="true"></i>
                     </button>
                     <a href="mailto:info@ticketvise.com?subject=Bug&body=Hi%20TicketVise," target="_blank" rel="noopener noreferrer"
@@ -51,7 +51,7 @@
                         </svg>
                         {% number_of_unread_notifications user as count %}
                         {% if count > 0 %}
-                        <div class="flex justify-center items-center absolute top-0 transform translate-x-4 h-4 min-w-4 w-auto bg-orange-500 rounded-full p-0.5">
+                        <div class="flex justify-center items-center absolute top-0 transform translate-x-4 h-4 min-w-4 w-auto bg-primary rounded-full p-0.5">
                             <span class="rounded-full text-white text-center text-2xs">{{ count }}</span>
                         </div>
                         {% endif %}
@@ -75,7 +75,7 @@
                              x-transition:enter-end="transform opacity-100 scale-100"
                              x-transition:leave="transition ease-in duration-75"
                              x-transition:leave-start="transform opacity-100 scale-100"
-                             x-transition:leave-end="transform opacity-0 scale-95">
+                             x-transition:leave-end="transform opacity-0 scale-95" style="display: none">
                             <div class="py-1 rounded-md bg-white shadow-xs" role="menu" aria-orientation="vertical"
                                  aria-labelledby="user-menu">
                                 <a href="/profile" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"

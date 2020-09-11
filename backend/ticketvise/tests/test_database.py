@@ -35,10 +35,7 @@ class DatabaseTestCase(TestCase):
 
         :raises AssertionError: When validate_hex_color raises an error for valid color.
         """
-        try:
-            validate_hex_color("#ffffff")
-        except ValidationError:
-            raise AssertionError("Method raised an exception where it shouldn't have.")
+        self.assertEqual(validate_hex_color("#ffffff"), None)
 
         self.assertRaises(ValidationError, validate_hex_color, random_string())
 

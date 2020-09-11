@@ -26,8 +26,7 @@
         <ticket-card
           :key="ticket.id"
           :ticket="ticket"
-          :small="title == 'Closed'"
-          :assignee_show="title != 'Pending'"
+          :assignee_show="title !== 'Pending'"
           v-for="ticket in ticketList"/>
       </div>
     </div>
