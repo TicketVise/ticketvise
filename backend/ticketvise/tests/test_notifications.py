@@ -46,7 +46,7 @@ class NotificationsTestCase(TestCase):
         )
         self.ta2.add_inbox(self.inbox, Role.AGENT)
 
-        self.ticket = Ticket.objects.create(author=self.student, assignee=self.ta,
+        self.ticket = Ticket.objects.create(author=self.student, assignee=self.ta2,
                                             title="How to code?",
                                             inbox=self.inbox, content="wat is 1+1?")
         self.comment = Comment.objects.create(ticket=self.ticket, author=self.ta2, content="Hello World")
@@ -131,41 +131,6 @@ class NotificationsTestCase(TestCase):
                          content_type="application/x-www-form-urlencoded")
         self.assertFalse(Notification.objects.get(pk=notification.id).is_read)
 
-    def test_mark_all_notifications_read(self):
-        """
-        A user must be able to mark all notifications as unread at once.
-
-        :return: None.
-        """
-        self.client.force_login(self.ta)
-
-        for notification in Notification.objects.filter(receiver=self.ticket.author):
-            self.assertFalse(notification.is_read)
-
-        self.client.post("/notifications", follow=True)
-
-        for notification in Notification.objects.filter(receiver=self.ticket.author):
-            self.assertTrue(notification.is_read)
-
-    def test_opening_ticket_marks_related_notifications_as_read(self):
-        """
-        If a link to a ticket from notifications is clicked, the notification must be marked as
-        read.
-
-        :return: None.
-        """
-        self.client.force_login(self.ta)
-
-        for notification in Notification.objects.filter(receiver=self.ticket.author):
-            self.assertFalse(notification.is_read)
-
-        self.client.get("/inboxes/{}/tickets/{}".format(self.ticket.inbox.id,
-                                                        self.ticket.ticket_inbox_id),
-                        follow=True)
-
-        for notification in Notification.objects.filter(receiver=self.ticket.author):
-            self.assertTrue(notification.is_read)
-
     def test_mention_notification(self):
         """
         If a user is mentioned, it needs to receive a notification.
@@ -245,9 +210,7 @@ class NotificationsTestCase(TestCase):
                 elif hasattr(notification, "ticket"):
                     notification(receiver=updated_user, ticket=self.ticket).save()
 
-                bla = list(Notification.objects.filter(receiver=updated_user).select_subclasses())
                 self.assertEqual(notification.objects.filter(receiver=updated_user).exists(), b)
-
 
     def test_getters_comment_notifications(self):
         """
@@ -294,6 +257,20 @@ class NotificationsTestCase(TestCase):
         with self.assertRaises(NotImplementedError):
             notification.inbox
 
+    def test_duplicate_notification_on_mention(self):
+        """
+        Test to verify that the person being mentioned only receive a single mention notification, and not also a
+        new comment notification. This test checks for issue #176.
+        """
+        Notification.objects.all().delete()
+
+        ticket = Ticket.objects.create(author=self.student, assignee=self.ta,
+                                       title="How to code?",
+                                       inbox=self.inbox, content="wat is 1+1?")
+        comment = Comment.objects.create(ticket=ticket, author=self.ta2, content="@admin", is_reply=False)
+        self.assertTrue(MentionNotification.objects.filter(comment=comment, receiver=self.ta).exists())
+        self.assertFalse(CommentNotification.objects.filter(comment=comment, receiver=self.ta).exists())
+
 
 class NotificationsAPITestCase(NotificationsTestCase):
 
@@ -320,11 +297,52 @@ class NotificationsAPITestCase(NotificationsTestCase):
             TicketReminderNotification.objects.create(receiver=self.ta, is_read=False, ticket=self.ticket)
         ]
 
+        for notification in notifications:
+            self.assertFalse(Notification.objects.get(pk=notification.id).is_read)
+
         response = self.client.put("/api/notifications/read/all")
         self.assertEqual(response.status_code, 200)
 
         for notification in notifications:
             self.assertTrue(Notification.objects.get(pk=notification.id).is_read)
+
+    def test_get_notifications_read_on_ticket_view(self):
+        self.client.force_login(self.ta)
+
+        comment1 = Comment.objects.create(ticket=self.ticket, author=self.student, content="@admin", is_reply=True)
+
+        notifications1 = [
+            MentionNotification.objects.create(receiver=self.ta, is_read=False, comment=comment1),
+            CommentNotification.objects.create(receiver=self.ta, is_read=False, comment=comment1),
+            TicketAssignedNotification.objects.create(receiver=self.ta, is_read=False, ticket=self.ticket),
+            NewTicketNotification.objects.create(receiver=self.ta, is_read=False, ticket=self.ticket),
+            TicketReminderNotification.objects.create(receiver=self.ta, is_read=False, ticket=self.ticket)
+        ]
+
+        comment2 = Comment.objects.create(ticket=self.ticket_2, author=self.student, content="@admin", is_reply=True)
+        notifications2 = [
+            MentionNotification.objects.create(receiver=self.ta, is_read=False, comment=comment2),
+            CommentNotification.objects.create(receiver=self.ta, is_read=False, comment=comment2),
+            TicketAssignedNotification.objects.create(receiver=self.ta, is_read=False, ticket=self.ticket_2),
+            NewTicketNotification.objects.create(receiver=self.ta, is_read=False, ticket=self.ticket_2),
+            TicketReminderNotification.objects.create(receiver=self.ta, is_read=False, ticket=self.ticket_2)
+        ]
+
+        for notification in notifications1:
+            self.assertFalse(Notification.objects.get(pk=notification.id).is_read)
+
+        for notification in notifications2:
+            self.assertFalse(Notification.objects.get(pk=notification.id).is_read)
+
+        response = self.client.put(
+            f"/api/notifications/read/inboxes/{self.inbox.id}/tickets/{self.ticket.ticket_inbox_id}")
+        self.assertEqual(response.status_code, 200)
+
+        for notification in notifications1:
+            self.assertTrue(Notification.objects.get(pk=notification.id).is_read)
+
+        for notification in notifications2:
+            self.assertFalse(Notification.objects.get(pk=notification.id).is_read)
 
     def test_get_notifications_flip_read(self):
         self.client.force_login(self.ta)

@@ -64,7 +64,7 @@ class InboxTicketsPerDateTypeStatisticsApiView(UserIsInboxManagerMixin, APIView)
 
 
 class InboxAverageAgentResponseTimeSerializer(ModelSerializer):
-    avg_response_time = serializers.DurationField(read_only=True, )
+    avg_response_time = serializers.DurationField(read_only=True)
 
     class Meta:
         model = User
@@ -76,7 +76,8 @@ class InboxAverageAgentResponseTimeStatisticsApiView(UserIsInboxManagerMixin, AP
     def get(self, request, inbox_id):
         inbox = get_object_or_404(Inbox, pk=inbox_id)
 
-        recent_comment_ids = Comment.objects.filter(ticket__inbox=inbox, author=OuterRef(OuterRef("pk"))) \
+        recent_comment_ids = Comment.objects.filter(ticket__inbox=inbox, is_reply=True,
+                                                    author=OuterRef(OuterRef("pk"))) \
             .order_by("ticket", "-date_created") \
             .distinct("ticket") \
             .values("id")

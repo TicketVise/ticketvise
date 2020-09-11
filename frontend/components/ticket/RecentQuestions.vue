@@ -22,20 +22,16 @@
   export default {
     name: "RecentQuestions",
     components: {Card, Avatar},
-    props: ["author", "inbox_id"],
+    props: ["author", "inbox_id", "role"],
     data() {
       return {
         tickets: null,
-        role: null,
       }
     },
     mounted() {
       axios.get("/api/inboxes/" + this.inbox_id + "/users/" + this.author.id + "/tickets/recent").then(response => {
         this.tickets = response.data;
       });
-      axios.get("/api/inboxes/" + this.inbox_id + "/users/" + this.author.id + "/roles").then(response => {
-        this.role = response.data;
-      })
     }
   }
 </script>

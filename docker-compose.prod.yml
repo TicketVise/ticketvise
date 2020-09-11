@@ -18,9 +18,15 @@ services:
     command: >
       sh -c "python manage.py wait_for_database &&
              python manage.py migrate --no-input &&
-             python manage.py collectstatic --no-input &&
+             python manage.py collectstatic --no-input --clear &&
              gunicorn ticketvise.wsgi:application --bind 0.0.0.0:6000"
     deploy:
+      replicas: 2
+      update_config:
+        parallelism: 1
+        delay: 10s
+        order: start-first
+        failure_action: rollback
       restart_policy:
         condition: on-failure
         delay: 5s
@@ -28,7 +34,7 @@ services:
         window: 10s
     volumes:
       - media:/backend/ticketvise/media
-      - static:/backend/ticketvise/static
+      - static:/backend/static
     environment:
       DEBUG: 0
       SEND_MAIL: 1
@@ -38,6 +44,8 @@ services:
       SQL_PASSWORD: ${SQL_PASSWORD}
       LTI_KEY: ${LTI_KEY}
       LTI_SECRET: ${LTI_SECRET}
+      DOMAIN: ${DOMAIN}
+      SENTRY_DSN: ${SENTRY_DSN}
 
   cronjob:
     image: "ticketvise/cronjob:sha-${GIT_DIGEST}"
@@ -57,10 +65,18 @@ services:
       SQL_PASSWORD: ${SQL_PASSWORD}
       LTI_KEY: ${LTI_KEY}
       LTI_SECRET: ${LTI_SECRET}
+      DOMAIN: ${DOMAIN}
+      SENTRY_DSN: ${SENTRY_DSN}
 
   proxy:
     image: "ticketvise/proxy:sha-${GIT_DIGEST}"
     deploy:
+      replicas: 2
+      update_config:
+        parallelism: 1
+        delay: 10s
+        order: start-first
+        failure_action: rollback
       restart_policy:
         condition: on-failure
         delay: 5s

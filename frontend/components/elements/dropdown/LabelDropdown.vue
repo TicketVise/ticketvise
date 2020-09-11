@@ -1,5 +1,5 @@
 <template>
-  <div class="space-y-1">
+  <div class="space-y-1" v-click-outside="away">
     <div class="relative">
       <span class="inline-block w-full rounded-md shadow-sm" @click="open = !open">
         <button aria-expanded="true" aria-haspopup="listbox" aria-labelledby="listbox-label"
@@ -7,18 +7,18 @@
                 tabindex="-1"
                 type="button">
           <div class="flex items-center space-x-3">
-            <span class="block truncate">Select labels</span>
+            <span class="block truncate">{{ values && values.length ? "Select labels" : "No labels available" }}</span>
           </div>
           <span class="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none">
             <svg class="h-5 w-5 text-gray-400" viewBox="0 0 20 20" fill="none" stroke="currentColor">
-                <path d="M7 7l3-3 3 3m0 6l-3 3-3-3" stroke-linecap="round" stroke-linejoin="round"
-                      stroke-width="1.5"/>
+              <path d="M7 7l3-3 3 3m0 6l-3 3-3-3" stroke-linecap="round" stroke-linejoin="round"
+                    stroke-width="1.5"/>
             </svg>
           </span>
         </button>
       </span>
 
-      <div class="absolute mt-1 w-full rounded-md bg-white shadow-lg z-50" v-if="open">
+      <div class="absolute mt-1 w-full rounded-md bg-white shadow-lg z-50" v-if="open && values && values.length">
         <ul aria-activedescendant="listbox-item-3" aria-labelledby="listbox-label"
             class="max-h-56 rounded-md py-1 text-base leading-6 shadow-xs overflow-auto focus:outline-none sm:text-sm sm:leading-5"
             role="listbox"
@@ -30,7 +30,8 @@
               v-for="item in values">
             <div class="flex items-center space-x-3">
               <div :style="`background-color: ${item.color};`" class="w-2 h-2 rounded-full"></div>
-              <span :class="{ 'font-semibold': containsObject(labels, item.id) }" class="font-normal block truncate">{{ item.name }}</span>
+              <span :class="{ 'font-semibold': containsObject(labels, item.id) }"
+                    class="font-normal block truncate">{{ item.name }}</span>
             </div>
             <span class="absolute inset-y-0 right-0 flex items-center pr-4" v-if="containsObject(labels, item.id)">
               <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
@@ -47,33 +48,38 @@
 </template>
 
 <script>
-  export default {
-    name: "Dropdown",
-    props: ["values", "selected"],
-    data: () => ({
-      open: false,
-      labels: []
-    }),
-    created() {
-      this.labels = this.selected ? this.selected : []
-    },
-    methods: {
-      switchItem(value) {
-        if (this.containsObject(this.labels, value.id))
-          this.labels.splice(this.labels.findIndex(e => e.id === value.id), 1);
-        else
-          this.labels.push(value);
+import ClickOutside from 'vue-click-outside'
 
-        this.$emit("input", this.labels)
-      },
-      away() {
-        this.open = false
-      },
-      containsObject(list, id) {
-        return list && list.some(e => e.id === id);
-      }
+export default {
+  name: "Dropdown",
+  props: ["values", "selected"],
+  data: () => ({
+    open: false,
+    labels: []
+  }),
+  created() {
+    this.labels = this.selected ? this.selected : []
+  },
+  methods: {
+    switchItem(value) {
+      if (this.containsObject(this.labels, value.id))
+        this.labels.splice(this.labels.findIndex(e => e.id === value.id), 1);
+      else
+        this.labels.push(value);
+
+      this.$emit("input", this.labels)
+    },
+    away() {
+      this.open = false
+    },
+    containsObject(list, id) {
+      return list && list.some(e => e.id === id);
     }
+  },
+  directives: {
+    ClickOutside
   }
+}
 </script>
 
 <style scoped>

@@ -6,7 +6,8 @@ services:
     build:
       context: .
     command: >
-      sh -c "python manage.py wait_for_database &&
+      sh -c "python manage.py collectstatic --no-input --clear &&
+             python manage.py wait_for_database &&
              python manage.py migrate --no-input &&
              python manage.py insert_demo_data &&
              python manage.py runserver 0.0.0.0:6000"
@@ -25,8 +26,9 @@ services:
     build: ./nginx
     ports:
       - 8000:8000
+    entrypoint: ""
     volumes:
-      - ./nginx/nginx.dev.conf:/etc/nginx/conf.d/nginx.conf:ro
+      - ./nginx/nginx.dev.conf:/etc/nginx/conf.d/nginx.conf
       - ./backend/ticketvise/media:/home/media:ro
       - ./backend/ticketvise/static:/home/static:ro
 

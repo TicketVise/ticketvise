@@ -1,32 +1,68 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  {% if user.is_authenticated %}
+    <meta charset="UTF-8">
+    {% if user.is_authenticated %}
     {% number_of_unread_notifications user as count %}
-  {% endif %}
-  {% if count %}
+    {% endif %}
+    {% if count %}
     <title>({{ count }}) TicketVise</title>
-  {% else %}
+    {% else %}
     <title>TicketVise</title>
-  {% endif %}
+    {% endif %}
 
-  <meta name="description" content="TicketVise, making assisting great again.">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  {% load static %}
-  <link rel="shortcut icon" type="image/png" href="{% static 'favicon.png' %}"/>
-  <link rel="stylesheet" type="text/css" href="{% static 'styles.css' %}">
+    <meta name="description" content="TicketVise, making assisting great again.">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    {% load static %}
+    <link rel="shortcut icon" type="image/png" href="{% static 'favicon.png' %}"/>
+    <link rel="stylesheet" type="text/css" href="{% static 'styles.css' %}">
+    <script type="text/javascript" src="{% static 'bundle.js' %}" async></script>
+    <noscript>
+        <style>
+            .js-only {
+                display: none !important;
+            }
+        </style>
+    </noscript>
 </head>
-<body class="flex flex-col min-h-screen">
+<body>
 
-{% block body %}
-  if you see this, something is wrong!
-{% endblock body %}
+
+<noscript>
+    <div class="bg-gray-100">
+        <div class="grid grid-rows-2 lg:grid-cols-2 lg:grid-rows-1 h-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex flex-col justify-center items-center h-full w-full text-center space-y-2">
+                <div class="text-4xl font-semibold text-gray-700">JavaScript is disabled</div>
+                <p class="text-xl text-gray-600">TicketVise requires JavaScript to function properly. Please
+                    enable JavaScript in your browser.
+                </p>
+                <a href="https://enablejavascript.co/" target="_blank"
+                   class="inline-flex items-center px-4 py-2 border border-transparent leading-5 font-medium rounded-md text-white bg-primary hover:bg-orange-500 focus:outline-none focus:shadow-outline-orange focus:border-orange-700 active:bg-orange-700 transition duration-150 ease-in-out">
+                    Enable JavaScript
+                </a>
+            </div>
+            <div class="flex flex-col justify-end lg:justify-center items-center h-full w-full pb-4">
+                <img class="h-11/12 lg:max-h-6/12 w-full max-w-md "
+                     src="{% static 'img/svg/undraw_set_preferences_kwia.svg' %}" alt="no script photo">
+            </div>
+        </div>
+    </div>
+    <a href="/" class="flex items-center justify-center mt-4">
+        <img class="h-8 w-8" src="{% static 'img/logo/logo.svg' %}" alt="Logo">
+        <span class="text-2xl ml-2 text-gray-700">Ticket</span><span
+            class="text-2xl text-orange-500 font-bold">Vise</span>
+    </a>
+</noscript>
+
+<main class="flex flex-col min-h-screen js-only">
+    {% block body %}
+    if you see this, something is wrong!
+    {% endblock body %}
+</main>
 
 {% block navbar-javascript %}
 {% endblock navbar-javascript %}
 
-<script type="text/javascript" src="{% static 'bundle.js' %}"></script>
 {% block javascript %}
 {% endblock javascript %}
 

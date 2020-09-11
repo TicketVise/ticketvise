@@ -1,10 +1,28 @@
 import Vue from 'vue'
 import 'alpinejs'
 import './email/index.js'
+import * as Sentry from "@sentry/browser";
+import {Vue as VueIntegration} from "@sentry/integrations";
+import {Integrations} from '@sentry/tracing';
 
+// global is declared using DefinePlugin in the webpack.config.js
+if (typeof SENTRY_DSN !== 'undefined') {
+    Sentry.init({
+        dsn: SENTRY_DSN,
+        integrations: [
+            new VueIntegration({
+                Vue,
+                tracing: true,
+                logErrors: true
+            }),
+            new Integrations.BrowserTracing()
+        ],
+        tracesSampleRate: 1
+    });
+}
 
-window.axios = require('axios')
 window.Vue = Vue
+window.axios = require('axios')
 Vue.config.productionTip = false
 
 /* Include font-awesome icons. */
@@ -35,20 +53,20 @@ files.keys().map(key =>
  * @param {String} el = the name of the vue component.
  */
 let create_vue = (components) => {
-  for (let key in components) {
-    if (window.location.pathname.match('^' + key.replace(/\*/g, '[^.]*') + '$')) {
-      for (let el of components[key]) {
-        new Vue({
-          el: '#' + el,
-          template: `
+    for (let key in components) {
+        if (window.location.pathname.match('^' + key.replace(/\*/g, '[^.]*') + '$')) {
+            for (let el of components[key]) {
+                new Vue({
+                    el: '#' + el,
+                    template: `
           <${el}></${el}>
           `
-        })
-      }
+                })
+            }
 
-      return
+            return
+        }
     }
-  }
 }
 
 /**
@@ -58,12 +76,12 @@ let create_vue = (components) => {
  * The name of the vue component if the lowercase name with dashes in between.
  */
 let components = {
-  '/notifications': ['notifications'],
-  '/inboxes/*/tickets': ['ticket-overview'],
-  '/inboxes/*/tickets/new': ['ticket-form'],
-  '/inboxes/*/tickets/*': ['ticket'],
-  '/inboxes/*/statistics': ['inbox-statistics'],
-  '/profile': ['profile']
+    '/notifications': ['notifications'],
+    '/inboxes/*/tickets': ['ticket-overview'],
+    '/inboxes/*/tickets/new': ['ticket-form'],
+    '/inboxes/*/tickets/*': ['ticket'],
+    '/inboxes/*/statistics': ['inbox-statistics'],
+    '/profile': ['profile']
 }
 
 /* Now lets set them all up. */
