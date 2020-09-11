@@ -57,8 +57,10 @@
                                 <a href="https://ticketvise.com/getting-started/" target="_blank"
                                    class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                                    role="menuitem">Getting started</a>
-                                <a href="mailto:info@ticketvise.com?subject=Feedback&body=Hi%20TicketVise," target="_blank"
-                                   rel="noopener noreferrer" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                                <a href="mailto:info@ticketvise.com?subject=Feedback&body=Hi%20TicketVise,"
+                                   target="_blank"
+                                   rel="noopener noreferrer"
+                                   class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                                    role="menuitem">Send feedback</a>
                             </div>
                         </div>
@@ -138,6 +140,19 @@
             <a href="/inboxes"
                class="block px-3 py-2 rounded-md text-base font-medium text-gray-300 hover:text-white hover:bg-gray-700 focus:outline-none focus:text-white focus:bg-gray-700"
                :class="{ 'text-white bg-gray-900 ': url === '/inboxes'}">Inboxes</a>
+            <a href="{% url 'notifications' %}"
+               class="flex flex-row items-center px-3 py-2 rounded-md text-base font-medium text-gray-300 hover:text-white hover:bg-gray-700 focus:outline-none focus:text-white focus:bg-gray-700"
+               :class="{ 'text-white bg-gray-900 ': url === '/notifications'}">
+                Notifications
+
+                {% number_of_unread_notifications user as count %}
+                {% if count > 0 %}
+                <div class="flex justify-center items-center h-4 min-w-4 bg-primary rounded-full ml-2">
+                    <span class="rounded-full text-white text-center text-2xs">{{ count }}</span>
+                </div>
+                {% endif %}
+
+            </a>
             {% if user.is_superuser %}
             <a href="/admin/"
                class="block px-3 py-2 rounded-md text-sm font-medium text-gray-300 hover:text-white hover:bg-gray-700 focus:outline-none focus:text-white focus:bg-gray-700"
