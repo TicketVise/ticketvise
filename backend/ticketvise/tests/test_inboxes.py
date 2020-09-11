@@ -92,3 +92,19 @@ class InboxConfigureTestCase(TestCase):
 
         relation = self.coordinator.get_entry_by_inbox(inbox)
         self.assertFalse(relation.is_bookmarked)
+
+    def test_bookmark_unrelated(self):
+        """
+        Test if unrelated user can bookmark inbox
+        """
+        student2 = User.objects.create_user(username="student2", email="student2@ticketvise.com", password="test12345",
+                                           is_staff=False)
+        self.client.force_login(student2)
+        inbox = create_inbox("TestInbox", "TestInbox")
+        data = {
+            "inbox_id": inbox.id,
+        }
+
+        with self.assertRaises(ValueError):
+            self.client.post("/inboxes", urlencode(data), follow=True,
+                                        content_type="application/x-www-form-urlencoded")

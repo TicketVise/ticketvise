@@ -1,5 +1,6 @@
 from django.test import TestCase, Client
 
+from ticketvise.models.label import Label
 from ticketvise.models.user import User, Role
 from ticketvise.tests.utils import create_label, create_inbox
 
@@ -41,6 +42,8 @@ class InboxTestCase(TestCase):
         self.coordinator_2.add_inbox(self.inbox_2, Role.MANAGER)
         self.label = create_label(inbox=self.inbox)
         self.label_2 = create_label(inbox=self.inbox_2)
+        self.invisible_label = Label.objects.create(name="invisible", inbox=self.inbox, is_visible_to_guest=False)
+        self.disabled_label = Label.objects.create(name="disabled", inbox=self.inbox, is_active=False)
 
         self.template_names = [
             ("inbox_user", (self.inbox.id, self.student.id)),

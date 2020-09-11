@@ -68,3 +68,9 @@ class BaseTestCase(InboxTestCase):
             url = reverse(template_name, args=args).replace("1", "1a")
             response = self.client.get(url, follow=True)
             self.assertEqual(response.status_code, 404)
+
+    def test_get_coordinator(self):
+        """
+        Test if the get_coordinator function return the coordinator
+        """
+        self.assertEqual(self.inbox.get_coordinator(), self.coordinator)

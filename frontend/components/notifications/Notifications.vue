@@ -77,7 +77,6 @@
       }).then(response => {
         this.notifications = response.data;
         this.getNotificationCount()
-        console.log(this.notifications)
       })
     },
     methods: {

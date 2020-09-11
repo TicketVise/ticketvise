@@ -5,6 +5,8 @@ const autoprefixer = require('autoprefixer');
 const tailwindcss = require('tailwindcss');
 const VueLoaderPlugin = require('vue-loader/lib/plugin');
 const path = require('path');
+const purgecss = require('@fullhuman/postcss-purgecss')
+const webpack = require("webpack");
 
 module.exports = {
     entry: ['./frontend/index.js', './frontend/styles/index.scss'],
@@ -50,6 +52,28 @@ module.exports = {
                             plugins: [
                                 autoprefixer,
                                 tailwindcss('./tailwind.config.js'),
+                                purgecss(
+                                    {
+                                        content: ['./**/*.html', './**/*.vue'],
+                                        defaultExtractor(content) {
+                                            const contentWithoutStyleBlocks = content.replace(/<style[^]+?<\/style>/gi, '')
+                                            return contentWithoutStyleBlocks.match(/[A-Za-z0-9-_/:]*[A-Za-z0-9-_/]+/g) || []
+                                        },
+                                        whitelist: [],
+                                        whitelistPatterns: [
+                                            /-(leave|enter|appear)(|-(to|from|active))$/,
+                                            /^(?!(|.*?:)cursor-move).+-move$/,
+                                            /^router-link(|-exact)-active$/,
+                                            /data-v-.*/,
+                                            // whitelist comment editor
+                                            /^tui-.*/,
+                                            /^CodeMirror/,
+                                            /^cm-.*/,
+                                            /^te/,
+                                            /^code-.*/
+                                        ],
+                                    }
+                                )
                             ],
                         }
                     },
@@ -92,6 +116,9 @@ module.exports = {
         ]
     },
     plugins: [
+        new webpack.DefinePlugin({
+            SENTRY_DSN: JSON.stringify(process.env.SENTRY_DSN),
+        }),
         new MiniCssExtractPlugin({
             filename: "styles.css",
             chunkFilename: '[id].css'

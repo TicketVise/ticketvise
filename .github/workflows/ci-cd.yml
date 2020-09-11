@@ -26,6 +26,8 @@ jobs:
           npm ci
           npm run build
           npm test
+        env:
+          SENTRY_DSN: ${{ secrets.SENTRY_DSN_FRONTEND }}
 
       - name: Setup test environment
         run: docker-compose up -d --build
@@ -81,6 +83,7 @@ jobs:
           GIT_DIGEST: ${{ steps.git-sha7.outputs.sha7 }}
           EMAIL_PASSWORD: ${{ secrets.EMAIL_PASSWORD }}
           DOMAIN: dev.ticketvise.com
+          SENTRY_DSN: ${{ secrets.SENTRY_DSN_BACKEND }}
         with:
           remote_host: ${{ secrets.DOCKER_SSH_HOST_DEV }}
           ssh_private_key: ${{ secrets.DOCKER_SSH_PRIVATE_KEY_DEV }}
@@ -99,6 +102,7 @@ jobs:
           GIT_DIGEST: ${{ steps.git-sha7.outputs.sha7 }}
           EMAIL_PASSWORD: ${{ secrets.EMAIL_PASSWORD }}
           DOMAIN: uva.ticketvise.com
+          SENTRY_DSN: ${{ secrets.SENTRY_DSN_BACKEND }}
         with:
           remote_host: ${{ secrets.DOCKER_SSH_HOST }}
           ssh_private_key: ${{ secrets.DOCKER_SSH_PRIVATE_KEY }}
