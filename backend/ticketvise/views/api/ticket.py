@@ -17,6 +17,7 @@ from django.shortcuts import get_object_or_404
 from rest_framework import serializers
 from rest_framework.generics import UpdateAPIView, ListAPIView, RetrieveAPIView, CreateAPIView, RetrieveUpdateAPIView, \
     DestroyAPIView
+from rest_framework.response import Response
 from rest_framework.serializers import ModelSerializer
 from rest_framework.views import APIView
 
@@ -268,17 +269,17 @@ class TicketLabelApiView(UserIsInboxStaffMixin, UpdateAPIView):
         return Ticket.objects.get(inbox=inbox, ticket_inbox_id=self.kwargs["ticket_inbox_id"])
 
 
-class TicketAttachmentsApiView(UpdateAPIView):
+class TicketAttachmentsApiView(UserIsTicketAuthorOrInboxStaffMixin, CreateAPIView):
     serializer_class = TicketSerializer
 
-    def get_object(self):
+    def post(self, request, *args, **kwargs):
         inbox = get_object_or_404(Inbox, pk=self.kwargs["inbox_id"])
         ticket = get_object_or_404(Ticket, inbox=inbox, ticket_inbox_id=self.kwargs["ticket_inbox_id"])
 
         for file in self.request.FILES.getlist('files'):
             TicketAttachment(ticket=ticket, file=file).save()
         
-        return ticket
+        return Response()
 
 
 class AttachmentViewApiView(UserIsTicketAuthorOrInboxStaffMixin, DestroyAPIView):

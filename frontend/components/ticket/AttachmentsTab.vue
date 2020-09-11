@@ -45,7 +45,7 @@
         axios.defaults.xsrfCookieName = 'csrftoken'
         axios.defaults.xsrfHeaderName = "X-CSRFTOKEN"
 
-        axios.patch("/api" + window.location.pathname + '/attachments', formData, {
+        axios.post("/api" + window.location.pathname + '/attachments', formData, {
           headers: {
             'Content-Type': 'multipart/form-data'
           }
