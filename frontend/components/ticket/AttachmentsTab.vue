@@ -1,7 +1,7 @@
 <template>
   <div class="w-full p-4 pt-2 mb-3">
     <div v-if="ticket.attachments.length > 0" class="w-full grid sm:grid-cols-2 xl:grid-cols-3 gap-4">
-      <Attachment v-for="(attachment, index) in ticket.attachments" :key="index" :attachment="attachment" />
+      <Attachment v-for="(attachment, index) in ticket.attachments" :key="index" :attachment="attachment" @remove="ticket.attachments.splice(index, 1)" />
     </div>
     <div v-if="ticket.attachments.length === 0" class="text-center mb-4">
       <img src="/static/img/svg/undraw_upload_87y9.svg" alt="Nothing here" class="w-1/2 md:w-1/4 mx-auto mb-8">
@@ -50,7 +50,7 @@
             'Content-Type': 'multipart/form-data'
           }
         }).then(() => {
-          window.location.href = window.location.pathname
+          this.$emit('uploaded')
         }).catch(error => {
           this.errors = error.response.data
         })

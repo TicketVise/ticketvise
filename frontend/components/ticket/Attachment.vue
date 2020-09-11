@@ -34,6 +34,7 @@
 </template>
 
 <script>
+import axios from 'axios'
 import { mixin as clickaway } from 'vue-clickaway'
 
 export default {
@@ -75,8 +76,10 @@ export default {
     getExtension(url) {
       return url.substring(url.lastIndexOf('.') + 1);
     },
-    remove(file) {
-      console.log(file)
+    remove(attachment) {
+      this.menu = false
+      axios.delete('/api/attachments/' + attachment.id)
+      this.$emit('remove')
     },
     away() {
       this.menu = false

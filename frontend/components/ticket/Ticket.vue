@@ -105,7 +105,7 @@
           <internal-tab v-if="ticket && user && comments && is_staff && activeTab === 'internal'" :ticket="ticket"
                         :comments="comments"
                         v-on:post="onCommentPost" :user="user" :staff="staff_excluding_self"/>
-          <attachments-tab v-if="ticket && activeTab === 'attachments'" :ticket="ticket"/>
+          <attachments-tab v-if="ticket && activeTab === 'attachments'" :ticket="ticket" @uploaded="updateTicket"/>
         </div>
       </div>
     </div>
@@ -157,7 +157,7 @@
         labels: [],
         comments: [],
         staff: [],
-        activeTab: 'attachments',
+        activeTab: 'external',
         user: null,
         role: "",
         shared_with: [],
@@ -290,6 +290,11 @@
             }).then(_ => {
 
         });
+      },
+      updateTicket() {
+        axios.get("/api" + window.location.pathname).then(response => {
+          this.ticket = response.data;
+        })
       }
     }
   }

@@ -15,7 +15,8 @@ from django.core.exceptions import ValidationError
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
 from rest_framework import serializers
-from rest_framework.generics import UpdateAPIView, ListAPIView, RetrieveAPIView, CreateAPIView, RetrieveUpdateAPIView
+from rest_framework.generics import UpdateAPIView, ListAPIView, RetrieveAPIView, CreateAPIView, RetrieveUpdateAPIView, \
+    DestroyAPIView
 from rest_framework.serializers import ModelSerializer
 from rest_framework.views import APIView
 
@@ -107,7 +108,7 @@ class CreateTicketSerializer(ModelSerializer):
 class TicketAttachmentSerializer(ModelSerializer):
     class Meta:
         model = TicketAttachment
-        fields = ["file"]
+        fields = ["id", "file"]
 
 
 class TicketWithParticipantsSerializer(TicketSerializer):
@@ -278,7 +279,18 @@ class TicketAttachmentsApiView(UpdateAPIView):
             TicketAttachment(ticket=ticket, file=file).save()
         
         return ticket
-            
+
+
+class AttachmentViewApiView(DestroyAPIView): # UserIsTicketAuthorOrInboxStaffMixin
+    serializer_class = TicketAttachment
+
+    def get_object(self):
+        attachment = TicketAttachment.objects.filter(pk=self.kwargs["pk"])
+        for a in attachment:
+            a.delete()
+
+        return attachment
+
 
 class TicketStatusUpdateSerializer(ModelSerializer):
     class Meta:

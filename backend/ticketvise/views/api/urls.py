@@ -9,7 +9,7 @@ from ticketvise.views.api.statistics import InboxTicketsPerDateTypeStatisticsApi
     InboxAverageAgentResponseTimeStatisticsApiView, InboxAverageTimeToCloseStatisticsApiView, \
     LabelsCountStatisticsApiView
 from ticketvise.views.api.ticket import TicketApiView, TicketUpdateAssignee, \
-    TicketStatusUpdateApiView, TicketAttachmentsApiView, \
+    TicketStatusUpdateApiView, TicketAttachmentsApiView, AttachmentViewApiView, \
     RecentTicketApiView, InboxTicketsApiView, TicketLabelApiView, TicketCreateApiView, TicketSharedAPIView, \
     TicketEventsApiView
 from ticketvise.views.api.user import UserRoleApiView, CurrentUserApiView, UserGetFromUsernameApiView, \
@@ -47,6 +47,7 @@ urlpatterns = [
     path("notifications/read/inboxes/<int:inbox_id>/tickets/<int:ticket_inbox_id>",
          VisitTicketNotificationApi.as_view()),
     path("notifications/<int:pk>/read", NotificationFlipRead.as_view()),
+    path("attachments/<int:pk>", AttachmentViewApiView.as_view()),
     path("me", CurrentUserApiView.as_view()),
     path("me/settings", NotificationsSettingsAPIView.as_view()),
 ]

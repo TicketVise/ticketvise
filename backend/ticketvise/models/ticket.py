@@ -7,6 +7,7 @@ Contains all entity sets for the ticket database and TicketStatusChangedNotifica
 * :class:`Ticket`
 * :class:`TicketStatuscChangedNotification`
 """
+import os
 
 from django.db import models, transaction
 from django.db.models import Max
@@ -15,6 +16,7 @@ from django.dispatch import receiver
 from django.utils.translation import gettext_lazy as _
 from model_utils.managers import InheritanceManager
 
+from ticketvise import settings
 from ticketvise.middleware import CurrentUserMiddleware
 from ticketvise.models.label import Label
 from ticketvise.models.notification.assigned import TicketAssignedNotification
@@ -188,6 +190,10 @@ class TicketAttachment(models.Model):
     file = models.FileField(upload_to="media/tickets")
     date_edited = models.DateTimeField(auto_now=True)
     date_created = models.DateTimeField(auto_now_add=True)
+
+    def delete(self, *args, **kwargs):
+        os.remove(os.path.join(settings.MEDIA_ROOT, self.file.name))
+        super(TicketAttachment, self).delete()
 
 
 class TicketEvent(models.Model):
