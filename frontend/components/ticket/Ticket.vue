@@ -166,7 +166,7 @@
         status: {
           PNDG: 'Pending',
           ASGD: 'Assigned',
-          ANSD: 'Answered',
+          ANSD: 'Awaiting response',
           CLSD: 'Closed'
         }
       }

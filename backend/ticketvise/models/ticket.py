@@ -31,7 +31,7 @@ class Status(models.TextChoices):
 
     PENDING = "PNDG", _("Pending")
     ASSIGNED = "ASGD", _("Assigned")
-    ANSWERED = "ANSD", _("Answered")
+    ANSWERED = "ANSD", _("Awaiting response")
     CLOSED = "CLSD", _("Closed")
 
 
