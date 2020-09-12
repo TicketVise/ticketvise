@@ -47,13 +47,6 @@ class NotificationsAPIView(LoginRequiredMixin, ListAPIView):
 
         return notifications
 
-    def validate_read(self, read):
-        if read == "True":
-            return True
-        elif read == "False":
-            return False
-        return None
-
 
 class NotificationFlipRead(LoginRequiredMixin, UpdateAPIView):
     serializer_class = NotificationSerializer
@@ -62,6 +55,7 @@ class NotificationFlipRead(LoginRequiredMixin, UpdateAPIView):
     def put(self, request, *args, **kwargs):
         Notification.objects.filter(pk=self.kwargs["pk"]).update(is_read=Q(is_read=False))
         return Response()
+
 
 class NotificationsReadAll(LoginRequiredMixin, UpdateAPIView):
     serializer_class = NotificationSerializer

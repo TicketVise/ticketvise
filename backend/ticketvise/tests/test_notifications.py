@@ -374,7 +374,79 @@ class NotificationsAPITestCase(NotificationsTestCase):
         self.assertEqual(response.status_code, 302)
         self.assertEqual(response.url, "/login/?next=/api/notifications")
 
-    def test_get_notifications_read_all(self):
+    def test_get_notifications_count(self):
+        self.client.force_login(self.ta)
+        Notification.objects.all().delete()
+
+        MentionNotification.objects.create(receiver=self.ta, is_read=True, comment=self.comment),
+        CommentNotification.objects.create(receiver=self.ta, is_read=False, comment=self.comment),
+        TicketAssignedNotification.objects.create(receiver=self.ta, is_read=True, ticket=self.ticket),
+        NewTicketNotification.objects.create(receiver=self.ta, is_read=False, ticket=self.ticket),
+        TicketReminderNotification.objects.create(receiver=self.ta, is_read=False, ticket=self.ticket)
+
+        response = self.client.get("/api/notifications/unread")
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, '3')
+
+
+    def test_get_notifications_all(self):
+        self.client.force_login(self.ta)
+
+        data = {
+            "is_read": ""
+        }
+
+        Notification.objects.all().delete()
+
+        MentionNotification.objects.create(receiver=self.ta, is_read=True, comment=self.comment),
+        CommentNotification.objects.create(receiver=self.ta, is_read=False, comment=self.comment),
+        TicketAssignedNotification.objects.create(receiver=self.ta, is_read=True, ticket=self.ticket),
+        NewTicketNotification.objects.create(receiver=self.ta, is_read=False, ticket=self.ticket),
+        TicketReminderNotification.objects.create(receiver=self.ta, is_read=False, ticket=self.ticket)
+
+        response = self.client.get("/api/notifications", data)
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, '"count":5')
+
+    def test_get_notifications_read(self):
+        self.client.force_login(self.ta)
+
+        data = {
+            "is_read": "True"
+        }
+
+        Notification.objects.all().delete()
+
+        MentionNotification.objects.create(receiver=self.ta, is_read=True, comment=self.comment),
+        CommentNotification.objects.create(receiver=self.ta, is_read=False, comment=self.comment),
+        TicketAssignedNotification.objects.create(receiver=self.ta, is_read=True, ticket=self.ticket),
+        NewTicketNotification.objects.create(receiver=self.ta, is_read=False, ticket=self.ticket),
+        TicketReminderNotification.objects.create(receiver=self.ta, is_read=False, ticket=self.ticket)
+
+        response = self.client.get("/api/notifications", data)
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, '"count":2')
+
+    def test_get_notifications_unread(self):
+        self.client.force_login(self.ta)
+
+        data = {
+            "is_read": "False"
+        }
+
+        Notification.objects.all().delete()
+
+        MentionNotification.objects.create(receiver=self.ta, is_read=True, comment=self.comment),
+        CommentNotification.objects.create(receiver=self.ta, is_read=False, comment=self.comment),
+        TicketAssignedNotification.objects.create(receiver=self.ta, is_read=True, ticket=self.ticket),
+        NewTicketNotification.objects.create(receiver=self.ta, is_read=False, ticket=self.ticket),
+        TicketReminderNotification.objects.create(receiver=self.ta, is_read=False, ticket=self.ticket)
+
+        response = self.client.get("/api/notifications", data)
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, '"count":3')
+
+    def test_notifications_read_all(self):
         self.client.force_login(self.ta)
 
         comment = Comment.objects.create(ticket=self.ticket, author=self.student, content="@admin", is_reply=True)
@@ -396,7 +468,7 @@ class NotificationsAPITestCase(NotificationsTestCase):
         for notification in notifications:
             self.assertTrue(Notification.objects.get(pk=notification.id).is_read)
 
-    def test_get_notifications_read_on_ticket_view(self):
+    def test_notifications_read_on_ticket_view(self):
         self.client.force_login(self.ta)
 
         comment1 = Comment.objects.create(ticket=self.ticket, author=self.student, content="@admin", is_reply=True)
@@ -434,7 +506,7 @@ class NotificationsAPITestCase(NotificationsTestCase):
         for notification in notifications2:
             self.assertFalse(Notification.objects.get(pk=notification.id).is_read)
 
-    def test_get_notifications_flip_read(self):
+    def test_notifications_flip_read(self):
         self.client.force_login(self.ta)
 
         comment = Comment.objects.create(ticket=self.ticket, author=self.student, content="@admin", is_reply=True)
