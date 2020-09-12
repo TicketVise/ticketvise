@@ -107,8 +107,6 @@ class TicketTestCase(TransactionTestCase):
         response = self.client.get(reverse("ticket", args=[self.ticket.inbox.id, self.ticket.ticket_inbox_id]))
         self.assertEqual(response.status_code, 403)
 
-
-class TicketTestApi(APITestCase, TicketTestCase):
     def test_get_ticket_as_unauthorized_student(self):
         """
         Test to verify a student cannot get the ticket

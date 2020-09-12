@@ -114,23 +114,6 @@ class NotificationsTestCase(TestCase):
             exists = NewTicketNotification.objects.filter(ticket=ticket, receiver=user).exists()
             self.assertTrue(exists)
 
-    def test_mark_notification_read_toggle(self):
-        """
-        A user must be able to mark notifications as unread.
-
-        :return: None.
-        """
-        self.client.force_login(self.ta)
-        notification = Notification.objects.create(receiver=self.ta)
-
-        self.client.post("/notifications", urlencode({"id": notification.id}), follow=True,
-                         content_type="application/x-www-form-urlencoded")
-        self.assertTrue(Notification.objects.get(pk=notification.id).is_read)
-
-        self.client.post("/notifications", urlencode({"id": notification.id}), follow=True,
-                         content_type="application/x-www-form-urlencoded")
-        self.assertFalse(Notification.objects.get(pk=notification.id).is_read)
-
     def test_mention_notification(self):
         """
         If a user is mentioned, it needs to receive a notification.
@@ -188,13 +171,13 @@ class NotificationsTestCase(TestCase):
 
         for b in [True, False]:
 
-            data = {"action": "notifications"}
+            data = {}
             for _, key in notifications:
                 for suffix in ["mail", "app"]:
                     data[key + "_" + suffix] = b
 
-            response = self.client.post("/profile", urlencode(data), follow=True,
-                                        content_type="application/x-www-form-urlencoded")
+            response = self.client.put("/api/me/settings", data, follow=True,
+                                        content_type="application/json")
             self.assertEqual(response.status_code, 200)
             updated_user = User.objects.get(pk=self.ta.id)
             self.ticket.author = self.ta2
@@ -360,9 +343,6 @@ class NotificationsTestCase(TestCase):
         ]
         comment_notification = CommentNotification.objects.create(comment=replies[1], receiver=self.ta)
         self.assertEqual(list(comment_notification.get_email_comments()), replies)
-
-
-class NotificationsAPITestCase(NotificationsTestCase):
 
     def test_get_notifications_200(self):
         self.client.force_login(self.student)
