@@ -329,6 +329,16 @@ class TicketTestApi(APITestCase, TicketTestCase):
         self.assertEqual(ticket.assignee, None)
         self.assertEqual(ticket.status, "PNDG")
 
+    def test_put_assignee_not_valid(self):
+        """
+        Test to verify an assistant of the inbox can change assignees
+        """
+        self.client.force_login(self.assistant)
+
+        response = self.client.put(f"/api/inboxes/{self.inbox.id}/tickets/{self.ticket.ticket_inbox_id}/assignee",
+                                   data={"assignee": self.student.id}, content_type="application/json")
+        self.assertEqual(response.status_code, 400)
+
     def test_put_shared_with_as_author(self):
         """
         Test to verify a author cannot change shared_with
