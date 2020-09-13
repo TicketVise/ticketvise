@@ -65,7 +65,7 @@ class InboxGuestsAPIView(UserIsInInboxMixin, ListAPIView):
 
     def get_queryset(self):
         q = self.request.GET.get("q", "")
-        size = self.request.GET.get("size", None)
+        size = self.request.GET.get("size", "")
         size = int(size) if size.isdigit() else None
 
         users = User.objects.annotate(fullname=Concat('first_name', Value(' '), 'last_name'))
@@ -77,5 +77,6 @@ class InboxGuestsAPIView(UserIsInInboxMixin, ListAPIView):
                 users.filter(email__icontains=q)
 
         if size and size > 0:
+
             return users[:size]
         return size
