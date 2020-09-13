@@ -20,6 +20,9 @@ class ApiTestCase(TestCase):
         self.client = Client()
         self.inbox1 = create_inbox("coures1", "c1")
         self.inbox2 = create_inbox("coures2", "c2")
+        self.manager1 = User.objects.create(username="m1", email="m1@test.nl", password="m1")
+        self.manager1.add_inbox(self.inbox1)
+        self.manager1.set_role_for_inbox(self.inbox1, Role.MANAGER)
         self.ta1 = User.objects.create(username="ta1", email="ta1@test.nl", password="ta1")
         self.ta1.add_inbox(self.inbox1)
         self.ta1.set_role_for_inbox(self.inbox1, Role.AGENT)
@@ -120,3 +123,70 @@ class ApiTestCase(TestCase):
         self.client.force_login(self.ta4)
         response = self.client.get(f"/api/inboxes/{self.inbox2.id}/users/{self.student1}", follow=True)
         self.assertEqual(response.status_code, 404)
+
+    def test_get_user_role_by_id(self):
+        self.client.force_login(self.ta1)
+        response = self.client.get(f"/api/inboxes/{self.inbox1.id}/users/{self.student1.id}/roles")
+        self.assertContains(response, "GUEST")
+
+        response = self.client.get(f"/api/inboxes/{self.inbox1.id}/users/{self.ta2.id}/roles")
+        self.assertContains(response, "AGENT")
+
+        response = self.client.get(f"/api/inboxes/{self.inbox1.id}/users/{self.manager1.id}/roles")
+        self.assertContains(response, "MANAGER")
+
+    def test_get_self_role(self):
+        self.client.force_login(self.student1)
+        response = self.client.get(f"/api/inboxes/{self.inbox1.id}/role")
+        self.assertContains(response, "GUEST")
+
+        self.client.force_login(self.ta1)
+        response = self.client.get(f"/api/inboxes/{self.inbox1.id}/role")
+        self.assertContains(response, "AGENT")
+
+        self.client.force_login(self.manager1)
+        response = self.client.get(f"/api/inboxes/{self.inbox1.id}/role")
+        self.assertContains(response, "MANAGER")
+
+    def test_get_current_user(self):
+        self.client.force_login(self.student1)
+        response = self.client.get(f"/api/me")
+        self.assertContains(response, self.student1.username)
+
+        self.client.force_login(self.ta1)
+        response = self.client.get(f"/api/me")
+        self.assertContains(response, self.ta1.username)
+
+        self.client.force_login(self.manager1)
+        response = self.client.get(f"/api/me")
+        self.assertContains(response, self.manager1.username)
+
+    def test_get_user_settings(self):
+        self.client.force_login(self.student1)
+        response = self.client.get(f"/api/me/settings")
+
+        notifications = [
+            "notification_mention_mail",
+            "notification_mention_app",
+            "notification_new_ticket_mail",
+            "notification_new_ticket_app",
+            "notification_comment_mail",
+            "notification_comment_app",
+            "notification_assigned_mail",
+            "notification_assigned_app",
+            "notification_ticket_reminder_mail",
+            "notification_ticket_reminder_app"
+        ]
+
+        for notification in notifications:
+            self.assertContains(response, notification)
+
+    def test_get_users_filter(self):
+        self.client.force_login(self.student1)
+        response = self.client.get(f"/api/inboxes/{self.inbox1.id}/guests")
+        self.assertContains(response, "s1")
+        self.assertContains(response, "s2")
+
+        response = self.client.get(f"/api/inboxes/{self.inbox1.id}/guests", {"q": "1"})
+        self.assertContains(response, "s1")
+        self.assertNotContains(response, "s2")

@@ -107,8 +107,6 @@ class TicketTestCase(TransactionTestCase):
         response = self.client.get(reverse("ticket", args=[self.ticket.inbox.id, self.ticket.ticket_inbox_id]))
         self.assertEqual(response.status_code, 403)
 
-
-class TicketTestApi(APITestCase, TicketTestCase):
     def test_get_ticket_as_unauthorized_student(self):
         """
         Test to verify a student cannot get the ticket
@@ -328,6 +326,16 @@ class TicketTestApi(APITestCase, TicketTestCase):
         ticket = Ticket.objects.get(pk=self.ticket.id)
         self.assertEqual(ticket.assignee, None)
         self.assertEqual(ticket.status, "PNDG")
+
+    def test_put_assignee_not_valid(self):
+        """
+        Test to verify an assistant of the inbox can change assignees
+        """
+        self.client.force_login(self.assistant)
+
+        response = self.client.put(f"/api/inboxes/{self.inbox.id}/tickets/{self.ticket.ticket_inbox_id}/assignee",
+                                   data={"assignee": self.student.id}, content_type="application/json")
+        self.assertEqual(response.status_code, 400)
 
     def test_put_shared_with_as_author(self):
         """
