@@ -65,7 +65,7 @@ class InboxGuestsAPIView(UserIsInInboxMixin, ListAPIView):
 
     def get_queryset(self):
         q = self.request.GET.get("q", "")
-        size = self.request.GET.get("size", -1)
+        size = self.request.GET.get("size", "-1")
         size = int(size) if size.isdigit() else -1
 
         users = User.objects.annotate(fullname=Concat('first_name', Value(' '), 'last_name'))
