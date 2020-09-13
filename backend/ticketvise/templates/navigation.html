@@ -34,39 +34,39 @@
                 <div class="ml-4 flex items-center md:ml-6">
 
                     <div class="relative">
-                    <button type="button"
-                            class="relative cursor-pointer px-2 py-1 border-2 border-transparent text-gray-400 rounded-full hover:text-white focus:outline-none focus:text-white focus:bg-gray-700"
-                            aria-label="Fullscreen" onclick="window.open(window.location.href, '_blank')"
-                            x-show="window.self !== window.top" style="display: none">
-                        <i class="fa fa-arrows-alt text-lg" aria-hidden="true"></i>
-                    </button>
-
-                    <div>
-                        <button class="relative cursor-pointer px-2 py-1 border-2 border-transparent text-gray-400 rounded-full hover:text-white focus:outline-none focus:text-white focus:bg-gray-700"
-                                aria-label="Support" aria-haspopup="true" @click="openSupport = !openSupport">
-                            <i class="fa fa-question-circle text-xl" aria-hidden="true"></i>
+                        <button type="button"
+                                class="relative cursor-pointer px-2 py-1 border-2 border-transparent text-gray-400 rounded-full hover:text-white focus:outline-none focus:text-white focus:bg-gray-700"
+                                aria-label="Fullscreen" onclick="window.open(window.location.href, '_blank')"
+                                x-show="window.self !== window.top" style="display: none">
+                            <i class="fa fa-arrows-alt text-lg" aria-hidden="true"></i>
                         </button>
-                        <div class="origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg"
-                             x-show="openSupport"
-                             @click.away="openSupport = false" x-transition:enter="transition ease-out duration-100"
-                             x-transition:enter-start="transform opacity-0 scale-95"
-                             x-transition:enter-end="transform opacity-100 scale-100"
-                             x-transition:leave="transition ease-in duration-75"
-                             x-transition:leave-start="transform opacity-100 scale-100"
-                             x-transition:leave-end="transform opacity-0 scale-95" style="display: none">
-                            <div class="py-1 rounded-md bg-white shadow-xs" role="menu" aria-orientation="vertical"
-                                 aria-labelledby="user-menu">
-                                <a href="https://ticketvise.com/getting-started/" target="_blank"
-                                   class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                                   role="menuitem">Getting started</a>
-                                <a href="mailto:info@ticketvise.com?subject=Feedback&body=Hi%20TicketVise,"
-                                   target="_blank"
-                                   rel="noopener noreferrer"
-                                   class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                                   role="menuitem">Send feedback</a>
+
+                        <div>
+                            <button class="relative cursor-pointer px-2 py-1 border-2 border-transparent text-gray-400 rounded-full hover:text-white focus:outline-none focus:text-white focus:bg-gray-700"
+                                    aria-label="Support" aria-haspopup="true" @click="openSupport = !openSupport">
+                                <i class="fa fa-question-circle text-xl" aria-hidden="true"></i>
+                            </button>
+                            <div class="origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg"
+                                 x-show="openSupport"
+                                 @click.away="openSupport = false" x-transition:enter="transition ease-out duration-100"
+                                 x-transition:enter-start="transform opacity-0 scale-95"
+                                 x-transition:enter-end="transform opacity-100 scale-100"
+                                 x-transition:leave="transition ease-in duration-75"
+                                 x-transition:leave-start="transform opacity-100 scale-100"
+                                 x-transition:leave-end="transform opacity-0 scale-95" style="display: none">
+                                <div class="py-1 rounded-md bg-white shadow-xs" role="menu" aria-orientation="vertical"
+                                     aria-labelledby="user-menu">
+                                    <a href="https://ticketvise.com/getting-started/" target="_blank"
+                                       class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                                       role="menuitem">Getting started</a>
+                                    <a href="mailto:info@ticketvise.com?subject=Feedback&body=Hi%20TicketVise,"
+                                       target="_blank"
+                                       rel="noopener noreferrer"
+                                       class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                                       role="menuitem">Send feedback</a>
+                                </div>
                             </div>
                         </div>
-                    </div>
                     </div>
 
                     <a href="{% url 'notifications' %}"
