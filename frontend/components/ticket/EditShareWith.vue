@@ -93,7 +93,7 @@
         this.open = false
       },
       filterGuests() {
-        axios.get("/api/inboxes/" + this.inbox_id + "/guests", {params: {"q": this.query}}).then(response => {
+        axios.get("/api/inboxes/" + this.inbox_id + "/guests", {params: {"q": this.query, "size": 5}}).then(response => {
           this.guests = response.data;
         })
       },
