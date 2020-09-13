@@ -1,13 +1,16 @@
+from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
 from rest_framework import serializers
 from rest_framework.generics import ListAPIView, RetrieveAPIView
 from rest_framework.serializers import ModelSerializer
+from rest_framework.views import APIView
 
 from ticketvise.middleware import CurrentUserMiddleware
 from ticketvise.models.inbox import Inbox
 from ticketvise.models.label import Label
+from ticketvise.models.ticket import Ticket
 from ticketvise.models.user import User, Role
-from ticketvise.views.api.security import UserIsInboxStaffMixin, UserIsInInboxMixin
+from ticketvise.views.api.security import UserIsInboxStaffMixin, UserIsInInboxMixin, UserIsSuperUserMixin
 from ticketvise.views.api.ticket import LabelSerializer
 from ticketvise.views.api.user import UserSerializer
 
@@ -59,6 +62,24 @@ class InboxApiView(UserIsInInboxMixin, RetrieveAPIView):
     serializer_class = InboxSerializer
     queryset = Inbox
     lookup_url_kwarg = "inbox_id"
+
+
+class CoordinatorSerializer(ModelSerializer):
+    class Meta:
+        model = User
+        fields = ["first_name", "last_name"]
+
+
+class InboxStatsApiView(UserIsSuperUserMixin, APIView):
+    def get(self, request, inbox_id):
+        inbox = get_object_or_404(Inbox, pk=inbox_id)
+
+        return JsonResponse({
+            'labels': Label.objects.filter(inbox=inbox).count(),
+            'tickets': Ticket.objects.filter(inbox=inbox).count(),
+            'users': User.objects.filter(inbox_relationship__inbox_id=inbox).count(),
+            'coordinator': CoordinatorSerializer(inbox.get_coordinator()).data
+        }, safe=False)
 
 
 class InboxesApiView(ListAPIView):

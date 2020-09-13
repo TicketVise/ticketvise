@@ -3,19 +3,22 @@
     <div class="pl-6 pr-2 py-4 flex justify-between">
       <div class="flex-grow grid sm:grid-cols-2">
         <div class="flex space-x-4">
-          <img class="h-12 w-12 rounded-full object-cover" :src="inbox.image">
+          <img class="h-12 w-12 rounded-full object-cover border-4" :style="`border-color: ${inbox.color}`" :src="inbox.image">
           <div class="flex flex-col">
-            <span class="text-orange-500 break-words">{{ inbox.name }}</span>
+            <a class="text-orange-500 break-words hover:underline" :href="`/inboxes/${inbox.id}/tickets`">{{ inbox.name }}</a>
             <div class="flex items-center text-sm leading-5 text-gray-500">
               <i class="fa fa-user mr-1"></i>
-              {{ inbox.get_coordinator }}
+              {{ stats ? stats.coordinator.first_name + ' ' + stats.coordinator.last_name : '' }}
             </div>
           </div>
         </div>
         <div class="hidden sm:flex flex-col">
-          <span class="text-gray-800">Started: {{ moment(inbox.date_created).calendar() }}</span>
           <span class="text-gray-800">
-            <i class="fa fa-clipboard-list"></i>
+            <span class="font-bold">Started:</span> 
+            {{ moment(inbox.date_created).calendar() }}
+          </span>
+          <span class="text-gray-800">
+            <font-awesome-icon class="text-orange-400 group-hover:text-orange-500" icon="clipboard-list" />
             {{ inbox.scheduling_algorithm }}
           </span>
         </div>
@@ -27,25 +30,25 @@
     <div v-if="open" class="border-t py-2 sm:px-6 grid grid-cols-3 divide-x">
       <div class="flex flex-col items-center">
         <span class="text-orange-500 text-2xl">
-          {{ inbox.get_number_of_users }}
+          {{ stats ? stats.users : '' }}
         </span>
         <span class="text-gray-700">Users</span>
       </div>
       <div class="flex flex-col items-center">
         <span class="text-orange-500 text-2xl">
-          {{ inbox.get_number_of_tickets }}
+          {{ stats ? stats.tickets : '' }}
         </span>
         <span class="text-gray-700">Tickets</span>
       </div>
       <div class="flex flex-col items-center">
         <span class="text-orange-500 text-2xl">
-          {{ inbox.get_number_of_labels }}
+          {{ stats ? stats.labels : '' }}
         </span>
         <span class="text-gray-700">Labels</span>
       </div>
 
       <div class="col-span-3">
-        <div id="tickets-chart" :inboxId="inbox.id"></div>
+        <tickets-chart :inboxId="inbox.id" />
       </div>
     </div>
   </div>
@@ -57,17 +60,19 @@ const moment = require('moment')
 export default {
   data: () => ({
     open: false,
-    moment: moment
+    moment: moment,
+    stats: null
   }),
   props: {
     inbox: {
       required: true,
       type: Object
     }
+  },
+  mounted() {
+    window.axios.get(`/api/inboxes/${this.inbox.id}/stats`).then(response => {
+      this.stats = response.data
+    })
   }
 }
 </script>
-
-<style>
-
-</style>
