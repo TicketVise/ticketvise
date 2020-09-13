@@ -27,28 +27,30 @@
         <i class="fa p-4" :class="{ 'fa-chevron-down': !open, 'fa-chevron-up': open }"></i>
       </div>
     </div>
-    <div v-if="open" class="border-t py-2 sm:px-6 grid grid-cols-3 divide-x">
-      <div class="flex flex-col items-center">
-        <span class="text-orange-500 text-2xl">
-          {{ stats ? stats.users : '' }}
-        </span>
-        <span class="text-gray-700">Users</span>
+    <div v-if="open" class="border-t py-2 sm:px-6">
+      <div class="grid grid-cols-3 divide-x">
+        <div class="flex flex-col items-center">
+          <span class="text-orange-500 text-2xl">
+            {{ stats ? stats.users : '' }}
+          </span>
+          <span class="text-gray-700">Users</span>
+        </div>
+        <div class="flex flex-col items-center">
+          <span class="text-orange-500 text-2xl">
+            {{ stats ? stats.tickets : '' }}
+          </span>
+          <span class="text-gray-700">Tickets</span>
+        </div>
+        <div class="flex flex-col items-center">
+          <span class="text-orange-500 text-2xl">
+            {{ stats ? stats.labels : '' }}
+          </span>
+          <span class="text-gray-700">Labels</span>
+        </div>
       </div>
-      <div class="flex flex-col items-center">
-        <span class="text-orange-500 text-2xl">
-          {{ stats ? stats.tickets : '' }}
-        </span>
-        <span class="text-gray-700">Tickets</span>
-      </div>
-      <div class="flex flex-col items-center">
-        <span class="text-orange-500 text-2xl">
-          {{ stats ? stats.labels : '' }}
-        </span>
-        <span class="text-gray-700">Labels</span>
-      </div>
-
-      <div class="col-span-3">
-        <tickets-chart :inboxId="inbox.id" />
+      <div class="mt-2">
+        <h2 class="font-bold text-gray-900 ml-12">Number of Tickets</h2>
+        <tickets-chart :inboxId="inbox.id" :height="200" />
       </div>
     </div>
   </div>

@@ -41,10 +41,9 @@
 
   export default {
     components: {Card, LabelsChart, AgentResponseTimeChart, TicketsChart},
-    props: {
-      inboxId: {
-        type: Number,
-        required: true
+    computed: {
+      inboxId() {
+        return 1
       }
     }
   }

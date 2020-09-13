@@ -44,7 +44,6 @@ export default {
   async mounted() {
     const response = await axios.get(`/api/inboxes`)
     this.inboxes = response.data
-    console.log(this.inboxes)
   }
 }
 </script>
