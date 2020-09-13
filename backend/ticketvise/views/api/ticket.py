@@ -181,7 +181,7 @@ class InboxTicketsApiView(UserIsInInboxMixin, APIView):
         tickets = Ticket.objects.filter(inbox=inbox, title__icontains=q) | Ticket.objects.filter(
             inbox=inbox, ticket_inbox_id__icontains=q).order_by("-date_created")
 
-        if not request.user.is_assistant_or_coordinator(inbox):
+        if not request.user.is_assistant_or_coordinator(inbox) and not request.user.is_superuser:
             tickets = tickets.filter(author=request.user) | tickets.filter(shared_with__id__icontains=request.user.id)
         elif show_personal:
             tickets = tickets.filter(assignee=request.user) | \
@@ -213,7 +213,8 @@ class InboxTicketsApiView(UserIsInInboxMixin, APIView):
         ]
 
         if not self.request.user.is_assistant_or_coordinator(inbox) \
-                and not inbox.show_assignee_to_guest:
+                and not inbox.show_assignee_to_guest \
+                and not self.request.user.is_superuser:
             columns[0] = {
                 "label": columns[0]["label"],
                 "tickets": columns[0]["tickets"] + columns[1]["tickets"]

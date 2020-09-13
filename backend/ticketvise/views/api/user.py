@@ -15,13 +15,13 @@ from ticketvise.views.api.security import UserIsInboxStaffMixin, UserIsInInboxMi
 class UserProfileSerializer(ModelSerializer):
     class Meta:
         model = User
-        fields = ["first_name", "last_name", "email", "username", "avatar_url", "id"]
+        fields = ["first_name", "last_name", "email", "username", "avatar_url", "id", "is_superuser"]
 
 
 class UserSerializer(ModelSerializer):
     class Meta:
         model = User
-        fields = ["first_name", "last_name", "email", "username", "avatar_url", "id"]
+        fields = ["first_name", "last_name", "email", "username", "avatar_url", "id", "is_superuser"]
 
 
 class UserNotificationSettingsSerializer(ModelSerializer):

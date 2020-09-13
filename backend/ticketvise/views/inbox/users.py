@@ -17,7 +17,7 @@ class InboxUsersView(InboxCoordinatorRequiredMixin, TemplateView):
     def get_context_data(self, **kwargs):
         inbox = get_object_or_404(Inbox, pk=self.kwargs.get("pk"))
 
-        if not self.request.user.is_coordinator_for_inbox(inbox):
+        if not self.request.user.is_coordinator_for_inbox(inbox) and not self.request.user.is_superuser:
             raise PermissionDenied()
 
         q = self.request.GET.get("q", "")
