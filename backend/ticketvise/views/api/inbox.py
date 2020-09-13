@@ -77,6 +77,5 @@ class InboxGuestsAPIView(UserIsInInboxMixin, ListAPIView):
                 users.filter(email__icontains=q)
 
         if size and size > 0:
-
             return users[:size]
-        return size
+        return users
