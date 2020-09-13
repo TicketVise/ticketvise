@@ -181,3 +181,12 @@ class ApiTestCase(TestCase):
         for notification in notifications:
             self.assertContains(response, notification)
 
+    def test_get_users_filter(self):
+        self.client.force_login(self.student1)
+        response = self.client.get(f"/api/inboxes/{self.inbox1.id}/guests")
+        self.assertContains(response, "s1")
+        self.assertContains(response, "s2")
+
+        response = self.client.get(f"/api/inboxes/{self.inbox1.id}/guests", {"q": "1"})
+        self.assertContains(response, "s1")
+        self.assertNotContains(response, "s2")
