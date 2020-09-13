@@ -1,3 +1,5 @@
+from django.db.models import Value
+from django.db.models.functions import Concat
 from django.shortcuts import get_object_or_404
 from rest_framework import serializers
 from rest_framework.generics import ListAPIView, RetrieveAPIView
@@ -56,3 +58,19 @@ class InboxApiView(UserIsInInboxMixin, RetrieveAPIView):
     serializer_class = InboxSerializer
     queryset = Inbox
     lookup_url_kwarg = "inbox_id"
+
+
+class InboxGuestsAPIView(UserIsInInboxMixin, ListAPIView):
+    serializer_class = UserSerializer
+
+    def get_queryset(self):
+        q = self.request.GET.get("q", "")
+        users = User.objects.annotate(fullname=Concat('first_name', Value(' '), 'last_name'))
+
+        users = users.filter(inbox_relationship__role=Role.GUEST,
+                             inbox_relationship__inbox_id=self.kwargs[self.inbox_key])
+        users = users.filter(username__icontains=q) | \
+                users.filter(fullname__icontains=q) | \
+                users.filter(email__icontains=q)
+
+        return users
