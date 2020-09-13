@@ -238,3 +238,4 @@ class LabelsTest(InboxTestCase):
 
         self.assertEqual(response.status_code, 200)
         self.assertNotContains(response, self.disabled_label.name)
+

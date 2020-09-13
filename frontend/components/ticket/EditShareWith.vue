@@ -10,9 +10,29 @@
       </chip>
     </div>
     <form @submit.prevent="username.length ? getUsername(username) : {}" class="flex space-x-2 w-full mb-2">
-      <input
-              class="appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none flex-grow focus:border-gray-800"
-              id="username" name="username" placeholder="username" type="text" v-model="username">
+      <div class="space-y-1 flex-grow" v-click-outside="away">
+        <div class="relative">
+          <input class="appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none flex-grow focus:border-gray-800"
+                 type="text" @focus="open=true" v-model="query" @keyup="filterGuests()" placeholder="Search user">
+          <div class="absolute mt-1 w-full rounded-md bg-white shadow-lg z-50" v-if="open">
+            <ul aria-activedescendant="listbox-item-3" aria-labelledby="listbox-label"
+                class="max-h-56 rounded-md py-1 text-base leading-6 shadow-xs overflow-auto focus:outline-none sm:text-sm sm:leading-5"
+                role="listbox"
+                tabindex="-1">
+              <li :key="item.id" :value="item.id" @click="submit(item)"
+                  class="text-gray-900 hover:text-white hover:bg-orange-400 cursor-pointer select-none relative py-2 pl-3 pr-9"
+                  id="listbox-item-0"
+                  role="option"
+                  v-for="item in guests">
+                <div class="flex items-center space-x-3">
+                  <avatar :source="item.avatar_url" class="w-6 h-6 rounded-full"></avatar>
+                  <span class="font-normal block truncate">{{ item.first_name }} {{ item.last_name }}</span>
+                </div>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
       <submit-button v-on:click.native="username.length ? getUsername(username) : {}" class="bg-primary text-white"
                      text="Share"></submit-button>
     </form>
@@ -24,6 +44,7 @@
 <script>
   import SubmitButton from "../elements/buttons/SubmitButton";
   import axios from "axios";
+  import ClickOutside from "vue-click-outside";
 
   export default {
     name: "EditShareWith",
@@ -32,8 +53,16 @@
     data() {
       return {
         username: "",
-        usernameErrors: []
+        usernameErrors: [],
+        open: false,
+        query: "",
+        guests: [],
       }
+    },
+    created() {
+      axios.get("/api/inboxes/" + this.inbox_id + "/guests").then(response => {
+        this.guests = response.data
+      })
     },
     methods: {
       removeSharedWith: function (index) {
@@ -50,13 +79,30 @@
             this.$emit("input", this.shared_with)
 
           }
-          this.username = ""
+          this.username = "";
+          this.query = ""
         }).catch(error => {
               this.usernameErrors = error.response.data
             }
         )
 
+      },
+      submit(user) {
+        this.username = user.username;
+        this.query = user.first_name + " " + user.last_name;
+        this.open = false
+      },
+      filterGuests() {
+        axios.get("/api/inboxes/" + this.inbox_id + "/guests", {params: {"q": this.query, "size": 5}}).then(response => {
+          this.guests = response.data;
+        })
+      },
+      away() {
+        this.open = false
       }
+    },
+    directives: {
+      ClickOutside
     }
   }
 </script>

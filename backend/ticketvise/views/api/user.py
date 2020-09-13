@@ -12,12 +12,6 @@ from ticketvise.models.user import User, Role
 from ticketvise.views.api.security import UserIsInboxStaffMixin, UserIsInInboxMixin
 
 
-class UserProfileSerializer(ModelSerializer):
-    class Meta:
-        model = User
-        fields = ["first_name", "last_name", "email", "username", "avatar_url", "id"]
-
-
 class UserSerializer(ModelSerializer):
     class Meta:
         model = User
@@ -95,7 +89,7 @@ class UserGetFromUsernameApiView(UserIsInInboxMixin, RetrieveUpdateAPIView):
 
 
 class CurrentUserApiView(LoginRequiredMixin, RetrieveAPIView):
-    serializer_class = UserProfileSerializer
+    serializer_class = UserSerializer
 
     def get_object(self):
         return self.request.user
