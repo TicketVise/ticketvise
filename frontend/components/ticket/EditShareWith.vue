@@ -13,7 +13,7 @@
       <div class="space-y-1 flex-grow" v-click-outside="away">
         <div class="relative">
           <input class="appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none flex-grow focus:border-gray-800"
-                 type="text" @focus="open=true" v-model="query" @keyup="filterGuests()">
+                 type="text" @focus="open=true" v-model="query" @keyup="filterGuests()" placeholder="Search user">
           <div class="absolute mt-1 w-full rounded-md bg-white shadow-lg z-50" v-if="open">
             <ul aria-activedescendant="listbox-item-3" aria-labelledby="listbox-label"
                 class="max-h-56 rounded-md py-1 text-base leading-6 shadow-xs overflow-auto focus:outline-none sm:text-sm sm:leading-5"
