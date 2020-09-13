@@ -3,7 +3,7 @@ from django.urls import path
 from ticketvise.views.api.comment import TicketCommentsApiView, CreateCommentApiView, CreateReplyApiView, \
     TicketRepliesApiView
 from ticketvise.views.api.inbox import InboxStaffApiView, InboxLabelsApiView, InboxApiView, InboxesApiView, \
-    InboxStatsApiView
+    InboxStatsApiView, InboxGuestsAPIView
 from ticketvise.views.api.notification import NotificationsAPIView, NotificationFlipRead, NotificationsReadAll, \
     VisitTicketNotificationApi, NotificationUnreadCountAPI
 from ticketvise.views.api.statistics import InboxTicketsPerDateTypeStatisticsApiView, \
@@ -13,8 +13,8 @@ from ticketvise.views.api.ticket import TicketApiView, TicketUpdateAssignee, \
     TicketStatusUpdateApiView, TicketAttachmentsApiView, AttachmentViewApiView, \
     RecentTicketApiView, InboxTicketsApiView, TicketLabelApiView, TicketCreateApiView, TicketSharedAPIView, \
     TicketEventsApiView
-from ticketvise.views.api.user import UserRoleApiView, CurrentUserApiView, UserGetFromUsernameApiView, \
-    UserRoleByIdApiView, NotificationsSettingsAPIView
+from ticketvise.views.api.user import UserRoleApiView, CurrentUserApiView, UserRoleByIdApiView, \
+    NotificationsSettingsAPIView, UserGetFromUsernameApiView
 
 urlpatterns = [
     path("inboxes", InboxesApiView.as_view()),
@@ -38,6 +38,7 @@ urlpatterns = [
     path("inboxes/<int:inbox_id>/users/<int:user_id>/roles", UserRoleByIdApiView.as_view()),
     path("inboxes/<int:inbox_id>/role", UserRoleApiView.as_view()),
     path("inboxes/<int:inbox_id>/users/<str:username>", UserGetFromUsernameApiView.as_view()),
+    path("inboxes/<int:inbox_id>/guests", InboxGuestsAPIView.as_view()),
     path("inboxes/<int:inbox_id>/staff", InboxStaffApiView.as_view()),
     path("inboxes/<int:inbox_id>/labels", InboxLabelsApiView.as_view()),
     path("inboxes/<int:inbox_id>/statistics", InboxStatsApiView.as_view()),

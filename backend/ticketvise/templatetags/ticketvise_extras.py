@@ -5,9 +5,11 @@ Contains various templatetags that can be used in the html templates.
 """
 from django import template
 
+from ..models.notification import Notification
 from ..models.user import User, Role
 
 register = template.Library()
+
 
 @register.simple_tag
 def user_is_coordinator(user, inbox):
@@ -19,6 +21,7 @@ def user_is_coordinator(user, inbox):
     :rtype: bool
     """
     return user.is_coordinator_for_inbox(inbox) or user.is_superuser
+
 
 @register.simple_tag
 def abs_value(value):

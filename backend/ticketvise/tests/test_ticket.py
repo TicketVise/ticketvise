@@ -8,13 +8,11 @@ import json
 from django.db import transaction
 from django.test import Client, TransactionTestCase
 from django.urls import reverse
-from rest_framework.test import APITestCase
 
 from ticketvise.models.inbox import Inbox
 from ticketvise.models.label import Label
 from ticketvise.models.ticket import Ticket, Status
 from ticketvise.models.user import User, Role
-from ticketvise.views.api.ticket import LabelSerializer
 from ticketvise.views.api.user import UserSerializer
 
 
@@ -65,6 +63,8 @@ class TicketTestCase(TransactionTestCase):
                                              content="TestContent", inbox=self.inbox)
         self.ticket3.add_label(self.label)
 
+
+class TicketTestBackendCase(TicketTestCase):
     def test_ticket_page_200(self):
         """
         Authorized users should see their own ticket.
@@ -107,8 +107,6 @@ class TicketTestCase(TransactionTestCase):
         response = self.client.get(reverse("ticket", args=[self.ticket.inbox.id, self.ticket.ticket_inbox_id]))
         self.assertEqual(response.status_code, 403)
 
-
-class TicketTestApi(APITestCase, TicketTestCase):
     def test_get_ticket_as_unauthorized_student(self):
         """
         Test to verify a student cannot get the ticket
@@ -328,6 +326,16 @@ class TicketTestApi(APITestCase, TicketTestCase):
         ticket = Ticket.objects.get(pk=self.ticket.id)
         self.assertEqual(ticket.assignee, None)
         self.assertEqual(ticket.status, "PNDG")
+
+    def test_put_assignee_not_valid(self):
+        """
+        Test to verify an assistant of the inbox can change assignees
+        """
+        self.client.force_login(self.assistant)
+
+        response = self.client.put(f"/api/inboxes/{self.inbox.id}/tickets/{self.ticket.ticket_inbox_id}/assignee",
+                                   data={"assignee": self.student.id}, content_type="application/json")
+        self.assertEqual(response.status_code, 400)
 
     def test_put_shared_with_as_author(self):
         """
@@ -593,7 +601,8 @@ class TicketTestApi(APITestCase, TicketTestCase):
         self.client.force_login(self.student)
         self.inbox.show_assignee_to_guest = False
         self.inbox.save()
-        Ticket.objects.create(inbox=self.inbox, status=Status.CLOSED, content="CLOSED", title="CLOSED", author=self.student)
+        Ticket.objects.create(inbox=self.inbox, status=Status.CLOSED, content="CLOSED", title="CLOSED",
+                              author=self.student)
 
         data = {
             "columns": "true"
@@ -606,7 +615,6 @@ class TicketTestApi(APITestCase, TicketTestCase):
         self.assertContains(response, "Ticket1")
         self.assertNotContains(response, "Ticket3")
 
-
     def test_get_column_four_tickets_guest(self):
         """
         Test InboxTicketsApiView for guest
@@ -614,8 +622,10 @@ class TicketTestApi(APITestCase, TicketTestCase):
         self.client.force_login(self.student)
         self.inbox.show_assignee_to_guest = True
         self.inbox.save()
-        Ticket.objects.create(inbox=self.inbox, status=Status.CLOSED, content="CLOSED", title="CLOSED", author=self.student)
-        Ticket.objects.create(inbox=self.inbox, status=Status.ASSIGNED, content="ASSIGNED", title="ASSIGNED", author=self.student)
+        Ticket.objects.create(inbox=self.inbox, status=Status.CLOSED, content="CLOSED", title="CLOSED",
+                              author=self.student)
+        Ticket.objects.create(inbox=self.inbox, status=Status.ASSIGNED, content="ASSIGNED", title="ASSIGNED",
+                              author=self.student)
 
         data = {
             "columns": "true"
@@ -633,7 +643,8 @@ class TicketTestApi(APITestCase, TicketTestCase):
         Test InboxTicketsApiView for agent
         """
         self.client.force_login(self.assistant)
-        Ticket.objects.create(inbox=self.inbox, status=Status.CLOSED, content="CLOSED", title="CLOSED", author=self.student)
+        Ticket.objects.create(inbox=self.inbox, status=Status.CLOSED, content="CLOSED", title="CLOSED",
+                              author=self.student)
 
         data = {
             "columns": "true"
@@ -651,7 +662,8 @@ class TicketTestApi(APITestCase, TicketTestCase):
         Test InboxTicketsApiView for manager
         """
         self.client.force_login(self.assistant)
-        Ticket.objects.create(inbox=self.inbox, status=Status.CLOSED, content="CLOSED", title="CLOSED", author=self.student)
+        Ticket.objects.create(inbox=self.inbox, status=Status.CLOSED, content="CLOSED", title="CLOSED",
+                              author=self.student)
 
         data = {
             "columns": "true"
@@ -664,13 +676,13 @@ class TicketTestApi(APITestCase, TicketTestCase):
         self.assertContains(response, "Ticket1")
         self.assertContains(response, "Ticket3")
 
-
     def test_filter_labels(self):
         """
         Test InboxTicketsApiView for manager
         """
         self.client.force_login(self.assistant)
-        Ticket.objects.create(inbox=self.inbox, status=Status.CLOSED, content="CLOSED", title="CLOSED", author=self.student)
+        Ticket.objects.create(inbox=self.inbox, status=Status.CLOSED, content="CLOSED", title="CLOSED",
+                              author=self.student)
 
         data = {
             "labels[]": self.label.id
@@ -680,4 +692,3 @@ class TicketTestApi(APITestCase, TicketTestCase):
         self.assertEqual(response.status_code, 200)
         self.assertNotContains(response, "Ticket1")
         self.assertContains(response, "Ticket3")
-

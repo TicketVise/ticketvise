@@ -8,6 +8,11 @@ from rest_framework.serializers import ModelSerializer
 
 from ticketvise.models.inbox import Inbox
 from ticketvise.models.notification import Notification
+from ticketvise.models.notification.assigned import TicketAssignedNotification
+from ticketvise.models.notification.comment import CommentNotification
+from ticketvise.models.notification.mention import MentionNotification
+from ticketvise.models.notification.new import NewTicketNotification
+from ticketvise.models.notification.reminder import TicketReminderNotification
 from ticketvise.models.ticket import Ticket
 from ticketvise.views.api.inbox import InboxSerializer
 from ticketvise.views.api.security import UserHasAccessToTicketMixin
@@ -47,13 +52,6 @@ class NotificationsAPIView(LoginRequiredMixin, ListAPIView):
 
         return notifications
 
-    def validate_read(self, read):
-        if read == "True":
-            return True
-        elif read == "False":
-            return False
-        return None
-
 
 class NotificationFlipRead(LoginRequiredMixin, UpdateAPIView):
     serializer_class = NotificationSerializer
@@ -63,11 +61,12 @@ class NotificationFlipRead(LoginRequiredMixin, UpdateAPIView):
         Notification.objects.filter(pk=self.kwargs["pk"]).update(is_read=Q(is_read=False))
         return Response()
 
+
 class NotificationsReadAll(LoginRequiredMixin, UpdateAPIView):
     serializer_class = NotificationSerializer
 
     def put(self, request, *args, **kwargs):
-        Notification.objects.filter(receiver=self.request.user).update(is_read=True)
+        Notification.objects.filter(receiver=request.user).update(is_read=True)
         return Response()
 
 

@@ -95,7 +95,7 @@ class UserGetFromUsernameApiView(UserIsInInboxMixin, RetrieveUpdateAPIView):
 
 
 class CurrentUserApiView(LoginRequiredMixin, RetrieveAPIView):
-    serializer_class = UserProfileSerializer
+    serializer_class = UserSerializer
 
     def get_object(self):
         return self.request.user

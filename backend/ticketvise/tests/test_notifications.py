@@ -114,23 +114,6 @@ class NotificationsTestCase(TestCase):
             exists = NewTicketNotification.objects.filter(ticket=ticket, receiver=user).exists()
             self.assertTrue(exists)
 
-    def test_mark_notification_read_toggle(self):
-        """
-        A user must be able to mark notifications as unread.
-
-        :return: None.
-        """
-        self.client.force_login(self.ta)
-        notification = Notification.objects.create(receiver=self.ta)
-
-        self.client.post("/notifications", urlencode({"id": notification.id}), follow=True,
-                         content_type="application/x-www-form-urlencoded")
-        self.assertTrue(Notification.objects.get(pk=notification.id).is_read)
-
-        self.client.post("/notifications", urlencode({"id": notification.id}), follow=True,
-                         content_type="application/x-www-form-urlencoded")
-        self.assertFalse(Notification.objects.get(pk=notification.id).is_read)
-
     def test_mention_notification(self):
         """
         If a user is mentioned, it needs to receive a notification.
@@ -188,13 +171,13 @@ class NotificationsTestCase(TestCase):
 
         for b in [True, False]:
 
-            data = {"action": "notifications"}
+            data = {}
             for _, key in notifications:
                 for suffix in ["mail", "app"]:
                     data[key + "_" + suffix] = b
 
-            response = self.client.post("/profile", urlencode(data), follow=True,
-                                        content_type="application/x-www-form-urlencoded")
+            response = self.client.put("/api/me/settings", data, follow=True,
+                                        content_type="application/json")
             self.assertEqual(response.status_code, 200)
             updated_user = User.objects.get(pk=self.ta.id)
             self.ticket.author = self.ta2
@@ -243,6 +226,47 @@ class NotificationsTestCase(TestCase):
                          f"You have been mentioned by {comment.author.get_full_name()}")
         self.assertEqual(mention_notification.inbox, self.ticket.inbox)
 
+    def test_getters_assigned_notifications(self):
+        """
+        Test all getters of the TicketAssignedNotification.
+
+        :return: None.
+        """
+        ticket = Ticket.objects.create(author=self.student, assignee=None, title="TestTicket", inbox=self.inbox,
+                                       content="TestTicket")
+        assigned_notification = TicketAssignedNotification.objects.create(ticket=ticket, receiver=self.ta)
+        self.assertEqual(assigned_notification.author, f"@{ticket.author.username}")
+        self.assertEqual(assigned_notification.content, f"Ticket #{ticket.ticket_inbox_id} has been assigned to you")
+        self.assertEqual(assigned_notification.inbox, ticket.inbox)
+
+    def test_getters_new_ticket_notifications(self):
+        """
+        Test all getters of the NewTicketNotification.
+
+        :return: None.
+        """
+        ticket = Ticket.objects.create(author=self.student, assignee=None, title="TestTicket", inbox=self.inbox,
+                                       content="TestTicket")
+        new_ticket_notification = NewTicketNotification.objects.create(ticket=ticket, receiver=self.ta)
+        self.assertEqual(new_ticket_notification.author, f"@{ticket.author.username}")
+        self.assertEqual(new_ticket_notification.content,
+                         f"A new ticket has been created by {ticket.author.get_full_name()}")
+        self.assertEqual(new_ticket_notification.inbox, ticket.inbox)
+
+    def test_getters_reminder_notifications(self):
+        """
+        Test all getters of the TicketReminderNotification.
+
+        :return: None.
+        """
+        ticket = Ticket.objects.create(author=self.student, assignee=None, title="TestTicket", inbox=self.inbox,
+                                       content="TestTicket")
+        reminder_notification = TicketReminderNotification.objects.create(ticket=ticket, receiver=self.ta)
+        self.assertEqual(reminder_notification.author, f"@{ticket.author.username}")
+        self.assertEqual(reminder_notification.content,
+                         f"Ticket ${ticket.ticket_inbox_id} has been unanswered for {ticket.inbox.alert_coordinator_unanswered_days} days")
+        self.assertEqual(reminder_notification.inbox, ticket.inbox)
+
     def test_notification_getters_not_implemented(self):
         """
         Test the notification funcitonality when there are no getters.
@@ -271,8 +295,54 @@ class NotificationsTestCase(TestCase):
         self.assertTrue(MentionNotification.objects.filter(comment=comment, receiver=self.ta).exists())
         self.assertFalse(CommentNotification.objects.filter(comment=comment, receiver=self.ta).exists())
 
+    def test_own_new_ticket_notification(self):
+        ticket = Ticket.objects.create(author=self.ta, assignee=None, title="TestTicket", inbox=self.inbox,
+                                       content="TestTicket")
+        new_ticket_notification = NewTicketNotification.objects.create(ticket=ticket, receiver=self.ta)
+        self.assertFalse(Notification.objects.filter(pk=new_ticket_notification.id).exists())
 
-class NotificationsAPITestCase(NotificationsTestCase):
+    def test_self_mention_notification(self):
+        comment = Comment.objects.create(ticket=self.ticket, author=self.ta, content="@admin", is_reply=True)
+        mention_notification = MentionNotification.objects.create(comment=comment, receiver=self.ta)
+
+        self.assertFalse(Notification.objects.filter(id=mention_notification.id).exists())
+
+    def test_own_ticket_reminder_notification(self):
+        ticket = Ticket.objects.create(author=self.ta, assignee=None, title="TestTicket", inbox=self.inbox,
+                                       content="TestTicket")
+        reminder_notification = TicketReminderNotification.objects.create(ticket=ticket, receiver=self.ta)
+
+        self.assertFalse(Notification.objects.filter(id=reminder_notification.id).exists())
+
+    def test_email_comments(self):
+        """
+        Test if email_comments() returns the right comments
+        """
+        ticket = Ticket.objects.create(author=self.student, assignee=None, title="TestTicket", inbox=self.inbox,
+                                       content="TestTicket")
+        Comment.objects.create(ticket=ticket, author=self.student, content="wrong", is_reply=True)
+        comments = [
+            Comment.objects.create(ticket=ticket, author=self.student, content="first", is_reply=False),
+            Comment.objects.create(ticket=ticket, author=self.student, content="second", is_reply=False),
+            Comment.objects.create(ticket=ticket, author=self.student, content="third", is_reply=False),
+        ]
+        comment_notification = CommentNotification.objects.create(comment=comments[1], receiver=self.ta)
+        self.assertEqual(list(comment_notification.get_email_comments()), comments)
+
+    def test_email_replies(self):
+        """
+        Test if email_comments() returns the right replies
+        """
+        ticket = Ticket.objects.create(author=self.student, assignee=None, title="TestTicket", inbox=self.inbox,
+                                       content="TestTicket")
+        Comment.objects.create(ticket=ticket, author=self.student, content="wrong", is_reply=False),
+        replies = [
+            Comment.objects.create(ticket=ticket, author=self.student, content="first", is_reply=True),
+            Comment.objects.create(ticket=ticket, author=self.student, content="second", is_reply=True),
+            Comment.objects.create(ticket=ticket, author=self.student, content="third", is_reply=True),
+        ]
+        comment_notification = CommentNotification.objects.create(comment=replies[1], receiver=self.ta)
+        self.assertEqual(list(comment_notification.get_email_comments()), replies)
 
     def test_get_notifications_200(self):
         self.client.force_login(self.student)
@@ -284,7 +354,79 @@ class NotificationsAPITestCase(NotificationsTestCase):
         self.assertEqual(response.status_code, 302)
         self.assertEqual(response.url, "/login/?next=/api/notifications")
 
-    def test_get_notifications_read_all(self):
+    def test_get_notifications_count(self):
+        self.client.force_login(self.ta)
+        Notification.objects.all().delete()
+
+        MentionNotification.objects.create(receiver=self.ta, is_read=True, comment=self.comment),
+        CommentNotification.objects.create(receiver=self.ta, is_read=False, comment=self.comment),
+        TicketAssignedNotification.objects.create(receiver=self.ta, is_read=True, ticket=self.ticket),
+        NewTicketNotification.objects.create(receiver=self.ta, is_read=False, ticket=self.ticket),
+        TicketReminderNotification.objects.create(receiver=self.ta, is_read=False, ticket=self.ticket)
+
+        response = self.client.get("/api/notifications/unread")
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, '3')
+
+
+    def test_get_notifications_all(self):
+        self.client.force_login(self.ta)
+
+        data = {
+            "is_read": ""
+        }
+
+        Notification.objects.all().delete()
+
+        MentionNotification.objects.create(receiver=self.ta, is_read=True, comment=self.comment),
+        CommentNotification.objects.create(receiver=self.ta, is_read=False, comment=self.comment),
+        TicketAssignedNotification.objects.create(receiver=self.ta, is_read=True, ticket=self.ticket),
+        NewTicketNotification.objects.create(receiver=self.ta, is_read=False, ticket=self.ticket),
+        TicketReminderNotification.objects.create(receiver=self.ta, is_read=False, ticket=self.ticket)
+
+        response = self.client.get("/api/notifications", data)
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, '"count":5')
+
+    def test_get_notifications_read(self):
+        self.client.force_login(self.ta)
+
+        data = {
+            "is_read": "True"
+        }
+
+        Notification.objects.all().delete()
+
+        MentionNotification.objects.create(receiver=self.ta, is_read=True, comment=self.comment),
+        CommentNotification.objects.create(receiver=self.ta, is_read=False, comment=self.comment),
+        TicketAssignedNotification.objects.create(receiver=self.ta, is_read=True, ticket=self.ticket),
+        NewTicketNotification.objects.create(receiver=self.ta, is_read=False, ticket=self.ticket),
+        TicketReminderNotification.objects.create(receiver=self.ta, is_read=False, ticket=self.ticket)
+
+        response = self.client.get("/api/notifications", data)
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, '"count":2')
+
+    def test_get_notifications_unread(self):
+        self.client.force_login(self.ta)
+
+        data = {
+            "is_read": "False"
+        }
+
+        Notification.objects.all().delete()
+
+        MentionNotification.objects.create(receiver=self.ta, is_read=True, comment=self.comment),
+        CommentNotification.objects.create(receiver=self.ta, is_read=False, comment=self.comment),
+        TicketAssignedNotification.objects.create(receiver=self.ta, is_read=True, ticket=self.ticket),
+        NewTicketNotification.objects.create(receiver=self.ta, is_read=False, ticket=self.ticket),
+        TicketReminderNotification.objects.create(receiver=self.ta, is_read=False, ticket=self.ticket)
+
+        response = self.client.get("/api/notifications", data)
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, '"count":3')
+
+    def test_notifications_read_all(self):
         self.client.force_login(self.ta)
 
         comment = Comment.objects.create(ticket=self.ticket, author=self.student, content="@admin", is_reply=True)
@@ -306,7 +448,7 @@ class NotificationsAPITestCase(NotificationsTestCase):
         for notification in notifications:
             self.assertTrue(Notification.objects.get(pk=notification.id).is_read)
 
-    def test_get_notifications_read_on_ticket_view(self):
+    def test_notifications_read_on_ticket_view(self):
         self.client.force_login(self.ta)
 
         comment1 = Comment.objects.create(ticket=self.ticket, author=self.student, content="@admin", is_reply=True)
@@ -344,7 +486,7 @@ class NotificationsAPITestCase(NotificationsTestCase):
         for notification in notifications2:
             self.assertFalse(Notification.objects.get(pk=notification.id).is_read)
 
-    def test_get_notifications_flip_read(self):
+    def test_notifications_flip_read(self):
         self.client.force_login(self.ta)
 
         comment = Comment.objects.create(ticket=self.ticket, author=self.student, content="@admin", is_reply=True)
