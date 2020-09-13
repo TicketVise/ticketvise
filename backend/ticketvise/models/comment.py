@@ -52,20 +52,23 @@ class Comment(models.Model):
             MentionNotification.objects.create(receiver=receiver, comment=self)
 
         if self.is_reply:
-            if self.author.is_assistant_or_coordinator(self.ticket.inbox):
+            if self.author.is_assistant_or_coordinator(self.ticket.inbox) and self.author != self.ticket.author:
                 self.ticket.status = "ANSD"
-            elif self.ticket.status == "CLSD":
-                if self.ticket.assignee:
-                    self.ticket.status = "ASGD"
-                else:
-                    self.ticket.status = "PNDG"
+                if not self.ticket.assignee:
+                    self.ticket.assignee = self.author
+            elif self.ticket.assignee:
+                self.ticket.status = "ASGD"
+            else:
+                self.ticket.status = "PNDG"
 
             self.ticket.save()
 
             CommentNotification.objects.create(receiver=self.ticket.author, comment=self)
 
         if self.ticket.assignee:
-            CommentNotification.objects.create(receiver=self.ticket.assignee, comment=self)
+            # Preventing sending a comment and mention notification if assignee is being mentioned.
+            if self.ticket.assignee.username not in usernames:
+                CommentNotification.objects.create(receiver=self.ticket.assignee, comment=self)
         else:
             for receiver in self.ticket.inbox.get_assistants_and_coordinators():
                 CommentNotification.objects.create(receiver=receiver, comment=self)

@@ -104,51 +104,47 @@ class Command(BaseCommand):
 
         # Creating Courses
         inbox_pse = Inbox.objects.create(
-            code="5062STRE6Y", name="Project Software Engineering", color="#2ad43b", round_robin_parameter=4
+            code="5062STRE6Y", name="Project Software Engineering", round_robin_parameter=4
         )
-        inbox_ip = Inbox.objects.create(code="5062BEST6Y", name="Inleiding Programmeren", color="#45b6fe")
-        inbox_ds = Inbox.objects.create(code="5061DAVI6Y", name="Datastructuren", color="#7cfc00")
+        inbox_ip = Inbox.objects.create(code="5062BEST6Y", name="Inleiding Programmeren")
+        inbox_ds = Inbox.objects.create(code="5061DAVI6Y", name="Datastructuren")
 
-        inbox_pt = Inbox.objects.create(code="5061DAVI5Y", name="Programmeertalen", color="#ff1717")
-        inbox_mp = Inbox.objects.create(code="5061GAVI5Y", name="Master's Project ", color="#30139c")
+        inbox_pt = Inbox.objects.create(code="5061DAVI5Y", name="Programmeertalen")
+        inbox_mp = Inbox.objects.create(code="5061GAVI5Y", name="Master's Project ")
         inbox_pmpse = Inbox.objects.create(
-            code="5061VEVI5Y", name="Preparation Master's Project Software Engineering ", color="#138e9c"
+            code="5061VEVI5Y", name="Preparation Master's Project Software Engineering "
         )
 
         # Creating Labels
-        label_ds_heaps = Label.objects.create(inbox=inbox_ds, name="Heaps", color="#ff0000", is_visible_to_guest=True)
-        label_ds_list = Label.objects.create(inbox=inbox_ds, name="Linked List", color="#0097ff",
+        label_ds_heaps = Label.objects.create(inbox=inbox_ds, name="Heaps",  is_visible_to_guest=True)
+        label_ds_list = Label.objects.create(inbox=inbox_ds, name="Linked List",
                                              is_visible_to_guest=True)
-        label_ds_hash = Label.objects.create(inbox=inbox_ds, name="Hash Table", color="#0ec81d",
+        label_ds_hash = Label.objects.create(inbox=inbox_ds, name="Hash Table",
                                              is_visible_to_guest=True)
         label_pse_swebok = Label.objects.create(
             inbox=inbox_pse,
             name="SWEBOK",
-            color="#ff0000",
         )
         label_pse_report = Label.objects.create(
             inbox=inbox_pse,
             name="Individual Report",
-            color="#29ff00",
             is_visible_to_guest=True,
         )
         label_pse_lecture = Label.objects.create(
             inbox=inbox_pse,
             name="Lecture",
-            color="#0090ff",
             is_visible_to_guest=True,
         )
-        label_pse_ejournal = Label.objects.create(inbox=inbox_pse, name="E-Journal", color="#fbf06d",
+        label_pse_ejournal = Label.objects.create(inbox=inbox_pse, name="E-Journal",
                                                   is_visible_to_guest=True)
-        label_pse_laptop = Label.objects.create(inbox=inbox_pse, name="Laptop", color="#150a1a",
+        label_pse_laptop = Label.objects.create(inbox=inbox_pse, name="Laptop",
                                                 is_visible_to_guest=True)
-        label_pse_assignment = Label.objects.create(inbox=inbox_pse, name="Assignment", color="#00ffcd",
+        label_pse_assignment = Label.objects.create(inbox=inbox_pse, name="Assignment",
                                                     is_visible_to_guest=True)
-        label_ip_hotel = Label.objects.create(inbox=inbox_ip, name="Hotel", color="#00b5fe", is_visible_to_guest=True)
+        label_ip_hotel = Label.objects.create(inbox=inbox_ip, name="Hotel",  is_visible_to_guest=True)
         label_ip_quack = Label.objects.create(
             inbox=inbox_ip,
             name="Dr. Quackerjack",
-            color="#ff0000",
             is_visible_to_guest=True,
         )
 

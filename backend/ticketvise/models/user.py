@@ -167,17 +167,6 @@ class User(AbstractUser):
             inbox, Role.MANAGER
         )
 
-    def is_assistant_or_coordinator_in_a_inbox(self):
-        """
-        Checks if the user is assistant or coordinator in any of the associated inboxes of the user.
-
-        :return: ``True`` if the user is assistant or coordinator in any inbox, ``False`` otherwise.
-        :rtype: bool
-        """
-        return UserInbox.objects.filter(
-            user=self, role__in=[Role.AGENT, Role.MANAGER]
-        ).exists()
-
     def add_inbox(self, inbox, role=Role.GUEST, bookmarked=False):
         """
         Add a inbox to the user, with an optional role.

@@ -15,7 +15,9 @@ from django.core.exceptions import ValidationError
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
 from rest_framework import serializers
-from rest_framework.generics import UpdateAPIView, ListAPIView, RetrieveAPIView, CreateAPIView, RetrieveUpdateAPIView
+from rest_framework.generics import UpdateAPIView, ListAPIView, RetrieveAPIView, CreateAPIView, RetrieveUpdateAPIView, \
+    DestroyAPIView
+from rest_framework.response import Response
 from rest_framework.serializers import ModelSerializer
 from rest_framework.views import APIView
 
@@ -107,7 +109,7 @@ class CreateTicketSerializer(ModelSerializer):
 class TicketAttachmentSerializer(ModelSerializer):
     class Meta:
         model = TicketAttachment
-        fields = ["file"]
+        fields = ["id", "file"]
 
 
 class TicketWithParticipantsSerializer(TicketSerializer):
@@ -171,7 +173,7 @@ class InboxTicketsApiView(UserIsInInboxMixin, APIView):
         """
         q = request.GET.get("q", "")
         size = int(request.GET.get("size", AUTOCOMPLETE_MAX_ENTRIES))
-        columns = bool(request.GET.get("columns", False))
+        columns = str(request.GET.get("columns", False)) == "true"
         show_personal = str(request.GET.get("show_personal", False)) == "true"
         labels = list(map(int, request.GET.getlist("labels[]", [])))
 
@@ -265,6 +267,24 @@ class TicketLabelApiView(UserIsInboxStaffMixin, UpdateAPIView):
         inbox = get_object_or_404(Inbox, pk=self.kwargs["inbox_id"])
 
         return Ticket.objects.get(inbox=inbox, ticket_inbox_id=self.kwargs["ticket_inbox_id"])
+
+
+class TicketAttachmentsApiView(UserIsTicketAuthorOrInboxStaffMixin, CreateAPIView):
+    serializer_class = TicketSerializer
+
+    def post(self, request, *args, **kwargs):
+        inbox = get_object_or_404(Inbox, pk=self.kwargs["inbox_id"])
+        ticket = get_object_or_404(Ticket, inbox=inbox, ticket_inbox_id=self.kwargs["ticket_inbox_id"])
+
+        for file in self.request.FILES.getlist('files'):
+            TicketAttachment(ticket=ticket, file=file).save()
+        
+        return Response()
+
+
+class AttachmentViewApiView(UserIsTicketAuthorOrInboxStaffMixin, DestroyAPIView):
+    serializer_class = TicketAttachment
+    queryset = TicketAttachment
 
 
 class TicketStatusUpdateSerializer(ModelSerializer):

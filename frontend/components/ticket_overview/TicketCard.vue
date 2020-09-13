@@ -36,6 +36,11 @@
         type: Boolean,
         required: false,
         default: false
+      },
+      assignee_show: {
+        type: Boolean,
+        required: false,
+        default: true
       }
     },
     components: {
