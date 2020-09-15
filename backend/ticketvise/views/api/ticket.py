@@ -27,6 +27,7 @@ from ticketvise.models.label import Label
 from ticketvise.models.ticket import Ticket, TicketAttachment, TicketEvent, Status, TicketStatusEvent, \
     TicketAssigneeEvent, TicketLabelEvent
 from ticketvise.models.user import User, UserInbox
+from ticketvise.views.admin import SuperUserRequiredMixin
 from ticketvise.views.api import AUTOCOMPLETE_MAX_ENTRIES
 from ticketvise.views.api.security import UserHasAccessToTicketMixin, UserIsInboxStaffMixin, UserIsInInboxMixin, \
     UserIsTicketAuthorOrInboxStaffMixin
@@ -181,7 +182,7 @@ class InboxTicketsApiView(UserIsInInboxMixin, APIView):
         tickets = Ticket.objects.filter(inbox=inbox, title__icontains=q) | Ticket.objects.filter(
             inbox=inbox, ticket_inbox_id__icontains=q).order_by("-date_created")
 
-        if not request.user.is_assistant_or_coordinator(inbox):
+        if not request.user.is_assistant_or_coordinator(inbox) and not request.user.is_superuser:
             tickets = tickets.filter(author=request.user) | tickets.filter(shared_with__id__icontains=request.user.id)
         elif show_personal:
             tickets = tickets.filter(assignee=request.user) | \
@@ -213,7 +214,8 @@ class InboxTicketsApiView(UserIsInInboxMixin, APIView):
         ]
 
         if not self.request.user.is_assistant_or_coordinator(inbox) \
-                and not inbox.show_assignee_to_guest:
+                and not inbox.show_assignee_to_guest \
+                and not self.request.user.is_superuser:
             columns[0] = {
                 "label": columns[0]["label"],
                 "tickets": columns[0]["tickets"] + columns[1]["tickets"]
@@ -222,6 +224,15 @@ class InboxTicketsApiView(UserIsInInboxMixin, APIView):
         columns[0]["tickets"] = sorted(columns[0]["tickets"], key=lambda x: x["date_created"], reverse=True)
 
         return JsonResponse(data=columns, safe=False)
+
+
+class TicketsApiView(SuperUserRequiredMixin, APIView):
+    def get(self, request):
+        data = {
+            'tickets': Ticket.objects.count()
+        }
+
+        return JsonResponse(data, safe=False)
 
 
 class TicketApiView(UserHasAccessToTicketMixin, RetrieveAPIView):

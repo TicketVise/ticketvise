@@ -76,7 +76,7 @@ class User(AbstractUser):
         :return: ``True`` if the user has the :attr:`Role.MANAGER` role, ``False`` otherwise.
         :rtype: bool
         """
-        return self.has_role_in_inbox(inbox, Role.MANAGER)
+        return self.has_role_in_inbox(inbox, Role.MANAGER) or self.is_superuser
 
     def get_role_by_inbox(self, inbox):
         """
@@ -160,6 +160,9 @@ class User(AbstractUser):
         :return: ``True`` if the user is assistant or coordinator in the inbox, ``False`` otherwise.
         :rtype: bool
         """
+        if self.is_superuser:
+            return True
+
         if not self.has_inbox(inbox):
             return
 

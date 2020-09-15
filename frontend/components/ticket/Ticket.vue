@@ -234,7 +234,7 @@
     },
     methods: {
       isStaff: function () {
-        return this.role && (this.role.key === 'AGENT' || this.role.key === 'MANAGER')
+        return (this.role && (this.role.key === 'AGENT' || this.role.key === 'MANAGER')) || (this.user && this.user.is_superuser)
       },
       onReplyPost: function () {
         axios.get("/api" + window.location.pathname + "/replies").then(response => {
