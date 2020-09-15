@@ -10,12 +10,13 @@ from ticketvise.models.inbox import Inbox
 from ticketvise.models.notification import Notification
 from ticketvise.models.user import User, Role
 from ticketvise.views.api.security import UserIsInboxStaffMixin, UserIsInInboxMixin
+from ticketvise.views.admin import SuperUserRequiredMixin
 
 
 class UserSerializer(ModelSerializer):
     class Meta:
         model = User
-        fields = ["first_name", "last_name", "email", "username", "avatar_url", "id"]
+        fields = ["first_name", "last_name", "email", "username", "avatar_url", "id", "is_superuser"]
 
 
 class UserNotificationSettingsSerializer(ModelSerializer):
@@ -63,6 +64,10 @@ class UserRoleApiView(UserIsInInboxMixin, View):
 
     def get(self, request, inbox_id):
         inbox = get_object_or_404(Inbox, pk=inbox_id)
+        
+        # A superuser hasn't got any role inside an inbox.
+        if self.request.user.is_superuser:
+            return JsonResponse({}, safe=False)
 
         role = self.request.user.get_role_by_inbox(inbox)
         data = RoleSerializer(role).data
@@ -108,3 +113,12 @@ class NotificationsSettingsAPIView(LoginRequiredMixin, RetrieveUpdateAPIView):
 
     def get_object(self):
         return self.request.user
+
+
+class UsersApiView(SuperUserRequiredMixin, View):
+    def get(self, request):
+        data = {
+            'users': User.objects.count()
+        }
+
+        return JsonResponse(data, safe=False)

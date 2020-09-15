@@ -1,8 +1,10 @@
 <template>
   <line-chart
-          :data="data"
-          :options="options"
-          v-if="data"/>
+    v-if="data"
+    :data="data"
+    :options="options"
+    :height="this.height ? this.height : 400"
+  />
 </template>
 
 <script>
@@ -15,12 +17,24 @@
       type: {
         type: String,
         default: "date"
+      },
+      inboxId: {
+        type: Number,
+        required: true
+      },
+      height: {
+        type: Number,
+        required: false,
       }
     },
     data: () => ({
       data: null,
       options: {
+        legend: {
+          display: false
+        },
         responsive: true,
+        aspectRatio: 6,
         maintainAspectRatio: false,
         tooltips: {
           mode: 'nearest',
@@ -41,7 +55,7 @@
       }
     }),
     async mounted() {
-      const response = await axios.get("/api" + window.location.pathname + "/tickets/count", {
+      const response = await axios.get(`/api/inboxes/${this.inboxId}/statistics/tickets/count`, {
         params: {
           "date_type": this.type
         }
@@ -61,7 +75,3 @@
     },
   }
 </script>
-
-<style scoped>
-
-</style>
