@@ -37,31 +37,31 @@
     </header>
 
     <div class="container mx-auto grid md:grid-cols-3 gap-4 px-2 pt-4">
-      <div class="rounded border flex-grow py-2 px-4 flex md:flex-col space-x-2 md:space-x-0 items-center md:items-start">
-        <h3 class="text-lg leading-6 font-medium text-gray-900">
-          Inboxes
-        </h3>
+      <div class="rounded border flex-grow py-2 px-4 flex md:flex-col-reverse space-x-2 md:space-x-0 items-center md:items-start">
         <div class="flex items-baseline sm:mt-1">
           <h2 class="text-2xl font-medium text-orange-500">{{ inboxes.length }}</h2>
         </div>
+        <h3 class="text-lg leading-6 font-medium text-gray-900">
+          Inboxes
+        </h3>
       </div>
 
-      <div class="rounded border flex-grow py-2 px-4 flex md:flex-col space-x-2 md:space-x-0 items-center md:items-start">
-        <h3 class="text-lg leading-6 font-medium text-gray-900">
-          Total Number Of Users
-        </h3>
+      <div class="rounded border flex-grow py-2 px-4 flex md:flex-col-reverse space-x-2 md:space-x-0 items-center md:items-start">
         <div class="flex items-baseline mt-1">
           <h2 class="text-2xl font-medium text-orange-500">{{ users }}</h2>
         </div>
+        <h3 class="text-lg leading-6 font-medium text-gray-900">
+          Total Number Of Users
+        </h3>
       </div>
 
-      <div class="rounded border flex-grow py-2 px-4 flex md:flex-col space-x-2 md:space-x-0 items-center md:items-start">
-        <h3 class="text-lg leading-6 font-medium text-gray-900">
-          Total Number Of Tickets
-        </h3>
+      <div class="rounded border flex-grow py-2 px-4 flex md:flex-col-reverse space-x-2 md:space-x-0 items-center md:items-start">
         <div class="flex items-baseline mt-1">
           <h2 class="text-2xl font-medium text-orange-500">{{ tickets }}</h2>
         </div>
+        <h3 class="text-lg leading-6 font-medium text-gray-900">
+          Total Number Of Tickets
+        </h3>
       </div>
     </div>
 
