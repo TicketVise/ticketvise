@@ -51,7 +51,7 @@
           <h2 class="text-2xl font-medium text-orange-500">{{ users }}</h2>
         </div>
         <h3 class="text-lg leading-6 font-medium text-gray-900">
-          Total Number Of Users
+          Users
         </h3>
       </div>
 
@@ -60,7 +60,7 @@
           <h2 class="text-2xl font-medium text-orange-500">{{ tickets }}</h2>
         </div>
         <h3 class="text-lg leading-6 font-medium text-gray-900">
-          Total Number Of Tickets
+          Tickets
         </h3>
       </div>
     </div>
@@ -84,10 +84,10 @@ export default {
     const response = await axios.get(`/api/inboxes`)
     this.inboxes = response.data
 
-    const users = await axios.get(`/api/users`)
+    const users = await axios.get(`/api/admin/statistics/users/count`)
     this.users = users.data.users
 
-    const tickets = await axios.get(`/api/tickets`)
+    const tickets = await axios.get(`/api/admin/statistics/tickets/count`)
     this.tickets = tickets.data.tickets
   }
 }

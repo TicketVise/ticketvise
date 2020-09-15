@@ -64,7 +64,8 @@ class UserRoleApiView(UserIsInInboxMixin, View):
 
     def get(self, request, inbox_id):
         inbox = get_object_or_404(Inbox, pk=inbox_id)
-
+        
+        # A superuser hasn't got any role inside an inbox.
         if self.request.user.is_superuser:
             return JsonResponse({}, safe=False)
 
