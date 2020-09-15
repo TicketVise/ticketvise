@@ -33,9 +33,6 @@ class UserIsInboxStaffMixin(AccessMixin):
         if not request.user.is_authenticated:
             return self.handle_no_permission()
 
-        if request.user.is_superuser:
-            return super().dispatch(request, *args, **kwargs)
-
         inbox_id = kwargs.get(self.inbox_key)
         if not inbox_id:
             return self.handle_no_permission()
@@ -53,9 +50,6 @@ class UserIsInboxManagerMixin(AccessMixin):
     def dispatch(self, request, *args, **kwargs):
         if not request.user.is_authenticated:
             return self.handle_no_permission()
-
-        if request.user.is_superuser:
-            return super().dispatch(request, *args, **kwargs)
 
         inbox_id = kwargs.get(self.inbox_key)
         if not inbox_id:
@@ -75,9 +69,6 @@ class UserIsTicketAuthorOrInboxStaffMixin(AccessMixin):
     def dispatch(self, request, *args, **kwargs):
         if not request.user.is_authenticated:
             return self.handle_no_permission()
-
-        if request.user.is_superuser:
-            return super().dispatch(request, *args, **kwargs)
 
         inbox_id = kwargs.get(self.inbox_key)
         if not inbox_id:
@@ -101,9 +92,6 @@ class UserHasAccessToTicketMixin(AccessMixin):
     def dispatch(self, request, *args, **kwargs):
         if not request.user.is_authenticated:
             return self.handle_no_permission()
-
-        if request.user.is_superuser:
-            return super().dispatch(request, *args, **kwargs)
 
         inbox_id = kwargs.get(self.inbox_key)
         if not inbox_id:

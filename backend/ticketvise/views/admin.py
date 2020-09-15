@@ -17,7 +17,7 @@ from ticketvise.models.user import User
 from ticketvise.models.inbox import Inbox
 
 
-class UserCoordinatorRequiredMixin(AccessMixin):
+class SuperUserRequiredMixin(AccessMixin):
     """
     Mixin to verify that the user accessing the view is an admin.
     """
@@ -32,7 +32,7 @@ class UserCoordinatorRequiredMixin(AccessMixin):
         return super().dispatch(request, *args, **kwargs)
 
 
-class AdminView(UserCoordinatorRequiredMixin, TemplateView):
+class AdminView(SuperUserRequiredMixin, TemplateView):
     """
     Page to neatly display page not found errors.
 

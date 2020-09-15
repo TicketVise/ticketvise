@@ -20,7 +20,7 @@ def user_is_coordinator(user, inbox):
     :return: If the user is assistant or coordinator in the inbox.
     :rtype: bool
     """
-    return user.is_coordinator_for_inbox(inbox) or user.is_superuser
+    return user.is_coordinator_for_inbox(inbox)
 
 
 @register.simple_tag

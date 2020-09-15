@@ -27,6 +27,7 @@ from ticketvise.models.label import Label
 from ticketvise.models.ticket import Ticket, TicketAttachment, TicketEvent, Status, TicketStatusEvent, \
     TicketAssigneeEvent, TicketLabelEvent
 from ticketvise.models.user import User, UserInbox
+from ticketvise.views.admin import SuperUserRequiredMixin
 from ticketvise.views.api import AUTOCOMPLETE_MAX_ENTRIES
 from ticketvise.views.api.security import UserHasAccessToTicketMixin, UserIsInboxStaffMixin, UserIsInInboxMixin, \
     UserIsTicketAuthorOrInboxStaffMixin
@@ -223,6 +224,15 @@ class InboxTicketsApiView(UserIsInInboxMixin, APIView):
         columns[0]["tickets"] = sorted(columns[0]["tickets"], key=lambda x: x["date_created"], reverse=True)
 
         return JsonResponse(data=columns, safe=False)
+
+
+class TicketsApiView(SuperUserRequiredMixin, APIView):
+    def get(self, request):
+        data = {
+            'tickets': Ticket.objects.count()
+        }
+
+        return JsonResponse(data, safe=False)
 
 
 class TicketApiView(UserHasAccessToTicketMixin, RetrieveAPIView):

@@ -12,7 +12,7 @@
             </div>
           </div>
         </div>
-        <div class="hidden sm:flex flex-col">
+        <div class="hidden md:flex flex-col">
           <span class="text-gray-800">
             <span class="font-bold">Started:</span> 
             {{ moment(inbox.date_created).calendar() }}
@@ -23,7 +23,7 @@
           </span>
         </div>
       </div>
-      <div class="flex sm:items-center hover:bg-gray-100 rounded-full cursor-pointer select-none" @click="open = !open">
+      <div class="flex md:items-center hover:bg-gray-100 rounded-full cursor-pointer select-none" @click="open = !open">
         <i class="fa p-4" :class="{ 'fa-chevron-down': !open, 'fa-chevron-up': open }"></i>
       </div>
     </div>
@@ -72,7 +72,7 @@ export default {
     }
   },
   mounted() {
-    window.axios.get(`/api/inboxes/${this.inbox.id}/stats`).then(response => {
+    window.axios.get(`/api/inboxes/${this.inbox.id}/statistics`).then(response => {
       this.stats = response.data
     })
   }

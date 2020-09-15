@@ -9,13 +9,21 @@
                 <i class="fa fa-arrow-left mr-2"></i>
                 Dashboard
               </a>
+              <span class="sm:hidden">
+                <a
+                  href="/admin/django"
+                  class="inline-flex items-center py-2 text-sm leading-5 font-medium text-gray-700 hover:text-gray-500 focus:outline-none active:text-gray-800 active:bg-gray-50 transition duration-150 ease-in-out"
+                >
+                  <i class="fa fa-cog"></i>
+                </a>
+              </span>
             </div>
 
             <h2 class="text-2xl font-bold leading-7 text-gray-900 sm:text-3xl sm:leading-9 truncate">
               Admin overview
             </h2>
           </div>
-          <div class="mt-2 sm:mt-0 sm:ml-4 space-x-4 flex">
+          <div class="mt-2 sm:mt-0 sm:ml-4 space-x-4 hidden sm:flex">
             <span class="shadow-sm rounded-md">
               <a href="/admin/django"
                 class="inline-flex items-center px-4 py-2 border border-gray-300 text-sm leading-5 font-medium rounded-md text-gray-700 bg-white hover:text-gray-500 focus:outline-none focus:shadow-outline-blue focus:border-blue-300 active:text-gray-800 active:bg-gray-50 transition duration-150 ease-in-out">
@@ -28,8 +36,37 @@
       </div>
     </header>
 
+    <div class="container mx-auto grid md:grid-cols-3 gap-4 px-2 pt-4">
+      <div class="rounded border flex-grow py-2 px-4 flex md:flex-col space-x-2 md:space-x-0 items-center md:items-start">
+        <h3 class="text-lg leading-6 font-medium text-gray-900">
+          Inboxes
+        </h3>
+        <div class="flex items-baseline sm:mt-1">
+          <h2 class="text-2xl font-medium text-orange-500">{{ inboxes.length }}</h2>
+        </div>
+      </div>
+
+      <div class="rounded border flex-grow py-2 px-4 flex md:flex-col space-x-2 md:space-x-0 items-center md:items-start">
+        <h3 class="text-lg leading-6 font-medium text-gray-900">
+          Total Number Of Users
+        </h3>
+        <div class="flex items-baseline mt-1">
+          <h2 class="text-2xl font-medium text-orange-500">{{ users }}</h2>
+        </div>
+      </div>
+
+      <div class="rounded border flex-grow py-2 px-4 flex md:flex-col space-x-2 md:space-x-0 items-center md:items-start">
+        <h3 class="text-lg leading-6 font-medium text-gray-900">
+          Total Number Of Tickets
+        </h3>
+        <div class="flex items-baseline mt-1">
+          <h2 class="text-2xl font-medium text-orange-500">{{ tickets }}</h2>
+        </div>
+      </div>
+    </div>
+
     <div class="container mx-auto py-4 px-2">
-      <div class="w-full border rounded-md divide-y">
+      <div class="w-full border rounded divide-y">
         <inbox-stats v-for="inbox in inboxes" :key="inbox.id" :inbox="inbox" />
       </div>
     </div>
@@ -39,11 +76,19 @@
 <script>
 export default {
   data: () => ({
-    inboxes: []
+    inboxes: [],
+    users: 0,
+    tickets: 0
   }),
   async mounted() {
     const response = await axios.get(`/api/inboxes`)
     this.inboxes = response.data
+
+    const users = await axios.get(`/api/users`)
+    this.users = users.data.users
+
+    const tickets = await axios.get(`/api/tickets`)
+    this.tickets = tickets.data.tickets
   }
 }
 </script>
