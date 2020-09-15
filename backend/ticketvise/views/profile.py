@@ -10,10 +10,10 @@ Contains the view to view the profile of a user.
 * :class:`ProfileView`
 """
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.views.generic import FormView
+from django.views.generic import TemplateView
 
 
-class ProfileView(LoginRequiredMixin, FormView):
+class ProfileView(LoginRequiredMixin, TemplateView):
     """
     View of the profile page, which requires a logged in user.
 
