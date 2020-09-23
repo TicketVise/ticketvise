@@ -126,7 +126,6 @@ const ticketListData = [{
   "shared_with": []
 }];
 
-
 it("Column content", () => {
   const wrapper = shallowMount(TicketColumn, {
     propsData: {
@@ -155,6 +154,6 @@ it("Column no content", () => {
   expect(header.text()).toContain(titleData);
   expect(header.text()).toContain(0);
 
-  var cards = wrapper.findAllComponents(TicketCard);
+  let cards = wrapper.findAllComponents(TicketCard);
   expect(cards.length).toBe(0)
 });
