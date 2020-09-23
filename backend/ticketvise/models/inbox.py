@@ -9,6 +9,7 @@ Contains all entity sets for the inbox database.
 from django.db import models
 
 from ticketvise.models.user import User, Role
+from ticketvise.models.label import Label
 from ticketvise.models.validators import validate_hex_color
 from ticketvise.settings import INBOX_IMAGE_DIRECTORY, DEFAULT_INBOX_IMAGE_PATH
 from ticketvise.utils import random_preselected_color

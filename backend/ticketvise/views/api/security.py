@@ -12,6 +12,9 @@ class UserIsInInboxMixin(AccessMixin):
         if not request.user.is_authenticated:
             return self.handle_no_permission()
 
+        if request.user.is_superuser:
+            return super().dispatch(request, *args, **kwargs)
+
         inbox_id = kwargs.get(self.inbox_key)
         if not inbox_id:
             return self.handle_no_permission()
@@ -103,4 +106,15 @@ class UserHasAccessToTicketMixin(AccessMixin):
                 ticket.inbox) or ticket.shared_with.filter(pk=request.user.id).exists()):
             return self.handle_no_permission()
 
+        return super().dispatch(request, *args, **kwargs)
+
+
+class UserIsSuperUserMixin(AccessMixin):
+    def dispatch(self, request, *args, **kwargs):
+        if not request.user.is_authenticated:
+            return self.handle_no_permission()
+
+        if not request.user.is_superuser:
+            return self.handle_no_permission()
+        
         return super().dispatch(request, *args, **kwargs)

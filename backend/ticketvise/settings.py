@@ -79,9 +79,9 @@ CSP_SCRIPT_SRC = ["'self'", "'unsafe-inline'", "'unsafe-eval'"]
 CSP_IMG_SRC = ["*", "data:"]
 CSP_DEFAULT_SRC = ["'self'", "'unsafe-inline'", "'unsafe-eval'", "https://*.sentry.io"]
 
-CSRF_COOKIE_SAMESITE = "None"
+CSRF_COOKIE_SAMESITE = "" if DEBUG else "None"
 CSRF_COOKIE_SECURE = not DEBUG
-SESSION_COOKIE_SAMESITE = "None"
+SESSION_COOKIE_SAMESITE = "" if DEBUG else "None"
 SESSION_COOKIE_SECURE = not DEBUG
 
 #: WSGI application path.

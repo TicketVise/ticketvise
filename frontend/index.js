@@ -76,12 +76,13 @@ let create_vue = (components) => {
  * The name of the vue component if the lowercase name with dashes in between.
  */
 let components = {
-    '/notifications': ['notifications'],
-    '/inboxes/*/tickets': ['ticket-overview'],
-    '/inboxes/*/tickets/new': ['ticket-form'],
-    '/inboxes/*/tickets/*': ['ticket'],
-    '/inboxes/*/statistics': ['inbox-statistics'],
-    '/profile': ['profile']
+  '/notifications': ['notifications'],
+  '/inboxes/*/tickets': ['ticket-overview'],
+  '/inboxes/*/tickets/new': ['ticket-form'],
+  '/inboxes/*/tickets/*': ['ticket'],
+  '/inboxes/*/statistics': ['inbox-statistics'],
+  '/profile': ['profile'],
+  '/admin': ['admin']
 }
 
 /* Now lets set them all up. */
