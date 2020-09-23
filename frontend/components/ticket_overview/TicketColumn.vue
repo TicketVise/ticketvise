@@ -34,7 +34,9 @@
 </template>
 
 <script>
+  import TicketCard from "./TicketCard";
   export default {
+    components: {TicketCard},
     props: ['title', 'color', 'ticketList']
   }
 </script>
