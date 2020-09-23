@@ -205,8 +205,6 @@ class InboxTicketsApiView(UserIsInInboxMixin, APIView):
         :return: Lists of lists of tickets per status.
         :rtype: QuerySet<:class: `Ticket`>
         """
-        is_manual = inbox.scheduling_algorithm == SchedulingAlgorithm.FIXED and inbox.fixed_scheduling_assignee is None
-
         columns = [
             {
                 "label": status.label,
