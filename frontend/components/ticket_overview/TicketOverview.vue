@@ -46,7 +46,6 @@
       colors: ['#e76f51', '#e9c46a', '#2a9d8f', '#264653'],
       tickets: [],
       search: null,
-      debounce_search: null,
       showPersonal: false,
       labels: [],
       label: null,
@@ -60,7 +59,7 @@
         let labels_ids = []
         this.labels.forEach(label => labels_ids.push(label.id))
 
-        window.axios.get(`/api${window.location.pathname}`, {
+        axios.get(`/api${window.location.pathname}`, {
           params: {
             columns: true,
             q: this.search,
