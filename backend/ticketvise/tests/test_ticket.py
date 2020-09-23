@@ -694,7 +694,6 @@ class TicketTestBackendCase(TicketTestCase):
         self.assertNotContains(response, "Ticket1")
         self.assertContains(response, "Ticket3")
 
-
     def test_hide_pending(self):
         """
         Test InboxTicketsApiView for manager
@@ -731,4 +730,3 @@ class TicketTestBackendCase(TicketTestCase):
         response = self.client.get(f"/api/inboxes/{self.inbox.id}/tickets", data=data)
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, Status.PENDING.label)
-
