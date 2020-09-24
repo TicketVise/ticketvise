@@ -1,5 +1,5 @@
 import {shallowMount} from '@vue/test-utils'
-import TicketCard from "@/ticket_overview/TicketCard";
+import TicketCard from "@/inbox/TicketCard";
 import moment from "moment";
 
 const ticketData = {

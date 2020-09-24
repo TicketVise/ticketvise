@@ -1,9 +1,8 @@
 import {mount, shallowMount} from "@vue/test-utils";
-import TicketOverview from "../components/ticket_overview/TicketOverview";
+import TicketOverview from "../components/inbox/TicketOverview";
 import SearchBar from "../components/elements/SearchBar";
 import LabelDropdown from "../components/elements/dropdown/LabelDropdown";
 import SubmitButton from "../components/elements/buttons/SubmitButton";
-import TicketColumn from "../components/ticket_overview/TicketColumn";
 
 const colorData = ["#e76f51", "#e9c46a", "#2a9d8f", "#264653"];
 const inboxLabelsData = [{"name": "Assignment", "color": "#00ffcd", "id": 9}, {

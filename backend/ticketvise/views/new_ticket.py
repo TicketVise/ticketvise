@@ -12,7 +12,7 @@ from django.views.generic import TemplateView
 from .api.security import UserIsInInboxMixin
 
 
-class TicketFormView(UserIsInInboxMixin, TemplateView):
+class NewTicketView(UserIsInInboxMixin, TemplateView):
     """
     Form for submitting new tickets.
 
@@ -22,4 +22,4 @@ class TicketFormView(UserIsInInboxMixin, TemplateView):
     :var int inbox_id: The id of the ticket.
     :var QuerySet<:class>:`Label`> labels: The labels to display.
     """
-    template_name = "ticket_form.html"
+    template_name = "new_ticket.html"
