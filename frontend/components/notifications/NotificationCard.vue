@@ -12,15 +12,15 @@
     <div class="text-sm">#{{ notification.ticket.ticket_inbox_id }} - {{ notification.ticket.title }}</div>
     <div class="text-sm">
       <i class="fa fa-calendar text-xs"></i>
-      {{ date }}
+      {{ date(this.notification.date_created) }}
     </div>
   </div>
 </template>
 
 <script>
   import Avatar from "../elements/Avatar";
-  import moment from "moment"
   import axios from "axios"
+  import {calendarDate} from "../../utils";
 
   export default {
     name: "NotificationCard",
@@ -30,9 +30,6 @@
     }),
     props: {notification: {type: Object, default: null, required: true}},
     computed: {
-      date: function () {
-        return moment.parseZone(this.notification.date_created).fromNow()
-      },
       borderColor() {
         return {
           "border-color": this.notification.inbox.color
@@ -46,6 +43,7 @@
       this.read = this.notification.is_read
     },
     methods: {
+      date: calendarDate,
       flipRead() {
         let formData = new FormData;
         formData.append("is_read", this.notification.is_read ? "False" : "True");
