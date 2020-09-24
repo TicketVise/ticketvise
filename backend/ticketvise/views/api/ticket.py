@@ -22,7 +22,7 @@ from rest_framework.serializers import ModelSerializer
 from rest_framework.views import APIView
 
 from ticketvise.middleware import CurrentUserMiddleware
-from ticketvise.models.inbox import Inbox
+from ticketvise.models.inbox import Inbox, SchedulingAlgorithm
 from ticketvise.models.label import Label
 from ticketvise.models.ticket import Ticket, TicketAttachment, TicketEvent, Status, TicketStatusEvent, \
     TicketAssigneeEvent, TicketLabelEvent
@@ -210,7 +210,10 @@ class InboxTicketsApiView(UserIsInInboxMixin, APIView):
             {
                 "label": status.label,
                 "tickets": TicketSerializer(query_set.filter(status=status), many=True).data
-            } for status in Status
+            } for status in Status if status != Status.PENDING
+                                      or (inbox.scheduling_algorithm == SchedulingAlgorithm.FIXED
+                                          and inbox.fixed_scheduling_assignee is None)
+                                      or query_set.filter(status=status).exists()
         ]
 
         if not self.request.user.is_assistant_or_coordinator(inbox) \
@@ -289,7 +292,7 @@ class TicketAttachmentsApiView(UserIsTicketAuthorOrInboxStaffMixin, CreateAPIVie
 
         for file in self.request.FILES.getlist('files'):
             TicketAttachment(ticket=ticket, file=file).save()
-        
+
         return Response()
 
 

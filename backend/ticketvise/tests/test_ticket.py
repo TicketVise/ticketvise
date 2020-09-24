@@ -9,7 +9,7 @@ from django.db import transaction
 from django.test import Client, TransactionTestCase
 from django.urls import reverse
 
-from ticketvise.models.inbox import Inbox
+from ticketvise.models.inbox import Inbox, SchedulingAlgorithm
 from ticketvise.models.label import Label
 from ticketvise.models.ticket import Ticket, Status
 from ticketvise.models.user import User, Role
@@ -692,3 +692,40 @@ class TicketTestBackendCase(TicketTestCase):
         self.assertEqual(response.status_code, 200)
         self.assertNotContains(response, "Ticket1")
         self.assertContains(response, "Ticket3")
+
+    def test_hide_pending(self):
+        """
+        Test InboxTicketsApiView for manager
+        """
+        self.client.force_login(self.assistant)
+
+        data = {"columns": "true"}
+        self.inbox.tickets.all().delete()
+
+        response = self.client.get(f"/api/inboxes/{self.inbox.id}/tickets", data=data)
+        # Scheduling algorithm does not support pending status, so should be hidden.
+        self.assertEqual(response.status_code, 200)
+        self.assertNotContains(response, Status.PENDING.label)
+
+        self.inbox.scheduling_algorithm = SchedulingAlgorithm.FIXED
+        self.inbox.fixed_scheduling_assignee = None
+        self.inbox.save()
+
+        response = self.client.get(f"/api/inboxes/{self.inbox.id}/tickets", data=data)
+        # Scheduling algorithm does support pending status, so should be visible.
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, Status.PENDING.label)
+
+        self.inbox.scheduling_algorithm = SchedulingAlgorithm.FIXED
+        self.inbox.fixed_scheduling_assignee = None
+        self.inbox.save()
+
+        # Scheduling algorithm does not support pending status, but contains a ticket with the status, so the column
+        # should be visible.
+        Ticket.objects.create(inbox=self.inbox, content="content", title="test", author=self.student)
+        self.inbox.scheduling_algorithm = SchedulingAlgorithm.ROUND_ROBIN
+        self.inbox.save()
+
+        response = self.client.get(f"/api/inboxes/{self.inbox.id}/tickets", data=data)
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, Status.PENDING.label)
