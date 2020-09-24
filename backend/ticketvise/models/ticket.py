@@ -92,7 +92,7 @@ class Ticket(models.Model):
         self.status = Status.ASSIGNED if receiver else Status.PENDING
 
     def reopen(self):
-        last_comment = self.comments.order_by("-date_created").first()
+        last_comment = self.comments.filter(is_reply=True).order_by("-date_created").first()
 
         if last_comment and last_comment.author.is_assistant_or_coordinator(self.inbox):
             self.status = Status.ANSWERED
