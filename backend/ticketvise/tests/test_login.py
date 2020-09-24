@@ -40,7 +40,7 @@ class LoginTestCase(TestCase):
         :return: None.
         """
         inbox = Inbox.objects.create(name="name", code="code")
-        response = self.client.get(reverse("ticket_overview", args=(inbox.id,)))
+        response = self.client.get(reverse("inbox", args=(inbox.id,)))
         self.assertRedirects(response, "/login/?next=%2Finboxes%2F{}%2Ftickets".format(inbox.id))
 
     # def test_preserve_username_when_login_failed(self):

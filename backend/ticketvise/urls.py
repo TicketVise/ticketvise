@@ -14,6 +14,7 @@ from ticketvise.views.admin import AdminView
 from ticketvise.views.error import ErrorHandler
 from ticketvise.views.inbox.labels import InboxLabelsView, CreateInboxLabelView, EditInboxLabelView, \
     DeleteInboxLabelView
+from ticketvise.views.inbox.overview import InboxView
 from ticketvise.views.inbox.settings import InboxSettingsView
 from ticketvise.views.inbox.statistics import InboxStatisticsView
 from ticketvise.views.inbox.users import InboxUserDeleteView, InboxUserView, InboxUsersView
@@ -23,8 +24,7 @@ from ticketvise.views.lti.lti import LtiView
 from ticketvise.views.notifications import NotificationsView
 from ticketvise.views.profile import ProfileView
 from ticketvise.views.ticket import TicketView
-from ticketvise.views.ticket_form import TicketFormView
-from ticketvise.views.ticket_overview import TicketOverview
+from ticketvise.views.new_ticket import NewTicketView
 
 urlpatterns = [
                   path("admin/django", admin.site.urls),
@@ -33,7 +33,7 @@ urlpatterns = [
                   path("lti/config.xml", LtiConfigView.as_view()),
                   path("", InboxesView.as_view(), name="home"),
                   path("inboxes/<int:inbox_id>/tickets/<int:ticket_inbox_id>", TicketView.as_view(), name="ticket"),
-                  path("inboxes/<int:inbox_id>/tickets/new", TicketFormView.as_view(), name="new_ticket"),
+                  path("inboxes/<int:inbox_id>/tickets/new", NewTicketView.as_view(), name="new_ticket"),
                   path("inboxes/<int:inbox_id>/users/<int:pk>/delete", InboxUserDeleteView.as_view(),
                        name="inbox_user_delete"),
                   path("inboxes/<int:inbox_id>/users/<int:pk>", InboxUserView.as_view(), name="inbox_user"),
@@ -45,7 +45,7 @@ urlpatterns = [
                   path("inboxes/<int:inbox_id>/labels/<int:pk>", EditInboxLabelView.as_view(), name="edit_inbox_label"),
                   path("inboxes/<int:inbox_id>/labels/<int:pk>/delete", DeleteInboxLabelView.as_view(),
                        name="delete_inbox_label"),
-                  path("inboxes/<int:inbox_id>/tickets", TicketOverview.as_view(), name="ticket_overview"),
+                  path("inboxes/<int:inbox_id>/tickets", InboxView.as_view(), name="inbox"),
                   path("profile", ProfileView.as_view(), name="profile"),
                   path("inboxes", InboxesView.as_view(), name="inboxes"),
                   path("notifications", NotificationsView.as_view(), name="notifications"),
