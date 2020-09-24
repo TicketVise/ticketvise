@@ -5,7 +5,6 @@ This file tests the ticket page that show the information of a ticket.
 """
 import json
 
-from celery.schedules import schedule
 from django.db import transaction
 from django.test import Client, TransactionTestCase
 from django.urls import reverse
