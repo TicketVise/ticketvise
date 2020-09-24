@@ -36,6 +36,7 @@ it("card content with assignee", () => {
 
   expect(wrapper.find("span").text()).toContain(ticketData.ticket_inbox_id);
   let headers = wrapper.findAll("h3");
+  console.log(headers)
   expect(headers.length).toBe(2);
   expect(headers.at(0).text()).toContain(moment(ticketData.date_created).calendar());
   expect(headers.at(1).text()).toContain("Assignee:");
@@ -50,14 +51,12 @@ it("card content with assignee", () => {
   }
 });
 
-ticketData.assignee = {"first_name": "", "last_name": "", "email": "", "username": "", "avatar_url": ""};
-
 it("card content without assignee", () => {
+  ticketData.assignee = null;
   const wrapper = shallowMount(TicketCard, {propsData: {ticket: ticketData}});
 
   let headers = wrapper.findAll("h3");
-  expect(headers.length).toBe(2);
-  expect(headers.at(1).text()).toContain("Assignee: None");
+  expect(headers.length).toBe(1);
 });
 
 ticketData.labels = [];
