@@ -91,6 +91,18 @@ class Ticket(models.Model):
         self.assignee = receiver
         self.status = Status.ASSIGNED if receiver else Status.PENDING
 
+    def reopen(self):
+        last_comment = self.comments.order_by("-date_created").first()
+
+        if last_comment and last_comment.author.is_assistant_or_coordinator(self.inbox):
+            self.status = Status.ANSWERED
+        elif self.assignee is None:
+            self.status = Status.PENDING
+        else:
+            self.status = Status.ASSIGNED
+
+
+
     @transaction.atomic
     def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
         """

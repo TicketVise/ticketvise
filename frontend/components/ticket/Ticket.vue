@@ -65,8 +65,8 @@
             <div class="flex flex-row flex-wrap space-x-4 sm:space-x-6">
               <div class="mt-2 flex items-center text-sm leading-5 text-gray-500" title="Ticket Status">
                 <i
-                        class="fa mr-1"
-                        :class="{ 'fa-envelope-open': ticket.status === 'PNDG' || ticket.status === 'ASGD', 'fa-envelope': ticket.status === 'ANSD' || ticket.status === 'CLSD' }"
+                    class="fa mr-1"
+                    :class="{ 'fa-envelope-open': ticket.status === 'PNDG' || ticket.status === 'ASGD', 'fa-envelope': ticket.status === 'ANSD' || ticket.status === 'CLSD' }"
                 ></i>
                 {{ status[ticket.status] }}
               </div>
@@ -87,6 +87,13 @@
                       class="inline-flex items-center px-4 py-2 border border-transparent text-sm leading-5 font-medium rounded-md text-white bg-primary hover:bg-orange-500 focus:outline-none focus:shadow-outline-orange focus:border-orange-700 active:bg-orange-700 transition duration-150 ease-in-out">
                 <i class="fa fa-archive mr-2"></i>
                 Close Ticket
+              </button>
+            </span>
+            <span v-if="is_staff && ticket.status === 'CLSD'" class="shadow-sm rounded-md">
+              <button type="button" @click="openTicket"
+                      class="inline-flex items-center px-4 py-2 border border-transparent text-sm leading-5 font-medium rounded-md text-white bg-primary hover:bg-orange-500 focus:outline-none focus:shadow-outline-orange focus:border-orange-700 active:bg-orange-700 transition duration-150 ease-in-out">
+                <i class="fa fa-envelope-open-o mr-2"></i>
+                Reopen Ticket
               </button>
             </span>
           </div>
@@ -114,190 +121,197 @@
 </template>
 
 <script>
-  import Comment from "./Comment";
-  import Avatar from "../elements/Avatar";
-  import axios from "axios";
-  import moment from "moment"
-  import 'codemirror/lib/codemirror.css';
-  import VueTribute from 'vue-tribute';
+import Comment from "./Comment";
+import Avatar from "../elements/Avatar";
+import axios from "axios";
+import moment from "moment"
+import 'codemirror/lib/codemirror.css';
+import VueTribute from 'vue-tribute';
 
-  import Mention from "../elements/mention/Mention";
-  import Tab from "../elements/Tab"
-  import ExternalTab from "./ExternalTab";
-  import InternalTab from "./InternalTab";
-  import Card from '../elements/card/Card'
-  import AttachmentsTab from "./AttachmentsTab";
-  import Avatars from "../elements/Avatars";
-  import EditShareWith from "./EditShareWith";
-  import UserDropdown from "../elements/dropdown/UserDropdown";
-  import LabelDropdown from "../elements/dropdown/LabelDropdown";
-  import RecentQuestions from "./RecentQuestions";
+import Mention from "../elements/mention/Mention";
+import Tab from "../elements/Tab"
+import ExternalTab from "./ExternalTab";
+import InternalTab from "./InternalTab";
+import Card from '../elements/card/Card'
+import AttachmentsTab from "./AttachmentsTab";
+import Avatars from "../elements/Avatars";
+import EditShareWith from "./EditShareWith";
+import UserDropdown from "../elements/dropdown/UserDropdown";
+import LabelDropdown from "../elements/dropdown/LabelDropdown";
+import RecentQuestions from "./RecentQuestions";
 
-  export default {
-    components: {
-      EditShareWith,
-      Avatars,
-      AttachmentsTab,
-      InternalTab,
-      ExternalTab,
-      Mention,
-      UserDropdown,
-      LabelDropdown,
-      Avatar,
-      Comment,
-      VueTribute,
-      RecentQuestions,
-      Tab,
-      Card
-    },
-    data() {
-      return {
-        inbox: null,
-        ticket: null,
-        replies: [],
-        labels: [],
-        comments: [],
-        staff: [],
-        activeTab: 'external',
-        user: null,
-        role: "",
-        shared_with: [],
-        errors: [],
-        status: {
-          PNDG: 'Pending',
-          ASGD: 'Assigned',
-          ANSD: 'Awaiting response',
-          CLSD: 'Closed'
-        }
+export default {
+  components: {
+    EditShareWith,
+    Avatars,
+    AttachmentsTab,
+    InternalTab,
+    ExternalTab,
+    Mention,
+    UserDropdown,
+    LabelDropdown,
+    Avatar,
+    Comment,
+    VueTribute,
+    RecentQuestions,
+    Tab,
+    Card
+  },
+  data() {
+    return {
+      inbox: null,
+      ticket: null,
+      replies: [],
+      labels: [],
+      comments: [],
+      staff: [],
+      activeTab: 'external',
+      user: null,
+      role: "",
+      shared_with: [],
+      errors: [],
+      status: {
+        PNDG: 'Pending',
+        ASGD: 'Assigned',
+        ANSD: 'Awaiting response',
+        CLSD: 'Closed'
       }
-    },
-    created() {
-      axios.get("/api" + window.location.pathname).then(response => {
-        this.ticket = response.data;
-        this.labels = response.data.labels;
+    }
+  },
+  created() {
+    axios.get("/api" + window.location.pathname).then(response => {
+      this.ticket = response.data;
+      this.labels = response.data.labels;
 
-        axios.defaults.xsrfCookieName = 'csrftoken';
-        axios.defaults.xsrfHeaderName = "X-CSRFTOKEN";
+      axios.defaults.xsrfCookieName = 'csrftoken';
+      axios.defaults.xsrfHeaderName = "X-CSRFTOKEN";
 
-        axios.put("/api/notifications/read" + window.location.pathname).then(_ => {
-        });
-
-        axios.get("/api/me").then(response => {
-          this.user = response.data;
-
-          axios.get("/api/inboxes/" + this.ticket.inbox + "/role").then(response => {
-            this.role = response.data;
-
-            if (this.isStaff()) {
-              axios.get("/api" + window.location.pathname + "/comments").then(response => {
-                this.comments = response.data;
-              });
-
-              axios.get("/api/inboxes/" + this.ticket.inbox + "/staff").then(response => {
-                this.staff = response.data;
-              });
-
-              axios.get("/api/inboxes/" + this.ticket.inbox + "/users/" + this.ticket.author.id + "/roles").then(response => {
-                this.$set(this.ticket.author, 'role', response.data)
-              })
-            }
-            if (this.isStaff() || (this.ticket.author && this.ticket.author.id === this.user.id)) {
-              axios.get("/api" + window.location.pathname + "/shared").then(response => {
-                this.shared_with = response.data.shared_with;
-              });
-            }
-          });
-        });
-        axios.get("/api/inboxes/" + this.ticket.inbox).then(response => {
-          this.inbox = response.data
-        })
+      axios.put("/api/notifications/read" + window.location.pathname).then(_ => {
       });
+
+      axios.get("/api/me").then(response => {
+        this.user = response.data;
+
+        axios.get("/api/inboxes/" + this.ticket.inbox + "/role").then(response => {
+          this.role = response.data;
+
+          if (this.isStaff()) {
+            axios.get("/api" + window.location.pathname + "/comments").then(response => {
+              this.comments = response.data;
+            });
+
+            axios.get("/api/inboxes/" + this.ticket.inbox + "/staff").then(response => {
+              this.staff = response.data;
+            });
+
+            axios.get("/api/inboxes/" + this.ticket.inbox + "/users/" + this.ticket.author.id + "/roles").then(response => {
+              this.$set(this.ticket.author, 'role', response.data)
+            })
+          }
+          if (this.isStaff() || (this.ticket.author && this.ticket.author.id === this.user.id)) {
+            axios.get("/api" + window.location.pathname + "/shared").then(response => {
+              this.shared_with = response.data.shared_with;
+            });
+          }
+        });
+      });
+      axios.get("/api/inboxes/" + this.ticket.inbox).then(response => {
+        this.inbox = response.data
+      })
+    });
+    axios.get("/api" + window.location.pathname + "/replies").then(response => {
+      this.replies = response.data;
+    });
+  },
+  computed: {
+    date: function () {
+      return moment.parseZone(this.ticket.date_created).fromNow()
+    },
+    is_staff: function () {
+      return this.isStaff()
+    },
+    staff_excluding_self: function () {
+      if (!this.staff || !this.user) return [];
+
+      return this.staff.filter(user => user.id !== this.user.id)
+    },
+    canShare: function () {
+      return this.is_staff || (this.user && this.ticket.author.id === this.user.id)
+    }
+  },
+  methods: {
+    isStaff: function () {
+      return (this.role && (this.role.key === 'AGENT' || this.role.key === 'MANAGER')) || (this.user && this.user.is_superuser)
+    },
+    onReplyPost: function () {
       axios.get("/api" + window.location.pathname + "/replies").then(response => {
         this.replies = response.data;
       });
+
+      axios.get("/api" + window.location.pathname).then(response => {
+        this.ticket = response.data;
+      });
     },
-    computed: {
-      date: function () {
-        return moment.parseZone(this.ticket.date_created).fromNow()
-      },
-      is_staff: function () {
-        return this.isStaff()
-      },
-      staff_excluding_self: function () {
-        if (!this.staff || !this.user) return [];
+    onCommentPost: function () {
+      axios.get("/api" + window.location.pathname + "/comments").then(response => {
+        this.comments = response.data;
+      });
 
-        return this.staff.filter(user => user.id !== this.user.id)
-      },
-      canShare: function () {
-        return this.is_staff || (this.user && this.ticket.author.id === this.user.id)
-      }
+      axios.get("/api" + window.location.pathname).then(response => {
+        this.ticket = response.data;
+      });
     },
-    methods: {
-      isStaff: function () {
-        return (this.role && (this.role.key === 'AGENT' || this.role.key === 'MANAGER')) || (this.user && this.user.is_superuser)
-      },
-      onReplyPost: function () {
-        axios.get("/api" + window.location.pathname + "/replies").then(response => {
-          this.replies = response.data;
-        });
+    closeTicket: function () {
+      axios.defaults.xsrfCookieName = 'csrftoken';
+      axios.defaults.xsrfHeaderName = "X-CSRFTOKEN";
 
-        axios.get("/api" + window.location.pathname).then(response => {
-          this.ticket = response.data;
-        });
-      },
-      onCommentPost: function () {
-        axios.get("/api" + window.location.pathname + "/comments").then(response => {
-          this.comments = response.data;
-        });
+      this.ticket.status = "CLSD";
+      axios.post("/api" + window.location.pathname + "/status/close").then(_ => {})
+    },
+    openTicket: function () {
+      axios.defaults.xsrfCookieName = 'csrftoken';
+      axios.defaults.xsrfHeaderName = "X-CSRFTOKEN";
 
-        axios.get("/api" + window.location.pathname).then(response => {
-          this.ticket = response.data;
-        });
-      },
-      closeTicket: function () {
-        axios.defaults.xsrfCookieName = 'csrftoken';
-        axios.defaults.xsrfHeaderName = "X-CSRFTOKEN";
+      axios.post("/api" + window.location.pathname + "/status/open").then(_ => {
+        return axios.get("/api" + window.location.pathname)
+      }).then(response => {
+        this.ticket.status = response.data.status;
+      });
+    },
+    updateSharedWith() {
+      let formData = new FormData();
+      this.shared_with.forEach(shared_with => formData.append("shared_with", shared_with.id));
 
-        this.ticket.status = "CLSD";
-        axios.put("/api" + window.location.pathname + "/status", {
-          "status": this.ticket.status
-        }).then(_ => {
-        })
-      },
-      updateSharedWith() {
-        let formData = new FormData();
-        this.shared_with.forEach(shared_with => formData.append("shared_with", shared_with.id));
+      axios.defaults.xsrfCookieName = "csrftoken";
+      axios.defaults.xsrfHeaderName = "X-CSRFTOKEN";
 
-        axios.defaults.xsrfCookieName = "csrftoken";
-        axios.defaults.xsrfHeaderName = "X-CSRFTOKEN";
+      axios.put("/api" + window.location.pathname + "/shared", formData).then(_ => {
 
-        axios.put("/api" + window.location.pathname + "/shared", formData).then(_ => {
+      }).catch(error => {
+        this.errors = error.response.data
+      })
+    },
+    updateAssignee() {
+      axios.get("/api" + window.location.pathname).then(response => {
+        this.ticket = response.data;
+      })
+    },
+    updateLabels() {
+      axios.defaults.xsrfCookieName = 'csrftoken';
+      axios.defaults.xsrfHeaderName = "X-CSRFTOKEN";
 
-        }).catch(error => {
-          this.errors = error.response.data
-        })
-      },
-      updateAssignee() {
-        axios.get("/api" + window.location.pathname).then(response => {
-          this.ticket = response.data;
-        })
-      },
-      updateLabels() {
-        axios.defaults.xsrfCookieName = 'csrftoken';
-        axios.defaults.xsrfHeaderName = "X-CSRFTOKEN";
+      axios.put("/api" + window.location.pathname + "/labels",
+          {
+            "labels": this.labels.map(label => label.id)
+          }).then(_ => {
 
-        axios.put("/api" + window.location.pathname + "/labels",
-            {
-              "labels": this.labels.map(label => label.id)
-            }).then(_ => {
-
-        });
-      },
-      updateTicket() {
-        axios.get("/api" + window.location.pathname).then(response => {
-          this.ticket = response.data;
-        })
-      }
+      });
+    },
+    updateTicket() {
+      axios.get("/api" + window.location.pathname).then(response => {
+        this.ticket = response.data;
+      })
     }
   }
+}
 </script>
