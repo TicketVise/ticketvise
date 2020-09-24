@@ -1,6 +1,6 @@
 import {shallowMount} from '@vue/test-utils'
-import TicketColumn from "../components/ticket_overview/TicketColumn";
-import TicketCard from "../components/ticket_overview/TicketCard";
+import TicketColumn from "../components/inbox/TicketColumn";
+import TicketCard from "../components/inbox/TicketCard";
 
 const colorData = "#e9c46a";
 const titleData = "Assigned";
