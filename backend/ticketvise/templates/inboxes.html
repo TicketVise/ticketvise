@@ -21,7 +21,7 @@
           {% get_user_role user inbox as role %}
           <div class="bg-white relative">
             <!-- INBOX IMAGE -->
-            <a href="{% url 'ticket_overview' inbox.id %}" class="" aria-label="more options">
+            <a href="{% url 'inbox' inbox.id %}" class="" aria-label="more options">
               {% include "utils/inbox_image.html" %}
             </a>
 
@@ -43,7 +43,7 @@
               </form>
 
               <!-- INBOX NAME. -->
-              <a href="{% url 'ticket_overview' inbox.id %}">
+              <a href="{% url 'inbox' inbox.id %}">
                 {{ inbox.name }}
               </a>
             </div>
