@@ -36,7 +36,6 @@ it("card content with assignee", () => {
 
   expect(wrapper.find("span").text()).toContain(ticketData.ticket_inbox_id);
   let headers = wrapper.findAll("h3");
-  console.log(headers)
   expect(headers.length).toBe(2);
   expect(headers.at(0).text()).toContain(moment(ticketData.date_created).calendar());
   expect(headers.at(1).text()).toContain("Assignee:");
