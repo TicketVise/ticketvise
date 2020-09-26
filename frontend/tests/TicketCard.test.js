@@ -50,14 +50,12 @@ it("card content with assignee", () => {
   }
 });
 
-ticketData.assignee = {"first_name": "", "last_name": "", "email": "", "username": "", "avatar_url": ""};
-
 it("card content without assignee", () => {
+  ticketData.assignee = null;
   const wrapper = shallowMount(TicketCard, {propsData: {ticket: ticketData}});
 
   let headers = wrapper.findAll("h3");
-  expect(headers.length).toBe(2);
-  expect(headers.at(1).text()).toContain("Assignee: None");
+  expect(headers.length).toBe(1);
 });
 
 ticketData.labels = [];
