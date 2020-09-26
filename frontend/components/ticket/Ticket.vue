@@ -59,7 +59,7 @@
               <i class="fa fa-arrow-left mr-2"></i>
               {{ inbox ? inbox.name : '' }}
             </a>
-            <h2 class="text-2xl font-bold leading-7 text-gray-900 sm:text-3xl sm:leading-9 sm:truncate">
+            <h2 class="text-2xl font-bold leading-7 text-gray-900 xl:text-3xl xl:leading-9">
               #{{ ticket.ticket_inbox_id }} - {{ ticket.title }}
             </h2>
             <div class="flex flex-row flex-wrap space-x-4 sm:space-x-6">
