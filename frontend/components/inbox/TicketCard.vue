@@ -23,8 +23,7 @@
 
 <script>
   import Card from "../elements/card/Card";
-
-  const moment = require('moment')
+  import {calendarDate} from "../../utils";
 
   export default {
     props: {
@@ -47,9 +46,7 @@
       Card
     },
     methods: {
-      date: function (date) {
-        return moment(date).calendar()
-      }
+      date: calendarDate
     },
     computed: {
       link: function () {

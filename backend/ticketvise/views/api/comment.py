@@ -31,7 +31,7 @@ class TicketCommentsApiView(UserIsInboxStaffMixin, ListAPIView):
         inbox = get_object_or_404(Inbox, pk=self.kwargs["inbox_id"])
         ticket = get_object_or_404(Ticket, inbox=inbox, ticket_inbox_id=self.kwargs["ticket_inbox_id"])
 
-        return Comment.objects.filter(ticket=ticket, is_reply=False)
+        return Comment.objects.filter(ticket=ticket, is_reply=False).order_by("date_created")
 
 
 class TicketRepliesApiView(UserHasAccessToTicketMixin, ListAPIView):
@@ -41,7 +41,7 @@ class TicketRepliesApiView(UserHasAccessToTicketMixin, ListAPIView):
         inbox = get_object_or_404(Inbox, pk=self.kwargs["inbox_id"])
         ticket = get_object_or_404(Ticket, inbox=inbox, ticket_inbox_id=self.kwargs["ticket_inbox_id"])
 
-        return Comment.objects.filter(ticket=ticket, is_reply=True)
+        return Comment.objects.filter(ticket=ticket, is_reply=True).order_by("date_created")
 
 
 class CreateCommentApiView(UserIsInboxStaffMixin, CreateAPIView):
