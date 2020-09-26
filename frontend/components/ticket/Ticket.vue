@@ -35,7 +35,7 @@
           <div class="flex flex-wrap mb-2" v-else>
             No labels selected
           </div>
-          <label-dropdown :selected="labels" :values="inbox.labels" v-if="canShare" v-model="labels"
+          <label-dropdown :selected="labels" :values="inbox.labels" v-if="inbox && canShare" v-model="labels"
                           v-on:input="updateLabels"/>
         </div>
 
@@ -77,7 +77,7 @@
               </div>
               <div class="mt-2 flex items-center text-sm leading-5 text-gray-500" title="Created at">
                 <i class="fa fa-calendar mr-1"></i>
-                {{ date }}
+                {{ date(this.ticket.date_created) }}
               </div>
             </div>
           </div>
@@ -124,8 +124,7 @@
 import Comment from "./Comment";
 import Avatar from "../elements/Avatar";
 import axios from "axios";
-import moment from "moment"
-import 'codemirror/lib/codemirror.css';
+import  'codemirror/lib/codemirror.css';
 import VueTribute from 'vue-tribute';
 
 import Mention from "../elements/mention/Mention";
@@ -139,6 +138,7 @@ import EditShareWith from "./EditShareWith";
 import UserDropdown from "../elements/dropdown/UserDropdown";
 import LabelDropdown from "../elements/dropdown/LabelDropdown";
 import RecentQuestions from "./RecentQuestions";
+import {calendarDate} from "../../utils";
 
 export default {
   components: {
@@ -224,9 +224,7 @@ export default {
     });
   },
   computed: {
-    date: function () {
-      return moment.parseZone(this.ticket.date_created).fromNow()
-    },
+
     is_staff: function () {
       return this.isStaff()
     },
@@ -240,6 +238,7 @@ export default {
     }
   },
   methods: {
+    date: calendarDate,
     isStaff: function () {
       return (this.role && (this.role.key === 'AGENT' || this.role.key === 'MANAGER')) || (this.user && this.user.is_superuser)
     },

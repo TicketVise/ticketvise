@@ -216,16 +216,6 @@ class InboxTicketsApiView(UserIsInInboxMixin, APIView):
                                       or query_set.filter(status=status).exists()
         ]
 
-        if not self.request.user.is_assistant_or_coordinator(inbox) \
-                and not inbox.show_assignee_to_guest \
-                and not self.request.user.is_superuser:
-            columns[0] = {
-                "label": columns[0]["label"],
-                "tickets": columns[0]["tickets"] + columns[1]["tickets"]
-            }
-            del columns[1]
-        columns[0]["tickets"] = sorted(columns[0]["tickets"], key=lambda x: x["date_created"], reverse=True)
-
         return JsonResponse(data=columns, safe=False)
 
 
