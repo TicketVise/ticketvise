@@ -12,6 +12,7 @@ Contains classes for the API interface to dynamically load models using AJAX.
 """
 
 from django.core.exceptions import ValidationError
+from django.db.models import Exists, OuterRef
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
 from rest_framework import serializers
@@ -25,7 +26,7 @@ from ticketvise.middleware import CurrentUserMiddleware
 from ticketvise.models.inbox import Inbox, SchedulingAlgorithm
 from ticketvise.models.label import Label
 from ticketvise.models.ticket import Ticket, TicketAttachment, TicketEvent, Status, TicketStatusEvent, \
-    TicketAssigneeEvent, TicketLabelEvent
+    TicketAssigneeEvent, TicketLabelEvent, TicketLabel
 from ticketvise.models.user import User, UserInbox
 from ticketvise.views.admin import SuperUserRequiredMixin
 from ticketvise.views.api import AUTOCOMPLETE_MAX_ENTRIES
@@ -190,7 +191,14 @@ class InboxTicketsApiView(UserIsInInboxMixin, APIView):
                       tickets.filter(assignee=None)
 
         if labels:
-            tickets = tickets.filter(labels__id__in=labels).distinct()
+            label_tickets = tickets.filter(labels__id__in=labels)
+
+            # If the "unlabelled" label is selected, then also show the unlabelled tickets.
+            if 0 in labels:
+                label_tickets = label_tickets | tickets.filter(
+                    ~Exists(TicketLabel.objects.filter(ticket__pk=OuterRef("pk")).values_list("id")))
+
+            tickets = label_tickets.distinct()
 
         if columns:
             return self.get_column_tickets(inbox, tickets)
@@ -215,16 +223,6 @@ class InboxTicketsApiView(UserIsInInboxMixin, APIView):
                                           and inbox.fixed_scheduling_assignee is None)
                                       or query_set.filter(status=status).exists()
         ]
-
-        if not self.request.user.is_assistant_or_coordinator(inbox) \
-                and not inbox.show_assignee_to_guest \
-                and not self.request.user.is_superuser:
-            columns[0] = {
-                "label": columns[0]["label"],
-                "tickets": columns[0]["tickets"] + columns[1]["tickets"]
-            }
-            del columns[1]
-        columns[0]["tickets"] = sorted(columns[0]["tickets"], key=lambda x: x["date_created"], reverse=True)
 
         return JsonResponse(data=columns, safe=False)
 

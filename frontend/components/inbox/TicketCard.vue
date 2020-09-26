@@ -5,17 +5,17 @@
     </span>
 
     <h3 v-if="!small" class="text-xs text-gray-500">{{ date(ticket.date_created) }}</h3>
-    <h3 class="text-xs text-gray-500" v-if="!small && ticket.assignee && ticket.assignee.username">Assignee: {{
-      ticket.assignee.first_name }} {{ ticket.assignee.last_name }}</h3>
-    <h3 class="text-xs text-gray-500" v-else-if="!small">Assignee: None</h3>
+    <h3 class="text-xs text-gray-500" v-if="!small && ticket.assignee && ticket.assignee.username">
+      Assignee: {{ticket.assignee.first_name }} {{ ticket.assignee.last_name }}
+    </h3>
 
     <a :href="link" class="font-medium text-gray-900 hover:underline">
       {{ ticket.title }}
     </a>
 
     <div v-if="!small" class="space-x-1 select-none">
-      <chip :background="label.color" :key="label.id" v-for="label in ticket.labels"
-      >{{ label.name }}
+      <chip :background="label.color" :key="label.id" v-for="label in ticket.labels">
+        {{ label.name }}
       </chip>
     </div>
   </card>
@@ -23,8 +23,7 @@
 
 <script>
   import Card from "../elements/card/Card";
-
-  const moment = require('moment')
+  import {calendarDate} from "../../utils";
 
   export default {
     props: {
@@ -47,9 +46,7 @@
       Card
     },
     methods: {
-      date: function (date) {
-        return moment(date).calendar()
-      }
+      date: calendarDate
     },
     computed: {
       link: function () {

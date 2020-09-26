@@ -26,15 +26,19 @@ class InboxUsersView(InboxCoordinatorRequiredMixin, TemplateView):
         if not page_number.isnumeric():
             page_number = 1
 
-        inbox_users = (UserInbox.objects.filter(inbox=inbox, user__username__icontains=q)
-                       | UserInbox.objects.filter(inbox=inbox, user__first_name__icontains=q)
-                       | UserInbox.objects.filter(inbox=inbox, user__last_name__icontains=q)
-                       | UserInbox.objects.filter(inbox=inbox, user__email__contains=q)) \
-            .annotate(sort_staff=Case(
-                When(role=Role.GUEST, then=True),
-                default=False,
-                output_field=BooleanField()
-            )) \
+        inbox_users = UserInbox.objects
+
+        for term in q.split():
+            inbox_users = (UserInbox.objects.filter(inbox=inbox, user__username__icontains=term)
+                           | UserInbox.objects.filter(inbox=inbox, user__first_name__icontains=term)
+                           | UserInbox.objects.filter(inbox=inbox, user__last_name__icontains=term)
+                           | UserInbox.objects.filter(inbox=inbox, user__email__contains=term))
+
+        inbox_users = inbox_users.annotate(sort_staff=Case(
+            When(role=Role.GUEST, then=True),
+            default=False,
+            output_field=BooleanField()
+        )) \
             .select_related("user") \
             .order_by("sort_staff", "role", "user__first_name")
 

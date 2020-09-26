@@ -53,6 +53,8 @@ class TicketTestCase(TransactionTestCase):
         self.manager.set_role_for_inbox(self.inbox, Role.MANAGER)
 
         self.label = Label.objects.create(name="TestLabel", inbox=self.inbox, is_visible_to_guest=True)
+        self.label2 = Label.objects.create(name="TestLabel2", inbox=self.inbox, is_visible_to_guest=True)
+
 
         self.ticket = Ticket.objects.create(author=self.student, assignee=self.assistant, title="Ticket1",
                                             content="TestContent", inbox=self.inbox)
@@ -62,6 +64,8 @@ class TicketTestCase(TransactionTestCase):
         self.ticket3 = Ticket.objects.create(author=self.student2, assignee=self.assistant2, title="Ticket3",
                                              content="TestContent", inbox=self.inbox)
         self.ticket3.add_label(self.label)
+        self.ticket2.add_label(self.label2)
+
 
 
 class TicketTestBackendCase(TicketTestCase):
@@ -594,27 +598,6 @@ class TicketTestBackendCase(TicketTestCase):
         self.assertContains(response, "Ticket1")
         self.assertContains(response, "Ticket3")
 
-    def test_get_column_three_tickets_guest(self):
-        """
-        Test InboxTicketsApiView for guest
-        """
-        self.client.force_login(self.student)
-        self.inbox.show_assignee_to_guest = False
-        self.inbox.save()
-        Ticket.objects.create(inbox=self.inbox, status=Status.CLOSED, content="CLOSED", title="CLOSED",
-                              author=self.student)
-
-        data = {
-            "columns": "true"
-        }
-
-        response = self.client.get(f"/api/inboxes/{self.inbox.id}/tickets", data=data)
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(len(json.loads(response.content)), 3)
-        self.assertContains(response, "label")
-        self.assertContains(response, "Ticket1")
-        self.assertNotContains(response, "Ticket3")
-
     def test_get_column_four_tickets_guest(self):
         """
         Test InboxTicketsApiView for guest
@@ -692,6 +675,24 @@ class TicketTestBackendCase(TicketTestCase):
         self.assertEqual(response.status_code, 200)
         self.assertNotContains(response, "Ticket1")
         self.assertContains(response, "Ticket3")
+
+    def test_filter_unlabelled_labels(self):
+        """
+        Test InboxTicketsApiView for manager
+        """
+        self.client.force_login(self.assistant)
+        Ticket.objects.create(inbox=self.inbox, status=Status.CLOSED, content="CLOSED", title="CLOSED",
+                              author=self.student)
+
+        data = {
+            "labels[]": [0, self.label2.id]
+        }
+
+        response = self.client.get(f"/api/inboxes/{self.inbox.id}/tickets", data=data)
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Ticket1")
+        self.assertContains(response, "Ticket2")
+        self.assertNotContains(response, "Ticket3")
 
     def test_hide_pending(self):
         """
