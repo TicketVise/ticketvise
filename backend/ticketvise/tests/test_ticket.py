@@ -742,7 +742,7 @@ class TicketTestBackendCase(TicketTestCase):
         self.inbox.fixed_scheduling_assignee = None
         self.inbox.save()
 
-        # Scheduling algorithm does not support pending status, but contains a ticket w3ith the status, so the column
+        # Scheduling algorithm does not support pending status, but contains a ticket with the status, so the column
         # should be visible.
         Ticket.objects.create(inbox=self.inbox, content="content", title="test", author=self.student)
         self.inbox.scheduling_algorithm = SchedulingAlgorithm.ROUND_ROBIN
