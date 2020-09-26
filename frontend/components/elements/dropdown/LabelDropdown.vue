@@ -1,5 +1,5 @@
 <template>
-  <div class="space-y-1" v-click-outside="away">
+  <div class="space-y-1" v-on-clickaway="away">
     <div class="relative">
       <span class="inline-block w-full rounded-md shadow-sm" @click="open = !open">
         <button aria-expanded="true" aria-haspopup="listbox" aria-labelledby="listbox-label"
@@ -48,10 +48,11 @@
 </template>
 
 <script>
-import ClickOutside from 'vue-click-outside'
+import { mixin as clickaway } from 'vue-clickaway'
 
 export default {
   name: "Dropdown",
+  mixins: [ clickaway ],
   props: ["values", "selected"],
   data: () => ({
     open: false,
@@ -75,9 +76,6 @@ export default {
     containsObject(list, id) {
       return list && list.some(e => e.id === id);
     }
-  },
-  directives: {
-    ClickOutside
   }
 }
 </script>

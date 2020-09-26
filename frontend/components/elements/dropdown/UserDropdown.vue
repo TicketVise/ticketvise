@@ -1,5 +1,5 @@
 <template>
-  <div class="space-y-1" v-click-outside="away">
+  <div class="space-y-1" v-on-clickaway="away">
     <div class="relative">
       <span @click="open = !open" class="inline-block w-full rounded-md shadow-sm">
         <button aria-expanded="true" aria-haspopup="listbox" aria-labelledby="listbox-label"
@@ -54,11 +54,12 @@
 <script>
 import Avatar from "../Avatar";
 import axios from "axios";
-import ClickOutside from "vue-click-outside";
+import { mixin as clickaway } from 'vue-clickaway'
 
 export default {
   name: "Dropdown",
   components: {Avatar},
+  mixins: [ clickaway ],
   props: ["assignee", "staff"],
   data: () => ({
     open: false,
@@ -83,9 +84,6 @@ export default {
     away() {
       this.open = false
     },
-  },
-  directives: {
-    ClickOutside
   }
 }
 </script>
