@@ -1,7 +1,18 @@
 <template>
   <section class="flex flex-col h-full flex-grow">
     <div class="flex flex-col md:grid md:grid-cols-5 md:gap-2 p-4 space-y-2 md:space-y-0">
-      <search-bar v-model="search" v-on:input="get_tickets" class="flex-grow px-2 md:col-span-3"></search-bar>
+      <div class="flex space-x-2 md:col-span-3 items-center">
+        <search-bar v-model="search" v-on:input="get_tickets" class="flex-grow px-2"></search-bar>
+
+        <!-- Change view -->
+        <button
+          class="md:hidden border rounded h-10 px-3 focus:outline-none hover:bg-gray-100"
+          :title="list ? 'Show Columns View' : 'Show List View'"
+          @click="list = !list"
+        >
+          <font-awesome-icon :icon="list ? 'columns' : 'list'"></font-awesome-icon>
+        </button>
+      </div>
 
       <!--MY TICKETS-->
       <div class="flex space-x-2 md:col-span-2 items-center">
@@ -16,18 +27,38 @@
             class="px-2 md:m-0"
             v-if="is_staff"> My Tickets
         </submit-button>
+
+        <!-- Change view -->
+        <button
+          class="hidden md:block border rounded h-10 px-3 focus:outline-none hover:bg-gray-100"
+          :title="list ? 'Show Columns View' : 'Show List View'"
+          @click="list = !list"
+        >
+          <font-awesome-icon :icon="list ? 'columns' : 'list'"></font-awesome-icon>
+        </button>
       </div>
     </div>
 
-    <div class="w-full flex md:space-x-4 flex-grow overflow-x-auto px-4 mb-4 space-x-2">
-      <!-- Columns -->
+    <!-- List -->
+    <div v-if="list" class="container mx-auto flex flex-col space-y-4 mb-4">
+      <ticket-list
+        :color="colors[i]"
+        :key="column.label"
+        :ticket-list="column.tickets"
+        :title="column.label"
+        v-for="(column, i) in tickets"
+      />
+    </div>
+
+    <!-- Columns -->
+    <div v-else class="w-full flex md:space-x-4 flex-grow overflow-x-auto px-4 mb-4 space-x-2">
       <ticket-column
-          :color="colors[i]"
-          :key="column.label"
-          :ticket-list="column.tickets"
-          :title="column.label"
-          class="min-w-3/4 sm:min-w-1/2 lg:min-w-0"
-          v-for="(column, i) in tickets"
+        :color="colors[i]"
+        :key="column.label"
+        :ticket-list="column.tickets"
+        :title="column.label"
+        class="min-w-3/4 sm:min-w-1/2 lg:min-w-0"
+        v-for="(column, i) in tickets"
       />
     </div>
   </section>
@@ -58,8 +89,9 @@ export default {
     label: null,
     inbox_labels: [],
     inbox_id: window.location.pathname.split('/')[2],
-    is_staff: true,
-    user: null
+    is_staff: false,
+    user: null,
+    list: false
   }),
   methods: {
     get_tickets() {
@@ -97,7 +129,9 @@ export default {
         this.user = response.data
 
         axios.get("/api/inboxes/" + this.inbox_id + "/role").then(response => {
+          console.log(response.data.key)
           this.is_staff = response.data && (response.data.key === 'AGENT' || response.data.key === 'MANAGER')
+          this.list = !this.is_staff
         })
       })
     });
