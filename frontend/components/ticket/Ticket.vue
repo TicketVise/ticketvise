@@ -35,7 +35,7 @@
           <div class="flex flex-wrap mb-2" v-else>
             No labels selected
           </div>
-          <label-dropdown :selected="labels" :values="inbox.labels" v-if="canShare" v-model="labels"
+          <label-dropdown :selected="labels" :values="inbox.labels" v-if="inbox && canShare" v-model="labels"
                           v-on:input="updateLabels"/>
         </div>
 

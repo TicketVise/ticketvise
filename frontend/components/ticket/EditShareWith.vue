@@ -10,7 +10,7 @@
       </chip>
     </div>
     <form @submit.prevent="username.length ? getUsername(username) : {}" class="flex space-x-2 w-full mb-2">
-      <div class="space-y-1 flex-grow" v-click-outside="away">
+      <div class="space-y-1 flex-grow" v-on-clickaway="away">
         <div class="relative">
           <input class="appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none flex-grow focus:border-gray-800"
                  type="text" @focus="open=true" v-model="query" @keyup="filterGuests()" placeholder="Search user">
@@ -42,13 +42,14 @@
 </template>
 
 <script>
-  import SubmitButton from "../elements/buttons/SubmitButton";
-  import axios from "axios";
-  import ClickOutside from "vue-click-outside";
+  import SubmitButton from "../elements/buttons/SubmitButton"
+  import axios from "axios"
+  import { mixin as clickaway } from 'vue-clickaway'
 
   export default {
     name: "EditShareWith",
     components: {SubmitButton},
+    mixins: [ clickaway ],
     props: ["inbox_id", "shared_with", "errors"],
     data() {
       return {
@@ -100,9 +101,6 @@
       away() {
         this.open = false
       }
-    },
-    directives: {
-      ClickOutside
     }
   }
 </script>
