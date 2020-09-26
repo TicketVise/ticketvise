@@ -266,13 +266,13 @@ export default {
       axios.defaults.xsrfHeaderName = "X-CSRFTOKEN";
 
       this.ticket.status = "CLSD";
-      axios.post("/api" + window.location.pathname + "/status/close").then(_ => {})
+      axios.patch("/api" + window.location.pathname + "/status/close").then(_ => {})
     },
     openTicket: function () {
       axios.defaults.xsrfCookieName = 'csrftoken';
       axios.defaults.xsrfHeaderName = "X-CSRFTOKEN";
 
-      axios.post("/api" + window.location.pathname + "/status/open").then(_ => {
+      axios.patch("/api" + window.location.pathname + "/status/open").then(_ => {
         return axios.get("/api" + window.location.pathname)
       }).then(response => {
         this.ticket.status = response.data.status;

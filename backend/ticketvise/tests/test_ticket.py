@@ -736,7 +736,7 @@ class TicketTestBackendCase(TicketTestCase):
 
         self.assertNotEqual(self.ticket.status, Status.CLOSED)
 
-        response = self.client.post(f"/api/inboxes/{self.inbox.id}/tickets/{self.ticket.ticket_inbox_id}/status/close")
+        response = self.client.patch(f"/api/inboxes/{self.inbox.id}/tickets/{self.ticket.ticket_inbox_id}/status/close")
         self.assertEqual(response.status_code, 200)
         self.assertEqual(Ticket.objects.get(pk=self.ticket.id).status, Status.CLOSED)
 
@@ -747,7 +747,7 @@ class TicketTestBackendCase(TicketTestCase):
         self.ticket.status = Status.CLOSED
         self.ticket.save()
 
-        response = self.client.post(f"/api/inboxes/{self.inbox.id}/tickets/{self.ticket.ticket_inbox_id}/status/open")
+        response = self.client.patch(f"/api/inboxes/{self.inbox.id}/tickets/{self.ticket.ticket_inbox_id}/status/open")
         self.assertEqual(response.status_code, 200)
         self.assertEqual(Ticket.objects.get(pk=self.ticket.id).status, Status.ASSIGNED)
 
@@ -756,7 +756,7 @@ class TicketTestBackendCase(TicketTestCase):
         self.ticket.assignee = None
         self.ticket.save()
 
-        response = self.client.post(f"/api/inboxes/{self.inbox.id}/tickets/{self.ticket.ticket_inbox_id}/status/open")
+        response = self.client.patch(f"/api/inboxes/{self.inbox.id}/tickets/{self.ticket.ticket_inbox_id}/status/open")
         self.assertEqual(response.status_code, 200)
         self.assertEqual(Ticket.objects.get(pk=self.ticket.id).status, Status.PENDING)
 
@@ -766,6 +766,6 @@ class TicketTestBackendCase(TicketTestCase):
 
         Comment.objects.create(ticket=self.ticket, author=self.assistant, content="test", is_reply=True)
 
-        response = self.client.post(f"/api/inboxes/{self.inbox.id}/tickets/{self.ticket.ticket_inbox_id}/status/open")
+        response = self.client.patch(f"/api/inboxes/{self.inbox.id}/tickets/{self.ticket.ticket_inbox_id}/status/open")
         self.assertEqual(response.status_code, 200)
         self.assertEqual(Ticket.objects.get(pk=self.ticket.id).status, Status.ANSWERED)

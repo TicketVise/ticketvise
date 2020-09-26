@@ -303,7 +303,7 @@ class AttachmentViewApiView(UserIsTicketAuthorOrInboxStaffMixin, DestroyAPIView)
 
 class CloseTicketApiView(UserIsInboxStaffMixin, APIView):
 
-    def post(self, request, inbox_id, ticket_inbox_id):
+    def patch(self, request, inbox_id, ticket_inbox_id):
         inbox = get_object_or_404(Inbox, pk=inbox_id)
         ticket = get_object_or_404(Ticket, inbox=inbox, ticket_inbox_id=ticket_inbox_id)
 
@@ -315,7 +315,7 @@ class CloseTicketApiView(UserIsInboxStaffMixin, APIView):
 
 class OpenTicketApiView(UserIsInboxStaffMixin, APIView):
 
-    def post(self, request, inbox_id, ticket_inbox_id):
+    def patch(self, request, inbox_id, ticket_inbox_id):
         inbox = get_object_or_404(Inbox, pk=inbox_id)
         ticket = get_object_or_404(Ticket, inbox=inbox, ticket_inbox_id=ticket_inbox_id)
 
