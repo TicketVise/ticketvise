@@ -1,6 +1,5 @@
 import moment from "moment";
 
-
 export function calendarDate(date) {
     return moment.parseZone(date).calendar(null, {
         lastDay: '[Yesterday at] HH:mm',
