@@ -3,8 +3,7 @@
     v-if="data"
     :data="data"
     :options="options"
-    :height="this.height ? this.height : 400"
-  />
+    :height="this.height ? this.height : 400" />
 </template>
 
 <script>
@@ -20,7 +19,8 @@
       },
       inboxId: {
         type: Number,
-        required: true
+        required: false,
+        default: null
       },
       height: {
         type: Number,
@@ -55,7 +55,11 @@
       }
     }),
     async mounted() {
-      const response = await axios.get(`/api/inboxes/${this.inboxId}/statistics/tickets/count`, {
+      const url = this.inboxId
+          ? `/api/inboxes/${this.inboxId}/statistics/tickets/count`
+          : `/api/${window.location.pathname}/tickets/count`
+
+      const response = await axios.get(url, {
         params: {
           "date_type": this.type
         }
