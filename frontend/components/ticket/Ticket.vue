@@ -108,12 +108,13 @@
                  :badge="ticket.attachments.length"/>
           </ul>
 
-          <external-tab v-show="ticket && user && replies && activeTab === 'external'" :ticket="ticket" :replies="replies"
-                        v-on:post="onReplyPost" :user="user"/>
-          <internal-tab v-show="ticket && user && comments && is_staff && activeTab === 'internal'" :ticket="ticket"
-                        :comments="comments"
-                        v-on:post="onCommentPost" :user="user" :staff="staff_excluding_self"/>
-          <attachments-tab v-if="ticket && activeTab === 'attachments'" :ticket="ticket" @uploaded="updateTicket"/>
+          <div class="lg:container">
+            <external-tab v-show="ticket && user && replies && activeTab === 'external'" :ticket="ticket"
+                          :replies="replies" v-on:post="onReplyPost" :user="user"/>
+            <internal-tab v-show="ticket && user && comments && is_staff && activeTab === 'internal'" :ticket="ticket"
+                          :comments="comments" v-on:post="onCommentPost" :user="user" :staff="staff_excluding_self"/>
+            <attachments-tab v-if="ticket && activeTab === 'attachments'" :ticket="ticket" @uploaded="updateTicket"/>
+          </div>
         </div>
       </div>
     </div>
