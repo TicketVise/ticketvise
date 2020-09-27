@@ -9,13 +9,13 @@
         <h3 class="text-lg leading-6 font-medium text-gray-900">
           Number of tickets per day
         </h3>
-        <tickets-chart :inboxId="inboxId"/>
+        <tickets-chart />
       </div>
       <div class="shadow p-3">
         <h3 class="text-lg leading-6 font-medium text-gray-900">
           Number of tickets per hour
         </h3>
-        <tickets-chart type="hour" :inboxId="inboxId"/>
+        <tickets-chart type="hour" />
       </div>
       <div class="shadow p-3">
         <h3 class="text-lg leading-6 font-medium text-gray-900">
@@ -41,11 +41,6 @@
 
   export default {
     components: {Card, LabelsChart, AgentResponseTimeChart, TicketsChart},
-    computed: {
-      inboxId() {
-        return 1
-      }
-    }
   }
 </script>
 

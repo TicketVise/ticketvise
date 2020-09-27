@@ -17,7 +17,7 @@ if (typeof SENTRY_DSN !== 'undefined') {
             }),
             new Integrations.BrowserTracing()
         ],
-        tracesSampleRate: 1
+        tracesSampleRate: 1 / 100
     });
 }
 
