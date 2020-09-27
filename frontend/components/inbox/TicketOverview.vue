@@ -50,7 +50,7 @@
         :color="column.color"
         :title="column.title"
         :personal="showPersonal"
-        :ticket-list="tickets.find((c) => c.label == column.title) ? tickets.find((c) => c.label == column.title).tickets : []"
+        :ticket-list="tickets.find((c) => c.label === column.title) ? tickets.find((c) => c.label === column.title).tickets : []"
       />
 
       <div v-if="tickets[0] && tickets[0].tickets.length === 0" class="flex flex-col items-center w-full">
@@ -67,7 +67,7 @@
         :color="column.color"
         :title="column.title"
         :personal="showPersonal"
-        :ticket-list="tickets.find((c) => c.label == column.title) ? tickets.find((c) => c.label == column.title).tickets : []"
+        :ticket-list="tickets.find((c) => c.label === column.title) ? tickets.find((c) => c.label === column.title).tickets : []"
         class="min-w-3/4 sm:min-w-1/2 lg:min-w-0"
       />
     </div>
@@ -79,6 +79,7 @@ import SearchBar from "../elements/SearchBar";
 import SubmitButton from "../elements/buttons/SubmitButton";
 import TicketColumn from "./TicketColumn";
 import LabelDropdown from "../elements/dropdown/LabelDropdown";
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 
 import axios from "axios";
 
@@ -89,7 +90,13 @@ const UNLABELLED_LABEL = {
 }
 
 export default {
-  components: {TicketColumn, LabelDropdown, SubmitButton, SearchBar},
+  components: {
+    TicketColumn,
+    LabelDropdown,
+    SubmitButton,
+    SearchBar,
+    FontAwesomeIcon
+  },
   data: () => ({
     columns: [
       {
@@ -158,7 +165,7 @@ export default {
   },
   created() {
     let inbox_view = localStorage.getItem('inbox_view')
-    if (inbox_view) this.list = inbox_view == 'list'
+    if (inbox_view) this.list = inbox_view === 'list'
 
     axios.get("/api/inboxes/" + this.inbox_id + "/labels").then(response => {
       this.inbox_labels = response.data.concat([UNLABELLED_LABEL])
@@ -176,7 +183,7 @@ export default {
         localStorage.setItem('inbox_view', this.is_staff ? 'column' : 'list')
         inbox_view = localStorage.getItem('inbox_view')
       }
-      this.list = inbox_view == 'list'
+      this.list = inbox_view === 'list'
     })
 
     let inbox_show_personal_tickets = localStorage.getItem('inbox_show_personal_tickets')
@@ -184,7 +191,7 @@ export default {
       localStorage.setItem('inbox_show_personal_tickets', this.showPersonal)
       inbox_show_personal_tickets = localStorage.getItem('inbox_view')
     }
-    this.showPersonal = inbox_show_personal_tickets == 'true'
+    this.showPersonal = inbox_show_personal_tickets === 'true'
     this.get_tickets()
   }
 }
