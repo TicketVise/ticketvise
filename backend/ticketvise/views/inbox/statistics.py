@@ -68,4 +68,4 @@ class InboxStatisticsView(InboxCoordinatorRequiredMixin, TemplateView):
 
 
 def calculate_increase(current_week, last_week):
-    return round(current_week / last_week, 2) * 100 if last_week else 0
+    return round((current_week / last_week) * 100, 2) if last_week else 0
