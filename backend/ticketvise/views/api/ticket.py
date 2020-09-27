@@ -217,7 +217,7 @@ class InboxTicketsApiView(UserIsInInboxMixin, APIView):
         columns = [
             {
                 "label": status.label,
-                "tickets": TicketSerializer(query_set.filter(status=status), many=True).data
+                "tickets": TicketSerializer(query_set.filter(status=status)[:25] if status == Status.CLOSED else query_set.filter(status=status), many=True).data
             } for status in Status if status != Status.PENDING
                                       or (inbox.scheduling_algorithm == SchedulingAlgorithm.FIXED
                                           and inbox.fixed_scheduling_assignee is None)

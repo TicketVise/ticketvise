@@ -6,7 +6,8 @@
       :style="`border-color: ${color}; top: 64px;`"
       @scroll.passive="handleScroll"
     >
-      <p>{{ title }} (<strong>{{ ticketList.length }}</strong>)</p>
+      <p v-if="title == 'Closed'">{{ title }}</p>
+      <p v-else>{{ title }} (<strong>{{ ticketList.length }}</strong>)</p>
 
       <div class="is-marginless pretty p-icon p-round select-column" style="display: none;">
         <input

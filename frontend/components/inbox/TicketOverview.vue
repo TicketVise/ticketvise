@@ -35,7 +35,7 @@
         <button
           class="hidden md:block border rounded h-10 px-3 focus:outline-none hover:bg-gray-100"
           :title="list ? 'Show Columns View' : 'Show List View'"
-          @click="list = !list"
+          @click="toggleView"
         >
           <font-awesome-icon :icon="list ? 'columns' : 'list'"></font-awesome-icon>
         </button>
@@ -50,7 +50,7 @@
         :color="column.color"
         :title="column.title"
         :personal="showPersonal"
-        :ticket-list="tickets[i] ? tickets[i].tickets : []"
+        :ticket-list="tickets.find((c) => c.label == column.title) ? tickets.find((c) => c.label == column.title).tickets : []"
       />
 
       <div v-if="tickets[0] && tickets[0].tickets.length === 0" class="flex flex-col items-center w-full">
@@ -157,6 +157,9 @@ export default {
     }
   },
   created() {
+    let inbox_view = localStorage.getItem('inbox_view')
+    if (inbox_view) this.list = inbox_view == 'list'
+
     axios.get("/api/inboxes/" + this.inbox_id + "/labels").then(response => {
       this.inbox_labels = response.data.concat([UNLABELLED_LABEL])
     })
@@ -168,20 +171,20 @@ export default {
     axios.get("/api/inboxes/" + this.inbox_id + "/role").then(response => {
       this.is_staff = response.data && (response.data.key === 'AGENT' || response.data.key === 'MANAGER')
 
-      let pref = localStorage.getItem('inbox_view')
-      if (!pref) {
+      let inbox_view = localStorage.getItem('inbox_view')
+      if (!inbox_view) {
         localStorage.setItem('inbox_view', this.is_staff ? 'column' : 'list')
-        pref = localStorage.getItem('inbox_view')
+        inbox_view = localStorage.getItem('inbox_view')
       }
-      this.list = pref == 'list'
+      this.list = inbox_view == 'list'
     })
 
-    let pref = localStorage.getItem('inbox_show_personal_tickets')
-    if (!pref) {
+    let inbox_show_personal_tickets = localStorage.getItem('inbox_show_personal_tickets')
+    if (!inbox_show_personal_tickets) {
       localStorage.setItem('inbox_show_personal_tickets', this.showPersonal)
-      pref = localStorage.getItem('inbox_view')
+      inbox_show_personal_tickets = localStorage.getItem('inbox_view')
     }
-    this.showPersonal = pref == 'true'
+    this.showPersonal = inbox_show_personal_tickets == 'true'
     this.get_tickets()
   }
 }

@@ -4,7 +4,8 @@
     :id="title"
   >
     <div class="py-1 text-center border-t-2 bg-white rounded-tl rounded-tr" :style="`border-color: ${color};`">
-      <p>{{ title }} (<strong>{{ ticketList.length }}</strong>)</p>
+      <p v-if="title == 'Closed'">{{ title }}</p>
+      <p v-else>{{ title }} (<strong>{{ ticketList.length }}</strong>)</p>
 
       <div class="is-marginless pretty p-icon p-round select-column" style="display: none;">
         <input
