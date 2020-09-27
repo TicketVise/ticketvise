@@ -23,15 +23,16 @@
       </div>
     </div>
 
-    <span v-if="ticketList.length === 0">No tickets in this status</span>
 
-    <div v-else class="mx-4 space-y-2 text-center" :id="`${title}-tickets`">
+    <div class="mx-4 space-y-2 text-center" :id="`${title}-tickets`">
       <ticket-card
         :key="ticket.id"
         :ticket="ticket"
         :assignee_show="title !== 'Pending'"
         class="text-left"
         v-for="ticket in ticketList"/>
+
+      <span v-if="ticketList.length === 0">No tickets in this status</span>
     </div>
   </div>
 </template>

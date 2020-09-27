@@ -45,11 +45,12 @@
     <!-- List -->
     <div v-if="list" class="container mx-auto flex flex-col space-y-4 mb-4">
       <ticket-list
-        v-for="column in tickets"
-        :key="column.label"
-        :color="colors[column.label]"
-        :ticket-list="column.tickets"
-        :title="column.label"
+        v-for="(column, i) in columns"
+        :key="i"
+        :color="column.color"
+        :title="column.title"
+        :personal="showPersonal"
+        :ticket-list="tickets[i] ? tickets[i].tickets : []"
       />
 
       <div v-if="tickets[0] && tickets[0].tickets.length === 0" class="flex flex-col items-center w-full">
@@ -61,12 +62,13 @@
     <!-- Columns -->
     <div v-else class="w-full flex md:space-x-4 flex-grow overflow-x-auto px-4 mb-4 space-x-2">
       <ticket-column
-        :color="colors[i]"
-        :key="column.label"
-        :ticket-list="column.tickets"
-        :title="column.label"
+        v-for="(column, i) in columns"
+        :key="i"
+        :color="column.color"
+        :title="column.title"
+        :personal="showPersonal"
+        :ticket-list="tickets.find((c) => c.label == column.title) ? tickets.find((c) => c.label == column.title).tickets : []"
         class="min-w-3/4 sm:min-w-1/2 lg:min-w-0"
-        v-for="(column, i) in tickets"
       />
     </div>
   </section>
@@ -89,12 +91,24 @@ const UNLABELLED_LABEL = {
 export default {
   components: {TicketColumn, LabelDropdown, SubmitButton, SearchBar},
   data: () => ({
-    colors: {
-      'Pending': '#e76f51',
-      'Assigned': '#e9c46a',
-      'Awaiting response': '#2a9d8f',
-      'Closed': '#264653'
-    },
+    columns: [
+      {
+        title: 'Pending',
+        color: '#e76f51',
+      },
+      {
+        title: 'Assigned',
+        color: '#e9c46a',
+      },
+      {
+        title: 'Awaiting response',
+        color: '#2a9d8f',
+      },
+      {
+        title: 'Closed',
+        color: '#264653',
+      }
+    ],
     tickets: [],
     search: null,
     showPersonal: false,
