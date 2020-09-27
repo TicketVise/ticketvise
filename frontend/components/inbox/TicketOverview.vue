@@ -8,7 +8,7 @@
         <button
           class="md:hidden border rounded h-10 px-3 focus:outline-none hover:bg-gray-100"
           :title="list ? 'Show Columns View' : 'Show List View'"
-          @click="list = !list"
+          @click="toggleView"
         >
           <font-awesome-icon :icon="list ? 'columns' : 'list'"></font-awesome-icon>
         </button>
@@ -48,6 +48,11 @@
         :title="column.label"
         v-for="(column, i) in tickets"
       />
+
+      <div v-if="tickets.length" class="flex flex-col items-center w-full">
+        <img src="/static/img/svg/undraw_blank_canvas_3rbb.svg" alt="Nothing here" class="w-1/2 md:w-1/3 mx-auto py-8">
+        <span class="text-gray-600 text-lg md:text-xl">You have no tickets (yet)!</span>
+      </div>
     </div>
 
     <!-- Columns -->
@@ -118,23 +123,32 @@ export default {
       this.labels = items
 
       this.get_tickets()
+    },
+    toggleView() {
+      this.list = !this.list
+      localStorage.setItem('inbox_view', (this.list ? 'list' : 'column'))
     }
   },
   created() {
     this.get_tickets()
     axios.get("/api/inboxes/" + this.inbox_id + "/labels").then(response => {
       this.inbox_labels = response.data.concat([UNLABELLED_LABEL])
+    })
 
-      axios.get("/api/me").then(response => {
-        this.user = response.data
+    axios.get("/api/me").then(response => {
+      this.user = response.data
+    })
 
-        axios.get("/api/inboxes/" + this.inbox_id + "/role").then(response => {
-          console.log(response.data.key)
-          this.is_staff = response.data && (response.data.key === 'AGENT' || response.data.key === 'MANAGER')
-          this.list = !this.is_staff
-        })
-      })
-    });
+    axios.get("/api/inboxes/" + this.inbox_id + "/role").then(response => {
+      this.is_staff = response.data && (response.data.key === 'AGENT' || response.data.key === 'MANAGER')
+
+      let pref = localStorage.getItem('inbox_view')
+      if (!pref) {
+        localStorage.setItem('inbox_view', this.is_staff ? 'column' : 'list')
+        pref = localStorage.getItem('inbox_view')
+      }
+      this.list = pref == 'list'
+    })
   }
 }
 </script>

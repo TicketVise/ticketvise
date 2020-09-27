@@ -45,7 +45,9 @@
     }),
     mounted() {
       const self = this
-      window.addEventListener("scroll", function() {
+      if (this.ticketList.length === 0) return
+
+      window.addEventListener('scroll', function() {
         const element = this.document.getElementById(self.title)
         const coords = element.getBoundingClientRect()
         self.top = coords.top < 64
