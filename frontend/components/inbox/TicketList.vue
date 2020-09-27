@@ -1,5 +1,5 @@
 <template>
-  <div v-if="ticketList.length !== 0" class="flex flex-col flex-1 rounded" :id="title">
+  <div class="flex flex-col flex-1 rounded" :id="title">
     <div
       class="py-1 mb-2 text-center bg-white sticky z-0"
       :class="{ 'border-b-2': top, 'border rounded mx-4': !top }"
@@ -23,7 +23,9 @@
       </div>
     </div>
 
-    <div class="mx-4 space-y-2 text-center" :id="`${title}-tickets`">
+    <span v-if="ticketList.length === 0">No tickets in this status</span>
+
+    <div v-else class="mx-4 space-y-2 text-center" :id="`${title}-tickets`">
       <ticket-card
         :key="ticket.id"
         :ticket="ticket"

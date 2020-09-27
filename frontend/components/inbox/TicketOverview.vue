@@ -22,10 +22,13 @@
         </div>
 
         <submit-button
-            :class="showPersonal ? `bg-orange-500 text-white` : `bg-gray-100 text-black shadow` "
-            @click="showPersonal = !showPersonal; get_tickets()"
-            class="px-2 md:m-0"
-            v-if="is_staff"> My Tickets
+          :class="showPersonal ? `bg-orange-500 text-white` : `bg-gray-100 text-black` "
+          @click="togglePersonal"
+          class="px-2 md:m-0 h-10"
+          v-if="is_staff"
+        >
+          <font-awesome-icon :icon="showPersonal ? 'check' : 'minus'" class="mr-2"></font-awesome-icon>
+          My Tickets
         </submit-button>
 
         <!-- Change view -->
@@ -42,14 +45,14 @@
     <!-- List -->
     <div v-if="list" class="container mx-auto flex flex-col space-y-4 mb-4">
       <ticket-list
-        :color="colors[i]"
+        v-for="column in tickets"
         :key="column.label"
+        :color="colors[column.label]"
         :ticket-list="column.tickets"
         :title="column.label"
-        v-for="(column, i) in tickets"
       />
 
-      <div v-if="tickets.length" class="flex flex-col items-center w-full">
+      <div v-if="tickets[0] && tickets[0].tickets.length === 0" class="flex flex-col items-center w-full">
         <img src="/static/img/svg/undraw_blank_canvas_3rbb.svg" alt="Nothing here" class="w-1/2 md:w-1/3 mx-auto py-8">
         <span class="text-gray-600 text-lg md:text-xl">You have no tickets (yet)!</span>
       </div>
@@ -86,7 +89,12 @@ const UNLABELLED_LABEL = {
 export default {
   components: {TicketColumn, LabelDropdown, SubmitButton, SearchBar},
   data: () => ({
-    colors: ['#e76f51', '#e9c46a', '#2a9d8f', '#264653'],
+    colors: {
+      'Pending': '#e76f51',
+      'Assigned': '#e9c46a',
+      'Awaiting response': '#2a9d8f',
+      'Closed': '#264653'
+    },
     tickets: [],
     search: null,
     showPersonal: false,
@@ -112,6 +120,7 @@ export default {
         }
       }).then(response => {
         this.tickets = response.data
+        console.log(this.tickets)
       })
     },
     deleteEvent(index) {
@@ -127,10 +136,14 @@ export default {
     toggleView() {
       this.list = !this.list
       localStorage.setItem('inbox_view', (this.list ? 'list' : 'column'))
+    },
+    togglePersonal() {
+      this.showPersonal = !this.showPersonal
+      localStorage.setItem('inbox_show_personal_tickets', this.showPersonal)
+      this.get_tickets()
     }
   },
   created() {
-    this.get_tickets()
     axios.get("/api/inboxes/" + this.inbox_id + "/labels").then(response => {
       this.inbox_labels = response.data.concat([UNLABELLED_LABEL])
     })
@@ -149,6 +162,14 @@ export default {
       }
       this.list = pref == 'list'
     })
+
+    let pref = localStorage.getItem('inbox_show_personal_tickets')
+    if (!pref) {
+      localStorage.setItem('inbox_show_personal_tickets', this.showPersonal)
+      pref = localStorage.getItem('inbox_view')
+    }
+    this.showPersonal = pref == 'true'
+    this.get_tickets()
   }
 }
 </script>
