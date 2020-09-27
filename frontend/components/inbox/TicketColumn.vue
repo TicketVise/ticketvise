@@ -36,8 +36,9 @@
 
 <script>
   import TicketCard from "./TicketCard";
+  import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
   export default {
-    components: {TicketCard},
+    components: {TicketCard, FontAwesomeIcon},
     name: "TicketColumn",
     props: ['title', 'color', 'ticketList']
   }
