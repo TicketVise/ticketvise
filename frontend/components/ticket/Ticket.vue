@@ -89,6 +89,13 @@
                 Close Ticket
               </button>
             </span>
+            <span v-if="is_staff && ticket.status === 'CLSD'" class="shadow-sm rounded-md">
+              <button type="button" @click="openTicket"
+                      class="inline-flex items-center px-4 py-2 border border-transparent text-sm leading-5 font-medium rounded-md text-white bg-primary hover:bg-orange-500 focus:outline-none focus:shadow-outline-orange focus:border-orange-700 active:bg-orange-700 transition duration-150 ease-in-out">
+                <i class="fa fa-envelope-open-o mr-2"></i>
+                Reopen Ticket
+              </button>
+            </span>
           </div>
         </div>
         <div class="flex flex-col">
@@ -117,7 +124,7 @@
 import Comment from "./Comment";
 import Avatar from "../elements/Avatar";
 import axios from "axios";
-import 'codemirror/lib/codemirror.css';
+import  'codemirror/lib/codemirror.css';
 import VueTribute from 'vue-tribute';
 
 import Mention from "../elements/mention/Mention";
@@ -217,6 +224,7 @@ export default {
     });
   },
   computed: {
+
     is_staff: function () {
       return this.isStaff()
     },
@@ -257,10 +265,17 @@ export default {
       axios.defaults.xsrfHeaderName = "X-CSRFTOKEN";
 
       this.ticket.status = "CLSD";
-      axios.put("/api" + window.location.pathname + "/status", {
-        "status": this.ticket.status
-      }).then(_ => {
-      })
+      axios.patch("/api" + window.location.pathname + "/status/close").then(_ => {})
+    },
+    openTicket: function () {
+      axios.defaults.xsrfCookieName = 'csrftoken';
+      axios.defaults.xsrfHeaderName = "X-CSRFTOKEN";
+
+      axios.patch("/api" + window.location.pathname + "/status/open").then(_ => {
+        return axios.get("/api" + window.location.pathname)
+      }).then(response => {
+        this.ticket.status = response.data.status;
+      });
     },
     updateSharedWith() {
       let formData = new FormData();

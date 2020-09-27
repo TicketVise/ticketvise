@@ -9,6 +9,7 @@ from django.db import transaction
 from django.test import Client, TransactionTestCase
 from django.urls import reverse
 
+from ticketvise.models.comment import Comment
 from ticketvise.models.inbox import Inbox, SchedulingAlgorithm
 from ticketvise.models.label import Label
 from ticketvise.models.ticket import Ticket, Status
@@ -730,3 +731,42 @@ class TicketTestBackendCase(TicketTestCase):
         response = self.client.get(f"/api/inboxes/{self.inbox.id}/tickets", data=data)
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, Status.PENDING.label)
+
+    def test_close_ticket_api(self):
+        self.client.force_login(self.assistant)
+
+        self.assertNotEqual(self.ticket.status, Status.CLOSED)
+
+        response = self.client.patch(f"/api/inboxes/{self.inbox.id}/tickets/{self.ticket.ticket_inbox_id}/status/close")
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(Ticket.objects.get(pk=self.ticket.id).status, Status.CLOSED)
+
+    def test_open_ticket_api(self):
+        self.client.force_login(self.assistant)
+
+        # Testing reopen Closed to Assigned
+        self.ticket.status = Status.CLOSED
+        self.ticket.save()
+
+        response = self.client.patch(f"/api/inboxes/{self.inbox.id}/tickets/{self.ticket.ticket_inbox_id}/status/open")
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(Ticket.objects.get(pk=self.ticket.id).status, Status.ASSIGNED)
+
+        # Testing reopen Closed to Pending
+        self.ticket.status = Status.CLOSED
+        self.ticket.assignee = None
+        self.ticket.save()
+
+        response = self.client.patch(f"/api/inboxes/{self.inbox.id}/tickets/{self.ticket.ticket_inbox_id}/status/open")
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(Ticket.objects.get(pk=self.ticket.id).status, Status.PENDING)
+
+        # Testing reopen Closed to Answered
+        self.ticket.status = Status.CLOSED
+        self.ticket.save()
+
+        Comment.objects.create(ticket=self.ticket, author=self.assistant, content="test", is_reply=True)
+
+        response = self.client.patch(f"/api/inboxes/{self.inbox.id}/tickets/{self.ticket.ticket_inbox_id}/status/open")
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(Ticket.objects.get(pk=self.ticket.id).status, Status.ANSWERED)

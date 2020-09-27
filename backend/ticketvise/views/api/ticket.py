@@ -299,19 +299,28 @@ class AttachmentViewApiView(UserIsTicketAuthorOrInboxStaffMixin, DestroyAPIView)
     queryset = TicketAttachment
 
 
-class TicketStatusUpdateSerializer(ModelSerializer):
-    class Meta:
-        model = Ticket
-        fields = ["status"]
+class CloseTicketApiView(UserIsInboxStaffMixin, APIView):
+
+    def patch(self, request, inbox_id, ticket_inbox_id):
+        inbox = get_object_or_404(Inbox, pk=inbox_id)
+        ticket = get_object_or_404(Ticket, inbox=inbox, ticket_inbox_id=ticket_inbox_id)
+
+        ticket.status = Status.CLOSED
+        ticket.save()
+
+        return Response()
 
 
-class TicketStatusUpdateApiView(UserIsInboxStaffMixin, UpdateAPIView):
-    serializer_class = TicketStatusUpdateSerializer
+class OpenTicketApiView(UserIsInboxStaffMixin, APIView):
 
-    def get_object(self):
-        inbox = get_object_or_404(Inbox, pk=self.kwargs["inbox_id"])
+    def patch(self, request, inbox_id, ticket_inbox_id):
+        inbox = get_object_or_404(Inbox, pk=inbox_id)
+        ticket = get_object_or_404(Ticket, inbox=inbox, ticket_inbox_id=ticket_inbox_id)
 
-        return Ticket.objects.get(inbox=inbox, ticket_inbox_id=self.kwargs["ticket_inbox_id"])
+        ticket.reopen()
+        ticket.save()
+
+        return Response()
 
 
 class TicketCreateApiView(UserIsInInboxMixin, CreateAPIView):
