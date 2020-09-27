@@ -106,7 +106,7 @@
           <internal-tab v-show="ticket && user && comments && is_staff && activeTab === 'internal'" :ticket="ticket"
                         :comments="comments"
                         v-on:post="onCommentPost" :user="user" :staff="staff_excluding_self"/>
-          <attachments-tab v-show="ticket && activeTab === 'attachments'" :ticket="ticket" @uploaded="updateTicket"/>
+          <attachments-tab v-if="ticket && activeTab === 'attachments'" :ticket="ticket" @uploaded="updateTicket"/>
         </div>
       </div>
     </div>
