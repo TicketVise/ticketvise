@@ -120,7 +120,6 @@ export default {
         }
       }).then(response => {
         this.tickets = response.data
-        console.log(this.tickets)
       })
     },
     deleteEvent(index) {
