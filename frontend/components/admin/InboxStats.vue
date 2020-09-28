@@ -59,7 +59,14 @@
 <script>
 import {calendarDate} from "../../utils";
 
+import { library } from '@fortawesome/fontawesome-svg-core'
+import { faClipboardList } from '@fortawesome/free-solid-svg-icons'
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
+
+library.add(faClipboardList)
+
 export default {
+  components: { FontAwesomeIcon },
   data: () => ({
     open: false,
     stats: null

@@ -41,7 +41,7 @@ const ticketsData = [{"label": "Pending", "tickets": []}, {
       "username": "anacoordinator",
       "avatar_url": "/static/img/avatars/default-avatar.png",
       "id": 5,
-      "is_superuser": true
+      "is_superuser": false
     },
     "shared_with": []
   }, {
@@ -56,7 +56,7 @@ const ticketsData = [{"label": "Pending", "tickets": []}, {
       "username": "bryanstudent",
       "avatar_url": "/static/img/avatars/default-avatar.png",
       "id": 6,
-      "is_superuser": true
+      "is_superuser": false
     },
     "content": "How long should the demo be?",
     "date_created": "2020-08-26T14:01:41.067229+02:00",
@@ -69,7 +69,7 @@ const ticketsData = [{"label": "Pending", "tickets": []}, {
       "username": "anacoordinator",
       "avatar_url": "/static/img/avatars/default-avatar.png",
       "id": 5,
-      "is_superuser": true
+      "is_superuser": false
     }
   }]
 }];
@@ -80,12 +80,13 @@ const userData = {
   "username": "anacoordinator",
   "avatar_url": "/static/img/avatars/default-avatar.png",
   "id": 5,
-  "is_superuser": false
+  "is_superuser": false,
 };
 
 it("Ticket Overview navigation", async () => {
   const wrapper = mount(TicketOverview, {
-    propsData: {
+    data () {
+      return {
       color: colorData,
       inbox_id: "1",
       inbox_labels: inboxLabelsData,
@@ -95,13 +96,14 @@ it("Ticket Overview navigation", async () => {
       user: userData,
       search: null,
       labels: [],
-      label: null,
+      label: null,}
     }
   });
 
   expect(wrapper.findAllComponents(SearchBar).length).toBe(1);
   expect(wrapper.findAllComponents(LabelDropdown).length).toBe(1);
 
+  let test = wrapper.vm.is_staff;
   let myTicketsButton = wrapper.findAllComponents(SubmitButton);
   expect(myTicketsButton.length).toBe(1);
 

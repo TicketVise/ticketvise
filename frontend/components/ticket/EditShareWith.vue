@@ -33,7 +33,7 @@
           </div>
         </div>
       </div>
-      <submit-button v-on:click.native="username.length ? getUsername(username) : {}" class="bg-primary text-white"
+      <submit-button v-on:click.native="username.length ? getUsername(username) : {}" class="bg-primary hover:bg-orange-500 text-white"
                      text="Share"></submit-button>
     </form>
     <error v-for="error in this.errors.shared_with" :key="error" :message="error"></error>

@@ -70,7 +70,7 @@
     </header>
 
     <span
-        class="fixed bottom-4 right-4 shadow-xl rounded-full md:hidden"
+        class="fixed bottom-4 right-4 shadow-xl rounded-full md:hidden z-10"
         x-data="{ atTop: (window.pageYOffset > 0) ? false : true }"
         x-on:scroll.window="atTop = (window.pageYOffset > 0) ? false : true"
     >
