@@ -79,7 +79,12 @@ import SearchBar from "../elements/SearchBar";
 import SubmitButton from "../elements/buttons/SubmitButton";
 import TicketColumn from "./TicketColumn";
 import LabelDropdown from "../elements/dropdown/LabelDropdown";
+
+import { library } from '@fortawesome/fontawesome-svg-core'
+import { faColumns, faList, faMinus, faCheck } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
+
+library.add([faColumns, faList, faMinus, faCheck])
 
 import axios from "axios";
 

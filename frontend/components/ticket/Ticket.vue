@@ -166,7 +166,7 @@ export default {
       comments: [],
       staff: [],
       activeTab: 'external',
-      user: null,
+      user: {},
       role: "",
       shared_with: [],
       errors: [],
