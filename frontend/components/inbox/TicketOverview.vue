@@ -27,6 +27,7 @@
           class="px-2 md:m-0 h-10"
           v-if="is_staff"
         >
+          <font-awesome-icon :icon="showPersonal ? 'check' : 'minus'" class="mr-2"></font-awesome-icon>
           My Tickets
         </submit-button>
 
