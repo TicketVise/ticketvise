@@ -1,6 +1,6 @@
 <template>
   <div class="w-full border border-gray-200 rounded pl-3 pr-4 py-3 flex text-sm leading-5 items-center">
-    <font-awesome-icon class="text-2xl text-orange-400 group-hover:text-orange-500" :icon="icon" />
+    <font-awesome-icon class="text-2xl text-orange-400 group-hover:text-orange-500" :icon="[icon.prefix, icon.icon]" />
     <span class="w-full ml-2 flex-1 truncate text-gray-900">
       {{ getFilename(attachment.file) }}<span class="text-gray-400">.{{ getExtension(attachment.file) }}</span>
     </span>
@@ -37,7 +37,17 @@
 import axios from 'axios'
 import { mixin as clickaway } from 'vue-clickaway'
 
+import { library } from '@fortawesome/fontawesome-svg-core'
+import { faFilePdf, faFileImage, faFileCode, faFileAudio, faFileVideo,
+  faFileArchive, faFile } from '@fortawesome/free-solid-svg-icons'
+import { faJava, faPython, faVuejs, faJs } from '@fortawesome/free-brands-svg-icons'
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
+
+library.add([faFilePdf, faFileImage, faFileCode, faFileAudio, faFileVideo,
+  faFileArchive, faFile, faJava, faPython, faVuejs, faJs])
+
 export default {
+  components: { FontAwesomeIcon },
   mixins: [ clickaway ],
   props: {
     attachment: {
@@ -48,25 +58,25 @@ export default {
   data: () => ({
     menu: false,
     icons: {
-      pdf: 'file-pdf',
-      jpg: 'file-image',
-      jpeg: 'file-image',
-      png: 'file-image',
-      svg: 'file-image',
-      c: 'file-code',
-      mp3: 'file-audio',
-      mp4: 'file-video',
-      zip: 'file-archive',
-      java: 'java',
-      py: 'python',
-      vue: 'vuejs',
-      js: 'js',
-      json: 'file-code'
+      pdf: { icon: 'file-pdf', prefix: 'fas' },
+      jpg: { icon: 'file-image', prefix: 'fas' },
+      jpeg: { icon: 'file-image', prefix: 'fas' },
+      png: { icon: 'file-image', prefix: 'fas' },
+      svg: { icon: 'file-image', prefix: 'fas' },
+      c: { icon: 'file-code', prefix: 'fas' },
+      mp3: { icon: 'file-audio', prefix: 'fas' },
+      mp4: { icon: 'file-video', prefix: 'fas' },
+      zip: { icon: 'file-archive', prefix: 'fas' },
+      java: { icon: 'java', prefix: 'fab' },
+      py: { icon: 'python', prefix: 'fab' },
+      vue: { icon: 'vuejs', prefix: 'fab' },
+      js: { icon: 'js', prefix: 'fab' },
+      json: { icon: 'file-code', prefix: 'fas' }
     }
   }),
   computed: {
     icon() {
-      return this.icons[this.getExtension(this.attachment.file)] || 'file'
+      return this.icons[this.getExtension(this.attachment.file)] || { icon: 'file', prefix: 'fas' }
     }
   },
   methods: {

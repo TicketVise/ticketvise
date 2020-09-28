@@ -56,8 +56,7 @@ class InboxStatisticsView(InboxCoordinatorRequiredMixin, TemplateView):
                                                                        date_created__gte=last_14_days,
                                                                        new_status=Status.CLOSED).count()
 
-        context['last_week_total_tickets'] = Ticket.objects.filter(inbox=inbox, date_created__lte=last_7_days,
-                                                                   date_created__gte=last_14_days, ).count()
+        context['last_week_total_tickets'] = Ticket.objects.filter(inbox=inbox, date_created__lte=last_7_days).count()
 
         context['pending_pct'] = calculate_increase(context['current_week_pending'], context['last_week_pending'])
         context['assigned_pct'] = calculate_increase(context['current_week_assigned'], context['last_week_assigned'])
@@ -68,4 +67,4 @@ class InboxStatisticsView(InboxCoordinatorRequiredMixin, TemplateView):
 
 
 def calculate_increase(current_week, last_week):
-    return round(current_week / last_week, 2) * 100 if last_week else 0
+    return round((current_week / last_week) * 100, 2) if last_week else 0

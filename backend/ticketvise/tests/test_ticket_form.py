@@ -39,7 +39,7 @@ class TicketFormTestCase(TicketTestCase):
         """
         self.client.force_login(self.student)
         response = self.client.get(reverse("new_ticket", args=(self.inbox.id,)))
-        self.assertTemplateUsed(response, "ticket_form.html")
+        self.assertTemplateUsed(response, "new_ticket.html")
 
 
 class TicketFormTestAPI(APITestCase, TicketTestCase):

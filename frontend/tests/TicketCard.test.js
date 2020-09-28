@@ -1,6 +1,6 @@
 import {shallowMount} from '@vue/test-utils'
-import TicketCard from "@/ticket_overview/TicketCard";
-import moment from "moment";
+import TicketCard from "@/inbox/TicketCard";
+import {calendarDate} from "../utils";
 
 const ticketData = {
   "id": 22,
@@ -37,7 +37,7 @@ it("card content with assignee", () => {
   expect(wrapper.find("span").text()).toContain(ticketData.ticket_inbox_id);
   let headers = wrapper.findAll("h3");
   expect(headers.length).toBe(2);
-  expect(headers.at(0).text()).toContain(moment(ticketData.date_created).calendar());
+  expect(headers.at(0).text()).toContain(calendarDate(ticketData.date_created));
   expect(headers.at(1).text()).toContain("Assignee:");
   expect(headers.at(1).text()).toContain(ticketData.assignee.first_name);
   expect(headers.at(1).text()).toContain(ticketData.assignee.last_name);
@@ -50,14 +50,12 @@ it("card content with assignee", () => {
   }
 });
 
-ticketData.assignee = {"first_name": "", "last_name": "", "email": "", "username": "", "avatar_url": ""};
-
 it("card content without assignee", () => {
+  ticketData.assignee = null;
   const wrapper = shallowMount(TicketCard, {propsData: {ticket: ticketData}});
 
   let headers = wrapper.findAll("h3");
-  expect(headers.length).toBe(2);
-  expect(headers.at(1).text()).toContain("Assignee: None");
+  expect(headers.length).toBe(1);
 });
 
 ticketData.labels = [];

@@ -40,11 +40,9 @@
   import {Editor, Viewer} from '@toast-ui/vue-editor';
   import Card from "../elements/card/Card";
   import Mention from "../elements/mention/Mention";
-  import SubmitButton from "../elements/buttons/SubmitButton";
 
   export default {
     components: {
-      SubmitButton,
       Mention,
       Avatar,
       Comment,

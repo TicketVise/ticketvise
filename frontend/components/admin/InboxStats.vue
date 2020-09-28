@@ -15,7 +15,7 @@
         <div class="hidden md:flex flex-col">
           <span class="text-gray-800">
             <span class="font-bold">Started:</span> 
-            {{ moment(inbox.date_created).calendar() }}
+            {{ date(inbox.date_created) }}
           </span>
           <span class="text-gray-800">
             <font-awesome-icon class="text-orange-400 group-hover:text-orange-500" icon="clipboard-list" />
@@ -57,12 +57,18 @@
 </template>
 
 <script>
-const moment = require('moment')
+import {calendarDate} from "../../utils";
+
+import { library } from '@fortawesome/fontawesome-svg-core'
+import { faClipboardList } from '@fortawesome/free-solid-svg-icons'
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
+
+library.add(faClipboardList)
 
 export default {
+  components: { FontAwesomeIcon },
   data: () => ({
     open: false,
-    moment: moment,
     stats: null
   }),
   props: {
@@ -70,6 +76,9 @@ export default {
       required: true,
       type: Object
     }
+  },
+  methods: {
+    date: calendarDate
   },
   mounted() {
     window.axios.get(`/api/inboxes/${this.inbox.id}/statistics`).then(response => {

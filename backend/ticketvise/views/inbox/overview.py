@@ -15,12 +15,12 @@ from ticketvise.models.inbox import Inbox
 from ticketvise.views.api.security import UserIsInInboxMixin
 
 
-class TicketOverview(UserIsInInboxMixin, TemplateView):
+class InboxView(UserIsInInboxMixin, TemplateView):
     """
     Page to show the overview of the tickets.
     """
 
-    template_name = "ticket-overview.html"
+    template_name = "inbox.html"
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
