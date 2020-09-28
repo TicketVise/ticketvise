@@ -32,11 +32,9 @@
 
   import '@toast-ui/editor/dist/toastui-editor.css';
   import {Editor, Viewer} from '@toast-ui/vue-editor';
-  import SubmitButton from "../elements/buttons/SubmitButton";
 
   export default {
     components: {
-      SubmitButton,
       Avatar,
       Comment,
       Viewer,
