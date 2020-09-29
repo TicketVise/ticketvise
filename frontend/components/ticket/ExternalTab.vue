@@ -9,7 +9,7 @@
       <avatar :source="user.avatar_url" class="w-12 h-12 m-3"/>
       <div class="flex flex-col items-end flex-grow w-full mb-4">
         <card class="mb-2 w-full" outlined>
-          <editor :options="options" initialEditType="wysiwyg" previewStyle="tab" ref="replyEditor"/>
+          <editor ref="replyEditor" />
         </card>
         <button @click="submitReply"
           class="group relative w-full sm:w-auto flex justify-center sm:justify-start items-center py-2 px-4 border border-transparent text-sm leading-5 font-medium rounded-md text-white bg-primary hover:bg-orange-500 focus:outline-none focus:border-orange-700 focus:shadow-outline-orange active:bg-orange-700 transition duration-150 ease-in-out">
@@ -25,21 +25,14 @@
   import Comment from "./Comment";
   import Avatar from "../elements/Avatar";
   import Card from "../elements/card/Card";
+  import Editor from "../elements/markdown/Editor";
   import axios from "axios";
-  import '@toast-ui/editor/dist/toastui-editor-viewer.css';
-  import 'codemirror/lib/codemirror.css';
-  import VueTribute from 'vue-tribute';
-
-  import '@toast-ui/editor/dist/toastui-editor.css';
-  import {Editor, Viewer} from '@toast-ui/vue-editor';
 
   export default {
     components: {
       Avatar,
       Comment,
-      Viewer,
-      editor: Editor,
-      VueTribute,
+      Editor,
       Card
     },
     props: {
@@ -58,24 +51,18 @@
     },
     data() {
       return {
-        replyEditor: "",
         staff: [],
-        options: {
-          usageStatistics: false,
-        }
       }
     },
     methods: {
       submitReply() {
-        let content = this.$refs.replyEditor.invoke('getMarkdown');
-        this.$refs.replyEditor.invoke('setMarkdown', '');
-        let formData = new FormData();
-        formData.append("content", content);
+        let content = this.$refs.replyEditor.getContent()
+        this.$refs.replyEditor.clear()
 
         axios.defaults.xsrfCookieName = 'csrftoken';
         axios.defaults.xsrfHeaderName = "X-CSRFTOKEN";
 
-        axios.post("/api" + window.location.pathname + "/replies/post", formData)
+        axios.post("/api" + window.location.pathname + "/replies/post", {"content": content})
             .then(() => {
               this.$emit("post", true)
             })
