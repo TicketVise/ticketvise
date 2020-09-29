@@ -9,7 +9,7 @@
       <avatar :source="user.avatar_url" class="w-12 h-12 m-3"/>
       <div class="flex flex-col items-end flex-grow w-full mb-4">
         <card class="mb-2 w-full" outlined>
-          <editor initialEditType="wysiwyg" previewStyle="tab" ref="replyEditor"/>
+          <editor :options="options" initialEditType="wysiwyg" previewStyle="tab" ref="replyEditor"/>
         </card>
         <button @click="submitReply"
           class="group relative w-full sm:w-auto flex justify-center sm:justify-start items-center py-2 px-4 border border-transparent text-sm leading-5 font-medium rounded-md text-white bg-primary hover:bg-orange-500 focus:outline-none focus:border-orange-700 focus:shadow-outline-orange active:bg-orange-700 transition duration-150 ease-in-out">
@@ -60,6 +60,9 @@
       return {
         replyEditor: "",
         staff: [],
+        options: {
+          usageStatistics: false,
+        }
       }
     },
     methods: {
