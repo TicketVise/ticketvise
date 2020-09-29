@@ -46,16 +46,16 @@
 
 <style>
 .ticket-column {
-  height: calc((100vh - 266px) - 3rem);
+  height: calc((100vh - 255px) - 3rem);
 }
 @media screen and (min-width: 640px) {
   .ticket-column {
-    height: calc((100vh - 270px) - 3rem);
+    height: calc((100vh - 263px) - 3rem);
   }
 }
 @media screen and (min-width: 1024px) {
   .ticket-column {
-    height: calc((100vh - 212px) - 3rem);
+    height: calc((100vh - 214px) - 3rem);
   }
 }
 </style>
