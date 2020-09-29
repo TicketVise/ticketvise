@@ -51,6 +51,7 @@ class InboxUsersView(InboxCoordinatorRequiredMixin, TemplateView):
         context["index_end"] = context["index_start"] - 1 + len(page)
         context["total_count"] = inbox_users.count()
         context['inbox_users'] = page
+        context["coordinator"] = Inbox.get_coordinator(context["inbox"])
 
         return context
 
@@ -68,6 +69,7 @@ class InboxUserView(UserCoordinatorRequiredMixin, UpdateView):
         context = super().get_context_data(**kwargs)
         context["user"] = get_object_or_404(User, pk=self.kwargs["pk"])
         context["inbox"] = get_object_or_404(Inbox, pk=self.kwargs["inbox_id"])
+        context["coordinator"] = Inbox.get_coordinator(context["inbox"])
 
         return context
 
@@ -83,6 +85,7 @@ class InboxUserDeleteView(UserCoordinatorRequiredMixin, DeleteView):
         context = super().get_context_data(**kwargs)
         context["user"] = get_object_or_404(User, pk=self.kwargs["pk"])
         context["inbox"] = get_object_or_404(Inbox, pk=self.kwargs["inbox_id"])
+        context["coordinator"] = Inbox.get_coordinator(context["inbox"])
 
         return context
 

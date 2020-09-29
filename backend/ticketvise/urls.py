@@ -17,6 +17,7 @@ from ticketvise.views.inbox.labels import InboxLabelsView, CreateInboxLabelView,
 from ticketvise.views.inbox.overview import InboxView
 from ticketvise.views.inbox.settings import InboxSettingsView
 from ticketvise.views.inbox.statistics import InboxStatisticsView
+from ticketvise.views.inbox.automation import InboxAutomationView
 from ticketvise.views.inbox.users import InboxUserDeleteView, InboxUserView, InboxUsersView
 from ticketvise.views.inboxes import InboxesView
 from ticketvise.views.lti.config import LtiConfigView
@@ -41,6 +42,7 @@ urlpatterns = [
                   path("inboxes/<int:pk>/labels", InboxLabelsView.as_view(), name="inbox_labels"),
                   path("inboxes/<int:pk>/settings", InboxSettingsView.as_view(), name="inbox_settings"),
                   path("inboxes/<int:pk>/statistics", InboxStatisticsView.as_view(), name="inbox_statistics"),
+                  path("inboxes/<int:pk>/automation", InboxAutomationView.as_view(), name="inbox_automation"),
                   path("inboxes/<int:pk>/labels/new", CreateInboxLabelView.as_view(), name="create_inbox_label"),
                   path("inboxes/<int:inbox_id>/labels/<int:pk>", EditInboxLabelView.as_view(), name="edit_inbox_label"),
                   path("inboxes/<int:inbox_id>/labels/<int:pk>/delete", DeleteInboxLabelView.as_view(),

@@ -63,6 +63,8 @@ class InboxStatisticsView(InboxCoordinatorRequiredMixin, TemplateView):
         context['answered_pct'] = calculate_increase(context['current_week_answered'], context['last_week_answered'])
         context['closed_pct'] = calculate_increase(context['current_week_closed'], context['last_week_closed'])
 
+        context["coordinator"] = Inbox.get_coordinator(context["inbox"])
+
         return context
 
 

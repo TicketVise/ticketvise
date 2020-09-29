@@ -1,7 +1,7 @@
-{% extends "inbox/base.html" %}
+{% extends "navigation_side.html" %}
+{% load ticketvise_extras %}
 
-{% block inbox-content %}
-
+{% block content %}
   <div class="container mx-auto lg:px-4">
     <form>
       {% url 'create_inbox_label' inbox.id as add_url %}
@@ -137,4 +137,4 @@
     </div>
   </div>
 
-{% endblock inbox-content %}
+{% endblock content %}

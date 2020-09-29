@@ -1,11 +1,8 @@
-{% extends "inbox/base.html" %}
-
+{% extends "navigation_side.html" %}
 {% load ticketvise_extras %}
 
-{% block inbox-content %}
-
+{% block content %}
 <div class="container mx-auto lg:px-4">
-
   <form>
     {% include "inbox/search_bar.html" %}
   </form>
@@ -135,5 +132,4 @@
     </div>
   </div>
 </div>
-
-{% endblock inbox-content %}
+{% endblock content %}

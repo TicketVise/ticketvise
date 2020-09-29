@@ -1,0 +1,303 @@
+{% extends "base.html" %}
+
+{% load ticketvise_extras %}
+
+{% block body %}
+
+<nav class="bg-gray-800 sticky top-0 z-20"
+     x-data="{ openProfile: false, openSupport: false, mobile: false, url: location.pathname }">
+    <div class="px-4 sm:px-6 lg:px-8">
+        <div class="flex items-center justify-between h-16">
+            <div class="flex items-center">
+                <div class="flex-shrink-0">
+                    {% load static %}
+                    <a href="/" class="flex items-center">
+                        <img class="h-8 w-8" src="{% static 'img/logo/logo.svg' %}" alt="Logo">
+                        <span class="text-2xl ml-2 text-white">Ticket</span><span
+                            class="text-2xl text-primary font-bold">Vise</span>
+                    </a>
+                </div>
+                <div class="hidden md:block">
+                    <div class="ml-10 flex items-baseline space-x-4">
+                        <a href="/inboxes"
+                           class="px-3 py-2 rounded-md text-sm font-medium text-gray-300 hover:text-white hover:bg-gray-700 focus:outline-none focus:text-white focus:bg-gray-700"
+                           :class="{ 'text-white bg-gray-900 ': url == '/inboxes'}">Inboxes</a>
+                        {% if user.is_superuser %}
+                        <a href="/admin"
+                           class="px-3 py-2 rounded-md text-sm font-medium text-gray-300 hover:text-white hover:bg-gray-700 focus:outline-none focus:text-white focus:bg-gray-700"
+                           :class="{ 'text-white bg-gray-900 ': url == '/admin'}">Admin</a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            <div class="hidden md:block">
+                <div class="ml-4 flex items-center md:ml-6">
+
+                    <div class="relative flex">
+                        <button type="button"
+                                class="relative cursor-pointer px-2 py-1 border-2 border-transparent text-gray-400 rounded-full hover:text-white focus:outline-none focus:text-white focus:bg-gray-700"
+                                aria-label="Fullscreen" onclick="window.open(window.location.href, '_blank')"
+                                x-show="window.self !== window.top" style="display: none">
+                            <i class="fa fa-arrows-alt text-lg" aria-hidden="true"></i>
+                        </button>
+
+                        <div>
+                            <button class="relative cursor-pointer px-2 py-1 border-2 border-transparent text-gray-400 rounded-full hover:text-white focus:outline-none focus:text-white focus:bg-gray-700"
+                                    aria-label="Support" aria-haspopup="true" @click="openSupport = !openSupport">
+                                <i class="fa fa-question-circle text-xl" aria-hidden="true"></i>
+                            </button>
+                            <div class="origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg"
+                                 x-show="openSupport"
+                                 @click.away="openSupport = false" x-transition:enter="transition ease-out duration-100"
+                                 x-transition:enter-start="transform opacity-0 scale-95"
+                                 x-transition:enter-end="transform opacity-100 scale-100"
+                                 x-transition:leave="transition ease-in duration-75"
+                                 x-transition:leave-start="transform opacity-100 scale-100"
+                                 x-transition:leave-end="transform opacity-0 scale-95" style="display: none">
+                                <div class="py-1 rounded-md bg-white shadow-xs" role="menu" aria-orientation="vertical"
+                                     aria-labelledby="user-menu">
+                                    <a href="https://ticketvise.com/getting-started/" target="_blank"
+                                       class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                                       role="menuitem">Getting started</a>
+                                    <a href="mailto:info@ticketvise.com?subject=Feedback&body=Hi%20TicketVise,"
+                                       target="_blank"
+                                       rel="noopener noreferrer"
+                                       class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                                       role="menuitem">Send feedback</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <a href="{% url 'notifications' %}"
+                       class="relative cursor-pointer p-1 border-2 border-transparent text-gray-400 rounded-full hover:text-white focus:outline-none focus:text-white focus:bg-gray-700"
+                       aria-label="Notifications">
+                        <svg class="h-6 w-6" stroke="currentColor" fill="none" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                  d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/>
+                        </svg>
+                        {% number_of_unread_notifications user as count %}
+                        {% if count > 0 %}
+                        <div class="flex justify-center items-center absolute top-0 transform translate-x-4 h-4 min-w-4 w-auto bg-primary rounded-full p-0.5">
+                            <span class="rounded-full text-white text-center text-2xs">{{ count }}</span>
+                        </div>
+                        {% endif %}
+                    </a>
+
+                    <!-- Profile dropdown -->
+                    <div class="ml-3 relative">
+                        <div>
+                            <button
+                                    class="max-w-xs flex items-center text-sm rounded-full text-white focus:outline-none focus:shadow-solid"
+                                    id="user-menu" aria-label="User menu" aria-haspopup="true"
+                                    @click="openProfile = !openProfile">
+                                <img class="h-8 w-8 rounded-full"
+                                     src="{{ user.avatar_url }}"
+                                     alt="User profile">
+                            </button>
+
+                        </div>
+                        <div class="origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg"
+                             x-show="openProfile"
+                             @click.away="openProfile = false" x-transition:enter="transition ease-out duration-100"
+                             x-transition:enter-start="transform opacity-0 scale-95"
+                             x-transition:enter-end="transform opacity-100 scale-100"
+                             x-transition:leave="transition ease-in duration-75"
+                             x-transition:leave-start="transform opacity-100 scale-100"
+                             x-transition:leave-end="transform opacity-0 scale-95" style="display: none">
+                            <div class="py-1 rounded-md bg-white shadow-xs" role="menu" aria-orientation="vertical"
+                                 aria-labelledby="user-menu">
+                                <a href="/profile" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                                   role="menuitem">Your Profile</a>
+                                <a href="/logout/" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                                   role="menuitem">Sign out</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="flex items-center md:hidden">
+                <!-- Mobile menu button-->
+                <button
+                        class="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-white hover:bg-gray-700 focus:outline-none focus:bg-gray-700 focus:text-white transition duration-150 ease-in-out"
+                        aria-label="Main menu" aria-expanded="false" @click="mobile = !mobile">
+                    <!-- Icon when menu is closed. -->
+                    <!-- Menu open: "hidden", Menu closed: "block" -->
+                    <svg class="block h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                              d="M4 6h16M4 12h16M4 18h16"/>
+                    </svg>
+                    <!-- Icon when menu is open. -->
+                    <!-- Menu open: "block", Menu closed: "hidden" -->
+                    <svg class="hidden h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                              d="M6 18L18 6M6 6l12 12"/>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div x-show="mobile" style="display: none" @click.away="mobile = false">
+        <div class="px-2 pt-2 pb-3 sm:px-3 space-y-1">
+            <a href="/inboxes"
+               class="block px-3 py-2 rounded-md text-base font-medium text-gray-300 hover:text-white hover:bg-gray-700 focus:outline-none focus:text-white focus:bg-gray-700"
+               :class="{ 'text-white bg-gray-900 ': url === '/inboxes'}">Inboxes</a>
+            <a href="{% url 'notifications' %}"
+               class="flex flex-row items-center px-3 py-2 rounded-md text-base font-medium text-gray-300 hover:text-white hover:bg-gray-700 focus:outline-none focus:text-white focus:bg-gray-700"
+               :class="{ 'text-white bg-gray-900 ': url === '/notifications'}">
+                Notifications
+
+                {% number_of_unread_notifications user as count %}
+                {% if count > 0 %}
+                <div class="flex justify-center items-center h-4 min-w-4 bg-primary rounded-full ml-2">
+                    <span class="rounded-full text-white text-center text-2xs">{{ count }}</span>
+                </div>
+                {% endif %}
+
+            </a>
+            {% if user.is_superuser %}
+            <a href="/admin"
+               class="block px-3 py-2 rounded-md text-base font-medium text-gray-300 hover:text-white hover:bg-gray-700 focus:outline-none focus:text-white focus:bg-gray-700"
+               :class="{ 'text-white bg-gray-900 ': url === '/admin'}">Admin</a>
+            {% endif %}
+        </div>
+        <div class="pt-4 pb-3 border-t border-gray-700">
+            <div class="flex items-center px-5">
+                <div class="flex-shrink-0">
+                    <img class="h-10 w-10 rounded-full" src="{{ user.avatar_url }}" alt="Profile image">
+                </div>
+                <div class="ml-3">
+                    <div class="text-base font-medium leading-none text-white">{{ user.get_full_name }}</div>
+                    <div class="mt-1 text-sm font-medium leading-none text-gray-400">{{ user.email }}</div>
+                </div>
+            </div>
+            <div class="mt-3 px-2 space=y-1">
+                <a href="/profile"
+                   class="block px-3 py-2 rounded-md text-base font-medium text-gray-400 hover:text-white hover:bg-gray-700 focus:outline-none focus:text-white focus:bg-gray-700">Your
+                    Profile</a>
+                <a href="/logout/"
+                   class="block px-3 py-2 rounded-md text-base font-medium text-gray-400 hover:text-white hover:bg-gray-700 focus:outline-none focus:text-white focus:bg-gray-700">Sign
+                    out</a>
+            </div>
+        </div>
+    </div>
+</nav>
+
+<div class="flex flex-grow max-h-full">
+    <!-- Side Menu -->
+    <div class="w-screen max-w-side border-r flex flex-col flex-grow max-h-full">
+        <!-- Profile section -->
+        <div class="flex items-center px-6 py-4">
+            <div class="flex-shrink-0">
+                <img class="h-10 w-10 rounded-full" src="{{ user.avatar_url }}" alt="Profile image">
+            </div>
+            <div class="ml-3">
+                <div class="text-base font-bold leading-none text-gray-900">{{ user.get_full_name }}</div>
+                <div class="mt-1 text-sm leading-none text-gray-600">{{ user.email }}</div>
+            </div>
+        </div>
+
+        <div class="p-4">
+            <a href="{% url 'new_ticket' inbox.id %}"
+                class="inline-flex w-full justify-center items-center px-4 py-2 border border-transparent text-sm leading-5 font-medium rounded-md text-white bg-primary hover:bg-orange-500 focus:outline-none focus:shadow-outline-orange focus:border-orange-700 active:bg-orange-700 transition duration-150 ease-in-out">
+                <i class="fa fa-plus mr-2"></i>
+                <span>New Ticket</span>
+            </a>
+        </div>
+
+        <!-- Inbox links -->
+        <div class="flex flex-col space-y-1 px-4">
+            <!-- <span class="text-gray-700 text-sm">Navigation</span> -->
+            <a href="{% url 'inbox' inbox.id %}" class="grid grid-cols-12 px-3 py-2 rounded items-center space-x-2 text-gray-700 hover:bg-gray-100 hover:text-gray-900">
+                <i class="fa fa-home col-span-1 flex justify-center"></i>
+                <span class="col-span-11">Overview</span>
+            </a>
+            <a href="{% url 'inbox_users' inbox.id %}" class="grid grid-cols-12 px-3 py-2 rounded items-center space-x-2 text-gray-700 hover:bg-gray-100 hover:text-gray-900">
+                <i class="fa fa-users col-span-1 flex justify-center"></i>
+                <span class="col-span-11">Users</span>
+            </a>
+            <a href="{% url 'inbox_labels' inbox.id %}" class="grid grid-cols-12 px-3 py-2 rounded items-center space-x-2 text-gray-700 hover:bg-gray-100 hover:text-gray-900">
+                <i class="fa fa-tags col-span-1 flex justify-center"></i>
+                <span class="col-span-11">Labels</span>
+            </a>
+            <a href="{% url 'inbox_settings' inbox.id %}" class="grid grid-cols-12 px-3 py-2 rounded items-center space-x-2 text-gray-700 hover:bg-gray-100 hover:text-gray-900">
+                <i class="fa fa-cog col-span-1 flex justify-center"></i>
+                <span class="col-span-11">Settings</span>
+            </a>
+            <a href="{% url 'inbox_automation' inbox.id %}" class="grid grid-cols-12 px-3 py-2 rounded items-center space-x-2 text-gray-700 hover:bg-gray-100 hover:text-gray-900">
+                <i class="fa fa-fire col-span-1 flex justify-center"></i>
+                <span class="col-span-11">Automation</span>
+            </a>
+        </div>
+    </div>
+    
+    <div class="flex flex-col flex-grow max-h-full">
+        <header class="bg-white border-b">
+            <div class="p-4 pt-2">
+                <div class="lg:flex lg:items-center lg:justify-between">
+                    <div class="flex-1 min-w-0">
+                        <div class="flex justify-between items-center">
+                            <a href="/inboxes" class="text-xs text-gray-700 hover:underline cursor-pointer">
+                                <i class="fa fa-arrow-left mr-2"></i>
+                                Dashboard
+                            </a>
+        
+                            {% user_is_coordinator user inbox as permission %}
+                            {% if permission %}
+                            <span class="md:hidden">
+                                <a
+                                    href="{% url 'inbox_settings' inbox.id %}"
+                                    class="inline-flex items-center py-2 text-sm leading-5 font-medium text-gray-700 hover:text-gray-500 focus:outline-none active:text-gray-800 active:bg-gray-50 transition duration-150 ease-in-out"
+                                >
+                                    <i class="fa fa-cog"></i>
+                                </a>
+                            </span>
+                            {% endif %}
+                        </div>
+
+                        <h2 class="text-2xl font-bold leading-7 text-gray-900 sm:text-3xl sm:leading-9 truncate">
+                            {{ inbox.name }}
+                        </h2>
+                        <div class="flex flex-row flex-wrap space-x-4 sm:space-x-6">
+                            <div class="mt-2 flex items-center text-sm leading-5 text-gray-500">
+                                <i class="fa fa-code mr-1"></i>
+                                {{ inbox.code }}
+                            </div>
+                            {% if coordinator %}
+                            <div class="mt-2 flex items-center text-sm leading-5 text-gray-500">
+                                <i class="fa fa-user mr-1"></i>
+                                {{ coordinator.first_name }} {{ coordinator.last_name }}
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="mt-5 lg:mt-0 lg:ml-4 space-x-4 hidden md:flex">
+                        {% user_is_coordinator user inbox as permission %}
+                        <!-- {% if permission %}
+                        <span class="shadow-sm rounded-md">
+                            <a href="{% url 'inbox_settings' inbox.id %}"
+                            class="inline-flex items-center px-4 py-2 border border-gray-300 text-sm leading-5 font-medium rounded-md text-gray-700 bg-white hover:text-gray-500 focus:outline-none focus:shadow-outline-blue focus:border-blue-300 active:text-gray-800 active:bg-gray-50 transition duration-150 ease-in-out">
+                                <i class="fa fa-cog mr-2"></i>
+                                Settings
+                            </a>
+                        </span>
+                        {% endif %} -->
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main content -->
+        {% block content %}
+        if you see this, something is wrong!
+        {% endblock content %}
+    </div>
+</div>
+
+
+{% endblock body %}
+
+{% block javascript %}
+
+{% endblock javascript %}
