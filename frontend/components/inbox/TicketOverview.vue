@@ -52,11 +52,6 @@
         :personal="showPersonal"
         :ticket-list="column.tickets"
       />
-
-      <div v-if="tickets[0] && tickets[0].tickets.length === 0" class="flex flex-col items-center w-full">
-        <img src="/static/img/svg/undraw_blank_canvas_3rbb.svg" alt="Nothing here" class="w-1/2 md:w-1/3 mx-auto py-8">
-        <span class="text-gray-600 text-lg md:text-xl">You have no tickets (yet)!</span>
-      </div>
     </div>
 
     <!-- Columns -->
