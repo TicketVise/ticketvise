@@ -87,7 +87,27 @@
         }
       },
       content: function () {
-        const entries = this.replies.concat(this.events)
+        const entries = []
+
+        for (let entry of this.replies.concat(this.events)) {
+          if (entries.length > 0) {
+            const top = entries[entries.length - 1]
+
+            if (entry.hasOwnProperty("label")) {
+              if (top.hasOwnProperty("labels") && top.is_added === entry.is_added) {
+                top.labels.push(entry.label)
+              } else {
+                entry.labels = [entry.label]
+                entries.push(entry)
+              }
+            } else {
+              entries.push(entry)
+            }
+          } else {
+            entries.push(entry)
+          }
+        }
+
         entries.sort((a, b) => moment(a.date_created).diff(moment(b.date_created)))
 
         return entries

@@ -16,14 +16,15 @@
           {{ full_name(event.initiator) }}
         </div>
 
-        <div v-if="event.label">
+        <div v-if="event.labels">
           <span v-if="event.initiator">has <span v-if="event.is_added">added</span><span v-else>removed</span>
             the</span>
-          <span v-else>The label</span>
-          <chip :background="event.label.color">
-            {{ event.label.name }}
-          </chip>
-          <span v-if="event.initiator">label</span>
+          <span v-else>The label<span v-if="event.labels.length > 1">s</span></span>
+            <chip :background="label.color" :key="label.id" v-bind:class="{'mr-1' : i !== event.labels.length - 1 }"
+                  v-for="(label, i) in event.labels">
+              {{ label.name }}
+            </chip>
+          <span v-if="event.initiator">label<span v-if="event.labels.length > 1">s</span></span>
           <span v-else>has been <span v-if="event.is_added">added</span><span v-else>removed</span></span>
         </div>
 
