@@ -2,7 +2,10 @@
   <div class="flex flex-column flex-wrap w-full pr-4">
     <div class="mt-3 w-full">
       <comment :comment="ticket"/>
-      <comment :comment="comment" :key="comment.id" :ticket="ticket" v-for="comment in replies"/>
+      <div v-for="entry in content">
+        <comment v-if="entry.content" :comment="entry" :key="`comment-${entry.id}`" :ticket="ticket"/>
+        <ticket-event v-else :event="entry" :key="`event-${entry.id}`" />
+      </div>
     </div>
 
     <div class="flex w-full">
@@ -27,9 +30,12 @@
   import Card from "../elements/card/Card";
   import Editor from "../elements/markdown/Editor";
   import axios from "axios";
+  import TicketEvent from "./TicketEvent";
+  import moment from "moment";
 
   export default {
     components: {
+      TicketEvent,
       Avatar,
       Comment,
       Editor,
@@ -41,6 +47,10 @@
         required: true
       },
       replies: {
+        required: true,
+        default: []
+      },
+      events: {
         required: true,
         default: []
       },
@@ -75,6 +85,12 @@
         } else {
           return "Reply"
         }
+      },
+      content: function () {
+        const entries = this.replies.concat(this.events)
+        entries.sort((a, b) => moment(a.date_created).diff(moment(b.date_created)))
+
+        return entries
       }
     }
 

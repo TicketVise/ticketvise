@@ -1,10 +1,85 @@
 <template>
-$END$
+  <div class="flex w-full">
+    <div class="w-12 m-3"/>
+    <div class="flex flex-col">
+      <div class="ml-3 flex items-center text-sm">
+        <div class="flex w-6 h-6 bg-gray-100 rounded-full mr-2 items-center justify-center text-gray-500">
+          <i class="fa" v-bind:class="{
+            'fa-user': event.hasOwnProperty('assignee'),
+            'fa-tag': event.hasOwnProperty('label'),
+            'fa-bolt': event.hasOwnProperty('new_status'),
+          }"/>
+        </div>
+
+        <div v-if="event.initiator" class="flex flex-row font-medium items-center mr-1">
+          <avatar :source="event.initiator.avatar_url" class="w-5 h-5 mr-2"/>
+          {{ full_name(event.initiator) }}
+        </div>
+
+        <div v-if="event.label">
+          <span v-if="event.initiator">has <span v-if="event.is_added">added</span><span v-else>removed</span>
+            the</span>
+          <span v-else>The label</span>
+          <chip :background="event.label.color">
+            {{ event.label.name }}
+          </chip>
+          <span v-if="event.initiator">label</span>
+          <span v-else>has been <span v-if="event.is_added">added</span><span v-else>removed</span></span>
+        </div>
+
+        <div v-else-if="event.assignee" class="flex flex-row items-center">
+          <span v-if="event.initiator">has assigned the ticket to</span>
+          <span v-else>The ticket has been assigned to</span>
+          <chip class="ml-3">
+            <avatar :source="event.assignee.avatar_url" class="w-4 h-4"/>
+            <span class="ml-2">{{ full_name(event.assignee) }}</span>
+          </chip>
+        </div>
+
+        <div v-else-if="event.new_status" class="flex flex-row items-center">
+          <span v-if="event.initiator">has changed the status to</span>
+          <span v-else>The status has been changed to </span>
+          <chip class="ml-2">{{ status[event.new_status] }}</chip>
+        </div>
+
+        <span class="ml-1 lowercase">{{ date(event.date_created) }}</span>
+
+      </div>
+      <div class="h-6 border-l border-gray-400 w-1 mx-6"/>
+
+    </div>
+  </div>
 </template>
 
 <script>
+import Avatar from "../elements/Avatar";
+import Chip from "../elements/chip/Chip";
+import {calendarDate} from "../../utils";
+
 export default {
-name: "TicketEvent"
+  name: "TicketEvent",
+  props: ["event"],
+  components: {
+    Avatar,
+    Chip,
+  },
+  data() {
+    return {
+      date: calendarDate,
+      status: {
+        PNDG: 'Pending',
+        ASGD: 'Assigned',
+        ANSD: 'Awaiting response',
+        CLSD: 'Closed'
+      }
+    }
+  },
+  methods: {
+    full_name: function (user) {
+      return `${user.first_name} ${user.last_name}`
+    }
+  },
+
 }
 </script>
 

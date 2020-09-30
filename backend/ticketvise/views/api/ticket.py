@@ -361,7 +361,7 @@ class TicketStatusEventSerializer(ModelSerializer):
 
     class Meta:
         model = TicketStatusEvent
-        fields = ["ticket", "initiator", "date_created", "status"]
+        fields = ["id", "ticket", "initiator", "date_created", "old_status", "new_status"]
 
 
 class TicketAssigneeEventSerializer(ModelSerializer):
@@ -370,7 +370,7 @@ class TicketAssigneeEventSerializer(ModelSerializer):
 
     class Meta:
         model = TicketAssigneeEvent
-        fields = ["ticket", "initiator", "date_created", "assignee"]
+        fields = ["id", "ticket", "initiator", "date_created", "assignee"]
 
 
 class TicketLabelEventSerializer(ModelSerializer):
@@ -379,7 +379,7 @@ class TicketLabelEventSerializer(ModelSerializer):
 
     class Meta:
         model = TicketLabelEvent
-        fields = ["ticket", "initiator", "date_created", "label", "is_added"]
+        fields = ["id", "ticket", "initiator", "date_created", "label", "is_added"]
 
 
 class TicketEventSerializer(ModelSerializer):
