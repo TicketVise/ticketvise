@@ -23,18 +23,16 @@
 </template>
 
 <script>
-import '@toast-ui/editor/dist/toastui-editor-viewer.css';
 import Card from '../../components/elements/card/Card';
-
-import {Viewer} from '@toast-ui/vue-editor';
+import Viewer from "../elements/markdown/Viewer";
 import {calendarDate} from "../../utils";
 
 export default {
   name: "comment",
   props: ["comment", "reply", "ticket", "connected"],
   components: {
-    viewer: Viewer,
-    Card
+    Card,
+    Viewer
   },
   methods: {
     date: calendarDate

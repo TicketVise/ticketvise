@@ -70,7 +70,8 @@ module.exports = {
                                             /^CodeMirror/,
                                             /^cm-.*/,
                                             /^te/,
-                                            /^code-.*/
+                                            /^code-.*/,
+                                            /^hljs-.*/
                                         ],
                                     }
                                 )
