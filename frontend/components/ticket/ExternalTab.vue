@@ -4,7 +4,7 @@
       <comment :comment="ticket"/>
       <div v-for="entry in content">
         <comment v-if="entry.content" :comment="entry" :key="`comment-${entry.id}`" :ticket="ticket"/>
-        <ticket-event v-else :event="entry" :key="`event-${entry.id}`" />
+        <ticket-event v-else :ticket_event="entry" :key="`event-${entry.id}`" @remove_attachment="removeAttachment" />
       </div>
     </div>
 
@@ -98,7 +98,6 @@
 
             const timeDiffMinutes = moment(entry.date_created).diff(moment(top.date_created), "m")
 
-            console.log(timeDiffMinutes)
             // merge label events
             if (entry.hasOwnProperty("label")) {
               if (top.hasOwnProperty("labels")
@@ -131,7 +130,6 @@
         return entries
       }
     }
-
   }
 </script>
 
