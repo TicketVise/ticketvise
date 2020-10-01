@@ -14,13 +14,12 @@
       </div>
 
       <div class="flex pb-6 items-center flex-grow">
-        <div v-if="ticket_event.initiator" class="flex flex-row font-medium items-center mr-1">
-          <avatar :source="ticket_event.initiator.avatar_url" class="w-5 h-5 mr-2"/>
-          {{ full_name(ticket_event.initiator) }}
-        </div>
 
-        <div v-if="ticket_event.labels">
-          <span v-if="ticket_event.initiator">has <span v-if="ticket_event.is_added">added</span><span v-else>removed</span>
+        <div class="inline-block" v-if="ticket_event.labels">
+          <avatar :source="ticket_event.initiator.avatar_url" class="inline-block w-5 h-5 mr-1"/>
+          <span class="font-medium">{{ full_name(ticket_event.initiator) }}</span>
+          <span v-if="ticket_event.initiator">has <span v-if="ticket_event.is_added">added</span><span
+              v-else>removed</span>
             the</span>
           <span v-else>The label<span v-if="ticket_event.labels.length > 1">s</span></span>
           <chip :background="label.color" :key="`label-${label.id}`"
@@ -33,7 +32,9 @@
           <span class="lowercase">{{ date(ticket_event.date_created) }}</span>
         </div>
 
-        <div v-else-if="ticket_event.assignee" class="flex flex-row items-center">
+        <div v-else-if="ticket_event.assignee" class="inline-block">
+          <avatar :source="ticket_event.initiator.avatar_url" class="inline-block w-5 h-5 mr-1"/>
+          <span class="font-medium">{{ full_name(ticket_event.initiator) }}</span>
           <span v-if="ticket_event.initiator">has assigned the ticket to</span>
           <span v-else>The ticket has been assigned to</span>
           <chip class="ml-1">
@@ -43,7 +44,9 @@
           <span class="ml-1 lowercase">{{ date(ticket_event.date_created) }}</span>
         </div>
 
-        <div v-else-if="ticket_event.new_status" class="flex flex-row items-center">
+        <div v-else-if="ticket_event.new_status" class="inline-block">
+          <avatar :source="ticket_event.initiator.avatar_url" class="inline-block w-5 h-5 mr-1"/>
+          <span class="font-medium">{{ full_name(ticket_event.initiator) }}</span>
           <span v-if="ticket_event.initiator">has changed the status to</span>
           <span v-else>The status has been changed to </span>
           <chip class="ml-1">{{ status[ticket_event.new_status] }}</chip>
@@ -51,8 +54,8 @@
         </div>
 
         <div v-else-if="ticket_event.attachments" class="flex flex-col flex-grow">
-          <div class="flex flex-row mb-2">
-            <avatar :source="ticket_event.uploader.avatar_url" class="w-5 h-5 mr-2"/>
+          <div class="inline-block mb-2">
+            <avatar :source="ticket_event.uploader.avatar_url" class="inline-block w-5 h-5 mr-2"/>
             <span class="font-medium mr-1">{{ full_name(ticket_event.uploader) }}</span> uploaded
             <span v-if="ticket_event.attachments.length > 1" class="mx-1">{{ ticket_event.attachments.length }}</span>
             <span v-else class="mx-1">a</span>
@@ -61,7 +64,7 @@
           </div>
           <div class="w-full grid sm:grid-cols-2 xl:grid-cols-3 gap-4">
             <attachment v-for="attachment in ticket_event.attachments" :key="`attachment-${attachment.id}`"
-                        class="mr-1" :attachment="attachment" :show-delete="false" />
+                        class="mr-1" :attachment="attachment" :show-delete="false"/>
           </div>
         </div>
       </div>
@@ -100,8 +103,7 @@ export default {
     full_name: function (user) {
       return `${user.first_name} ${user.last_name}`
     },
-  },
-
+  }
 }
 </script>
 
