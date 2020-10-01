@@ -109,9 +109,11 @@ class CreateTicketSerializer(ModelSerializer):
 
 
 class TicketAttachmentSerializer(ModelSerializer):
+    uploader = UserSerializer(read_only=True)
+
     class Meta:
         model = TicketAttachment
-        fields = ["id", "file"]
+        fields = ["id", "file", "uploader", "date_created"]
 
 
 class TicketWithParticipantsSerializer(TicketSerializer):

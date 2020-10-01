@@ -89,7 +89,7 @@
       content: function () {
         const entries = []
 
-        for (let entry of this.replies.concat(this.events)) {
+        for (let entry of this.replies.concat(this.events).concat(this.ticket.attachments)) {
           if (entries.length > 0) {
             const top = entries[entries.length - 1]
 
