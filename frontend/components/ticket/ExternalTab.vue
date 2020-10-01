@@ -88,8 +88,10 @@
       },
       content: function () {
         const entries = []
+        const tempEntries = this.replies.concat(this.events).concat(this.ticket.attachments)
+        tempEntries.sort((a, b) => moment(a.date_created).diff(moment(b.date_created)))
 
-        for (let entry of this.replies.concat(this.events).concat(this.ticket.attachments)) {
+        for (let entry of tempEntries) {
           if (entries.length > 0) {
             const top = entries[entries.length - 1]
 
@@ -119,8 +121,6 @@
             entries.push(entry)
           }
         }
-
-        entries.sort((a, b) => moment(a.date_created).diff(moment(b.date_created)))
 
         return entries
       }
