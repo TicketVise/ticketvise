@@ -93,16 +93,28 @@
           if (entries.length > 0) {
             const top = entries[entries.length - 1]
 
+            // merge label events
             if (entry.hasOwnProperty("label")) {
-              if (top.hasOwnProperty("labels") && top.is_added === entry.is_added) {
+              if (top.hasOwnProperty("labels")
+                  && top.is_added === entry.is_added
+                  && JSON.stringify(entry.initiator) === JSON.stringify(top.initiator)) {
                 top.labels.push(entry.label)
               } else {
                 entry.labels = [entry.label]
                 entries.push(entry)
               }
+            } else if (entry.hasOwnProperty("file")) {
+              if (top.hasOwnProperty("attachments")
+                  && JSON.stringify(entry.uploader) === JSON.stringify(top.uploader)) {
+                top.attachments.push(entry)
+              } else {
+                entry.attachments = [{...entry}]
+                entries.push(entry)
+              }
             } else {
               entries.push(entry)
             }
+
           } else {
             entries.push(entry)
           }
