@@ -87,6 +87,7 @@
         }
       },
       content: function () {
+        const mergeMinutes = 5
         const entries = []
         const tempEntries = this.replies.concat(this.events).concat(this.ticket.attachments)
         tempEntries.sort((a, b) => moment(a.date_created).diff(moment(b.date_created)))
@@ -95,9 +96,13 @@
           if (entries.length > 0) {
             const top = entries[entries.length - 1]
 
+            const timeDiffMinutes = moment(entry.date_created).diff(moment(top.date_created), "m")
+
+            console.log(timeDiffMinutes)
             // merge label events
             if (entry.hasOwnProperty("label")) {
               if (top.hasOwnProperty("labels")
+                  && timeDiffMinutes <= mergeMinutes
                   && top.is_added === entry.is_added
                   && JSON.stringify(entry.initiator) === JSON.stringify(top.initiator)) {
                 top.labels.push(entry.label)
@@ -107,6 +112,7 @@
               }
             } else if (entry.hasOwnProperty("file")) {
               if (top.hasOwnProperty("attachments")
+                  && timeDiffMinutes <= mergeMinutes
                   && JSON.stringify(entry.uploader) === JSON.stringify(top.uploader)) {
                 top.attachments.push(entry)
               } else {
