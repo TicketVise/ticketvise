@@ -1,7 +1,7 @@
 <template>
   <div class="flex w-full">
     <div class="w-12 m-3 flex-shrink-0"/>
-    <div class="ml-3 flex text-sm">
+    <div class="ml-3 flex text-sm flex-grow">
       <div class="flex flex-col ">
         <div class="flex flex-shrink-0 w-6 h-6 bg-gray-100 rounded-full mr-2 items-center justify-center text-gray-500">
           <i class="fa" v-bind:class="{
@@ -13,7 +13,7 @@
         <div class="ml-3 h-full border-l border-gray-400 w-1"/>
       </div>
 
-      <div class="flex pb-6 items-center">
+      <div class="flex pb-6 items-center flex-grow">
         <div v-if="event.initiator" class="flex flex-row font-medium items-center mr-1">
           <avatar :source="event.initiator.avatar_url" class="w-5 h-5 mr-2"/>
           {{ full_name(event.initiator) }}
@@ -51,7 +51,7 @@
 
         </div>
 
-        <div v-else-if="event.attachments" class="flex flex-col ">
+        <div v-else-if="event.attachments" class="flex flex-col flex-grow">
           <div class="flex flex-row mb-2">
             <avatar :source="event.uploader.avatar_url" class="w-5 h-5 mr-2"/>
             <span class="font-medium mr-1">{{ full_name(event.uploader) }}</span> uploaded
