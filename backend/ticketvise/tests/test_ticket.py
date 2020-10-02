@@ -53,7 +53,7 @@ class TicketTestCase(TransactionTestCase):
         self.manager.add_inbox(self.inbox)
         self.manager.set_role_for_inbox(self.inbox, Role.MANAGER)
 
-        self.label = Label.objects.create(name="TestLabel", inbox=self.inbox, is_visible_to_guest=True)
+        self.label = Label.objects.create(name="Test-Label", inbox=self.inbox, is_visible_to_guest=True)
         self.label2 = Label.objects.create(name="TestLabel2", inbox=self.inbox, is_visible_to_guest=True)
 
 
