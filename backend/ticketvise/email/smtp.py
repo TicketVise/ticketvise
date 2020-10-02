@@ -1,5 +1,6 @@
 from email import policy
 from email.parser import BytesParser
+from uuid import UUID
 
 from aiosmtpd.controller import Controller
 from asgiref.sync import sync_to_async
@@ -18,6 +19,13 @@ class SmtpServer:
     def __init__(self) -> None:
         self.controller = Controller(self, hostname="127.0.0.1", port=settings.SMTP_INBOUND_PORT)
         super().__init__()
+
+    def parse_message_id(self, raw_message_id):
+        parts = raw_message_id.split("@")
+        if len(parts) > 1:
+            return UUID(parts[0].replace("<", ""))
+
+        return None
 
     @sync_to_async
     def handle_RCPT(self, server, session, envelope, address, rcpt_options):
@@ -40,7 +48,10 @@ class SmtpServer:
             author, _ = User.objects.get_or_create(email=mail_from)
 
             if "Message-ID" in message:
-                messageId = message["Message-ID"]
+                messageId = self.parse_message_id(message["Message-ID"])
+                if not messageId:
+                    return '501 Invalid Message-ID format'
+
                 ticket = Ticket.objects.get(Q(reply_message_id=messageId) | Q(comment_message_id=messageId))
                 Comment.objects.create(ticket=ticket, author=author, is_reply=ticket.reply_message_id == messageId,
                                        content=reply)

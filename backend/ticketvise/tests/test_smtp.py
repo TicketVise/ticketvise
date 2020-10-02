@@ -2,6 +2,7 @@ from smtplib import SMTP
 from django.test import TestCase, LiveServerTestCase
 
 from ticketvise.email.smtp import SmtpServer
+from ticketvise.models.comment import Comment
 from ticketvise.models.inbox import Inbox
 from ticketvise.models.ticket import Ticket
 from ticketvise.models.user import User, Role
@@ -34,19 +35,19 @@ class SmtpServerTestCase(LiveServerSingleThreadedTestCase):
         self.student.add_inbox(inbox=self.inbox, role=Role.GUEST)
         self.assistant.add_inbox(inbox=self.inbox, role=Role.AGENT)
 
+
     def test_send_new_email_with_known_user(self):
         from_email = self.student.email
         to_email = self.inbox.email
         title = "This must be the title2343!!?"
         content = "This is the content!!??"
-
-        email_message = f"""\
-From: {from_email}
-To: {to_email}
-Subject: {title}
-
-{content}     
-"""
+        email_message = "\n".join([
+            f"From: {from_email}",
+            f"To: {to_email}",
+            f"Subject: {title}",
+            "",
+            content
+        ])
 
         with SMTP(*self.address) as client:
             client.sendmail(from_email, [to_email], email_message)
@@ -58,14 +59,13 @@ Subject: {title}
         to_email = self.inbox.email
         title = "This must be the title2343!!?"
         content = "This is the content!!??"
-
-        email_message = f"""\
-From: {from_email}
-To: {to_email}
-Subject: {title}
-
-{content}     
-"""
+        email_message = "\n".join([
+            f"From: {from_email}",
+            f"To: {to_email}",
+            f"Subject: {title}",
+            "",
+            content
+        ])
 
         with SMTP(*self.address) as client:
             client.sendmail(from_email, [to_email], email_message)
@@ -74,7 +74,73 @@ Subject: {title}
         self.assertTrue(User.objects.filter(email=from_email).exists())
 
     def test_send_reply_email_with_known_user(self):
-        raise NotImplemented
+        from_email = self.student.email
+        to_email = self.inbox.email
+        content = "This is the content!!??"
+        email_message = "\n".join([
+            f"From: {from_email}",
+            f"To: {to_email}",
+            f"Subject: This must be the title2343!!?",
+            f"Message-ID: <{self.ticket.reply_message_id}@ticketvise.com>",
+            "",
+            content
+        ])
+
+        with SMTP(*self.address) as client:
+            client.sendmail(from_email, [to_email], email_message)
+
+        self.assertTrue(Comment.objects.filter(ticket=self.ticket, content=content, is_reply=True).exists())
 
     def test_send_reply_email_with_unknown_user(self):
-        raise NotImplemented
+        from_email = "tom.wassing@ticketvise.com"
+        to_email = self.inbox.email
+        content = "This is the content!!??"
+        email_message = "\n".join([
+            f"From: {from_email}",
+            f"To: {to_email}",
+            f"Subject: This must be the title2343!!?",
+            f"Message-ID: <{self.ticket.reply_message_id}@ticketvise.com>",
+            "",
+            content
+        ])
+
+        with SMTP(*self.address) as client:
+            client.sendmail(from_email, [to_email], email_message)
+
+        self.assertTrue(Comment.objects.filter(ticket=self.ticket, content=content, is_reply=True).exists())
+
+    def test_send_comment_email_with_known_user(self):
+        from_email = self.student.email
+        to_email = self.inbox.email
+        content = "This is the content!!??"
+        email_message = "\n".join([
+            f"From: {from_email}",
+            f"To: {to_email}",
+            f"Subject: This must be the title2343!!?",
+            f"Message-ID: <{self.ticket.comment_message_id}@ticketvise.com>",
+            "",
+            content
+        ])
+
+        with SMTP(*self.address) as client:
+            client.sendmail(from_email, [to_email], email_message)
+
+        self.assertTrue(Comment.objects.filter(ticket=self.ticket, content=content, is_reply=False).exists())
+
+    def test_send_comment_email_with_unknown_user(self):
+        from_email = "tom.wassing@ticketvise.com"
+        to_email = self.inbox.email
+        content = "This is the content!!??"
+        email_message = "\n".join([
+            f"From: {from_email}",
+            f"To: {to_email}",
+            f"Subject: This must be the title2343!!?",
+            f"Message-ID: <{self.ticket.comment_message_id}@ticketvise.com>",
+            "",
+            content
+        ])
+
+        with SMTP(*self.address) as client:
+            client.sendmail(from_email, [to_email], email_message)
+
+        self.assertTrue(Comment.objects.filter(ticket=self.ticket, content=content, is_reply=False).exists())
