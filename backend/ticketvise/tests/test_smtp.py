@@ -54,7 +54,24 @@ Subject: {title}
         self.assertTrue(Ticket.objects.filter(title=title, content=content).exists())
 
     def test_send_new_email_with_unknown_user(self):
-        raise NotImplemented
+        from_email = "tom.wassing@ticketvise.com"
+        to_email = self.inbox.email
+        title = "This must be the title2343!!?"
+        content = "This is the content!!??"
+
+        email_message = f"""\
+From: {from_email}
+To: {to_email}
+Subject: {title}
+
+{content}     
+"""
+
+        with SMTP(*self.address) as client:
+            client.sendmail(from_email, [to_email], email_message)
+
+        self.assertTrue(Ticket.objects.filter(title=title, content=content).exists())
+        self.assertTrue(User.objects.filter(email=from_email).exists())
 
     def test_send_reply_email_with_known_user(self):
         raise NotImplemented

@@ -37,26 +37,19 @@ class SmtpServer:
         if body:
             content = body.get_content()
             reply = EmailReplyParser.parse_reply(content)
+            author, _ = User.objects.get_or_create(email=mail_from)
 
             if "Message-ID" in message:
-                self.handle_reply(mail_from, message["Message-ID"], reply)
+                messageId = message["Message-ID"]
+                ticket = Ticket.objects.get(Q(reply_message_id=messageId) | Q(comment_message_id=messageId))
+                Comment.objects.create(ticket=ticket, author=author, is_reply=ticket.reply_message_id == messageId,
+                                       content=reply)
             else:
-                self.handle_new_ticket(mail_from, envelope.rcpt_tos, message["Subject"], reply)
+
+                inbox = Inbox.objects.get(email__in=envelope.rcpt_tos,)
+                Ticket.objects.create(author=author, inbox=inbox, title=message["Subject"], content=reply)
 
         return '250 OK'
-
-    def handle_new_ticket(self, mail_from, rcpt_tos, subject, content):
-        user = User.objects.get_or_create(email=mail_from)
-
-        inbox = Inbox.objects.get(email__in=rcpt_tos)
-        Ticket.objects.create(author=user, inbox=inbox, title=subject, content=content)
-
-    def handle_reply(self, mail_from, message_id, content):
-        user = User.objects.get_or_create(email=mail_from)
-
-        ticket = Ticket.objects.get(Q(reply_message_id=message_id) | Q(comment_message_id=message_id))
-        Comment.objects.create(ticket=ticket, author=user, is_reply=ticket.reply_message_id == message_id,
-                               content=content)
 
     def start(self):
         try:
