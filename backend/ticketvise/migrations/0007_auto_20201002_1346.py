@@ -3,6 +3,15 @@
 from django.db import migrations, models
 import uuid
 
+from ticketvise.models.ticket import Ticket
+
+
+def set_initial_message_id(apps, schema_editor):
+    for device in Ticket.objects.all():
+        device.reply_message_id = uuid.uuid4()
+        device.comment_message_id = uuid.uuid4()
+        device.save(update_fields=['reply_message_id', 'comment_message_id'])
+
 
 class Migration(migrations.Migration):
 
@@ -19,11 +28,22 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='ticket',
             name='comment_message_id',
-            field=models.UUIDField(default=uuid.uuid4, editable=False, unique=True),
+            field=models.UUIDField(null=True),
         ),
         migrations.AddField(
             model_name='ticket',
             name='reply_message_id',
-            field=models.UUIDField(default=uuid.uuid4, editable=False, unique=True),
+            field=models.UUIDField(null=True),
         ),
+        migrations.RunPython(set_initial_message_id),
+        migrations.AlterField(
+            model_name='ticket',
+            name='comment_message_id',
+            field=models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
+        ),
+        migrations.AlterField(
+            model_name='ticket',
+            name='reply_message_id',
+            field=models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
+        )
     ]
