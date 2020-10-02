@@ -52,6 +52,7 @@ class Inbox(models.Model):
     show_assignee_to_guest = models.BooleanField(default=False)
     close_answered_weeks = models.PositiveIntegerField(default=0)
     alert_coordinator_unanswered_days = models.PositiveIntegerField(default=0)
+    email = models.EmailField(null=True, unique=True)
     is_active = models.BooleanField(default=True)
     date_edited = models.DateTimeField(auto_now=True)
     date_created = models.DateTimeField(auto_now_add=True)
