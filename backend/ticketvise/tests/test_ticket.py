@@ -56,7 +56,6 @@ class TicketTestCase(TransactionTestCase):
         self.label = Label.objects.create(name="Test-Label", inbox=self.inbox, is_visible_to_guest=True)
         self.label2 = Label.objects.create(name="TestLabel2", inbox=self.inbox, is_visible_to_guest=True)
 
-
         self.ticket = Ticket.objects.create(author=self.student, assignee=self.assistant, title="Ticket1",
                                             content="TestContent", inbox=self.inbox)
         self.ticket2 = Ticket.objects.create(author=self.student, assignee=self.assistant, title="Ticket2",
@@ -66,7 +65,6 @@ class TicketTestCase(TransactionTestCase):
                                              content="TestContent", inbox=self.inbox)
         self.ticket3.add_label(self.label)
         self.ticket2.add_label(self.label2)
-
 
 
 class TicketTestBackendCase(TicketTestCase):
