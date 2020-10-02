@@ -2,7 +2,10 @@
   <div class="flex flex-column flex-wrap w-full pr-4">
     <div class="mt-3 w-full">
       <comment :comment="ticket"/>
-      <comment :comment="comment" :key="comment.id" :ticket="ticket" v-for="comment in replies"/>
+      <div v-for="entry in content">
+        <comment v-if="entry.content" :comment="entry" :key="`comment-${entry.id}`" :ticket="ticket"/>
+        <ticket-event v-else :ticket_event="entry" :key="`event-${entry.id}`" @remove_attachment="removeAttachment" />
+      </div>
     </div>
 
     <div class="flex w-full">
@@ -27,9 +30,12 @@
   import Card from "../elements/card/Card";
   import Editor from "../elements/markdown/Editor";
   import axios from "axios";
+  import TicketEvent from "./TicketEvent";
+  import moment from "moment";
 
   export default {
     components: {
+      TicketEvent,
       Avatar,
       Comment,
       Editor,
@@ -41,6 +47,10 @@
         required: true
       },
       replies: {
+        required: true,
+        default: []
+      },
+      events: {
         required: true,
         default: []
       },
@@ -75,9 +85,51 @@
         } else {
           return "Reply"
         }
+      },
+      content: function () {
+        const mergeMinutes = 5
+        const entries = []
+        const tempEntries = this.replies.concat(this.events).concat(this.ticket.attachments)
+        tempEntries.sort((a, b) => moment(a.date_created).diff(moment(b.date_created)))
+
+        for (let entry of tempEntries) {
+          if (entries.length > 0) {
+            const top = entries[entries.length - 1]
+
+            const timeDiffMinutes = moment(entry.date_created).diff(moment(top.date_created), "m")
+
+            // merge label events
+            if (entry.hasOwnProperty("label")) {
+              if (top.hasOwnProperty("labels")
+                  && timeDiffMinutes <= mergeMinutes
+                  && top.is_added === entry.is_added
+                  && JSON.stringify(entry.initiator) === JSON.stringify(top.initiator)) {
+                top.labels.push(entry.label)
+              } else {
+                entry.labels = [entry.label]
+                entries.push(entry)
+              }
+            } else if (entry.hasOwnProperty("file")) {
+              if (top.hasOwnProperty("attachments")
+                  && timeDiffMinutes <= mergeMinutes
+                  && JSON.stringify(entry.uploader) === JSON.stringify(top.uploader)) {
+                top.attachments.push(entry)
+              } else {
+                entry.attachments = [{...entry}]
+                entries.push(entry)
+              }
+            } else {
+              entries.push(entry)
+            }
+
+          } else {
+            entries.push(entry)
+          }
+        }
+
+        return entries
       }
     }
-
   }
 </script>
 
