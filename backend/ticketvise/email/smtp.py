@@ -2,12 +2,15 @@ from email import policy
 from email.parser import BytesParser
 
 from aiosmtpd.controller import Controller
-from django.db import transaction
+from asgiref.sync import sync_to_async
+from django.db.models import Q
 from email_reply_parser import EmailReplyParser
 
 from ticketvise import settings
-# from ticketvise.models.user import User
+from ticketvise.models.comment import Comment
 from ticketvise.models.inbox import Inbox
+from ticketvise.models.ticket import Ticket
+from ticketvise.models.user import User
 
 
 class SmtpServer:
@@ -16,16 +19,17 @@ class SmtpServer:
         self.controller = Controller(self, hostname="127.0.0.1", port=settings.SMTP_INBOUND_PORT)
         super().__init__()
 
-    async def handle_RCPT(self, server, session, envelope, address, rcpt_options):
-        emails = Inbox.objects.all().values_list("email")
-
-        if address not in emails:
+    @sync_to_async
+    def handle_RCPT(self, server, session, envelope, address, rcpt_options):
+        if not Inbox.objects.filter(email=address).exists():
             return '550 not relaying to that domain'
+
         envelope.rcpt_tos.append(address)
 
         return '250 OK'
 
-    async def handle_DATA(self, server, session, envelope):
+    @sync_to_async
+    def handle_DATA(self, server, session, envelope):
         mail_from = envelope.mail_from
 
         message = BytesParser(policy=policy.default).parsebytes(envelope.content)
@@ -41,26 +45,18 @@ class SmtpServer:
 
         return '250 OK'
 
-    @transaction.atomic
     def handle_new_ticket(self, mail_from, rcpt_tos, subject, content):
-        user = User.objects.filter(email=mail_from).first()
-        #
-        # if not user:
-        #     user = User.objects.create(email=mail_from)
-        #
-        # inbox = Inbox.objects.get(email__in=rcpt_tos)
-        # Ticket.objects.create(author=user, inbox=inbox, title=subject, content=content)
+        user = User.objects.get_or_create(email=mail_from)
 
-    @transaction.atomic
+        inbox = Inbox.objects.get(email__in=rcpt_tos)
+        Ticket.objects.create(author=user, inbox=inbox, title=subject, content=content)
+
     def handle_reply(self, mail_from, message_id, content):
-        user = User.objects.filter(email=mail_from).first()
-        #
-        # if not user:
-        #     user = User.objects.create(email=mail_from)
-        #
-        # ticket = Ticket.objects.get(Q(reply_message_id=message_id) | Q(comment_message_id=message_id))
-        # Comment.objects.create(ticket=ticket, author=user, is_reply=ticket.reply_message_id == message_id,
-        #                        content=content)
+        user = User.objects.get_or_create(email=mail_from)
+
+        ticket = Ticket.objects.get(Q(reply_message_id=message_id) | Q(comment_message_id=message_id))
+        Comment.objects.create(ticket=ticket, author=user, is_reply=ticket.reply_message_id == message_id,
+                               content=content)
 
     def start(self):
         try:
