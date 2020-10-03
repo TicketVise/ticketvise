@@ -1,9 +1,7 @@
-{% extends "inbox/base.html" %}
+{% extends "navigation_side.html" %}
 {% load ticketvise_extras %}
 
-<!-- STATISTICS FOR MANAGER ABOUT INBOX AND ITS ASSISTANTS. -->
-
-{% block inbox-content %}
+{% block content %}
 <div class="container mx-auto pt-4 sm:px-2 lg:px-4">
   <h3 class="text-lg leading-6 font-medium text-gray-900 px-4 pb-1">
     Last week
@@ -99,4 +97,4 @@
   <div id="inbox-statistics"></div>
 </div>
 
-  {% endblock inbox-content %}
+{% endblock content %}

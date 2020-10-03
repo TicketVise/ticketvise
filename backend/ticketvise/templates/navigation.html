@@ -184,9 +184,11 @@
     </div>
 </nav>
 
-{% block content %}
-if you see this, something is wrong!
-{% endblock content %}
+<div class="h-full overflow-y-auto">
+    {% block content %}
+    if you see this, something is wrong!
+    {% endblock content %}
+</div>
 
 {% endblock body %}
 

@@ -1,7 +1,7 @@
 <template>
-  <section class="flex flex-col h-full flex-grow">
+  <section class="flex flex-col h-full flex-grow justify-start">
     <div class="flex flex-col md:grid md:grid-cols-5 md:gap-2 p-4 space-y-2 md:space-y-0">
-      <div class="flex space-x-2 md:col-span-2 lg:col-span-3 items-center">
+      <div class="flex space-x-2 md:col-span-2 xl:col-span-3 items-center">
         <search-bar v-model="search" v-on:input="get_tickets" class="flex-grow px-2"></search-bar>
 
         <!-- Change view -->
@@ -14,8 +14,7 @@
         </button>
       </div>
 
-      <!--MY TICKETS-->
-      <div class="flex space-x-2 md:col-span-3 lg:col-span-2 items-center">
+      <div class="flex space-x-2 md:col-span-3 xl:col-span-2 items-center">
         <!--FILTER LABELS-->
         <div class="flex-grow">
           <label-dropdown :selected="labels" :values="inbox_labels" v-model="labels" v-on:input="updateLabels"/>
@@ -55,7 +54,7 @@
     </div>
 
     <!-- Columns -->
-    <div v-else class="w-full flex md:space-x-4 flex-grow overflow-x-auto px-4 mb-4 space-x-2">
+    <div v-else class="max-w-full flex md:space-x-4 flex-grow overflow-x-auto px-4 mb-4 space-x-2">
       <ticket-column
         v-for="(column, i) in tickets"
         :key="i"
@@ -63,7 +62,7 @@
         :title="column.label"
         :personal="showPersonal"
         :ticket-list="column.tickets"
-        class="min-w-3/4 sm:min-w-1/2 lg:min-w-0"
+        class="min-w-3/4 sm:min-w-1/2 md:min-w-0"
       />
     </div>
   </section>
