@@ -38,6 +38,10 @@ services:
       POSTGRES_USER: ticketvise
       POSTGRES_PASSWORD: Welkom01
 
+  mail:
+    image: ticketvise/mail
+    build: ./postfix
+
   cronjob:
     image: ticketvise/cronjob
     build: ./cronjob
