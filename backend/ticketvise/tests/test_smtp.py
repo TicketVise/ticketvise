@@ -1,4 +1,4 @@
-from smtplib import SMTP
+from smtplib import SMTP, SMTPDataError
 from django.test import TestCase, LiveServerTestCase
 
 from ticketvise.email.smtp import SmtpServer
@@ -26,7 +26,7 @@ class SmtpServerTestCase(LiveServerSingleThreadedTestCase):
         self.address = (self.smtp_server.controller.hostname, self.smtp_server.controller.port)
 
         # setup test data
-        self.inbox = Inbox.objects.create(code="test", name="test-inbox", email="ticket@ticketvise.com")
+        self.inbox = Inbox.objects.create(code="test", name="test-inbox", email="ticket@ticketvise.com", enable_create_new_ticket_by_email=True)
         self.student = User.objects.create(username="student", email="student@ticketvise.com")
         self.assistant = User.objects.create(username="assistant", email="assistant@ticketvise.com")
         self.ticket = Ticket.objects.create(inbox=self.inbox, author=self.student, assignee=self.assistant,
@@ -144,3 +144,47 @@ class SmtpServerTestCase(LiveServerSingleThreadedTestCase):
             client.sendmail(from_email, [to_email], email_message)
 
         self.assertTrue(Comment.objects.filter(ticket=self.ticket, content=content, is_reply=False).exists())
+
+    def test_reply_by_email_disabled(self):
+        self.inbox.enable_reply_by_email = False
+        self.inbox.save()
+
+        from_email = self.student.email
+        to_email = self.inbox.email
+        content = "This is the content!!??"
+        email_message = "\n".join([
+            f"From: {from_email}",
+            f"To: {to_email}",
+            f"Subject: This must be the title2343!!?",
+            f"Message-ID: <{self.ticket.comment_message_id}@ticketvise.com>",
+            "",
+            content
+        ])
+
+        with self.assertRaises(SMTPDataError):
+            with SMTP(*self.address) as client:
+                client.sendmail(from_email, [to_email], email_message)
+
+        self.assertFalse(Comment.objects.filter(ticket=self.ticket, content=content, is_reply=False).exists())
+
+    def test_create_ticket_by_email_disabled(self):
+        self.inbox.enable_create_new_ticket_by_email = False
+        self.inbox.save()
+
+        from_email = self.student.email
+        to_email = self.inbox.email
+        title = "This must be the title2343!!?"
+        content = "This is the content!!??"
+        email_message = "\n".join([
+            f"From: {from_email}",
+            f"To: {to_email}",
+            f"Subject: {title}",
+            "",
+            content
+        ])
+
+        with self.assertRaises(SMTPDataError):
+            with SMTP(*self.address) as client:
+                client.sendmail(from_email, [to_email], email_message)
+
+        self.assertFalse(Ticket.objects.filter(title=title, content=content).exists())

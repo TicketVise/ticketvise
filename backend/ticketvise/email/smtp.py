@@ -53,11 +53,16 @@ class SmtpServer:
                     return '501 Invalid Message-ID format'
 
                 ticket = Ticket.objects.get(Q(reply_message_id=messageId) | Q(comment_message_id=messageId))
+                if not ticket.inbox.enable_reply_by_email:
+                    return '450 Reply by email is disabled for the inbox'
+
                 Comment.objects.create(ticket=ticket, author=author, is_reply=ticket.reply_message_id == messageId,
                                        content=reply)
             else:
-
                 inbox = Inbox.objects.get(email__in=envelope.rcpt_tos,)
+                if not inbox.enable_create_new_ticket_by_email:
+                    return '450 Creation of ticket by email is disabled for the inbox'
+
                 Ticket.objects.create(author=author, inbox=inbox, title=message["Subject"], content=reply)
 
         return '250 OK'

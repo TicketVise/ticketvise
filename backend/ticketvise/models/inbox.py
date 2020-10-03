@@ -53,6 +53,8 @@ class Inbox(models.Model):
     close_answered_weeks = models.PositiveIntegerField(default=0)
     alert_coordinator_unanswered_days = models.PositiveIntegerField(default=0)
     email = models.EmailField(null=True, unique=True)
+    enable_create_new_ticket_by_email = models.BooleanField(default=False)
+    enable_reply_by_email = models.BooleanField(default=True)
     is_active = models.BooleanField(default=True)
     date_edited = models.DateTimeField(auto_now=True)
     date_created = models.DateTimeField(auto_now_add=True)
