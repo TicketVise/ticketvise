@@ -109,8 +109,8 @@
           </ul>
 
           <div class="lg:container">
-            <external-tab v-show="ticket && user && replies && activeTab === 'external'" :ticket="ticket"
-                          :replies="replies" v-on:post="onReplyPost" :user="user"/>
+            <external-tab v-show="ticket && user && replies && events && activeTab === 'external'" :ticket="ticket"
+                          :replies="replies" :events="events" v-on:post="onReplyPost" :user="user"/>
             <internal-tab v-show="ticket && user && comments && is_staff && activeTab === 'internal'" :ticket="ticket"
                           :comments="comments" v-on:post="onCommentPost" :user="user" :staff="staff_excluding_self"/>
             <attachments-tab v-if="ticket && activeTab === 'attachments'" :ticket="ticket" @uploaded="updateTicket"/>
@@ -125,7 +125,7 @@
 import Comment from "./Comment";
 import Avatar from "../elements/Avatar";
 import axios from "axios";
-import  'codemirror/lib/codemirror.css';
+import 'codemirror/lib/codemirror.css';
 import VueTribute from 'vue-tribute';
 
 import Mention from "../elements/mention/Mention";
@@ -166,6 +166,7 @@ export default {
       labels: [],
       comments: [],
       staff: [],
+      events: [],
       activeTab: 'external',
       user: {},
       role: "",
@@ -188,6 +189,7 @@ export default {
       axios.defaults.xsrfHeaderName = "X-CSRFTOKEN";
 
       axios.put("/api/notifications/read" + window.location.pathname).then(_ => {
+
       });
 
       axios.get("/api/me").then(response => {
@@ -223,6 +225,10 @@ export default {
     axios.get("/api" + window.location.pathname + "/replies").then(response => {
       this.replies = response.data;
     });
+
+    axios.get("/api" + window.location.pathname + "/events").then(response => {
+      this.events = response.data;
+    });
   },
   computed: {
 
@@ -246,7 +252,12 @@ export default {
     onReplyPost: function () {
       axios.get("/api" + window.location.pathname + "/replies").then(response => {
         this.replies = response.data;
+
+        return axios.get("/api" + window.location.pathname + "/events")
+      }).then(response => {
+        this.events = response.data;
       });
+
 
       axios.get("/api" + window.location.pathname).then(response => {
         this.ticket = response.data;
@@ -266,7 +277,12 @@ export default {
       axios.defaults.xsrfHeaderName = "X-CSRFTOKEN";
 
       this.ticket.status = "CLSD";
-      axios.patch("/api" + window.location.pathname + "/status/close").then(_ => {})
+      axios.patch("/api" + window.location.pathname + "/status/close").then(_ => {
+        return axios.get("/api" + window.location.pathname + "/events")
+      }).then(response => {
+        this.events = response.data;
+      });
+
     },
     openTicket: function () {
       axios.defaults.xsrfCookieName = 'csrftoken';
@@ -294,7 +310,11 @@ export default {
     updateAssignee() {
       axios.get("/api" + window.location.pathname).then(response => {
         this.ticket = response.data;
-      })
+
+        return axios.get("/api" + window.location.pathname + "/events")
+      }).then(response => {
+        this.events = response.data;
+      });
     },
     updateLabels() {
       axios.defaults.xsrfCookieName = 'csrftoken';
@@ -304,7 +324,9 @@ export default {
           {
             "labels": this.labels.map(label => label.id)
           }).then(_ => {
-
+        return axios.get("/api" + window.location.pathname + "/events")
+      }).then(response => {
+        this.events = response.data;
       });
     },
     updateTicket() {
