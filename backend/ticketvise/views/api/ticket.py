@@ -409,7 +409,12 @@ class TicketEventsApiView(UserHasAccessToTicketMixin, ListAPIView):
         inbox = get_object_or_404(Inbox, pk=self.kwargs["inbox_id"])
         ticket = get_object_or_404(Ticket, inbox=inbox, ticket_inbox_id=self.kwargs["ticket_inbox_id"])
 
-        return TicketEvent.objects.filter(ticket=ticket).select_subclasses()
+        if self.request.user.is_assistant_or_coordinator(inbox):
+            return TicketEvent.objects.filter(ticket=ticket).select_subclasses()
+
+        return TicketEvent.objects.filter(ticket=ticket)\
+            .exclude(ticketlabelevent__label__is_visible_to_guest=False).\
+            select_subclasses()\
 
 
 class TicketSharedAPIView(UserIsTicketAuthorOrInboxStaffMixin, RetrieveUpdateAPIView):

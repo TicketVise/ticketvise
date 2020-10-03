@@ -53,9 +53,8 @@ class TicketTestCase(TransactionTestCase):
         self.manager.add_inbox(self.inbox)
         self.manager.set_role_for_inbox(self.inbox, Role.MANAGER)
 
-        self.label = Label.objects.create(name="TestLabel", inbox=self.inbox, is_visible_to_guest=True)
+        self.label = Label.objects.create(name="Test-Label", inbox=self.inbox, is_visible_to_guest=True)
         self.label2 = Label.objects.create(name="TestLabel2", inbox=self.inbox, is_visible_to_guest=True)
-
 
         self.ticket = Ticket.objects.create(author=self.student, assignee=self.assistant, title="Ticket1",
                                             content="TestContent", inbox=self.inbox)
@@ -66,7 +65,6 @@ class TicketTestCase(TransactionTestCase):
                                              content="TestContent", inbox=self.inbox)
         self.ticket3.add_label(self.label)
         self.ticket2.add_label(self.label2)
-
 
 
 class TicketTestBackendCase(TicketTestCase):
