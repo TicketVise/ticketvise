@@ -1,26 +1,15 @@
 <template>
-  <div class="flex flex-col h-full">
-    <!-- Header -->
-    <div class="border-b shadow flex justify-center">
-      <div class="container px-4 mb-4 mt-2 xl:flex xl:items-center xl:justify-between" v-if="inbox">
-        <div class="flex-1 min-w-0">
-          <a :href="`/inboxes/${inbox_id}/tickets`" class="text-xs text-gray-700 hover:underline cursor-pointer">
-            <i class="fa fa-arrow-left mr-2"></i>
-            {{ inbox ? inbox.name : '' }}
-          </a>
-          <h2 class="text-2xl font-bold leading-7 text-gray-900 sm:text-3xl sm:leading-9 sm:truncate">
-            Create a new ticket
-          </h2>
-        </div>
-      </div>
-    </div>
-
+  <div class="flex flex-col">
     <div class="container mx-auto m-2 mb-4 px-4">
+      <h2 class="text-xl font-bold leading-7 text-gray-900 sm:text-3xl sm:leading-9 sm:truncate mb-4">
+        Create a new ticket
+      </h2>
       <!-- Labels -->
       <div class="mb-4">
         <label class="block text-gray-700 font-bold mb-2" for="title">
           Title
         </label>
+        <error class="mb-2" v-for="error in this.errors.title" :key="error" :message="error"></error>
         <input
           class="appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none"
           id="title"
@@ -30,18 +19,17 @@
           v-model="title"
         >
       </div>
-      <error v-for="error in this.errors.title" :key="error" :message="error"></error>
 
       <!-- Question content -->
       <h4 class="block text-gray-700 font-bold mb-2">Question</h4>
+      <error class="mb-2" v-for="error in this.errors.content" :key="error" :message="error"></error>
       <card outlined class="mb-4 w-full">
         <editor ref="editor" initialEditType="wysiwyg" previewStyle="tab"/>
       </card>
-      <error v-for="error in this.errors.content" :key="error" :message="error"></error>
 
       <!-- Labels -->
       <h4 class="block text-gray-700 font-bold mb-2">Labels</h4>
-      <error v-for="error in this.errors.labels" :key="error" :message="error"></error>
+      <error class="mb-2" v-for="error in this.errors.labels" :key="error" :message="error"></error>
       <div class="flex flex-wrap mb-2" v-if="labels.length > 0">
         <chip :background="label.color" :key="label.id" class="m-1" v-for="label in labels">
           {{ label.name }}
@@ -54,16 +42,16 @@
         <label-dropdown :values="inbox_labels" v-model="labels"/>
       </div>
 
-      <!-- Attachments -->
-      <h4 class="block text-gray-700 font-bold mb-2">Attachments</h4>
-      <file-upload v-bind:value="files" v-on:input="setFiles" class="mb-4"></file-upload>
-      <error v-for="error in this.errors.attachments" :key="error" :message="error"></error>
-
       <!-- Share with -->
       <div class="mb-4">
         <edit-share-with :shared_with="shared_with" :errors="errors" class="mb-2 w-1/5" :inbox_id="inbox_id"
                          v-on:input="updateSharedWith"></edit-share-with>
       </div>
+
+      <!-- Attachments -->
+      <h4 class="block text-gray-700 font-bold mb-2">Attachments</h4>
+      <error class="mb-2" v-for="error in this.errors.attachments" :key="error" :message="error"></error>
+      <file-upload v-bind:value="files" v-on:input="setFiles" class="mb-4"></file-upload>
 
       <submit-button v-on:click.native="submit" text="Submit" class="bg-primary hover:bg-orange-500 text-white">
         <i class="fa fa-paper-plane mr-2"></i>

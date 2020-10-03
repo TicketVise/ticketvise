@@ -6,9 +6,10 @@
 
 {% block content %}
 <span
-    class="fixed bottom-4 right-4 shadow-xl rounded-full md:hidden z-10"
+    class="fixed bottom-2 right-2 shadow-xl rounded-full md:hidden z-10"
     x-data="{ atTop: (window.pageYOffset > 0) ? false : true }"
-    x-on:scroll.window="atTop = (window.pageYOffset > 0) ? false : true"
+    x-on:scroll.window="atTop = (window.pageYOffset > 0) ? false : true;"
+    x-on:scroll.window="alert(window.pageYOffset)"
 >
     <a
         href="{% url 'new_ticket' inbox.id %}"
