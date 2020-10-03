@@ -60,3 +60,37 @@ class TestTicketEvent(TicketTestCase):
         self.assertContains(response, "\"id\":" + str(self.manager.id))
         self.assertContains(response, "\"is_added\":true")
         self.assertContains(response, "\"is_added\":false")
+
+    def test_hide_certain_labels_for_student(self):
+        self.client.force_login(self.student)
+
+        self.label.is_visible_to_guest = False
+        self.label.save()
+
+        self.ticket.add_label(self.label)
+        self.ticket.add_label(self.label2)
+
+
+        url = "/api/inboxes/{}/tickets/{}/events".format(self.ticket.inbox.id, self.ticket.ticket_inbox_id)
+        response = self.client.get(url)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertNotContains(response, self.label.name)
+        self.assertContains(response, self.label2.name)
+
+    def test_hide_certain_labels_not_for_staff(self):
+        self.client.force_login(self.assistant)
+
+        self.label.is_visible_to_guest = False
+        self.label.save()
+
+        self.ticket.add_label(self.label)
+        self.ticket.add_label(self.label2)
+
+        url = "/api/inboxes/{}/tickets/{}/events".format(self.ticket.inbox.id, self.ticket.ticket_inbox_id)
+        response = self.client.get(url)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, self.label.name)
+        self.assertContains(response, self.label2.name)
+
