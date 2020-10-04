@@ -6,7 +6,7 @@
     <div class="flex flex-wrap mb-2" v-if="shared_with.length > 0">
       <chip v-for="(user, index) in shared_with" :key="user.id" class="my-1 mx-1">
         {{ user.first_name }} {{ user.last_name }}
-        <a class="fa fa-close cursor-pointer" @click="removeSharedWith(index)"></a>
+        <a class="fa fa-close cursor-pointer ml-1" @click="removeSharedWith(index)"></a>
       </chip>
     </div>
     <form @submit.prevent="username.length ? getUsername(username) : {}" class="flex space-x-2 w-full mb-2">

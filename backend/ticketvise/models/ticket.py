@@ -139,11 +139,19 @@ class Ticket(models.Model):
             for user in self.inbox.get_assistants_and_coordinators():
                 NewTicketNotification.objects.create(ticket=self, receiver=user)
 
+
 class TicketSharedUser(models.Model):
-    ticket = models.ForeignKey(Ticket, on_delete=models.CASCADE)
-    user = models.ForeignKey("User", on_delete=models.CASCADE)
+    ticket = models.ForeignKey(Ticket, on_delete=models.CASCADE, related_name="shared_with")
+    user = models.ForeignKey("User", on_delete=models.CASCADE, related_name="shared_with_me")
+    sharer = models.ForeignKey("User", null=True, on_delete=models.SET_NULL, related_name="shared_to")
     date_edited = models.DateTimeField(auto_now=True)
     date_created = models.DateTimeField(auto_now_add=True)
+
+    def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
+        if not self.id:
+            self.sharer = CurrentUserMiddleware.get_current_user()
+
+        super().save(force_insert, force_update, using, update_fields)
 
 
 class TicketLabel(models.Model):
