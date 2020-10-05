@@ -5,7 +5,7 @@
          :class="{'border-gray-400 border-b-2 mb-4': ticket_event.new_status === `CLSD`}">
       <div class="flex flex-col">
         <div class="flex flex-shrink-0 w-6 h-6 bg-gray-100 rounded-full mr-2 items-center justify-center text-gray-500"
-          :class="{'bg-red-400': ticket_event.new_status === 'CLSD', 'bg-green-500': ticket_event.old_status === 'CLSD'}">
+          :class="{'bg-red-500': ticket_event.new_status === 'CLSD', 'bg-green-500': ticket_event.old_status === 'CLSD'}">
           <i class="fa" v-bind:class="{
                   'fa-user': ticket_event.hasOwnProperty('assignee'),
                   'fa-tag': ticket_event.hasOwnProperty('label'),
