@@ -46,7 +46,6 @@ class Ticket(models.Model):
     """
 
     author = models.ForeignKey("User", on_delete=models.CASCADE, related_name="tickets")
-    shared_with = models.ManyToManyField("User", blank=True, through="TicketSharedUser")
     assignee = models.ForeignKey("User", on_delete=models.CASCADE, blank=True, null=True,
                                  related_name="assigned_tickets")
     inbox = models.ForeignKey("Inbox", on_delete=models.CASCADE, related_name="tickets")
@@ -100,8 +99,6 @@ class Ticket(models.Model):
             self.status = Status.PENDING
         else:
             self.status = Status.ASSIGNED
-
-
 
     @transaction.atomic
     def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
