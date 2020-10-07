@@ -178,7 +178,7 @@ class Command(BaseCommand):
         )
         student_bwesthof = User.objects.create(
             username="bwesthof",
-            first_name="Bartjan Westhof",
+            first_name="Bartjan",
             last_name="Westhof",
             password=password,
             email="bwesthof@ticketvise.com",
