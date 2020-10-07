@@ -287,6 +287,21 @@ class Command(BaseCommand):
         UserInbox.objects.create(user=assistant_tbijker, role=Role.AGENT, inbox=inbox_ds)
         UserInbox.objects.create(user=assistant_twesterkamp, role=Role.AGENT, inbox=inbox_ds)
         UserInbox.objects.create(user=coordinator_jreijers, role=Role.MANAGER, inbox=inbox_ds)
+        UserInbox.objects.create(user=user_coordinator, role=Role.MANAGER, inbox=inbox_ip)
+        UserInbox.objects.create(user=user_coordinator, role=Role.MANAGER, inbox=inbox_mp)
+        UserInbox.objects.create(user=user_coordinator, role=Role.MANAGER, inbox=inbox_pmpse)
+        UserInbox.objects.create(user=user_coordinator, role=Role.MANAGER, inbox=inbox_pse)
+        UserInbox.objects.create(user=user_coordinator, role=Role.MANAGER, inbox=inbox_pt)
+        UserInbox.objects.create(user=user_assistant, role=Role.AGENT, inbox=inbox_ip)
+        UserInbox.objects.create(user=user_assistant, role=Role.AGENT, inbox=inbox_mp)
+        UserInbox.objects.create(user=user_assistant, role=Role.AGENT, inbox=inbox_pmpse)
+        UserInbox.objects.create(user=user_assistant, role=Role.AGENT, inbox=inbox_pse)
+        UserInbox.objects.create(user=user_assistant, role=Role.AGENT, inbox=inbox_pt)
+        UserInbox.objects.create(user=user_student, role=Role.GUEST, inbox=inbox_ip)
+        UserInbox.objects.create(user=user_student, role=Role.GUEST, inbox=inbox_mp)
+        UserInbox.objects.create(user=user_student, role=Role.GUEST, inbox=inbox_pmpse)
+        UserInbox.objects.create(user=user_student, role=Role.GUEST, inbox=inbox_pse)
+        UserInbox.objects.create(user=user_student, role=Role.GUEST, inbox=inbox_pt)
 
         # Demo data for future use END------
 
