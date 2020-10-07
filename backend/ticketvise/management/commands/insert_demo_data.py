@@ -836,7 +836,7 @@ class Command(BaseCommand):
         comment_36 = Comment.objects.create(author=student_gmandemaker, ticket=ticket_38, is_reply=True,
                                             content="How does this look? I did some research and there seems "
                                                     "to be nothing wrong with this.\n"
-                                                    "``` c \n    class Node {\n    public:\n    int data;\n"
+                                                    "``` c \nclass Node {\n    public:\n    int data;\n"
                                                     "    Node* next;\n};\n ```", )
         add_date_to_comment(comment_36, datetime.timedelta(days=0, hours=22))
 
