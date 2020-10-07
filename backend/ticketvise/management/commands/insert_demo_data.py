@@ -32,8 +32,8 @@ class Command(BaseCommand):
             last_name="admin",
             password=password,
             email="admin@ticketvise.com",
-            is_staff=True,
-            is_superuser=True,
+            is_staff=False,
+            is_superuser=False,
         )
         user_ivan = User.objects.create(
             username="ivanstudent",
@@ -59,8 +59,8 @@ class Command(BaseCommand):
             last_name="Assistant",
             password=password,
             email="jelleassistant@ticketvise.com",
-            is_staff=True,
-            is_superuser=True,
+            is_staff=False,
+            is_superuser=False,
         )
         user_ana = User.objects.create(
             username="anacoordinator",
@@ -68,8 +68,8 @@ class Command(BaseCommand):
             last_name="Coordinator",
             password=password,
             email="info@ticketvise.com",
-            is_staff=True,
-            is_superuser=True,
+            is_staff=False,
+            is_superuser=False,
         )
         user_bryan = User.objects.create(
             username="bryanstudent",
@@ -77,8 +77,8 @@ class Command(BaseCommand):
             last_name="Student",
             password=password,
             email="bryanstudent@ticketvise.com",
-            is_staff=True,
-            is_superuser=True,
+            is_staff=False,
+            is_superuser=False,
         )
         user_tom = User.objects.create(
             username="tomassistant",
@@ -86,8 +86,8 @@ class Command(BaseCommand):
             last_name="Assistant",
             password=password,
             email="tomassistant@ticketvise.com",
-            is_staff=True,
-            is_superuser=True,
+            is_staff=False,
+            is_superuser=False,
         )
         user_marco = User.objects.create(
             username="marcoassistant",
@@ -95,8 +95,8 @@ class Command(BaseCommand):
             last_name="Assistant",
             password=password,
             email="marcoassistant@ticketvise.com",
-            is_staff=True,
-            is_superuser=True,
+            is_staff=False,
+            is_superuser=False,
         )
         user_no_pass = User.objects.create(
             username="nopass", first_name="no", last_name="password", email="nopass@ticketvise.com"
@@ -107,7 +107,7 @@ class Command(BaseCommand):
             code="5062STRE6Y", name="Project Software Engineering", round_robin_parameter=4
         )
         inbox_ip = Inbox.objects.create(code="5062BEST6Y", name="Inleiding Programmeren")
-        inbox_ds = Inbox.objects.create(code="5061DAVI6Y", name="Datastructuren")
+        inbox_ds = Inbox.objects.create(code="2020DS1864", name="Datastructuren")
 
         inbox_pt = Inbox.objects.create(code="5061DAVI5Y", name="Programmeertalen")
         inbox_mp = Inbox.objects.create(code="5061GAVI5Y", name="Master's Project ")
@@ -116,7 +116,7 @@ class Command(BaseCommand):
         )
 
         # Creating Labels
-        label_ds_heaps = Label.objects.create(inbox=inbox_ds, name="Heaps",  is_visible_to_guest=True)
+        label_ds_heaps = Label.objects.create(inbox=inbox_ds, name="Heaps", is_visible_to_guest=True)
         label_ds_list = Label.objects.create(inbox=inbox_ds, name="Linked List",
                                              is_visible_to_guest=True)
         label_ds_hash = Label.objects.create(inbox=inbox_ds, name="Hash Table",
@@ -141,35 +141,187 @@ class Command(BaseCommand):
                                                 is_visible_to_guest=True)
         label_pse_assignment = Label.objects.create(inbox=inbox_pse, name="Assignment",
                                                     is_visible_to_guest=True)
-        label_ip_hotel = Label.objects.create(inbox=inbox_ip, name="Hotel",  is_visible_to_guest=True)
+        label_ip_hotel = Label.objects.create(inbox=inbox_ip, name="Hotel", is_visible_to_guest=True)
         label_ip_quack = Label.objects.create(
             inbox=inbox_ip,
             name="Dr. Quackerjack",
             is_visible_to_guest=True,
         )
 
+        # Demo data for future use START-----
+        user_coordinator = User.objects.create(
+            username="examplecoordinator",
+            first_name="Example",
+            last_name="Coordinator",
+            password=password,
+            email="coordinator@ticketvise.com",
+            is_staff=False,
+            is_superuser=False,
+        )
+        user_assistant = User.objects.create(
+            username="exampleassistant",
+            first_name="Example",
+            last_name="Assistant",
+            password=password,
+            email="assistant@ticketvise.com",
+            is_staff=False,
+            is_superuser=False,
+        )
+        user_student = User.objects.create(
+            username="examplestudent",
+            first_name="Example",
+            last_name="Student",
+            password=password,
+            email="student@ticketvise.com",
+            is_staff=False,
+            is_superuser=False,
+        )
+        student_bwesthof = User.objects.create(
+            username="bwesthof",
+            first_name="Bartjan",
+            last_name="Westhof",
+            password=password,
+            email="bwesthof@ticketvise.com",
+            is_staff=False,
+            is_superuser=False,
+            avatar_url="/static/img/demo/bwesthof.jpg"
+        )
+        student_rwijnhoud = User.objects.create(
+            username="rwijnhoud",
+            first_name="Rolf",
+            last_name="Wijnhoud",
+            password=password,
+            email="rwijnhoud@ticketvise.com",
+            is_staff=False,
+            is_superuser=False,
+            avatar_url="/static/img/demo/rwijnhoud.jpg"
+        )
+        student_gmandemaker = User.objects.create(
+            username="gmandemaker",
+            first_name="Gerco",
+            last_name="Mandemaker",
+            password=password,
+            email="gmandemaker@ticketvise.com",
+            is_staff=False,
+            is_superuser=False,
+            avatar_url="/static/img/demo/gmandemaker.jpg"
+        )
+        student_smartinus = User.objects.create(
+            username="smartinus",
+            first_name="Sandy",
+            last_name="Martinus",
+            password=password,
+            email="smartinus@ticketvise.com",
+            is_staff=False,
+            is_superuser=False,
+            avatar_url="/static/img/demo/smartinus.jpg"
+        )
+        student_abrock = User.objects.create(
+            username="abrock",
+            first_name="Arno",
+            last_name="Brock",
+            password=password,
+            email="abrock@ticketvise.com",
+            is_staff=False,
+            is_superuser=False,
+            avatar_url="/static/img/demo/abrock.jpg"
+        )
+        assistant_tbijker = User.objects.create(
+            username="tbijker",
+            first_name="Tonia",
+            last_name="Bijker",
+            password=password,
+            email="tbijker@ticketvise.com",
+            is_staff=False,
+            is_superuser=False,
+            avatar_url="/static/img/demo/tbijker.jpg"
+        )
+        assistant_avdwerf = User.objects.create(
+            username="avdwerf",
+            first_name="Anis",
+            last_name="van der Werf",
+            password=password,
+            email="avdwerf@ticketvise.com",
+            is_staff=False,
+            is_superuser=False,
+            avatar_url="/static/img/demo/avdwerf.jpg"
+        )
+        assistant_rkempen = User.objects.create(
+            username="rkempen",
+            first_name="Ranil",
+            last_name="Kempen",
+            password=password,
+            email="rkempen@ticketvise.com",
+            is_staff=False,
+            is_superuser=False,
+            avatar_url="/static/img/demo/rkempen.jpg"
+        )
+        assistant_twesterkamp = User.objects.create(
+            username="twesterkamp",
+            first_name="Thom",
+            last_name="Westerkamp",
+            password=password,
+            email="twesterkamp@ticketvise.com",
+            is_staff=False,
+            is_superuser=False,
+            avatar_url="/static/img/demo/twesterkamp.jpg"
+        )
+        coordinator_jreijers = User.objects.create(
+            username="jreijers",
+            first_name="Jordi",
+            last_name="Reijers",
+            password=password,
+            email="jreijers@ticketvise.com",
+            is_staff=False,
+            is_superuser=False,
+            avatar_url="/static/img/demo/jreijers.jpg"
+        )
+
+        UserInbox.objects.create(user=student_abrock, role=Role.GUEST, inbox=inbox_ds)
+        UserInbox.objects.create(user=student_bwesthof, role=Role.GUEST, inbox=inbox_ds)
+        UserInbox.objects.create(user=student_rwijnhoud, role=Role.GUEST, inbox=inbox_ds)
+        UserInbox.objects.create(user=student_gmandemaker, role=Role.GUEST, inbox=inbox_ds)
+        UserInbox.objects.create(user=student_smartinus, role=Role.GUEST, inbox=inbox_ds)
+        UserInbox.objects.create(user=assistant_avdwerf, role=Role.AGENT, inbox=inbox_ds)
+        UserInbox.objects.create(user=assistant_rkempen, role=Role.AGENT, inbox=inbox_ds)
+        UserInbox.objects.create(user=assistant_tbijker, role=Role.AGENT, inbox=inbox_ds)
+        UserInbox.objects.create(user=assistant_twesterkamp, role=Role.AGENT, inbox=inbox_ds)
+        UserInbox.objects.create(user=coordinator_jreijers, role=Role.MANAGER, inbox=inbox_ds)
+        UserInbox.objects.create(user=user_coordinator, role=Role.MANAGER, inbox=inbox_ip)
+        UserInbox.objects.create(user=user_coordinator, role=Role.MANAGER, inbox=inbox_mp)
+        UserInbox.objects.create(user=user_coordinator, role=Role.MANAGER, inbox=inbox_pmpse)
+        UserInbox.objects.create(user=user_coordinator, role=Role.MANAGER, inbox=inbox_pse)
+        UserInbox.objects.create(user=user_coordinator, role=Role.MANAGER, inbox=inbox_pt)
+        UserInbox.objects.create(user=user_assistant, role=Role.AGENT, inbox=inbox_ip)
+        UserInbox.objects.create(user=user_assistant, role=Role.AGENT, inbox=inbox_mp)
+        UserInbox.objects.create(user=user_assistant, role=Role.AGENT, inbox=inbox_pmpse)
+        UserInbox.objects.create(user=user_assistant, role=Role.AGENT, inbox=inbox_pse)
+        UserInbox.objects.create(user=user_assistant, role=Role.AGENT, inbox=inbox_pt)
+        UserInbox.objects.create(user=user_student, role=Role.GUEST, inbox=inbox_ip)
+        UserInbox.objects.create(user=user_student, role=Role.GUEST, inbox=inbox_mp)
+        UserInbox.objects.create(user=user_student, role=Role.GUEST, inbox=inbox_pmpse)
+        UserInbox.objects.create(user=user_student, role=Role.GUEST, inbox=inbox_pse)
+        UserInbox.objects.create(user=user_student, role=Role.GUEST, inbox=inbox_pt)
+
+        # Demo data for future use END------
+
         # Creating user-inbox relationships
         # UserInbox.objects.create(user=user_admin, role=Role.AGENT)
         # UserInbox.objects.create(user=user_admin, role=Role.GUEST)
-        UserInbox.objects.create(user=user_ivan, role=Role.GUEST, inbox=inbox_ds)
         UserInbox.objects.create(user=user_ivan, role=Role.GUEST, inbox=inbox_ip)
         UserInbox.objects.create(user=user_ivan, role=Role.GUEST, inbox=inbox_pse)
         UserInbox.objects.create(user=user_julian, role=Role.GUEST, inbox=inbox_pse)
-        UserInbox.objects.create(user=user_jelle, role=Role.AGENT, inbox=inbox_ds)
         UserInbox.objects.create(user=user_jelle, role=Role.AGENT, inbox=inbox_ip)
         UserInbox.objects.create(user=user_jelle, role=Role.AGENT, inbox=inbox_pse)
         UserInbox.objects.create(user=user_ana, role=Role.MANAGER, inbox=inbox_pse)
         UserInbox.objects.create(user=user_ana, role=Role.MANAGER, inbox=inbox_pt)
         UserInbox.objects.create(user=user_ana, role=Role.MANAGER, inbox=inbox_mp)
         UserInbox.objects.create(user=user_ana, role=Role.MANAGER, inbox=inbox_pmpse)
-        UserInbox.objects.create(user=user_bryan, role=Role.AGENT, inbox=inbox_ds)
         UserInbox.objects.create(user=user_bryan, role=Role.AGENT, inbox=inbox_ip)
         UserInbox.objects.create(user=user_bryan, role=Role.GUEST, inbox=inbox_pse)
         UserInbox.objects.create(user=user_tom, role=Role.AGENT, inbox=inbox_pse)
-        UserInbox.objects.create(user=user_tom, role=Role.AGENT, inbox=inbox_ds)
         UserInbox.objects.create(user=user_tom, role=Role.AGENT, inbox=inbox_ip)
         UserInbox.objects.create(user=user_marco, role=Role.AGENT, inbox=inbox_pse)
-        UserInbox.objects.create(user=user_marco, role=Role.AGENT, inbox=inbox_ds)
         UserInbox.objects.create(user=user_marco, role=Role.AGENT, inbox=inbox_ip)
 
         # Creating tickets
@@ -222,17 +374,19 @@ class Command(BaseCommand):
         ticket_13.add_label(label_ip_hotel)
 
         ticket_14 = Ticket.objects.create(
-            author=user_ivan,
+            author=student_gmandemaker,
+            assignee=assistant_rkempen,
             inbox=inbox_ds,
             title="Do we need to make a singly linked list or a doubly linked list?",
             content="From the lecture I understood that getting the previous element in a doubly linked\
         list is in O(1) instead of O(n). However, the other functions may become slower cause I\
         need to change more pointers. So what type of list do I need to implement?",
         )
+        ticket_14.status = Status.ANSWERED
         ticket_14.add_label(label_ds_list)
 
         ticket_15 = Ticket.objects.create(
-            author=user_ivan,
+            author=student_gmandemaker,
             inbox=inbox_ds,
             title="What's the difference between a hash table and a linked list?",
             status=Status.ANSWERED,
@@ -278,16 +432,15 @@ class Command(BaseCommand):
         ticket_18.save()
 
         ticket_19 = Ticket.objects.create(
-            author=user_ivan,
-            assignee=user_tom,
-            inbox=inbox_pse,
+            author=student_abrock,
+            assignee=assistant_rkempen,
+            inbox=inbox_ds,
             title="My laptop broke.",
             content="I cannot help my team or make my report, help!",
         )
         ticket_19.date_created = timezone.now() - datetime.timedelta(hours=23)
         ticket_19.date_edited = timezone.now() - datetime.timedelta(hours=23)
-        ticket_19.add_label(label_pse_laptop)
-        ticket_19.add_label(label_pse_report)
+        ticket_19.add_label(label_ds_hash)
         ticket_19.status = Status.ANSWERED
         ticket_19.save()
 
@@ -516,6 +669,81 @@ class Command(BaseCommand):
         ticket_36.status = Status.ANSWERED
         ticket_36.save()
 
+        ticket_37 = Ticket.objects.create(
+            author=student_gmandemaker,
+            inbox=inbox_ds,
+            title="What happens if multiple objects get the same hash?",
+            content="What happens if multiple objects get the same hash?",
+        )
+        ticket_37.date_created = timezone.now() - datetime.timedelta(days=1, hours=18)
+        ticket_37.date_edited = timezone.now() - datetime.timedelta(days=1, hours=18)
+        ticket_37.add_label(label_ds_hash)
+        ticket_36.status = Status.ANSWERED
+        ticket_37.save()
+
+        ticket_38 = Ticket.objects.create(
+            author=student_gmandemaker,
+            assignee=assistant_tbijker,
+            inbox=inbox_ds,
+            title="How to define a linked list in C?",
+            content="I keep getting segmentation faults which do not help me!",
+        )
+        ticket_38.date_created = timezone.now() - datetime.timedelta(days=1, hours=2)
+        ticket_38.date_edited = timezone.now() - datetime.timedelta(days=1, hours=2)
+        ticket_38.add_label(label_ds_list)
+        ticket_38.status = Status.ANSWERED
+        ticket_38.save()
+
+        ticket_39 = Ticket.objects.create(
+            author=student_gmandemaker,
+            assignee=assistant_twesterkamp,
+            inbox=inbox_ds,
+            title="Which datastructure is best for a Stack?",
+            content="Which datastructure is best for a Stack?",
+        )
+        ticket_39.date_created = timezone.now() - datetime.timedelta(days=2, hours=1)
+        ticket_39.date_edited = timezone.now() - datetime.timedelta(days=2, hours=1)
+        ticket_39.save()
+
+        ticket_40 = Ticket.objects.create(
+            author=student_gmandemaker,
+            assignee=assistant_twesterkamp,
+            inbox=inbox_ds,
+            title="Do we have to use the framework?",
+            content="Do we have to use the framework?",
+        )
+        ticket_40.date_created = timezone.now() - datetime.timedelta(days=2, hours=13)
+        ticket_40.date_edited = timezone.now() - datetime.timedelta(days=2, hours=13)
+        ticket_40.status = Status.CLOSED
+        ticket_40.save()
+
+        ticket_41 = Ticket.objects.create(
+            author=student_gmandemaker,
+            assignee=assistant_rkempen,
+            inbox=inbox_ds,
+            title="Can we always use a hash table instead of a list?",
+            content="Can we always use a hash table instead of a list?",
+        )
+        ticket_41.date_created = timezone.now() - datetime.timedelta(days=2, hours=16)
+        ticket_41.date_edited = timezone.now() - datetime.timedelta(days=2, hours=16)
+        ticket_41.status = Status.CLOSED
+        ticket_41.add_label(label_ds_list)
+        ticket_41.add_label(label_ds_hash)
+        ticket_41.save()
+
+        ticket_42 = Ticket.objects.create(
+            author=student_gmandemaker,
+            assignee=assistant_avdwerf,
+            inbox=inbox_ds,
+            title="Do we need to balance a heap?",
+            content="Do we need to balance a heap?",
+        )
+        ticket_42.date_created = timezone.now() - datetime.timedelta(days=2, hours=16)
+        ticket_42.date_edited = timezone.now() - datetime.timedelta(days=2, hours=16)
+        ticket_42.status = Status.CLOSED
+        ticket_42.add_label(label_ds_heaps)
+        ticket_42.save()
+
         # Create Comments
         def add_date_to_comment(comment: Comment, timedelta):
             """
@@ -561,7 +789,7 @@ class Command(BaseCommand):
         add_date_to_comment(comment_18, datetime.timedelta(days=3, hours=14))
 
         comment_19 = Comment.objects.create(
-            author=user_tom, ticket=ticket_19, is_reply=True,
+            author=assistant_tbijker, ticket=ticket_19, is_reply=True,
             content="Maybe you can borrow a laptop from one of your peers.",
         )
         add_date_to_comment(comment_19, datetime.timedelta(hours=13))
@@ -612,3 +840,26 @@ class Command(BaseCommand):
         comment_36 = Comment.objects.create(author=user_ana, ticket=ticket_36, is_reply=True,
                                             content="Only the papers!", )
         add_date_to_comment(comment_36, datetime.timedelta(days=2, hours=14))
+
+        comment_36 = Comment.objects.create(author=assistant_tbijker, ticket=ticket_38, is_reply=True,
+                                            content="You need to create a struct object to store the data and point to "
+                                                    "the next object in the list. The point of a linked list is that "
+                                                    "you have multiple objects pointing to the next, you need to see "
+                                                    "all nodes in this list separately.", )
+        add_date_to_comment(comment_36, datetime.timedelta(days=1, hours=0))
+
+        comment_36 = Comment.objects.create(author=student_gmandemaker, ticket=ticket_38, is_reply=True,
+                                            content="How does this look? I did some research and there seems "
+                                                    "to be nothing wrong with this.\n"
+                                                    "``` c \nclass Node {\n    public:\n    int data;\n"
+                                                    "    Node* next;\n};\n ```", )
+        add_date_to_comment(comment_36, datetime.timedelta(days=0, hours=22))
+
+        comment_36 = Comment.objects.create(author=assistant_tbijker, ticket=ticket_38, is_reply=True,
+                                            content="It seems you are right, are you sure you declare the `Node*` "
+                                                    "before you use it?", )
+        add_date_to_comment(comment_36, datetime.timedelta(days=0, hours=22))
+
+        comment_36 = Comment.objects.create(author=student_gmandemaker, ticket=ticket_38, is_reply=True,
+                                            content="This was indeed the problem, Thanks for helping me", )
+        add_date_to_comment(comment_36, datetime.timedelta(days=0, hours=22))
