@@ -32,8 +32,8 @@ class Command(BaseCommand):
             last_name="admin",
             password=password,
             email="admin@ticketvise.com",
-            is_staff=False,
-            is_superuser=False,
+            is_staff=True,
+            is_superuser=True,
         )
         user_ivan = User.objects.create(
             username="ivanstudent",
