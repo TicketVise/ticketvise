@@ -83,12 +83,12 @@
 
           }
           this.username = "";
-          this.query = ""
+          this.query = "";
+          this.filterGuests()
         }).catch(error => {
               this.usernameErrors = error.response.data
             }
         )
-
       },
       submit(user) {
         this.username = user.username;
