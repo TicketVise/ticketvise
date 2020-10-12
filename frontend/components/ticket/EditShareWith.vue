@@ -33,7 +33,8 @@
           </div>
         </div>
       </div>
-      <submit-button v-on:click.native="username.length ? getUsername(username) : {}" class="bg-primary hover:bg-orange-500 text-white"
+      <submit-button v-on:click.native="username.length ? getUsername(username) : {}"
+                     class="bg-primary hover:bg-orange-500 text-white"
                      text="Share"></submit-button>
     </form>
     <error v-for="error in this.errors.shared_with" :key="error" :message="error"></error>
@@ -44,13 +45,13 @@
 <script>
   import SubmitButton from "../elements/buttons/SubmitButton"
   import axios from "axios"
-  import { mixin as clickaway } from 'vue-clickaway'
+  import {mixin as clickaway} from 'vue-clickaway'
 
   export default {
     name: "EditShareWith",
     components: {SubmitButton},
-    mixins: [ clickaway ],
-    props: ["inbox_id", "shared_with", "errors"],
+    mixins: [clickaway],
+    props: ["inbox_id", "shared_with", "errors", "author"],
     data() {
       return {
         username: "",
@@ -62,7 +63,8 @@
     },
     created() {
       axios.get("/api/inboxes/" + this.inbox_id + "/guests").then(response => {
-        this.guests = response.data
+        this.guests = response.data;
+        this.removeAuthorFromGuests()
       })
     },
     methods: {
@@ -94,12 +96,26 @@
         this.open = false
       },
       filterGuests() {
-        axios.get("/api/inboxes/" + this.inbox_id + "/guests", {params: {"q": this.query, "size": 5}}).then(response => {
+        axios.get("/api/inboxes/" + this.inbox_id + "/guests", {
+          params: {
+            "q": this.query,
+            "size": 5
+          }
+        }).then(response => {
           this.guests = response.data;
+          this.removeAuthorFromGuests()
         })
       },
       away() {
         this.open = false
+      },
+      removeAuthorFromGuests() {
+        // Remove author from list
+        if (this.author) {
+          this.guests = this.guests.filter(obj => {
+            return obj.id !== this.author.id
+          })
+        }
       }
     }
   }
