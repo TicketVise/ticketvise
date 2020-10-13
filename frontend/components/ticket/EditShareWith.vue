@@ -23,7 +23,7 @@
                   class="text-gray-900 hover:text-white hover:bg-orange-400 cursor-pointer select-none relative py-2 pl-3 pr-9"
                   id="listbox-item-0"
                   role="option"
-                  v-for="item in guests">
+                  v-for="item in guestsWithoutAuthor">
                 <div class="flex items-center space-x-3">
                   <avatar :source="item.avatar_url" class="w-6 h-6 rounded-full"></avatar>
                   <span class="font-normal block truncate">{{ item.first_name }} {{ item.last_name }}</span>
@@ -64,7 +64,6 @@
     created() {
       axios.get("/api/inboxes/" + this.inbox_id + "/guests").then(response => {
         this.guests = response.data;
-        this.removeAuthorFromGuests()
       })
     },
     methods: {
@@ -103,19 +102,22 @@
           }
         }).then(response => {
           this.guests = response.data;
-          this.removeAuthorFromGuests()
         })
       },
       away() {
         this.open = false
       },
-      removeAuthorFromGuests() {
+    },
+    computed: {
+      guestsWithoutAuthor: function () {
         // Remove author from list
+        let guests = this.guests;
         if (this.author) {
-          this.guests = this.guests.filter(obj => {
+          guests = guests.filter(obj => {
             return obj.id !== this.author.id
           })
         }
+        return guests
       }
     }
   }
