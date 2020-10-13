@@ -24,6 +24,7 @@
 <script>
   import Card from "../elements/card/Card";
   import {calendarDate} from "../../utils";
+  import Chip from "../elements/chip/Chip";
 
   export default {
     props: {
@@ -43,6 +44,7 @@
       }
     },
     components: {
+      Chip,
       Card
     },
     methods: {
