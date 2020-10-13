@@ -82,6 +82,7 @@ library.add([faColumns, faList, faMinus, faCheck])
 
 import axios from "axios";
 import _ from 'lodash';
+import TicketList from "./TicketList";
 
 const UNLABELLED_LABEL = {
   id: 0,
@@ -91,6 +92,7 @@ const UNLABELLED_LABEL = {
 
 export default {
   components: {
+    TicketList,
     TicketColumn,
     LabelDropdown,
     SubmitButton,

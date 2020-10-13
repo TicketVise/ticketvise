@@ -19,7 +19,7 @@
 
         <!-- Sharing -->
         <div class="px-4" v-if="canShare">
-          <edit-share-with :errors="errors" :inbox_id="ticket.inbox" :shared_with="shared_with"
+          <edit-share-with :errors="errors" :inbox_id="ticket.inbox" :shared_with="shared_with" :author="ticket.author"
                            v-on:input="updateSharedWith"></edit-share-with>
         </div>
 
