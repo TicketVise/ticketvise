@@ -1,8 +1,10 @@
-import {mount, shallowMount} from "@vue/test-utils";
+import {mount} from "@vue/test-utils";
 import TicketOverview from "../components/inbox/TicketOverview";
 import SearchBar from "../components/elements/SearchBar";
 import LabelDropdown from "../components/elements/dropdown/LabelDropdown";
 import SubmitButton from "../components/elements/buttons/SubmitButton";
+import TicketColumn from "../components/inbox/TicketColumn";
+import TicketList from "../components/inbox/TicketList";
 
 const colorData = ["#e76f51", "#e9c46a", "#2a9d8f", "#264653"];
 const inboxLabelsData = [{"name": "Assignment", "color": "#00ffcd", "id": 9}, {
@@ -85,25 +87,26 @@ const userData = {
 
 it("Ticket Overview navigation", async () => {
   const wrapper = mount(TicketOverview, {
-    data () {
+    data() {
       return {
-      color: colorData,
-      inbox_id: "1",
-      inbox_labels: inboxLabelsData,
-      is_staff: true,
-      showPersonal: false,
-      tickets: ticketsData,
-      user: userData,
-      search: null,
-      labels: [],
-      label: null,}
+        color: colorData,
+        inbox_id: "1",
+        inbox_labels: inboxLabelsData,
+        is_staff: true,
+        showPersonal: false,
+        tickets: ticketsData,
+        user: userData,
+        search: null,
+        labels: [],
+        label: null,
+        list: false,
+      }
     }
   });
 
   expect(wrapper.findAllComponents(SearchBar).length).toBe(1);
   expect(wrapper.findAllComponents(LabelDropdown).length).toBe(1);
 
-  let test = wrapper.vm.is_staff;
   let myTicketsButton = wrapper.findAllComponents(SubmitButton);
   expect(myTicketsButton.length).toBe(1);
 
@@ -112,4 +115,79 @@ it("Ticket Overview navigation", async () => {
   await myTicketsButton.trigger("click");
   await wrapper.vm.$nextTick();
   expect(wrapper.vm.showPersonal).toBeTruthy();
+
+  let columns = wrapper.findAllComponents(TicketColumn);
+  expect(columns.length).toBe(ticketsData.length);
+});
+
+it("Listview change", async () => {
+  const wrapper = mount(TicketOverview, {
+    data() {
+      return {
+        color: colorData,
+        inbox_id: "1",
+        inbox_labels: inboxLabelsData,
+        is_staff: true,
+        showPersonal: false,
+        tickets: ticketsData,
+        user: userData,
+        search: null,
+        labels: [],
+        label: null,
+        list: false,
+      }
+    }
+  });
+
+  let buttons = wrapper.findAll("button");
+  let listButtonMobile = buttons.at(1);
+  let myTicketsButton = buttons.at(3);
+  let ListButton = buttons.at(4);
+
+  expect(myTicketsButton.html()).toContain("My Tickets");
+
+  expect(wrapper.vm.list).toBeFalsy();
+  await ListButton.trigger("click");
+  await wrapper.vm.$nextTick();
+  expect(wrapper.vm.list).toBeTruthy();
+
+  await ListButton.trigger("click");
+  await wrapper.vm.$nextTick();
+  expect(wrapper.vm.list).toBeFalsy();
+
+  expect(wrapper.vm.list).toBeFalsy();
+  await listButtonMobile.trigger("click");
+  await wrapper.vm.$nextTick();
+  expect(wrapper.vm.list).toBeTruthy();
+
+  await listButtonMobile.trigger("click");
+  await wrapper.vm.$nextTick();
+  expect(wrapper.vm.list).toBeFalsy();
+});
+
+
+it("Listview show", async () => {
+  const wrapper = mount(TicketOverview, {
+    data() {
+      return {
+        color: colorData,
+        inbox_id: "1",
+        inbox_labels: inboxLabelsData,
+        is_staff: true,
+        showPersonal: false,
+        tickets: ticketsData,
+        user: userData,
+        search: null,
+        labels: [],
+        label: null,
+        list: true,
+      }
+    }
+  });
+
+  let columns = wrapper.findAllComponents(TicketColumn);
+  expect(columns.length).toBe(0);
+
+  let lists = wrapper.findAllComponents(TicketList);
+  expect(lists.length).toBe(ticketsData.length);
 });
