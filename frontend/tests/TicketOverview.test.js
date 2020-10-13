@@ -160,34 +160,13 @@ it("Listview change", async () => {
   await wrapper.vm.$nextTick();
   expect(wrapper.vm.list).toBeTruthy();
 
-  await listButtonMobile.trigger("click");
-  await wrapper.vm.$nextTick();
-  expect(wrapper.vm.list).toBeFalsy();
-});
-
-
-it("Listview show", async () => {
-  const wrapper = mount(TicketOverview, {
-    data() {
-      return {
-        color: colorData,
-        inbox_id: "1",
-        inbox_labels: inboxLabelsData,
-        is_staff: true,
-        showPersonal: false,
-        tickets: ticketsData,
-        user: userData,
-        search: null,
-        labels: [],
-        label: null,
-        list: true,
-      }
-    }
-  });
-
   let columns = wrapper.findAllComponents(TicketColumn);
   expect(columns.length).toBe(0);
 
   let lists = wrapper.findAllComponents(TicketList);
   expect(lists.length).toBe(ticketsData.length);
+
+  await listButtonMobile.trigger("click");
+  await wrapper.vm.$nextTick();
+  expect(wrapper.vm.list).toBeFalsy();
 });
