@@ -117,8 +117,9 @@ export default {
   }),
   methods: {
     get_tickets() {
-      let labels_ids = []
-      this.labels.forEach(label => labels_ids.push(label.id))
+      // Call this function by using callDebounceSearch
+      let labels_ids = [];
+      this.labels.forEach(label => labels_ids.push(label.id));
 
       axios.get(`/api${window.location.pathname}`, {
         params: {
