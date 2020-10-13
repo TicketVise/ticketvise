@@ -132,9 +132,11 @@ class Ticket(models.Model):
                                              old_status=old_ticket.status, new_status=self.status)
 
         if self.assignee and (not old_ticket or old_ticket.assignee != self.assignee):
+            current_user = CurrentUserMiddleware.get_current_user()
             TicketAssigneeEvent.objects.create(ticket=self, assignee=self.assignee,
-                                               initiator=CurrentUserMiddleware.get_current_user())
-            TicketAssignedNotification.objects.create(ticket=self, receiver=self.assignee)
+                                               initiator=current_user)
+            if current_user != self.assignee:
+                TicketAssignedNotification.objects.create(ticket=self, receiver=self.assignee)
         elif not self.assignee:
             for user in self.inbox.get_assistants_and_coordinators():
                 NewTicketNotification.objects.create(ticket=self, receiver=user)
