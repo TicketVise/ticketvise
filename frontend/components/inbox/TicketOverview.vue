@@ -133,11 +133,8 @@ export default {
       })
     },
     callDebounceSearch:_.debounce(function(){
-      this.debounceSearch();
+       this.get_tickets();
     }, 300),
-    debounceSearch() {
-      this.get_tickets()
-    },
     deleteEvent(index) {
       this.labels.splice(index, 1)
 
