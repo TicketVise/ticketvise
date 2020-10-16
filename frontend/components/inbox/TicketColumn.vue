@@ -6,20 +6,6 @@
     <div class="py-1 text-center border-t-2 bg-white rounded-tl rounded-tr" :style="`border-color: ${color};`">
       <p v-if="title === 'Closed'">{{ title }}</p>
       <p v-else>{{ title }} (<strong>{{ ticketList.length }}</strong>)</p>
-
-      <div class="is-marginless pretty p-icon p-round select-column" style="display: none;">
-        <input
-          :id="`select-column-${title}`"
-          :value="title"
-          autocomplete="off"
-          class="select-column-checkbox"
-          name="select-column-checkbox"
-          type="checkbox"/>
-        <div class="state">
-          <i class="icon fa fa-check"></i>
-          <label></label>
-        </div>
-      </div>
     </div>
 
     <div class="flex-grow border-t border-gray-700 border-opacity-50 overflow-y-auto">
@@ -46,16 +32,16 @@
 
 <style>
 .ticket-column {
-  height: calc((100vh - 266px) - 3rem);
+  height: calc((100vh - 255px) - 3rem);
 }
 @media screen and (min-width: 640px) {
   .ticket-column {
-    height: calc((100vh - 270px) - 3rem);
+    height: calc((100vh - 263px) - 3rem);
   }
 }
-@media screen and (min-width: 1024px) {
+@media screen and (min-width: 768px) {
   .ticket-column {
-    height: calc((100vh - 212px) - 3rem);
+    height: calc((100vh - 213px) - 3rem);
   }
 }
 </style>

@@ -1,8 +1,8 @@
 <template>
-  <section class="flex flex-col h-full flex-grow">
+  <section class="flex flex-col h-full flex-grow justify-start">
     <div class="flex flex-col md:grid md:grid-cols-5 md:gap-2 p-4 space-y-2 md:space-y-0">
-      <div class="flex space-x-2 md:col-span-2 lg:col-span-3 items-center">
-        <search-bar v-model="search" v-on:input="get_tickets" class="flex-grow px-2"></search-bar>
+      <div class="flex space-x-2 md:col-span-2 xl:col-span-3 items-center">
+        <search-bar v-model="search" v-on:input="callDebounceSearch" class="flex-grow px-2"></search-bar>
 
         <!-- Change view -->
         <button
@@ -14,8 +14,7 @@
         </button>
       </div>
 
-      <!--MY TICKETS-->
-      <div class="flex space-x-2 md:col-span-3 lg:col-span-2 items-center">
+      <div class="flex space-x-2 md:col-span-3 xl:col-span-2 items-center">
         <!--FILTER LABELS-->
         <div class="flex-grow">
           <label-dropdown :selected="labels" :values="inbox_labels" v-model="labels" v-on:input="updateLabels"/>
@@ -55,7 +54,7 @@
     </div>
 
     <!-- Columns -->
-    <div v-else class="w-full flex md:space-x-4 flex-grow overflow-x-auto px-4 mb-4 space-x-2">
+    <div v-else class="max-w-full flex md:space-x-4 flex-grow overflow-x-auto px-4 mb-4 space-x-2">
       <ticket-column
         v-for="(column, i) in tickets"
         :key="i"
@@ -63,7 +62,7 @@
         :title="column.label"
         :personal="showPersonal"
         :ticket-list="column.tickets"
-        class="min-w-3/4 sm:min-w-1/2 lg:min-w-0"
+        class="min-w-3/4 sm:min-w-1/2 md:min-w-0"
       />
     </div>
   </section>
@@ -82,6 +81,8 @@ import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 library.add([faColumns, faList, faMinus, faCheck])
 
 import axios from "axios";
+import _ from 'lodash';
+import TicketList from "./TicketList";
 
 const UNLABELLED_LABEL = {
   id: 0,
@@ -91,6 +92,7 @@ const UNLABELLED_LABEL = {
 
 export default {
   components: {
+    TicketList,
     TicketColumn,
     LabelDropdown,
     SubmitButton,
@@ -117,8 +119,9 @@ export default {
   }),
   methods: {
     get_tickets() {
-      let labels_ids = []
-      this.labels.forEach(label => labels_ids.push(label.id))
+      // Call this function by using callDebounceSearch
+      let labels_ids = [];
+      this.labels.forEach(label => labels_ids.push(label.id));
 
       axios.get(`/api${window.location.pathname}`, {
         params: {
@@ -131,6 +134,9 @@ export default {
         this.tickets = response.data
       })
     },
+    callDebounceSearch:_.debounce(function(){
+       this.get_tickets();
+    }, 300),
     deleteEvent(index) {
       this.labels.splice(index, 1)
 

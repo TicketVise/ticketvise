@@ -6,14 +6,17 @@ This file tests the ticket page that show the information of a ticket.
 import json
 
 from django.db import transaction
+from django.http import JsonResponse
 from django.test import Client, TransactionTestCase
 from django.urls import reverse
+from rest_framework.renderers import JSONRenderer
 
 from ticketvise.models.comment import Comment
 from ticketvise.models.inbox import Inbox, SchedulingAlgorithm
 from ticketvise.models.label import Label
 from ticketvise.models.ticket import Ticket, Status
 from ticketvise.models.user import User, Role
+from ticketvise.views.api.ticket import TicketSerializer
 from ticketvise.views.api.user import UserSerializer
 
 
@@ -53,9 +56,8 @@ class TicketTestCase(TransactionTestCase):
         self.manager.add_inbox(self.inbox)
         self.manager.set_role_for_inbox(self.inbox, Role.MANAGER)
 
-        self.label = Label.objects.create(name="TestLabel", inbox=self.inbox, is_visible_to_guest=True)
+        self.label = Label.objects.create(name="Test-Label", inbox=self.inbox, is_visible_to_guest=True)
         self.label2 = Label.objects.create(name="TestLabel2", inbox=self.inbox, is_visible_to_guest=True)
-
 
         self.ticket = Ticket.objects.create(author=self.student, assignee=self.assistant, title="Ticket1",
                                             content="TestContent", inbox=self.inbox)
@@ -66,7 +68,6 @@ class TicketTestCase(TransactionTestCase):
                                              content="TestContent", inbox=self.inbox)
         self.ticket3.add_label(self.label)
         self.ticket2.add_label(self.label2)
-
 
 
 class TicketTestBackendCase(TicketTestCase):
@@ -770,3 +771,38 @@ class TicketTestBackendCase(TicketTestCase):
         response = self.client.patch(f"/api/inboxes/{self.inbox.id}/tickets/{self.ticket.ticket_inbox_id}/status/open")
         self.assertEqual(response.status_code, 200)
         self.assertEqual(Ticket.objects.get(pk=self.ticket.id).status, Status.ANSWERED)
+
+    def test_get_ticket_search(self):
+        self.client.force_login(self.student)
+        self.ticket.shared_with.set([self.student])
+        self.ticket2.shared_with.set([self.student])
+        self.ticket3.shared_with.set([self.student])
+
+        data = {
+            "q": "",
+        }
+
+        response = self.client.get(f"/api/inboxes/{self.inbox.id}/tickets", data=data)
+        queryset = Ticket.objects.filter(inbox=self.inbox).order_by("-date_created")
+
+        json_data = JsonResponse(TicketSerializer(queryset, many=True).data, safe=False)
+        self.assertEqual(response.content, json_data.content)
+
+        data = {
+            "q": "student2",
+        }
+
+        response = self.client.get(f"/api/inboxes/{self.inbox.id}/tickets", data=data)
+        queryset = Ticket.objects.filter(inbox=self.inbox, author=self.student2).order_by("-date_created")
+        json_data = JsonResponse(TicketSerializer(queryset, many=True).data, safe=False)
+        self.assertEqual(response.content, json_data.content)
+
+        data = {
+            "q": "Ticket3",
+        }
+
+        response = self.client.get(f"/api/inboxes/{self.inbox.id}/tickets", data=data)
+        queryset = Ticket.objects.filter(inbox=self.inbox, title="Ticket3").order_by("-date_created")
+        json_data = JsonResponse(TicketSerializer(queryset, many=True).data, safe=False)
+        self.assertEqual(response.content, json_data.content)
+

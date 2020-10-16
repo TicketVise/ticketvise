@@ -29,6 +29,7 @@ class InboxLabelsView(InboxCoordinatorRequiredMixin, TemplateView):
         context["index_end"] = context["index_start"] - 1 + len(page)
         context["total_count"] = labels.count()
         context['labels'] = page
+        context["coordinator"] = Inbox.get_coordinator(context["inbox"])
 
         return context
 
@@ -46,6 +47,7 @@ class EditInboxLabelView(LabelCoordinatorRequiredMixin, UpdateView):
 
         context = super(UpdateView, self).get_context_data(**kwargs)
         context['inbox'] = inbox
+        context["coordinator"] = Inbox.get_coordinator(context["inbox"])
 
         return context
 
@@ -68,6 +70,7 @@ class CreateInboxLabelView(InboxCoordinatorRequiredMixin, CreateView):
 
         context = super(CreateView, self).get_context_data(**kwargs)
         context['inbox'] = inbox
+        context["coordinator"] = Inbox.get_coordinator(context["inbox"])
 
         return context
 
@@ -84,5 +87,6 @@ class DeleteInboxLabelView(LabelCoordinatorRequiredMixin, DeleteView):
 
         context = super(DeleteView, self).get_context_data(**kwargs)
         context['inbox'] = inbox
+        context["coordinator"] = Inbox.get_coordinator(context["inbox"])
 
         return context

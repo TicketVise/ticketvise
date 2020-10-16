@@ -1,19 +1,25 @@
 <template>
   <div class="flex w-full">
-    <div class="w-12 m-3 flex-shrink-0"/>
-    <div class="ml-3 flex text-sm flex-grow">
-      <div class="flex flex-col ">
-        <div class="flex flex-shrink-0 w-6 h-6 bg-gray-100 rounded-full mr-2 items-center justify-center text-gray-500">
+    <div class="w-12 m-3 flex-shrink-0 mb-2"/>
+    <div class="ml-3 flex text-sm flex-grow"
+         :class="{'border-gray-400 border-b-2 mb-4': ticket_event.new_status === `CLSD`}">
+      <div class="flex flex-col">
+        <div class="flex flex-shrink-0 w-6 h-6 bg-gray-100 rounded-full mr-2 items-center justify-center text-gray-500"
+          :class="{'bg-red-500': ticket_event.new_status === 'CLSD', 'bg-green-500': ticket_event.old_status === 'CLSD'}">
           <i class="fa" v-bind:class="{
                   'fa-user': ticket_event.hasOwnProperty('assignee'),
                   'fa-tag': ticket_event.hasOwnProperty('label'),
-                  'fa-bolt': ticket_event.hasOwnProperty('new_status'),
-                  'fa-file text-xs': ticket_event.hasOwnProperty('file')}"/>
+                  'fa-circle text-xs': ticket_event.hasOwnProperty('new_status'),
+                  'fa-file text-xs': ticket_event.hasOwnProperty('file'),
+                  'text-white': ticket_event.new_status === 'CLSD' || ticket_event.old_status === 'CLSD'}"/>
         </div>
         <div class="ml-3 h-full border-l border-gray-400 w-1"/>
       </div>
 
-      <div class="flex pb-6 items-center flex-grow">
+      <div class="flex items-center flex-grow" :class="{
+        'pb-4': ticket_event.new_status === 'CLSD',
+        'pb-6': ticket_event.new_status !== 'CLSD'
+      }">
 
         <div class="inline-block" v-if="ticket_event.labels">
           <avatar :source="ticket_event.initiator.avatar_url" class="inline-block w-5 h-5 mr-1"/>
