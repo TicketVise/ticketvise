@@ -1,0 +1,5 @@
+user = ticketvise
+password = Welkom01
+hosts = database
+dbname = ticketvise
+query = SELECT 1 FROM ticketvise_inbox WHERE email = '%s'

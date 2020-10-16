@@ -16,10 +16,11 @@ services:
       SQL_HOST: database
 
   mail:
+    # Quotes around ports are needed, see: https://docs.docker.com/compose/compose-file/#ports.
     ports:
-      - 25:25
-      - 465:465
-      - 587:587
+      - "25:25/tcp"
+      - "465:465/tcp"
+      - "587:587/tcp"
 
 volumes:
   static:
