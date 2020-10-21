@@ -46,6 +46,7 @@ class Ticket(models.Model):
     """
 
     author = models.ForeignKey("User", on_delete=models.CASCADE, related_name="tickets")
+    shared_with = models.ManyToManyField("User", blank=True, through="TicketSharedUser", through_fields=("ticket", "user"))
     assignee = models.ForeignKey("User", on_delete=models.CASCADE, blank=True, null=True,
                                  related_name="assigned_tickets")
     inbox = models.ForeignKey("Inbox", on_delete=models.CASCADE, related_name="tickets")
@@ -140,17 +141,12 @@ class Ticket(models.Model):
 
 
 class TicketSharedUser(models.Model):
-    ticket = models.ForeignKey(Ticket, on_delete=models.CASCADE, related_name="shared_with")
+    ticket = models.ForeignKey(Ticket, on_delete=models.CASCADE, related_name="shared_with_by")
     user = models.ForeignKey("User", on_delete=models.CASCADE, related_name="shared_with_me")
-    sharer = models.ForeignKey("User", null=True, on_delete=models.SET_NULL, related_name="shared_to")
+    sharer = models.ForeignKey("User", null=True, on_delete=models.SET_NULL, related_name="shared_to",
+                               default=CurrentUserMiddleware.get_current_user)
     date_edited = models.DateTimeField(auto_now=True)
     date_created = models.DateTimeField(auto_now_add=True)
-
-    def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
-        if not self.id:
-            self.sharer = CurrentUserMiddleware.get_current_user()
-
-        super().save(force_insert, force_update, using, update_fields)
 
 
 class TicketLabel(models.Model):

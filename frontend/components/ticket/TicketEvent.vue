@@ -9,6 +9,7 @@
           <i class="fa" v-bind:class="{
                   'fa-user': ticket_event.hasOwnProperty('assignee'),
                   'fa-tag': ticket_event.hasOwnProperty('label'),
+                  'fa-share-alt': ticket_event.hasOwnProperty('shared_with_users'),
                   'fa-circle text-xs': ticket_event.hasOwnProperty('new_status'),
                   'fa-file text-xs': ticket_event.hasOwnProperty('file'),
                   'text-white': ticket_event.new_status === 'CLSD' || ticket_event.old_status === 'CLSD'}"/>
@@ -74,15 +75,15 @@
           </div>
         </div>
 
-        <div v-else-if="ticket_event.sharer" class="inline-block">
+        <div v-else-if="ticket_event.shared_with_users" class="inline-block">
           <avatar v-if="ticket_event.sharer" :source="ticket_event.sharer.avatar_url"
                   class="inline-block w-5 h-5 mr-1"/>
           <span v-if="ticket_event.sharer" class="font-medium">{{ full_name(ticket_event.sharer) }}</span>
           <span v-if="ticket_event.sharer">has shared the ticket with</span>
           <span v-else>The ticket has been shared with</span>
           <chip :key="`shared-with-${user.id}`"
-                v-bind:class="{'mr-1' : i !== ticket_event.users.length - 1 }"
-                v-for="(user, i) in ticket_event.users">
+                v-bind:class="{'mr-1' : i !== ticket_event.shared_with_users.length - 1 }"
+                v-for="(user, i) in ticket_event.shared_with_users">
             <avatar :source="user.avatar_url" class="w-4 h-4"/>
             <span class="ml-2">{{ full_name(user) }}</span>
           </chip>

@@ -117,11 +117,12 @@ class TicketAttachmentSerializer(ModelSerializer):
 
 
 class TicketSharedUserSerializer(ModelSerializer):
-    shared_with = UserSerializer(read_only=True)
+    user = UserSerializer(read_only=True)
+    sharer = UserSerializer(read_only=True)
 
     class Meta:
         model = TicketSharedUser
-        fields = ["id", "shared_with", "date_created"]
+        fields = ["id", "user", "sharer", "date_created"]
 
 
 class TicketWithParticipantsSerializer(TicketSerializer):
@@ -131,7 +132,7 @@ class TicketWithParticipantsSerializer(TicketSerializer):
     participants = serializers.SerializerMethodField()
     role = serializers.SerializerMethodField()
     attachments = TicketAttachmentSerializer(many=True, read_only=True)
-    shared_with = TicketSharedUserSerializer(many=True, read_only=True)
+    shared_with_by = TicketSharedUserSerializer(many=True, read_only=True)
 
     def get_role(self, obj):
         role = UserInbox.objects.get(user=obj.author, inbox=obj.inbox).role
@@ -152,7 +153,7 @@ class TicketWithParticipantsSerializer(TicketSerializer):
     class Meta:
         model = Ticket
         fields = ["id", "inbox", "title", "ticket_inbox_id", "author", "content", "date_created", "status", "labels",
-                  "assignee", "attachments", "participants", "role", "attachments", "shared_with"]
+                  "assignee", "attachments", "participants", "role", "attachments", "shared_with_by"]
 
 
 class AssigneeUpdateSerializer(ModelSerializer):
@@ -436,6 +437,7 @@ class TicketEventsApiView(UserHasAccessToTicketMixin, ListAPIView):
 
 
 class TicketSharedAPIView(UserIsTicketAuthorOrInboxStaffMixin, RetrieveUpdateAPIView):
+
     def get_object(self):
         inbox = get_object_or_404(Inbox, pk=self.kwargs["inbox_id"])
 
