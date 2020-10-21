@@ -508,3 +508,39 @@ class NotificationsTestCase(TestCase):
             response = self.client.put(f"/api/notifications/{notification.id}/read")
             self.assertEqual(response.status_code, 200)
             self.assertFalse(Notification.objects.get(pk=notification.id).is_read)
+
+    def test_set_assignee(self):
+        self.client.force_login(self.ta2)
+
+        self.ticket.assignee = None
+        self.ticket.save()
+
+        Notification.objects.all().delete()
+
+        response = self.client.put(f"/api/inboxes/{self.inbox.id}/tickets/{self.ticket.ticket_inbox_id}/assignee",
+                                   data={"assignee": self.ta.id}, content_type="application/json")
+        self.assertEqual(response.status_code, 200)
+
+        ticket = Ticket.objects.get(pk=self.ticket.id)
+        self.assertEqual(ticket.assignee, self.ta)
+
+        exists = TicketAssignedNotification.objects.filter(ticket=self.ticket, receiver=self.ta).exists()
+        self.assertTrue(exists)
+
+    def test_set_assignee_self(self):
+        self.client.force_login(self.ta)
+
+        self.ticket.assignee = None
+        self.ticket.save()
+
+        Notification.objects.all().delete()
+
+        response = self.client.put(f"/api/inboxes/{self.inbox.id}/tickets/{self.ticket.ticket_inbox_id}/assignee",
+                                   data={"assignee": self.ta.id}, content_type="application/json")
+        self.assertEqual(response.status_code, 200)
+
+        ticket = Ticket.objects.get(pk=self.ticket.id)
+        self.assertEqual(ticket.assignee, self.ta)
+
+        exists = TicketAssignedNotification.objects.filter(ticket=self.ticket, receiver=self.ta).exists()
+        self.assertFalse(exists)
