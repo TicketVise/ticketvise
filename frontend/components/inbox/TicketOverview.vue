@@ -2,7 +2,7 @@
   <section class="flex flex-col h-full flex-grow justify-start">
     <div class="flex flex-col md:grid md:grid-cols-5 md:gap-2 p-4 space-y-2 md:space-y-0">
       <div class="flex space-x-2 md:col-span-2 xl:col-span-3 items-center">
-        <search-bar v-model="search" v-on:input="get_tickets" class="flex-grow px-2"></search-bar>
+        <search-bar v-model="search" v-on:input="callDebounceSearch" class="flex-grow px-2"></search-bar>
 
         <!-- Change view -->
         <button
@@ -81,6 +81,8 @@ import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 library.add([faColumns, faList, faMinus, faCheck])
 
 import axios from "axios";
+import _ from 'lodash';
+import TicketList from "./TicketList";
 
 const UNLABELLED_LABEL = {
   id: 0,
@@ -90,6 +92,7 @@ const UNLABELLED_LABEL = {
 
 export default {
   components: {
+    TicketList,
     TicketColumn,
     LabelDropdown,
     SubmitButton,
@@ -116,8 +119,9 @@ export default {
   }),
   methods: {
     get_tickets() {
-      let labels_ids = []
-      this.labels.forEach(label => labels_ids.push(label.id))
+      // Call this function by using callDebounceSearch
+      let labels_ids = [];
+      this.labels.forEach(label => labels_ids.push(label.id));
 
       axios.get(`/api${window.location.pathname}`, {
         params: {
@@ -130,6 +134,9 @@ export default {
         this.tickets = response.data
       })
     },
+    callDebounceSearch:_.debounce(function(){
+       this.get_tickets();
+    }, 300),
     deleteEvent(index) {
       this.labels.splice(index, 1)
 

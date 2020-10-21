@@ -1,10 +1,10 @@
 <template>
   <div class="flex flex-col flex-1 rounded" :id="title">
     <div
-      class="py-1 mb-2 text-center bg-white sticky z-0"
-      :class="{ 'border-b-2': top, 'border rounded mx-4': !top }"
-      :style="`border-color: ${color}; top: 0px;`"
-      @scroll.passive="handleScroll"
+            class="py-1 mb-2 text-center bg-white sticky z-0"
+            :class="{ 'border-b-2': top, 'border rounded mx-4': !top }"
+            :style="`border-color: ${color}; top: 0px;`"
+            @scroll.passive="handleScroll"
     >
       <p v-if="title === 'Closed'">{{ title }}</p>
       <p v-else>{{ title }} (<strong>{{ ticketList.length }}</strong>)</p>
@@ -13,11 +13,11 @@
 
     <div class="mx-4 space-y-2 text-center" :id="`${title}-tickets`">
       <ticket-card
-        :key="ticket.id"
-        :ticket="ticket"
-        :assignee_show="title !== 'Pending'"
-        class="text-left"
-        v-for="ticket in ticketList"/>
+              :key="ticket.id"
+              :ticket="ticket"
+              :assignee_show="title !== 'Pending'"
+              class="text-left"
+              v-for="ticket in ticketList"/>
 
       <span v-if="ticketList.length === 0">No tickets in this status</span>
     </div>
@@ -26,6 +26,7 @@
 
 <script>
   import TicketCard from "./TicketCard";
+
   export default {
     components: {TicketCard},
     name: "TicketList",
@@ -34,15 +35,19 @@
       top: false
     }),
     created() {
-      document.getElementById('scrollable-content').addEventListener('scroll', this.handleScroll);
+      if (document.getElementById('scrollable-content')) {
+        document.getElementById('scrollable-content').addEventListener('scroll', this.handleScroll);
+      }
     },
     destroyed() {
-      document.getElementById('scrollable-content').removeEventListener('scroll', this.handleScroll);
+      if (document.getElementById('scrollable-content')) {
+        document.getElementById('scrollable-content').removeEventListener('scroll', this.handleScroll);
+      }
     },
     methods: {
       handleScroll() {
-        const element = document.getElementById(this.title)
-        const coords = element.getBoundingClientRect()
+        const element = document.getElementById(this.title);
+        const coords = element.getBoundingClientRect();
         this.top = coords.top <= 64
       }
     }

@@ -191,8 +191,15 @@ class InboxTicketsApiView(UserIsInInboxMixin, APIView):
         labels = list(map(int, request.GET.getlist("labels[]", [])))
 
         inbox = get_object_or_404(Inbox, pk=inbox_id)
-        tickets = Ticket.objects.filter(inbox=inbox, title__icontains=q) | Ticket.objects.filter(
-            inbox=inbox, ticket_inbox_id__icontains=q).order_by("-date_created")
+        tickets = Ticket.objects.filter(inbox=inbox, title__icontains=q) | \
+                  Ticket.objects.filter(inbox=inbox, ticket_inbox_id__icontains=q).order_by("-date_created")
+
+        for term in q.split():
+            tickets = tickets | \
+                      (Ticket.objects.filter(author__username__icontains=term) |
+                       Ticket.objects.filter(author__first_name__icontains=term) |
+                       Ticket.objects.filter(author__last_name__icontains=term) |
+                       Ticket.objects.filter(author__email__contains=term))
 
         if not request.user.is_assistant_or_coordinator(inbox) and not request.user.is_superuser:
             tickets = tickets.filter(author=request.user) | tickets.filter(shared_with__id__icontains=request.user.id)
@@ -228,7 +235,9 @@ class InboxTicketsApiView(UserIsInInboxMixin, APIView):
         columns = [
             {
                 "label": status.label,
-                "tickets": TicketSerializer(query_set.filter(status=status)[:25] if status == Status.CLOSED else query_set.filter(status=status), many=True).data
+                "tickets": TicketSerializer(
+                    query_set.filter(status=status)[:25] if status == Status.CLOSED else query_set.filter(
+                        status=status), many=True).data
             } for status in Status if status != Status.PENDING
                                       or (inbox.scheduling_algorithm == SchedulingAlgorithm.FIXED
                                           and inbox.fixed_scheduling_assignee is None)
@@ -421,9 +430,9 @@ class TicketEventsApiView(UserHasAccessToTicketMixin, ListAPIView):
         if self.request.user.is_assistant_or_coordinator(inbox):
             return TicketEvent.objects.filter(ticket=ticket).select_subclasses()
 
-        return TicketEvent.objects.filter(ticket=ticket)\
-            .exclude(ticketlabelevent__label__is_visible_to_guest=False).\
-            select_subclasses()\
+        return TicketEvent.objects.filter(ticket=ticket) \
+            .exclude(ticketlabelevent__label__is_visible_to_guest=False). \
+            select_subclasses()
 
 
 class TicketSharedAPIView(UserIsTicketAuthorOrInboxStaffMixin, RetrieveUpdateAPIView):
