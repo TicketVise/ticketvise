@@ -22,8 +22,8 @@
         'pb-6': ticket_event.new_status !== 'CLSD'
       }">
 
-        <div class="inline-block" v-if="ticket_event.labels">
-          <avatar :source="ticket_event.initiator.avatar_url" class="inline-block w-5 h-5 mr-1"/>
+        <div v-if="ticket_event.labels" class="inline-block" >
+          <avatar v-if="ticket_event.initiator" :source="ticket_event.initiator.avatar_url" class="inline-block w-5 h-5 mr-1"/>
           <span class="font-medium">{{ full_name(ticket_event.initiator) }}</span>
           <span v-if="ticket_event.initiator">has <span v-if="ticket_event.is_added">added</span><span
               v-else>removed</span>
@@ -40,19 +40,19 @@
         </div>
 
         <div v-else-if="ticket_event.assignee" class="inline-block">
-          <avatar :source="ticket_event.initiator.avatar_url" class="inline-block w-5 h-5 mr-1"/>
+          <avatar v-if="ticket_event.initiator" :source="ticket_event.initiator.avatar_url" class="inline-block w-5 h-5 mr-1"/>
           <span class="font-medium">{{ full_name(ticket_event.initiator) }}</span>
           <span v-if="ticket_event.initiator">has assigned the ticket to</span>
           <span v-else>The ticket has been assigned to</span>
           <chip class="ml-1">
-            <avatar :source="ticket_event.assignee.avatar_url" class="w-4 h-4"/>
+            <avatar :source="ticket_event.assignee.avatar_url" class="w-3 h-3"/>
             <span class="ml-2">{{ full_name(ticket_event.assignee) }}</span>
           </chip>
           <span class="ml-1 lowercase">{{ date(ticket_event.date_created) }}</span>
         </div>
 
         <div v-else-if="ticket_event.new_status" class="inline-block">
-          <avatar :source="ticket_event.initiator.avatar_url" class="inline-block w-5 h-5 mr-1"/>
+          <avatar v-if="ticket_event.initiator" :source="ticket_event.initiator.avatar_url" class="inline-block w-5 h-5 mr-1"/>
           <span class="font-medium">{{ full_name(ticket_event.initiator) }}</span>
           <span v-if="ticket_event.initiator">has changed the status to</span>
           <span v-else>The status has been changed to </span>
@@ -62,12 +62,12 @@
 
         <div v-else-if="ticket_event.attachments" class="flex flex-col flex-grow">
           <div class="inline-block mb-2">
-            <avatar :source="ticket_event.uploader.avatar_url" class="inline-block w-5 h-5 mr-2"/>
-            <span class="font-medium mr-1">{{ full_name(ticket_event.uploader) }}</span> uploaded
-            <span v-if="ticket_event.attachments.length > 1" class="mx-1">{{ ticket_event.attachments.length }}</span>
-            <span v-else class="mx-1">a</span>
+            <avatar :source="ticket_event.uploader.avatar_url" class="inline-block w-5 h-5 mr-1"/>
+            <span class="font-medium">{{ full_name(ticket_event.uploader) }}</span> uploaded
+            <span v-if="ticket_event.attachments.length > 1">{{ ticket_event.attachments.length }}</span>
+            <span v-else>a</span>
             attachment<span v-if="ticket_event.attachments.length > 1">s</span>
-            <span class="ml-1 lowercase">{{ date(ticket_event.date_created) }}</span>
+            <span class="lowercase">{{ date(ticket_event.date_created) }}</span>
           </div>
           <div class="w-full grid sm:grid-cols-2 xl:grid-cols-3 gap-4">
             <attachment v-for="attachment in ticket_event.attachments" :key="`attachment-${attachment.id}`"
@@ -84,7 +84,7 @@
           <chip :key="`shared-with-${user.id}`"
                 v-bind:class="{'mr-1' : i !== ticket_event.shared_with_users.length - 1 }"
                 v-for="(user, i) in ticket_event.shared_with_users">
-            <avatar :source="user.avatar_url" class="w-4 h-4"/>
+            <avatar :source="user.avatar_url" class="w-3 h-3"/>
             <span class="ml-2">{{ full_name(user) }}</span>
           </chip>
           <span class="ml-1 lowercase">{{ date(ticket_event.date_created) }}</span>
