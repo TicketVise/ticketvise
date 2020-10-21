@@ -1,5 +1,6 @@
+from django.core.paginator import Paginator
 from django.http import JsonResponse
-from django.db.models import Value
+from django.db.models import Value, Case, When, BooleanField
 from django.db.models.functions import Concat
 from django.shortcuts import get_object_or_404
 from rest_framework import serializers
@@ -7,14 +8,16 @@ from rest_framework.generics import ListAPIView, RetrieveAPIView
 from rest_framework.serializers import ModelSerializer
 from rest_framework.views import APIView
 
+from ticketvise import settings
 from ticketvise.middleware import CurrentUserMiddleware
 from ticketvise.models.inbox import Inbox
 from ticketvise.models.label import Label
 from ticketvise.models.ticket import Ticket
-from ticketvise.models.user import User, Role
+from ticketvise.models.user import User, Role, UserInbox
+from ticketvise.utils import StandardResultsSetPagination
 from ticketvise.views.api.security import UserIsInboxStaffMixin, UserIsInInboxMixin, UserIsSuperUserMixin
 from ticketvise.views.api.ticket import LabelSerializer
-from ticketvise.views.api.user import UserSerializer
+from ticketvise.views.api.user import UserSerializer, UserInboxSerializer
 
 
 class InboxSerializer(ModelSerializer):
@@ -89,6 +92,32 @@ class InboxesApiView(ListAPIView):
     
     def get_queryset(self):
         return Inbox.objects.all()
+
+
+class InboxUsersApiView(UserIsInboxStaffMixin, ListAPIView):
+    serializer_class = UserInboxSerializer
+    pagination_class = StandardResultsSetPagination
+
+    def get_queryset(self):
+        q = self.request.GET.get("q", "")
+
+        inbox = get_object_or_404(Inbox, pk=self.kwargs["inbox_id"])
+        inbox_users = UserInbox.objects.annotate(fullname=Concat('user__first_name', Value(' '), 'user__last_name'))\
+            .filter(inbox=inbox)
+
+        inbox_users = inbox_users.filter(user__username__icontains=q) | \
+                inbox_users.filter(fullname__icontains=q) | \
+                inbox_users.filter(user__email__icontains=q)
+
+        inbox_users = inbox_users.annotate(sort_staff=Case(
+            When(role=Role.GUEST, then=True),
+            default=False,
+            output_field=BooleanField()
+        )) \
+            .select_related("user") \
+            .order_by("sort_staff", "role", "user__first_name")
+
+        return inbox_users
 
 
 class InboxGuestsAPIView(UserIsInInboxMixin, ListAPIView):

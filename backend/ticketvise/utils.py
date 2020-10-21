@@ -6,6 +6,7 @@ Various utility functions for use in python files.
 import random
 
 from PIL import ImageColor
+from rest_framework.pagination import PageNumberPagination
 
 
 def random_preselected_color():
@@ -38,3 +39,8 @@ def get_text_color(background_color):
     r, g, b = ImageColor.getcolor(background_color, "RGB")
     return "#374151" if (r * 0.299 + g * 0.587 + b * 0.114) > 186 else "#ffffff"
 
+
+class StandardResultsSetPagination(PageNumberPagination):
+    page_size = 100
+    page_size_query_param = 'page'
+    max_page_size = 1000

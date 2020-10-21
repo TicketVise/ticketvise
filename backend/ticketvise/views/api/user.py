@@ -8,7 +8,7 @@ from rest_framework.serializers import ModelSerializer
 
 from ticketvise.models.inbox import Inbox
 from ticketvise.models.notification import Notification
-from ticketvise.models.user import User, Role
+from ticketvise.models.user import User, Role, UserInbox
 from ticketvise.views.api.security import UserIsInboxStaffMixin, UserIsInInboxMixin
 from ticketvise.views.admin import SuperUserRequiredMixin
 
@@ -17,6 +17,14 @@ class UserSerializer(ModelSerializer):
     class Meta:
         model = User
         fields = ["first_name", "last_name", "email", "username", "avatar_url", "id", "is_superuser"]
+
+
+class UserInboxSerializer(ModelSerializer):
+    user = UserSerializer()
+
+    class Meta:
+        model = UserInbox
+        fields = ["role", "user", "is_bookmarked"]
 
 
 class UserNotificationSettingsSerializer(ModelSerializer):
