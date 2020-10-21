@@ -30,11 +30,14 @@ module.exports = {
                 'side': '275px'
             },
             width: {
-                'side': '275px'
+                'side': '275px',
+                '22': '5.5rem'
             }
         }
     },
-    variants: {},
+    variants: {
+        display: ['responsive', 'hover', 'focus', 'group-hover'],
+    },
     plugins: [
         require('@tailwindcss/ui'),
     ],

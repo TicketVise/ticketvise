@@ -1,9 +1,9 @@
 <template>
   <div class="space-y-1" v-on-clickaway="away">
     <div class="relative">
-      <span @click="open = !open" class="inline-block w-full rounded-md shadow-sm">
+      <span @click="open = !open" class="inline-block w-full rounded-md">
         <button aria-expanded="true" aria-haspopup="listbox" aria-labelledby="listbox-label"
-                class="cursor-pointer relative w-full rounded-md border border-gray-300 bg-white pl-3 pr-10 py-2 text-left focus:outline-none transition ease-in-out duration-150 sm:text-sm sm:leading-5"
+                class="h-10 cursor-pointer relative w-full rounded-md border border-gray-300 bg-white pl-3 pr-10 py-2 text-left focus:outline-none transition ease-in-out duration-150 sm:text-sm sm:leading-5"
                 tabindex="-1"
                 type="button">
           <div class="flex items-center space-x-3" v-if="assignee && assignee.id">
