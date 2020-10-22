@@ -302,7 +302,9 @@ export default {
       axios.defaults.xsrfHeaderName = "X-CSRFTOKEN";
 
       axios.put("/api" + window.location.pathname + "/shared", formData).then(_ => {
-
+        return axios.get("/api" + window.location.pathname)
+      }).then(response => {
+        this.ticket = response.data;
       }).catch(error => {
         this.errors = error.response.data
       })
