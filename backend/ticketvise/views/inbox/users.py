@@ -23,25 +23,14 @@ class InboxUsersView(InboxCoordinatorRequiredMixin, TemplateView):
         return context
 
 
-class InboxUserView(UserCoordinatorRequiredMixin, UpdateView):
+class InboxUserView(UserCoordinatorRequiredMixin, TemplateView):
     template_name = "inbox/user.html"
-    model = UserInbox
-    fields = ["role"]
-
-    def get_object(self, queryset=None):
-        return UserInbox.objects.get(user__id=self.kwargs.get("pk"),
-                                     inbox_id=self.kwargs.get("inbox_id"))
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["user"] = get_object_or_404(User, pk=self.kwargs["pk"])
         context["inbox"] = get_object_or_404(Inbox, pk=self.kwargs["inbox_id"])
-        context["coordinator"] = Inbox.get_coordinator(context["inbox"])
 
         return context
-
-    def get_success_url(self):
-        return reverse("inbox_users", args=(self.kwargs["inbox_id"],))
 
 
 class InboxUserDeleteView(UserCoordinatorRequiredMixin, DeleteView):
