@@ -16,11 +16,15 @@ from ticketvise.views.admin import SuperUserRequiredMixin
 class UserSerializer(ModelSerializer):
     class Meta:
         model = User
-        fields = ["first_name", "last_name", "email", "username", "avatar_url", "id", "is_superuser"]
+        fields = ["first_name", "last_name", "email", "username", "avatar_url", "id", "is_superuser", "is_active"]
 
 
 class UserInboxSerializer(ModelSerializer):
     user = UserSerializer()
+    role = serializers.SerializerMethodField()
+
+    def get_role(self, user_inbox):
+        return RoleSerializer(user_inbox.role).data
 
     class Meta:
         model = UserInbox

@@ -16,42 +16,9 @@ class InboxUsersView(InboxCoordinatorRequiredMixin, TemplateView):
 
     def get_context_data(self, **kwargs):
         inbox = get_object_or_404(Inbox, pk=self.kwargs.get("pk"))
-
-        if not self.request.user.is_coordinator_for_inbox(inbox) and not self.request.user.is_superuser:
-            raise PermissionDenied()
-
-        q = self.request.GET.get("q", "")
-        page_number = self.request.GET.get('page', '1')
-
-        if not page_number.isnumeric():
-            page_number = 1
-
-        inbox_users = UserInbox.objects.filter(inbox=inbox)
-
-        for term in q.split():
-            inbox_users = (inbox_users.filter(user__username__icontains=term)
-                           | inbox_users.filter(user__first_name__icontains=term)
-                           | inbox_users.filter(user__last_name__icontains=term)
-                           | inbox_users.filter(user__email__contains=term))
-
-        inbox_users = inbox_users.annotate(sort_staff=Case(
-            When(role=Role.GUEST, then=True),
-            default=False,
-            output_field=BooleanField()
-        )) \
-            .select_related("user") \
-            .order_by("sort_staff", "role", "user__first_name")
-
         context = super(TemplateView, self).get_context_data(**kwargs)
 
-        page = Paginator(inbox_users, settings.PAGE_SIZE).get_page(page_number)
-
         context['inbox'] = inbox
-        context["index_start"] = (int(page_number) - 1) * settings.PAGE_SIZE + 1
-        context["index_end"] = context["index_start"] - 1 + len(page)
-        context["total_count"] = inbox_users.count()
-        context['inbox_users'] = page
-        context["coordinator"] = Inbox.get_coordinator(context["inbox"])
 
         return context
 

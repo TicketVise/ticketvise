@@ -1,6 +1,6 @@
 <template>
   <div class="container mx-auto lg:px-4 pb-4">
-    <search-bar v-model="query" v-on:input="search" class="flex-grow px-2" />
+    <search-bar v-model="query" v-on:input="search" class="flex-grow px-2 my-2" autofocus />
 
     <div class="flex flex-col">
       <div class="-my-2 py-2 overflow-x-auto px-2 sm:-mx-6 sm:px-6 lg:-mx-8 lg:px-8">
@@ -24,9 +24,9 @@
               <th class="px-6 py-3 border-b border-gray-200 bg-gray-50"></th>
             </tr>
             </thead>
-            <tbody class="bg-white">
+            <tbody class="bg-white" v-if="page">
 
-            <tr v-for="inboxUser in page.results" v-if="page">
+            <tr v-for="inboxUser in page.results" >
               <td class="px-6 py-4 whitespace-no-wrap border-b border-gray-200">
                 <div class="flex items-center">
                   <div class="flex-shrink-0 h-10 w-10">
@@ -54,7 +54,7 @@
                 </span>
               </td>
               <td class="px-6 py-4 whitespace-no-wrap border-b border-gray-200 text-sm leading-5 text-gray-500">
-                {{ inboxUser.role }}
+                {{ inboxUser.role.label }}
               </td>
               <td class="px-6 py-4 whitespace-no-wrap text-right border-b border-gray-200 text-sm leading-5 font-medium">
                 <a href="#" class="text-indigo-600 hover:text-indigo-900">Edit</a>
@@ -62,67 +62,64 @@
             </tr>
             </tbody>
           </table>
-<!--          <div class="bg-white px-4 py-3 flex items-center justify-between border-t border-gray-200 sm:px-6">-->
-<!--            <div class="flex-1 flex items-center justify-between">-->
-<!--              <div>-->
-<!--                <p class="text-sm leading-5 text-gray-700">-->
-<!--                  Showing-->
-<!--                  <span class="font-medium">{{ index_start }}</span>-->
-<!--                  to-->
-<!--                  <span class="font-medium">{{ index_end }}</span>-->
-<!--                  of-->
-<!--                  <span class="font-medium">{{ total_count }}</span>-->
-<!--                  results-->
-<!--                </p>-->
-<!--              </div>-->
-<!--              <div>-->
-<!--                <nav class="relative z-0 inline-flex shadow-sm">-->
-<!--                  {% if inbox_users.has_previous %}-->
-<!--                  <a href="?page=1&q={{ request.GET.q }}"-->
-<!--                     class="-ml-px relative inline-flex items-center rounded-l-md px-4 py-2 border border-gray-300 bg-white text-sm leading-5 font-medium text-gray-700 hover:text-gray-500 focus:z-10 focus:outline-none focus:border-blue-300 focus:shadow-outline-blue active:bg-gray-100 active:text-gray-700 transition ease-in-out duration-150">-->
-<!--                    1-->
-<!--                  </a>-->
-<!--                  <span-->
-<!--                      class="-ml-px relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm leading-5 font-medium text-gray-700">-->
-<!--                    ...-->
-<!--                  </span>-->
-<!--                  <a href="?page={{ inbox_users.previous_page_number }}&q={{ request.GET.q }}"-->
-<!--                     class="-ml-px relative inline-flex items-center {% if not inbox_users.has_previous %} rounded-l-md {% endif %} px-2 py-2 border border-gray-300 bg-white text-sm leading-5 font-medium text-gray-500 hover:text-gray-400 focus:z-10 focus:outline-none focus:border-blue-300 focus:shadow-outline-blue active:bg-gray-100 active:text-gray-500 transition ease-in-out duration-150"-->
-<!--                     aria-label="Previous">-->
-<!--                    <svg class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">-->
-<!--                      <path fill-rule="evenodd"-->
-<!--                            d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z"-->
-<!--                            clip-rule="evenodd"/>-->
-<!--                    </svg>-->
-<!--                  </a>-->
-<!--                  {% endif %}-->
-<!--                  <span-->
-<!--                      class="-ml-px relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm leading-5 font-medium text-gray-700">-->
-<!--                    {{ inbox_users.number }}-->
-<!--                  </span>-->
-<!--                  {% if inbox_users.has_next %}-->
-<!--                  <a href="?page={{ inbox_users.next_page_number }}&q={{ request.GET.q }}"-->
-<!--                     class="-ml-px relative inline-flex items-center {% if not inbox_users.has_next %} rounded-r-md {% endif %} px-2 py-2 border border-gray-300 bg-white text-sm leading-5 font-medium text-gray-500 hover:text-gray-400 focus:z-10 focus:outline-none focus:border-blue-300 focus:shadow-outline-blue active:bg-gray-100 active:text-gray-500 transition ease-in-out duration-150"-->
-<!--                     aria-label="Next">-->
-<!--                    <svg class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">-->
-<!--                      <path fill-rule="evenodd"-->
-<!--                            d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"-->
-<!--                            clip-rule="evenodd"/>-->
-<!--                    </svg>-->
-<!--                  </a>-->
-<!--                  <span-->
-<!--                      class="-ml-px relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm leading-5 font-medium text-gray-700">-->
-<!--                    ...-->
-<!--                  </span>-->
-<!--                  <a href="?page={{ inbox_users.paginator.num_pages }}&q={{ request.GET.q }}"-->
-<!--                     class="-ml-px relative inline-flex items-center rounded-r-md px-4 py-2 border border-gray-300 bg-white text-sm leading-5 font-medium text-gray-700 hover:text-gray-500 focus:z-10 focus:outline-none focus:border-blue-300 focus:shadow-outline-blue active:bg-gray-100 active:text-gray-700 transition ease-in-out duration-150">-->
-<!--                    {{ inbox_users.paginator.num_pages }}-->
-<!--                  </a>-->
-<!--                  {% endif %}-->
-<!--                </nav>-->
-<!--              </div>-->
-<!--            </div>-->
-<!--          </div>-->
+          <div class="bg-white px-4 py-3 flex items-center justify-between border-t border-gray-200 sm:px-6">
+            <div class="flex-1 flex items-center justify-between">
+              <div>
+                <p class="text-sm leading-5 text-gray-700">
+                  Showing
+                  <span class="font-medium">{{ (page.page_number - 1) * page.page_size + 1 }}</span>
+                  to
+                  <span class="font-medium">{{ (page.page_number - 1) * page.page_size + page.results.length }}</span>
+                  of
+                  <span class="font-medium">{{ page.count }}</span>
+                  results
+                </p>
+              </div>
+              <div v-if="page.previous || page.next">
+                <nav class="relative z-0 inline-flex shadow-sm">
+                  <button type="button" v-if="page.previous" @click="performSearch(1)"
+                     class="-ml-px relative inline-flex items-center rounded-l-md px-4 py-2 border border-gray-300 bg-white text-sm leading-5 font-medium text-gray-700 hover:text-gray-500 focus:z-10 focus:outline-none focus:border-blue-300 focus:shadow-outline-blue active:bg-gray-100 active:text-gray-700 transition ease-in-out duration-150">
+                    1
+                  </button>
+                  <span v-if="page.previous"
+                      class="-ml-px relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm leading-5 font-medium text-gray-700">
+                    ...
+                  </span>
+                  <button type="button" v-if="page.previous" @click="performSearch(page.page_number - 1)"
+                     class="-ml-px relative inline-flex items-center px-2 py-2 border border-gray-300 bg-white text-sm leading-5 font-medium text-gray-500 hover:text-gray-400 focus:z-10 focus:outline-none focus:border-blue-300 focus:shadow-outline-blue active:bg-gray-100 active:text-gray-500 transition ease-in-out duration-150"
+                     aria-label="Previous" v-bind:class="{'rounded-l-md' : !page.hasOwnProperty('previous')}">
+                    <svg class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                      <path fill-rule="evenodd"
+                            d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z"
+                            clip-rule="evenodd"/>
+                    </svg>
+                  </button>
+                  <span
+                      class="-ml-px relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm leading-5 font-medium text-gray-700"
+                      v-bind:class="{'rounded-l-md' : !page.previous, 'rounded-r-md' : !page.next}">
+                    {{ page.page_number }}
+                  </span>
+                  <button type="button" v-if="page.next" @click="performSearch(page.page_number + 1)"
+                     class="-ml-px relative inline-flex items-center px-2 py-2 border border-gray-300 bg-white text-sm leading-5 font-medium text-gray-500 hover:text-gray-400 focus:z-10 focus:outline-none focus:border-blue-300 focus:shadow-outline-blue active:bg-gray-100 active:text-gray-500 transition ease-in-out duration-150"
+                     aria-label="Next" v-bind:class="{'rounded-r-md' : !page.hasOwnProperty('next')}">
+                    <svg class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                      <path fill-rule="evenodd"
+                            d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
+                            clip-rule="evenodd"/>
+                    </svg>
+                  </button>
+                  <span v-if="page.next"
+                      class="-ml-px relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm leading-5 font-medium text-gray-700">
+                    ...
+                  </span>
+                  <button type="button" v-if="page.next" @click="performSearch(page.total_pages)"
+                     class="-ml-px relative inline-flex items-center rounded-r-md px-4 py-2 border border-gray-300 bg-white text-sm leading-5 font-medium text-gray-700 hover:text-gray-500 focus:z-10 focus:outline-none focus:border-blue-300 focus:shadow-outline-blue active:bg-gray-100 active:text-gray-700 transition ease-in-out duration-150">
+                    {{ page.total_pages }}
+                  </button>
+                </nav>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -132,7 +129,7 @@
 <script>
 import SearchBar from "../elements/SearchBar";
 import axios from "axios";
-import _ from "lodash";
+import _, {debounce} from "lodash";
 
 export default {
   name: "Users",
@@ -147,16 +144,19 @@ export default {
     this.performSearch()
   },
   methods: {
-    performSearch: function () {
+    performSearch: function (page) {
       axios.get(`/api${window.location.pathname}`, {
         params: {
           q: this.query,
+          page: page
         }
       }).then(response => {
         this.page = response.data
       })
     },
-    search: _.debounce(this.performSearch, 250),
+    search: debounce(function () {
+      this.performSearch()
+    }, 250),
   }
 }
 </script>
