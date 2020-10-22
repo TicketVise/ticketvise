@@ -9,7 +9,7 @@ from django.views import View
 from django.views.decorators.csrf import csrf_exempt
 
 from ticketvise import settings
-from ticketvise.models.inbox import Inbox
+from ticketvise.models.inbox import Inbox, InboxSection, InboxUserSection
 from ticketvise.models.label import Label
 from ticketvise.models.user import User, UserInbox, Role
 from ticketvise.views.lti.validation import LtiLaunchForm
@@ -34,6 +34,7 @@ class LtiView(View):
         username = form.cleaned_data["custom_username"]
         email = form.cleaned_data["custom_email"]
         avatar = form.cleaned_data["custom_image_url"]
+        section_ids = form.cleaned_data["custom_section_ids"]
 
         user = User.objects.filter(lti_id=user_id).first()
 
@@ -86,6 +87,11 @@ class LtiView(View):
         elif relation.role != user_role:
             relation.role = user_role
             relation.save()
+
+        for section_id in section_ids.split(','):
+            section_id = section_id.strip().lower()
+            section = InboxSection.objects.get_or_create(code=section_id, inbox=inbox)
+            InboxUserSection.objects.get_or_create(user=user, section=section)
 
         login(request, user)
 
