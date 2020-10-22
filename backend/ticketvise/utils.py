@@ -43,16 +43,16 @@ def get_text_color(background_color):
 
 class StandardResultsSetPagination(PageNumberPagination):
     page_size = 25
-    page_size_query_param = 'page_size'
+    page_size_query_param = "page_size"
     max_page_size = 100
 
     def get_paginated_response(self, data):
         return Response({
-            'next': self.get_next_link(),
-            'previous': self.get_previous_link(),
-            'count': self.page.paginator.count,
-            'results': data,
-            'page_number': self.page.number,
-            'page_size': self.page_size,
-            'total_pages': self.page.paginator.num_pages,
+            "next": self.get_next_link(),
+            "previous": self.get_previous_link(),
+            "count": self.page.paginator.count,
+            "results": data,
+            "page_number": self.page.number,
+            "page_size": self.page_size,
+            "total_pages": self.page.paginator.num_pages,
         })
