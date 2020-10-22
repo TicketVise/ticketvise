@@ -33,6 +33,7 @@ class LtiTestCase(TestCase):
             "custom_image_url": "https://uvadlo-tes.instructure.com/images/messages/avatar-50.png",
             "custom_user_full_name": "Test persoon",
             "custom_username": "test",
+            "custom_section_ids": "1234",
             "roles": "Instructor,urn:lti:instrole:ims/lis/Administrator",
             "user_id": "1234567890"
         }
