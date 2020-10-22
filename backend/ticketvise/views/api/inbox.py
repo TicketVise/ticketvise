@@ -4,7 +4,7 @@ from django.db.models import Value, Case, When, BooleanField
 from django.db.models.functions import Concat
 from django.shortcuts import get_object_or_404
 from rest_framework import serializers
-from rest_framework.generics import ListAPIView, RetrieveAPIView
+from rest_framework.generics import ListAPIView, RetrieveAPIView, RetrieveUpdateDestroyAPIView
 from rest_framework.serializers import ModelSerializer
 from rest_framework.views import APIView
 
@@ -139,3 +139,22 @@ class InboxGuestsAPIView(UserIsInInboxMixin, ListAPIView):
         if size and size > 0:
             return users[:size]
         return users
+
+
+class UpdateUserInboxSerializer(ModelSerializer):
+    class Meta:
+        model = UserInbox
+        fields = ["role"]
+
+
+class UserInboxApiView(UserIsInboxStaffMixin, RetrieveUpdateDestroyAPIView):
+    def get_serializer_class(self):
+        if self.request.method == "PUT":
+            return UpdateUserInboxSerializer
+
+        return UserInboxSerializer
+
+    def get_object(self):
+        inbox = get_object_or_404(Inbox, pk=self.kwargs["inbox_id"])
+
+        return UserInbox.objects.get(inbox=inbox, user__id=self.kwargs["user_id"])

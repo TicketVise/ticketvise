@@ -74,6 +74,7 @@ let components = {
   '/inboxes/*/statistics': ['inbox-statistics'],
   '/inboxes/*/automation': ['automation'],
   '/inboxes/*/users': ['users'],
+  '/inboxes/*/users/*': ['user'],
   '/profile': ['profile'],
   '/admin': ['admin']
 }

@@ -21,14 +21,14 @@ class UserSerializer(ModelSerializer):
 
 class UserInboxSerializer(ModelSerializer):
     user = UserSerializer()
-    role = serializers.SerializerMethodField()
+    role_label = serializers.SerializerMethodField()
 
-    def get_role(self, user_inbox):
-        return RoleSerializer(user_inbox.role).data
+    def get_role_label(self, user_inbox):
+        return Role[user_inbox.role].label
 
     class Meta:
         model = UserInbox
-        fields = ["role", "user", "is_bookmarked"]
+        fields = ["id", "role", "role_label", "user", "is_bookmarked"]
 
 
 class UserNotificationSettingsSerializer(ModelSerializer):

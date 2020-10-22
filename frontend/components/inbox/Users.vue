@@ -26,8 +26,9 @@
             </thead>
             <tbody class="bg-white" v-if="page">
 
-            <tr v-for="inboxUser in page.results" >
+            <tr v-for="inboxUser in page.results" :key="inboxUser.id" >
               <td class="px-6 py-4 whitespace-no-wrap border-b border-gray-200">
+
                 <div class="flex items-center">
                   <div class="flex-shrink-0 h-10 w-10">
                     <img class="h-10 w-10 rounded-full" :src="inboxUser.user.avatar_url" alt=""/>
@@ -54,16 +55,16 @@
                 </span>
               </td>
               <td class="px-6 py-4 whitespace-no-wrap border-b border-gray-200 text-sm leading-5 text-gray-500">
-                {{ inboxUser.role.label }}
+                {{ inboxUser.role_label }}
               </td>
               <td class="px-6 py-4 whitespace-no-wrap text-right border-b border-gray-200 text-sm leading-5 font-medium">
-                <a href="#" class="text-indigo-600 hover:text-indigo-900">Edit</a>
+                <a :href="getInboxUserUrl(inboxUser)" class="text-indigo-600 hover:text-indigo-900">Edit</a>
               </td>
             </tr>
             </tbody>
           </table>
           <div class="bg-white px-4 py-3 flex items-center justify-between border-t border-gray-200 sm:px-6">
-            <div class="flex-1 flex items-center justify-between">
+            <div v-if="page" class="flex-1 flex items-center justify-between">
               <div>
                 <p class="text-sm leading-5 text-gray-700">
                   Showing
@@ -157,6 +158,9 @@ export default {
     search: debounce(function () {
       this.performSearch()
     }, 250),
+    getInboxUserUrl: function (inboxUser) {
+      return window.location.pathname + '/' + inboxUser.user.id
+    }
   }
 }
 </script>
