@@ -60,7 +60,7 @@ class TicketTestCase(TransactionTestCase):
                                             content="TestContent", inbox=self.inbox)
         self.ticket2 = Ticket.objects.create(author=self.student, assignee=self.assistant, title="Ticket2",
                                              content="TestContent", inbox=self.inbox)
-        self.ticket2.shared_with.set([self.student2])
+        self.ticket2.shared_with.set([self.student2, self.student3])
         self.ticket3 = Ticket.objects.create(author=self.student2, assignee=self.assistant2, title="Ticket3",
                                              content="TestContent", inbox=self.inbox)
         self.ticket3.add_label(self.label)
@@ -394,13 +394,14 @@ class TicketTestBackendCase(TicketTestCase):
 
     def test_get_shared_with_as_author(self):
         """
-        Test to verify a author cannot change shared_with
+        Test to verify an author can retrieve shared with users.
         """
         self.client.force_login(self.student)
 
         response = self.client.get(f"/api/inboxes/{self.inbox.id}/tickets/{self.ticket2.ticket_inbox_id}/shared")
         self.assertEqual(response.status_code, 200)
-        self.assertEqual((response.data["shared_with"][0]), UserSerializer(self.student2).data)
+        self.assertContains(response, "student2")
+        self.assertContains(response, "student3")
 
     def test_get_shared_with_as_shared_with(self):
         """
@@ -518,6 +519,34 @@ class TicketTestBackendCase(TicketTestCase):
         ticket.delete()
         Ticket.objects.create(author=self.student, assignee=self.assistant, title="TestTicket",
                               content="TestContent", inbox=self.inbox)
+
+    def test_get_tickets_id_contains_id(self):
+        """
+        Test for issue #315.
+        """
+        test_student = User()
+        test_student.id = 91
+        test_student.username = "student91"
+        test_student.password = "test12345"
+        test_student.email = "student91@ticketvise.com"
+        test_student.save()
+        test_student.add_inbox(self.inbox)
+        test_student.set_role_for_inbox(self.inbox, Role.GUEST)
+        test_ticket = Ticket.objects.create(author=self.student2, assignee=self.assistant, title="TestTicket315",
+                              content="TestTicket315", inbox=self.inbox)
+        test_ticket.shared_with.set([test_student])
+        test_ticket.shared_with.set([self.student3])
+        test_ticket.save()
+
+        self.client.force_login(self.student)
+
+        data = {
+            "columns": False
+        }
+
+        response = self.client.get(f"/api/inboxes/{self.inbox.id}/tickets", data=data)
+        self.assertEqual(response.status_code, 200)
+        self.assertNotContains(response, "TestTicket315")
 
     def test_get_tickets_guest(self):
         """
