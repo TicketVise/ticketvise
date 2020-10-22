@@ -90,7 +90,7 @@ class LtiView(View):
 
         for section_id in section_ids.split(','):
             section_id = section_id.strip().lower()
-            section = InboxSection.objects.get_or_create(code=section_id, inbox=inbox)
+            section, _ = InboxSection.objects.get_or_create(code=section_id, inbox=inbox)
             InboxUserSection.objects.get_or_create(user=user, section=section)
 
         login(request, user)
