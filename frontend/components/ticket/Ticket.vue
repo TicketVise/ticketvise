@@ -210,9 +210,6 @@
           });
         }
       });
-      axios.get("/api" + window.location.pathname + "/replies").then(response => {
-        this.replies = response.data;
-      });
 
       axios.get("/api" + window.location.pathname + "/events").then(response => {
         this.events = response.data;

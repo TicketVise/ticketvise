@@ -23,6 +23,7 @@ from rest_framework.serializers import ModelSerializer
 from rest_framework.views import APIView
 
 from ticketvise.middleware import CurrentUserMiddleware
+from ticketvise.models.comment import Comment
 from ticketvise.models.inbox import Inbox, SchedulingAlgorithm
 from ticketvise.models.label import Label
 from ticketvise.models.ticket import Ticket, TicketAttachment, TicketEvent, Status, TicketStatusEvent, \
@@ -30,6 +31,7 @@ from ticketvise.models.ticket import Ticket, TicketAttachment, TicketEvent, Stat
 from ticketvise.models.user import User, UserInbox
 from ticketvise.views.admin import SuperUserRequiredMixin
 from ticketvise.views.api import AUTOCOMPLETE_MAX_ENTRIES, DynamicFieldsModelSerializer
+from ticketvise.views.api.comment import CommentSerializer
 from ticketvise.views.api.inbox import InboxSerializer
 from ticketvise.views.api.labels import LabelSerializer
 from ticketvise.views.api.security import UserHasAccessToTicketMixin, UserIsInboxStaffMixin, UserIsInInboxMixin, \
@@ -269,11 +271,15 @@ class TicketApiView(UserHasAccessToTicketMixin, RetrieveAPIView):
 
         inbox_data = InboxSerializer(inbox).data
 
+        replies = Comment.objects.filter(ticket=ticket, is_reply=True).order_by("date_created")
+        replies_data = CommentSerializer(replies, many=True).data
+
         response = {
             "ticket": ticket_data,
             "me": user_data,
             "role": current_role_data,
-            "inbox": inbox_data
+            "inbox": inbox_data,
+            "replies": replies_data
         }
 
         return JsonResponse(response, safe=False)
