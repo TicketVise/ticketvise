@@ -10,16 +10,18 @@ Contains classes for the API interface to dynamically load models using AJAX.
 * :class:`InboxUsersView`
 * :class:`InboxTicketView`
 """
+import json
 
 from django.core.exceptions import ValidationError
 from django.db.models import Exists, OuterRef
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponse
 from django.shortcuts import get_object_or_404
 from rest_framework import serializers
 from rest_framework.generics import UpdateAPIView, ListAPIView, RetrieveAPIView, CreateAPIView, RetrieveUpdateAPIView, \
     DestroyAPIView
 from rest_framework.response import Response
 from rest_framework.serializers import ModelSerializer
+from rest_framework.utils.serializer_helpers import ReturnDict
 from rest_framework.views import APIView
 
 from ticketvise.middleware import CurrentUserMiddleware
@@ -263,15 +265,26 @@ class TicketsApiView(SuperUserRequiredMixin, APIView):
 
 
 class TicketApiView(UserHasAccessToTicketMixin, RetrieveAPIView):
-    serializer_class = TicketWithParticipantsSerializer
-
-    def get_object(self):
+    def get(self, request, *args, **kwargs):
         inbox = get_object_or_404(Inbox, pk=self.kwargs["inbox_id"])
         ticket = get_object_or_404(Ticket, inbox=inbox, ticket_inbox_id=self.kwargs["ticket_inbox_id"])
 
         unread_related_ticket_notifications(ticket, self.request.user)
 
-        return ticket
+        ticket_serializer = TicketWithParticipantsSerializer(ticket)
+        ticket_data = JsonResponse(ticket_serializer.data, safe=False)
+
+        user_serializer = UserSerializer(request.user,
+                                         fields=(["first_name", "last_name", "username", "avatar_url", "id"]))
+        user_data = JsonResponse(user_serializer.data, safe=False)
+        # TODO: test user_data = request.user.values("first_name", "last_name", "username", "avatar_url", "id")
+
+        response = {}
+
+        response["ticket"] = ticket_serializer.data
+        response["me"] = user_serializer.data
+
+        return JsonResponse(response)
 
 
 class RecentTicketApiView(UserIsInboxStaffMixin, ListAPIView):
