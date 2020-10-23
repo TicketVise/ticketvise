@@ -14,7 +14,7 @@
         </div>
 
         <!-- Recent question -->
-        <recent-questions :author="ticket.author" :inbox_id="ticket.inbox" :role="ticket.author.role" class="mx-4"
+        <recent-questions :author="ticket.author" :inbox_id="ticket.inbox" class="mx-4"
                           v-if="is_staff"/>
 
         <!-- Sharing -->
@@ -185,32 +185,29 @@
         this.ticket = response.data.ticket;
         this.labels = response.data.ticket.labels;
         this.user = response.data.me;
+        this.role = response.data.role;
 
         axios.defaults.xsrfCookieName = 'csrftoken';
         axios.defaults.xsrfHeaderName = "X-CSRFTOKEN";
 
-        axios.get("/api/inboxes/" + this.ticket.inbox + "/role").then(response => {
-          this.role = response.data;
+        if (this.isStaff()) {
+          axios.get("/api" + window.location.pathname + "/comments").then(response => {
+            this.comments = response.data;
+          });
 
-          if (this.isStaff()) {
-            axios.get("/api" + window.location.pathname + "/comments").then(response => {
-              this.comments = response.data;
-            });
+          axios.get("/api/inboxes/" + this.ticket.inbox + "/staff").then(response => {
+            this.staff = response.data;
+          });
 
-            axios.get("/api/inboxes/" + this.ticket.inbox + "/staff").then(response => {
-              this.staff = response.data;
-            });
-
-            axios.get("/api/inboxes/" + this.ticket.inbox + "/users/" + this.ticket.author.id + "/roles").then(response => {
-              this.$set(this.ticket.author, 'role', response.data)
-            })
-          }
-          if (this.isStaff() || (this.ticket.author && this.ticket.author.id === this.user.id)) {
-            axios.get("/api" + window.location.pathname + "/shared").then(response => {
-              this.shared_with = response.data.shared_with;
-            });
-          }
-        });
+          axios.get("/api/inboxes/" + this.ticket.inbox + "/users/" + this.ticket.author.id + "/roles").then(response => {
+            this.$set(this.ticket.author, 'role', response.data)
+          })
+        }
+        if (this.isStaff() || (this.ticket.author && this.ticket.author.id === this.user.id)) {
+          axios.get("/api" + window.location.pathname + "/shared").then(response => {
+            this.shared_with = response.data.shared_with;
+          });
+        }
 
         axios.get("/api/inboxes/" + this.ticket.inbox).then(response => {
           this.inbox = response.data
@@ -254,7 +251,7 @@
 
 
         axios.get("/api" + window.location.pathname).then(response => {
-          this.ticket = response.data;
+          this.ticket = response.data.ticket;
         });
       },
       onCommentPost: function () {
@@ -263,7 +260,7 @@
         });
 
         axios.get("/api" + window.location.pathname).then(response => {
-          this.ticket = response.data;
+          this.ticket = response.data.ticket;
         });
       },
       closeTicket: function () {
@@ -285,7 +282,7 @@
         axios.patch("/api" + window.location.pathname + "/status/open").then(_ => {
           return axios.get("/api" + window.location.pathname)
         }).then(response => {
-          this.ticket.status = response.data.status;
+          this.ticket.status = response.data.ticket.status;
         });
       },
       updateSharedWith() {
@@ -298,14 +295,14 @@
         axios.put("/api" + window.location.pathname + "/shared", formData).then(_ => {
           return axios.get("/api" + window.location.pathname)
         }).then(response => {
-          this.ticket = response.data;
+          this.ticket = response.data.ticket;
         }).catch(error => {
           this.errors = error.response.data
         })
       },
       updateAssignee() {
         axios.get("/api" + window.location.pathname).then(response => {
-          this.ticket = response.data;
+          this.ticket = response.data.ticket;
 
           return axios.get("/api" + window.location.pathname + "/events")
         }).then(response => {
@@ -327,7 +324,7 @@
       },
       updateTicket() {
         axios.get("/api" + window.location.pathname).then(response => {
-          this.ticket = response.data;
+          this.ticket = response.data.ticket;
         })
       }
     }

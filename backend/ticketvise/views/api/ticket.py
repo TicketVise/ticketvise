@@ -10,18 +10,16 @@ Contains classes for the API interface to dynamically load models using AJAX.
 * :class:`InboxUsersView`
 * :class:`InboxTicketView`
 """
-import json
 
 from django.core.exceptions import ValidationError
 from django.db.models import Exists, OuterRef
-from django.http import JsonResponse, HttpResponse
+from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
 from rest_framework import serializers
 from rest_framework.generics import UpdateAPIView, ListAPIView, RetrieveAPIView, CreateAPIView, RetrieveUpdateAPIView, \
     DestroyAPIView
 from rest_framework.response import Response
 from rest_framework.serializers import ModelSerializer
-from rest_framework.utils.serializer_helpers import ReturnDict
 from rest_framework.views import APIView
 
 from ticketvise.middleware import CurrentUserMiddleware
@@ -42,46 +40,6 @@ class LabelSerializer(ModelSerializer):
     class Meta:
         model = Label
         fields = ["name", "color", "id"]
-
-
-class TicketSerializer(DynamicFieldsModelSerializer):
-    """
-    Allows data to be converted into Python datatypes for the ticket.
-    """
-    author = UserSerializer(read_only=True, fields=(["first_name", "last_name", "username", "avatar_url", "id"]))
-    assignee = serializers.SerializerMethodField()
-    labels = serializers.SerializerMethodField()
-
-    def get_labels(self, obj):
-        user = CurrentUserMiddleware.get_current_user()
-        labels = obj.labels.filter(is_active=True)
-        if user and not user.is_assistant_or_coordinator(obj.inbox):
-            labels = labels.filter(is_visible_to_guest=True)
-            return LabelSerializer(labels, many=True, read_only=True).data
-        return LabelSerializer(labels, many=True, read_only=True).data
-
-    def get_assignee(self, obj):
-        user = CurrentUserMiddleware.get_current_user()
-
-        if user and (user.is_assistant_or_coordinator(obj.inbox) or obj.inbox.show_assignee_to_guest):
-            return UserSerializer(obj.assignee,
-                                  fields=(["first_name", "last_name", "username", "avatar_url", "id"])).data
-
-        return None
-
-    class Meta:
-        """
-        Define the model and fields.
-
-        :var Ticket model: The model.
-        :var list fields: Field defined to the model.
-        """
-
-        #: Tells the serializer to use the :class:`Ticket` model.
-        model = Ticket
-        #: Tells the serializer to use these fields from the :class:`Ticket` model.
-        fields = ["id", "inbox", "title", "ticket_inbox_id", "author", "content", "date_created", "status", "labels",
-                  "assignee", "shared_with"]
 
 
 class CreateTicketSerializer(ModelSerializer):
@@ -129,10 +87,27 @@ class TicketSharedUserSerializer(ModelSerializer):
         fields = ["id", "user", "sharer", "date_created"]
 
 
-class TicketWithParticipantsSerializer(TicketSerializer):
+class AssigneeUpdateSerializer(ModelSerializer):
+    class Meta:
+        model = Ticket
+        fields = ["assignee"]
+
+    def validate_assignee(self, assignee):
+        inbox = self.instance.inbox
+        if not assignee:
+            return None
+        elif not assignee.is_assistant_or_coordinator(inbox):
+            raise ValidationError("User doesn't have the right permissions to be assigned to this ticket")
+        return assignee
+
+
+class TicketSerializer(DynamicFieldsModelSerializer):
     """
     Allows data to be converted into Python datatypes for the ticket.
     """
+    author = UserSerializer(read_only=True, fields=(["first_name", "last_name", "username", "avatar_url", "id"]))
+    assignee = serializers.SerializerMethodField()
+    labels = serializers.SerializerMethodField()
     participants = serializers.SerializerMethodField()
     role = serializers.SerializerMethodField()
     attachments = TicketAttachmentSerializer(many=True, read_only=True)
@@ -155,24 +130,36 @@ class TicketWithParticipantsSerializer(TicketSerializer):
         return UserSerializer(participants, many=True,
                               fields=(["first_name", "last_name", "username", "avatar_url", "id"])).data
 
+    def get_labels(self, obj):
+        user = CurrentUserMiddleware.get_current_user()
+        labels = obj.labels.filter(is_active=True)
+        if user and not user.is_assistant_or_coordinator(obj.inbox):
+            labels = labels.filter(is_visible_to_guest=True)
+            return LabelSerializer(labels, many=True, read_only=True).data
+        return LabelSerializer(labels, many=True, read_only=True).data
+
+    def get_assignee(self, obj):
+        user = CurrentUserMiddleware.get_current_user()
+
+        if user and (user.is_assistant_or_coordinator(obj.inbox) or obj.inbox.show_assignee_to_guest):
+            return UserSerializer(obj.assignee,
+                                  fields=(["first_name", "last_name", "username", "avatar_url", "id"])).data
+
+        return None
+
     class Meta:
+        """
+        Define the model and fields.
+
+        :var Ticket model: The model.
+        :var list fields: Field defined to the model.
+        """
+
+        #: Tells the serializer to use the :class:`Ticket` model.
         model = Ticket
+        #: Tells the serializer to use these fields from the :class:`Ticket` model.
         fields = ["id", "inbox", "title", "ticket_inbox_id", "author", "content", "date_created", "status", "labels",
-                  "assignee", "attachments", "participants", "role", "attachments", "shared_with_by"]
-
-
-class AssigneeUpdateSerializer(ModelSerializer):
-    class Meta:
-        model = Ticket
-        fields = ["assignee"]
-
-    def validate_assignee(self, assignee):
-        inbox = self.instance.inbox
-        if not assignee:
-            return None
-        elif not assignee.is_assistant_or_coordinator(inbox):
-            raise ValidationError("User doesn't have the right permissions to be assigned to this ticket")
-        return assignee
+                  "assignee", "shared_with", "participants", "role", "attachments", "shared_with_by", "attachments"]
 
 
 class InboxTicketsApiView(UserIsInInboxMixin, APIView):
@@ -269,22 +256,28 @@ class TicketApiView(UserHasAccessToTicketMixin, RetrieveAPIView):
         inbox = get_object_or_404(Inbox, pk=self.kwargs["inbox_id"])
         ticket = get_object_or_404(Ticket, inbox=inbox, ticket_inbox_id=self.kwargs["ticket_inbox_id"])
 
-        unread_related_ticket_notifications(ticket, self.request.user)
+        unread_related_ticket_notifications(ticket, request.user)
 
-        ticket_serializer = TicketWithParticipantsSerializer(ticket)
-        ticket_data = JsonResponse(ticket_serializer.data, safe=False)
+        current_role = request.user.get_role_by_inbox(inbox)
+        current_role_data = RoleSerializer(current_role).data
 
-        user_serializer = UserSerializer(request.user,
-                                         fields=(["first_name", "last_name", "username", "avatar_url", "id"]))
-        user_data = JsonResponse(user_serializer.data, safe=False)
-        # TODO: test user_data = request.user.values("first_name", "last_name", "username", "avatar_url", "id")
+        if request.user.is_superuser:
+            current_role_data = {}
 
-        response = {}
+        ticket_data = TicketSerializer(ticket, fields=(
+            "id", "inbox", "title", "ticket_inbox_id", "author", "content", "date_created", "status", "labels",
+            "assignee", "attachments", "participants", "role", "attachments", "shared_with_by")).data
 
-        response["ticket"] = ticket_serializer.data
-        response["me"] = user_serializer.data
+        user_data = UserSerializer(request.user,
+                                   fields=(["first_name", "last_name", "username", "avatar_url", "id"])).data
 
-        return JsonResponse(response)
+        response = {
+            "ticket": ticket_data,
+            "me": user_data,
+            "role": current_role_data
+        }
+
+        return JsonResponse(response, safe=False)
 
 
 class RecentTicketApiView(UserIsInboxStaffMixin, ListAPIView):
@@ -324,7 +317,8 @@ class TicketLabelApiView(UserIsInboxStaffMixin, UpdateAPIView):
 
 
 class TicketAttachmentsApiView(UserIsTicketAuthorOrInboxStaffMixin, CreateAPIView):
-    serializer_class = TicketSerializer
+    def get_serializer(self, *args, **kwargs):
+        return TicketSerializer(fields="attachments")
 
     def post(self, request, *args, **kwargs):
         inbox = get_object_or_404(Inbox, pk=self.kwargs["inbox_id"])
