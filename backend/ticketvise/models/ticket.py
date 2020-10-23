@@ -47,7 +47,7 @@ class Ticket(models.Model):
     """
 
     author = models.ForeignKey("User", on_delete=models.CASCADE, related_name="tickets")
-    shared_with = models.ManyToManyField("User", blank=True, through="TicketSharedUser")
+    shared_with = models.ManyToManyField("User", blank=True, through="TicketSharedUser", through_fields=("ticket", "user"))
     assignee = models.ForeignKey("User", on_delete=models.CASCADE, blank=True, null=True,
                                  related_name="assigned_tickets")
     inbox = models.ForeignKey("Inbox", on_delete=models.CASCADE, related_name="tickets")
@@ -102,8 +102,6 @@ class Ticket(models.Model):
         else:
             self.status = Status.ASSIGNED
 
-
-
     @transaction.atomic
     def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
         """
@@ -133,16 +131,21 @@ class Ticket(models.Model):
                                              old_status=old_ticket.status, new_status=self.status)
 
         if self.assignee and (not old_ticket or old_ticket.assignee != self.assignee):
+            current_user = CurrentUserMiddleware.get_current_user()
             TicketAssigneeEvent.objects.create(ticket=self, assignee=self.assignee,
-                                               initiator=CurrentUserMiddleware.get_current_user())
-            TicketAssignedNotification.objects.create(ticket=self, receiver=self.assignee)
+                                               initiator=current_user)
+            if current_user != self.assignee:
+                TicketAssignedNotification.objects.create(ticket=self, receiver=self.assignee)
         elif not self.assignee:
             for user in self.inbox.get_assistants_and_coordinators():
                 NewTicketNotification.objects.create(ticket=self, receiver=user)
 
+
 class TicketSharedUser(models.Model):
-    ticket = models.ForeignKey(Ticket, on_delete=models.CASCADE)
-    user = models.ForeignKey("User", on_delete=models.CASCADE)
+    ticket = models.ForeignKey(Ticket, on_delete=models.CASCADE, related_name="shared_with_by")
+    user = models.ForeignKey("User", on_delete=models.CASCADE, related_name="shared_with_me")
+    sharer = models.ForeignKey("User", null=True, on_delete=models.SET_NULL, related_name="shared_to",
+                               default=CurrentUserMiddleware.get_current_user)
     date_edited = models.DateTimeField(auto_now=True)
     date_created = models.DateTimeField(auto_now_add=True)
 

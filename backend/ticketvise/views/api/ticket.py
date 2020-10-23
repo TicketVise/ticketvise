@@ -26,7 +26,7 @@ from ticketvise.middleware import CurrentUserMiddleware
 from ticketvise.models.inbox import Inbox, SchedulingAlgorithm
 from ticketvise.models.label import Label
 from ticketvise.models.ticket import Ticket, TicketAttachment, TicketEvent, Status, TicketStatusEvent, \
-    TicketAssigneeEvent, TicketLabelEvent, TicketLabel
+    TicketAssigneeEvent, TicketLabelEvent, TicketLabel, TicketSharedUser
 from ticketvise.models.user import User, UserInbox
 from ticketvise.views.admin import SuperUserRequiredMixin
 from ticketvise.views.api import AUTOCOMPLETE_MAX_ENTRIES
@@ -116,6 +116,15 @@ class TicketAttachmentSerializer(ModelSerializer):
         fields = ["id", "file", "uploader", "date_created"]
 
 
+class TicketSharedUserSerializer(ModelSerializer):
+    user = UserSerializer(read_only=True)
+    sharer = UserSerializer(read_only=True)
+
+    class Meta:
+        model = TicketSharedUser
+        fields = ["id", "user", "sharer", "date_created"]
+
+
 class TicketWithParticipantsSerializer(TicketSerializer):
     """
     Allows data to be converted into Python datatypes for the ticket.
@@ -123,6 +132,7 @@ class TicketWithParticipantsSerializer(TicketSerializer):
     participants = serializers.SerializerMethodField()
     role = serializers.SerializerMethodField()
     attachments = TicketAttachmentSerializer(many=True, read_only=True)
+    shared_with_by = TicketSharedUserSerializer(many=True, read_only=True)
 
     def get_role(self, obj):
         role = UserInbox.objects.get(user=obj.author, inbox=obj.inbox).role
@@ -143,7 +153,7 @@ class TicketWithParticipantsSerializer(TicketSerializer):
     class Meta:
         model = Ticket
         fields = ["id", "inbox", "title", "ticket_inbox_id", "author", "content", "date_created", "status", "labels",
-                  "assignee", "attachments", "participants", "role", "attachments"]
+                  "assignee", "attachments", "participants", "role", "attachments", "shared_with_by"]
 
 
 class AssigneeUpdateSerializer(ModelSerializer):
@@ -427,6 +437,7 @@ class TicketEventsApiView(UserHasAccessToTicketMixin, ListAPIView):
 
 
 class TicketSharedAPIView(UserIsTicketAuthorOrInboxStaffMixin, RetrieveUpdateAPIView):
+
     def get_object(self):
         inbox = get_object_or_404(Inbox, pk=self.kwargs["inbox_id"])
 
