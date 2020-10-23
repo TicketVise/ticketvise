@@ -9,11 +9,12 @@ from rest_framework.serializers import ModelSerializer
 from ticketvise.models.inbox import Inbox
 from ticketvise.models.notification import Notification
 from ticketvise.models.user import User, Role
+from ticketvise.views.api import DynamicFieldsModelSerializer
 from ticketvise.views.api.security import UserIsInboxStaffMixin, UserIsInInboxMixin
 from ticketvise.views.admin import SuperUserRequiredMixin
 
 
-class UserSerializer(ModelSerializer):
+class UserSerializer(DynamicFieldsModelSerializer):
     class Meta:
         model = User
         fields = ["first_name", "last_name", "email", "username", "avatar_url", "id", "is_superuser"]

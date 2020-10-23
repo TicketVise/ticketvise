@@ -29,7 +29,7 @@ from ticketvise.models.ticket import Ticket, TicketAttachment, TicketEvent, Stat
     TicketAssigneeEvent, TicketLabelEvent, TicketLabel, TicketSharedUser
 from ticketvise.models.user import User, UserInbox
 from ticketvise.views.admin import SuperUserRequiredMixin
-from ticketvise.views.api import AUTOCOMPLETE_MAX_ENTRIES
+from ticketvise.views.api import AUTOCOMPLETE_MAX_ENTRIES, DynamicFieldsModelSerializer
 from ticketvise.views.api.security import UserHasAccessToTicketMixin, UserIsInboxStaffMixin, UserIsInInboxMixin, \
     UserIsTicketAuthorOrInboxStaffMixin
 from ticketvise.views.api.user import UserSerializer, RoleSerializer
@@ -41,11 +41,11 @@ class LabelSerializer(ModelSerializer):
         fields = ["name", "color", "id"]
 
 
-class TicketSerializer(ModelSerializer):
+class TicketSerializer(DynamicFieldsModelSerializer):
     """
     Allows data to be converted into Python datatypes for the ticket.
     """
-    author = UserSerializer(read_only=True)
+    author = UserSerializer(read_only=True, fields=(["first_name", "last_name", "username", "avatar_url", "id"]))
     assignee = serializers.SerializerMethodField()
     labels = serializers.SerializerMethodField()
 
@@ -61,7 +61,8 @@ class TicketSerializer(ModelSerializer):
         user = CurrentUserMiddleware.get_current_user()
 
         if user and (user.is_assistant_or_coordinator(obj.inbox) or obj.inbox.show_assignee_to_guest):
-            return UserSerializer(obj.assignee).data
+            return UserSerializer(obj.assignee,
+                                  fields=(["first_name", "last_name", "username", "avatar_url", "id"])).data
 
         return None
 
@@ -109,7 +110,7 @@ class CreateTicketSerializer(ModelSerializer):
 
 
 class TicketAttachmentSerializer(ModelSerializer):
-    uploader = UserSerializer(read_only=True)
+    uploader = UserSerializer(read_only=True, fields=(["first_name", "last_name", "username", "avatar_url", "id"]))
 
     class Meta:
         model = TicketAttachment
@@ -117,8 +118,8 @@ class TicketAttachmentSerializer(ModelSerializer):
 
 
 class TicketSharedUserSerializer(ModelSerializer):
-    user = UserSerializer(read_only=True)
-    sharer = UserSerializer(read_only=True)
+    user = UserSerializer(read_only=True, fields=(["first_name", "last_name", "username", "avatar_url", "id"]))
+    sharer = UserSerializer(read_only=True, fields=(["first_name", "last_name", "username", "avatar_url", "id"]))
 
     class Meta:
         model = TicketSharedUser
@@ -148,7 +149,8 @@ class TicketWithParticipantsSerializer(TicketSerializer):
             if user not in participants:
                 participants.append(user)
 
-        return UserSerializer(participants, many=True).data
+        return UserSerializer(participants, many=True,
+                              fields=(["first_name", "last_name", "username", "avatar_url", "id"])).data
 
     class Meta:
         model = Ticket
@@ -222,7 +224,8 @@ class InboxTicketsApiView(UserIsInInboxMixin, APIView):
         if columns:
             return self.get_column_tickets(inbox, tickets)
 
-        serializer = TicketSerializer(tickets[:size], many=True)
+        serializer = TicketSerializer(tickets[:size], many=True, fields=(
+            "id", "title", "name", "assignee", "ticket_inbox_id", "date_created", "labels"))
         return JsonResponse(serializer.data, safe=False)
 
     def get_column_tickets(self, inbox, query_set):
@@ -238,7 +241,8 @@ class InboxTicketsApiView(UserIsInInboxMixin, APIView):
                 "label": status.label,
                 "tickets": TicketSerializer(
                     query_set.filter(status=status)[:25] if status == Status.CLOSED else query_set.filter(
-                        status=status), many=True).data
+                        status=status), many=True, fields=(
+                        "id", "title", "name", "assignee", "ticket_inbox_id", "date_created", "labels")).data
             } for status in Status if status != Status.PENDING
                                       or (inbox.scheduling_algorithm == SchedulingAlgorithm.FIXED
                                           and inbox.fixed_scheduling_assignee is None)
@@ -355,7 +359,8 @@ class TicketCreateApiView(UserIsInInboxMixin, CreateAPIView):
 
 
 class TicketSharedWithRetrieveSerializer(ModelSerializer):
-    shared_with = UserSerializer(many=True, read_only=True)
+    shared_with = UserSerializer(many=True, read_only=True,
+                                 fields=(["first_name", "last_name", "username", "avatar_url", "id"]))
 
     class Meta:
         model = Ticket
@@ -378,7 +383,7 @@ class TicketSharedWithUpdateSerializer(ModelSerializer):
 
 
 class TicketStatusEventSerializer(ModelSerializer):
-    initiator = UserSerializer(read_only=True)
+    initiator = UserSerializer(read_only=True, fields=(["first_name", "last_name", "username", "avatar_url", "id"]))
 
     class Meta:
         model = TicketStatusEvent
@@ -386,8 +391,8 @@ class TicketStatusEventSerializer(ModelSerializer):
 
 
 class TicketAssigneeEventSerializer(ModelSerializer):
-    initiator = UserSerializer(read_only=True)
-    assignee = UserSerializer(read_only=True)
+    initiator = UserSerializer(read_only=True, fields=(["first_name", "last_name", "username", "avatar_url", "id"]))
+    assignee = UserSerializer(read_only=True, fields=(["first_name", "last_name", "username", "avatar_url", "id"]))
 
     class Meta:
         model = TicketAssigneeEvent
@@ -395,7 +400,7 @@ class TicketAssigneeEventSerializer(ModelSerializer):
 
 
 class TicketLabelEventSerializer(ModelSerializer):
-    initiator = UserSerializer(read_only=True)
+    initiator = UserSerializer(read_only=True, fields=(["first_name", "last_name", "username", "avatar_url", "id"]))
     label = LabelSerializer(read_only=True)
 
     class Meta:
@@ -404,7 +409,7 @@ class TicketLabelEventSerializer(ModelSerializer):
 
 
 class TicketEventSerializer(ModelSerializer):
-    initiator = UserSerializer(read_only=True)
+    initiator = UserSerializer(read_only=True, fields=(["first_name", "last_name", "username", "avatar_url", "id"]))
 
     def to_representation(self, instance):
         if isinstance(instance, TicketStatusEvent):

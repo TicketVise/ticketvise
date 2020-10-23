@@ -12,7 +12,7 @@ from ticketvise.views.api.user import UserSerializer, RoleSerializer
 
 
 class CommentSerializer(ModelSerializer):
-    author = UserSerializer(read_only=True)
+    author = UserSerializer(read_only=True, fields=(["first_name", "last_name", "username", "avatar_url", "id"]))
     role = serializers.SerializerMethodField()
 
     def get_role(self, obj):

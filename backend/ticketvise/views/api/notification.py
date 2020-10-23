@@ -8,11 +8,6 @@ from rest_framework.serializers import ModelSerializer
 
 from ticketvise.models.inbox import Inbox
 from ticketvise.models.notification import Notification
-from ticketvise.models.notification.assigned import TicketAssignedNotification
-from ticketvise.models.notification.comment import CommentNotification
-from ticketvise.models.notification.mention import MentionNotification
-from ticketvise.models.notification.new import NewTicketNotification
-from ticketvise.models.notification.reminder import TicketReminderNotification
 from ticketvise.models.ticket import Ticket
 from ticketvise.views.api.inbox import InboxSerializer
 from ticketvise.views.api.security import UserHasAccessToTicketMixin
@@ -22,7 +17,7 @@ from ticketvise.views.notifications import unread_related_ticket_notifications
 
 
 class NotificationSerializer(ModelSerializer):
-    receiver = UserSerializer(read_only=True)
+    receiver = UserSerializer(read_only=True, fields=(["first_name", "last_name", "username", "avatar_url", "id"]))
     ticket = TicketSerializer(read_only=True)
     inbox = InboxSerializer(read_only=True)
 
