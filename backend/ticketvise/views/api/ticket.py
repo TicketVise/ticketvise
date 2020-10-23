@@ -30,16 +30,12 @@ from ticketvise.models.ticket import Ticket, TicketAttachment, TicketEvent, Stat
 from ticketvise.models.user import User, UserInbox
 from ticketvise.views.admin import SuperUserRequiredMixin
 from ticketvise.views.api import AUTOCOMPLETE_MAX_ENTRIES, DynamicFieldsModelSerializer
+from ticketvise.views.api.inbox import InboxSerializer
+from ticketvise.views.api.labels import LabelSerializer
 from ticketvise.views.api.security import UserHasAccessToTicketMixin, UserIsInboxStaffMixin, UserIsInInboxMixin, \
     UserIsTicketAuthorOrInboxStaffMixin
 from ticketvise.views.api.user import UserSerializer, RoleSerializer
 from ticketvise.views.notifications import unread_related_ticket_notifications
-
-
-class LabelSerializer(ModelSerializer):
-    class Meta:
-        model = Label
-        fields = ["name", "color", "id"]
 
 
 class CreateTicketSerializer(ModelSerializer):
@@ -271,10 +267,13 @@ class TicketApiView(UserHasAccessToTicketMixin, RetrieveAPIView):
         user_data = UserSerializer(request.user,
                                    fields=(["first_name", "last_name", "username", "avatar_url", "id"])).data
 
+        inbox_data = InboxSerializer(inbox).data
+
         response = {
             "ticket": ticket_data,
             "me": user_data,
-            "role": current_role_data
+            "role": current_role_data,
+            "inbox": inbox_data
         }
 
         return JsonResponse(response, safe=False)

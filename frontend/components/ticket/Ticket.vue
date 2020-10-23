@@ -186,6 +186,7 @@
         this.labels = response.data.ticket.labels;
         this.user = response.data.me;
         this.role = response.data.role;
+        this.inbox = response.data.inbox;
 
         axios.defaults.xsrfCookieName = 'csrftoken';
         axios.defaults.xsrfHeaderName = "X-CSRFTOKEN";
@@ -208,10 +209,6 @@
             this.shared_with = response.data.shared_with;
           });
         }
-
-        axios.get("/api/inboxes/" + this.ticket.inbox).then(response => {
-          this.inbox = response.data
-        })
       });
       axios.get("/api" + window.location.pathname + "/replies").then(response => {
         this.replies = response.data;
