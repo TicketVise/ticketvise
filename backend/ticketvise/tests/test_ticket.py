@@ -9,7 +9,6 @@ from django.db import transaction
 from django.http import JsonResponse
 from django.test import Client, TransactionTestCase
 from django.urls import reverse
-from rest_framework.renderers import JSONRenderer
 
 from ticketvise.models.comment import Comment
 from ticketvise.models.inbox import Inbox, SchedulingAlgorithm
@@ -403,7 +402,8 @@ class TicketTestBackendCase(TicketTestCase):
 
         response = self.client.get(f"/api/inboxes/{self.inbox.id}/tickets/{self.ticket2.ticket_inbox_id}/shared")
         self.assertEqual(response.status_code, 200)
-        self.assertEqual((response.data["shared_with"][0]), UserSerializer(self.student2).data)
+        self.assertEqual((response.data["shared_with"][0]), UserSerializer(self.student2, fields=(
+            ["first_name", "last_name", "username", "avatar_url", "id"])).data)
 
     def test_get_shared_with_as_shared_with(self):
         """
@@ -422,7 +422,8 @@ class TicketTestBackendCase(TicketTestCase):
 
         response = self.client.get(f"/api/inboxes/{self.inbox.id}/tickets/{self.ticket2.ticket_inbox_id}/shared")
         self.assertEqual(response.status_code, 200)
-        self.assertEqual((response.data["shared_with"][0]), UserSerializer(self.student2).data)
+        self.assertEqual((response.data["shared_with"][0]), UserSerializer(self.student2, fields=(
+            ["first_name", "last_name", "username", "avatar_url", "id"])).data)
 
     def test_get_shared_with_as_ta_not_in_inbox(self):
         """
@@ -785,7 +786,8 @@ class TicketTestBackendCase(TicketTestCase):
         response = self.client.get(f"/api/inboxes/{self.inbox.id}/tickets", data=data)
         queryset = Ticket.objects.filter(inbox=self.inbox).order_by("-date_created")
 
-        json_data = JsonResponse(TicketSerializer(queryset, many=True).data, safe=False)
+        json_data = JsonResponse(TicketSerializer(queryset, many=True, fields=(
+            "id", "title", "name", "assignee", "ticket_inbox_id", "date_created", "labels")).data, safe=False)
         self.assertEqual(response.content, json_data.content)
 
         data = {
@@ -794,7 +796,8 @@ class TicketTestBackendCase(TicketTestCase):
 
         response = self.client.get(f"/api/inboxes/{self.inbox.id}/tickets", data=data)
         queryset = Ticket.objects.filter(inbox=self.inbox, author=self.student2).order_by("-date_created")
-        json_data = JsonResponse(TicketSerializer(queryset, many=True).data, safe=False)
+        json_data = JsonResponse(TicketSerializer(queryset, many=True, fields=(
+            "id", "title", "name", "assignee", "ticket_inbox_id", "date_created", "labels")).data, safe=False)
         self.assertEqual(response.content, json_data.content)
 
         data = {
@@ -803,6 +806,6 @@ class TicketTestBackendCase(TicketTestCase):
 
         response = self.client.get(f"/api/inboxes/{self.inbox.id}/tickets", data=data)
         queryset = Ticket.objects.filter(inbox=self.inbox, title="Ticket3").order_by("-date_created")
-        json_data = JsonResponse(TicketSerializer(queryset, many=True).data, safe=False)
+        json_data = JsonResponse(TicketSerializer(queryset, many=True, fields=(
+            "id", "title", "name", "assignee", "ticket_inbox_id", "date_created", "labels")).data, safe=False)
         self.assertEqual(response.content, json_data.content)
-
