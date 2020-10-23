@@ -33,6 +33,7 @@ from ticketvise.views.api import AUTOCOMPLETE_MAX_ENTRIES
 from ticketvise.views.api.security import UserHasAccessToTicketMixin, UserIsInboxStaffMixin, UserIsInInboxMixin, \
     UserIsTicketAuthorOrInboxStaffMixin
 from ticketvise.views.api.user import UserSerializer, RoleSerializer
+from ticketvise.views.notifications import unread_related_ticket_notifications
 
 
 class LabelSerializer(ModelSerializer):
@@ -262,8 +263,11 @@ class TicketApiView(UserHasAccessToTicketMixin, RetrieveAPIView):
 
     def get_object(self):
         inbox = get_object_or_404(Inbox, pk=self.kwargs["inbox_id"])
+        ticket = get_object_or_404(Ticket, inbox=inbox, ticket_inbox_id=self.kwargs["ticket_inbox_id"])
 
-        return Ticket.objects.get(inbox=inbox, ticket_inbox_id=self.kwargs["ticket_inbox_id"])
+        unread_related_ticket_notifications(ticket, self.request.user)
+
+        return ticket
 
 
 class RecentTicketApiView(UserIsInboxStaffMixin, ListAPIView):

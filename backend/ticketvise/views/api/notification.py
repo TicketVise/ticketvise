@@ -70,18 +70,6 @@ class NotificationsReadAll(LoginRequiredMixin, UpdateAPIView):
         return Response()
 
 
-class VisitTicketNotificationApi(UserHasAccessToTicketMixin, UpdateAPIView):
-    serializer_class = NotificationSerializer
-
-    def put(self, request, *args, **kwargs):
-        inbox = get_object_or_404(Inbox, pk=self.kwargs["inbox_id"])
-        ticket = get_object_or_404(Ticket, inbox=inbox, ticket_inbox_id=self.kwargs["ticket_inbox_id"])
-
-        unread_related_ticket_notifications(ticket, request.user)
-
-        return Response()
-
-
 class NotificationUnreadCountAPI(LoginRequiredMixin, RetrieveAPIView):
     def get(self, request, *args, **kwargs):
         return JsonResponse(Notification.objects.filter(receiver=request.user, is_read=False).count(), safe=False)

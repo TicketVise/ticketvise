@@ -188,10 +188,6 @@ export default {
       axios.defaults.xsrfCookieName = 'csrftoken';
       axios.defaults.xsrfHeaderName = "X-CSRFTOKEN";
 
-      axios.put("/api/notifications/read" + window.location.pathname).then(_ => {
-
-      });
-
       axios.get("/api/me").then(response => {
         this.user = response.data;
 

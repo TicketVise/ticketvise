@@ -3,7 +3,6 @@ Test Notifications
 -------------------------------
 This file tests the notification functionality on the website.
 """
-from urllib.parse import urlencode
 
 from django.test import TestCase, Client
 
@@ -177,7 +176,7 @@ class NotificationsTestCase(TestCase):
                     data[key + "_" + suffix] = b
 
             response = self.client.put("/api/me/settings", data, follow=True,
-                                        content_type="application/json")
+                                       content_type="application/json")
             self.assertEqual(response.status_code, 200)
             updated_user = User.objects.get(pk=self.ta.id)
             self.ticket.author = self.ta2
@@ -368,7 +367,6 @@ class NotificationsTestCase(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, '3')
 
-
     def test_get_notifications_all(self):
         self.client.force_login(self.ta)
 
@@ -476,8 +474,7 @@ class NotificationsTestCase(TestCase):
         for notification in notifications2:
             self.assertFalse(Notification.objects.get(pk=notification.id).is_read)
 
-        response = self.client.put(
-            f"/api/notifications/read/inboxes/{self.inbox.id}/tickets/{self.ticket.ticket_inbox_id}")
+        response = self.client.get(f"/api/inboxes/{self.inbox.id}/tickets/{self.ticket.ticket_inbox_id}")
         self.assertEqual(response.status_code, 200)
 
         for notification in notifications1:
