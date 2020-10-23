@@ -18,7 +18,7 @@ from ticketvise.views.notifications import unread_related_ticket_notifications
 
 class NotificationSerializer(ModelSerializer):
     receiver = UserSerializer(read_only=True, fields=(["first_name", "last_name", "username", "avatar_url", "id"]))
-    ticket = TicketSerializer(read_only=True)
+    ticket = TicketSerializer(read_only=True, fields=("id", "title", "name", "ticket_inbox_id", "date_created"))
     inbox = InboxSerializer(read_only=True)
 
     class Meta:

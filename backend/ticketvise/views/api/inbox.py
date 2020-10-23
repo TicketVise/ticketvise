@@ -39,6 +39,7 @@ class InboxSerializer(ModelSerializer):
 
 class InboxStaffApiView(UserIsInboxStaffMixin, ListAPIView):
     serializer_class = UserSerializer
+    lookup_field = ["first_name", "last_name", "username", "avatar_url", "id"]
     staff_roles = [Role.AGENT, Role.MANAGER]
 
     def get_queryset(self):
@@ -93,6 +94,7 @@ class InboxesApiView(ListAPIView):
 
 class InboxGuestsAPIView(UserIsInInboxMixin, ListAPIView):
     serializer_class = UserSerializer
+    lookup_field = ["first_name", "last_name", "username", "avatar_url", "id"]
 
     def get_queryset(self):
         q = self.request.GET.get("q", "")
