@@ -38,7 +38,7 @@ from ticketvise.views.api.user import UserSerializer, RoleSerializer
 class LabelSerializer(ModelSerializer):
     class Meta:
         model = Label
-        fields = ["name", "color", "id"]
+        fields = ["id", "name", "color", "is_visible_to_guest", "is_active"]
 
 
 class TicketSerializer(ModelSerializer):

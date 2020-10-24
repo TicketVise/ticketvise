@@ -14,22 +14,9 @@ class InboxLabelsView(InboxCoordinatorRequiredMixin, TemplateView):
 
     def get_context_data(self, **kwargs):
         inbox = get_object_or_404(Inbox, pk=self.kwargs.get("pk"))
-        q = self.request.GET.get("q", "")
-        page_number = self.request.GET.get('page', '1')
-
-        if not page_number.isnumeric():
-            page_number = 1
-
-        labels = Label.objects.filter(inbox=inbox, name__icontains=q).order_by("name")
-        page = Paginator(labels, settings.PAGE_SIZE).get_page(page_number)
 
         context = super(TemplateView, self).get_context_data(**kwargs)
         context['inbox'] = inbox
-        context["index_start"] = (int(page_number) - 1) * settings.PAGE_SIZE + 1
-        context["index_end"] = context["index_start"] - 1 + len(page)
-        context["total_count"] = labels.count()
-        context['labels'] = page
-        context["coordinator"] = Inbox.get_coordinator(context["inbox"])
 
         return context
 
@@ -69,23 +56,6 @@ class CreateInboxLabelView(InboxCoordinatorRequiredMixin, CreateView):
         inbox = get_object_or_404(Inbox, pk=self.kwargs.get("pk"))
 
         context = super(CreateView, self).get_context_data(**kwargs)
-        context['inbox'] = inbox
-        context["coordinator"] = Inbox.get_coordinator(context["inbox"])
-
-        return context
-
-
-class DeleteInboxLabelView(LabelCoordinatorRequiredMixin, DeleteView):
-    template_name = "inbox/label.html"
-    model = Label
-
-    def get_success_url(self):
-        return reverse("inbox_labels", args=(self.kwargs["inbox_id"],))
-
-    def get_context_data(self, **kwargs):
-        inbox = get_object_or_404(Inbox, pk=self.kwargs.get("inbox_id"))
-
-        context = super(DeleteView, self).get_context_data(**kwargs)
         context['inbox'] = inbox
         context["coordinator"] = Inbox.get_coordinator(context["inbox"])
 

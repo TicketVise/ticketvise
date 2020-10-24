@@ -1,4 +1,4 @@
-from django.db.models import Case, BooleanField, When
+from django.db.models import Case, BooleanField, When, Q
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
 from rest_framework import serializers
@@ -54,11 +54,15 @@ class InboxLabelsApiView(UserIsInInboxMixin, ListAPIView):
         inbox = get_object_or_404(Inbox, pk=self.kwargs[self.inbox_key])
         user = CurrentUserMiddleware.get_current_user()
 
-        labels = Label.objects.filter(inbox=inbox, is_active=True).order_by("name")
+        labels = Label.objects.filter(inbox=inbox, is_active=True)
         if user and not user.is_assistant_or_coordinator(inbox):
             labels = labels.filter(is_visible_to_guest=True)
 
-        return labels
+        search_query = Q()
+        for term in self.request.GET.get("q", "").split():
+            search_query |= (Q(name__icontains=term) | Q(color__icontains=term))
+
+        return labels.filter(search_query).order_by("name")
 
 
 class InboxApiView(UserIsInInboxMixin, RetrieveAPIView):
@@ -143,3 +147,29 @@ class UserInboxApiView(UserIsInboxManagerMixin, RetrieveUpdateDestroyAPIView):
     def get_object(self):
         inbox = get_object_or_404(Inbox, pk=self.kwargs["inbox_id"])
         return get_object_or_404(UserInbox, inbox=inbox, user__id=self.kwargs["user_id"])
+
+
+class LabelsApiView(UserIsInboxStaffMixin, ListAPIView):
+    serializer_class = LabelSerializer
+    pagination_class = StandardResultsSetPagination
+
+    def get_queryset(self):
+        q = self.request.GET.get("q", "")
+
+        inbox = get_object_or_404(Inbox, pk=self.kwargs["inbox_id"])
+        labels = Label.objects.filter(inbox=inbox)
+
+        search_query = Q()
+        for term in q.split():
+            search_query |= (Q(name__icontains=term) | Q(color__icontains=term))
+
+        return labels.filter(search_query).order_by("name")
+
+
+class LabelApiView(UserIsInboxManagerMixin, RetrieveUpdateDestroyAPIView):
+    def get_serializer_class(self):
+        return LabelSerializer
+
+    def get_object(self):
+        inbox = get_object_or_404(Inbox, pk=self.kwargs["inbox_id"])
+        return get_object_or_404(Label, inbox=inbox, pk=self.kwargs["label_id"])
