@@ -17,22 +17,18 @@ class InboxLabelsView(InboxCoordinatorRequiredMixin, TemplateView):
 
         context = super(TemplateView, self).get_context_data(**kwargs)
         context['inbox'] = inbox
+        context["coordinator"] = Inbox.get_coordinator(context["inbox"])
 
         return context
 
 
-class EditInboxLabelView(LabelCoordinatorRequiredMixin, UpdateView):
+class EditInboxLabelView(LabelCoordinatorRequiredMixin, TemplateView):
     template_name = "inbox/label.html"
-    model = Label
-    fields = ["name", "color", "is_visible_to_guest", "is_active"]
-
-    def get_success_url(self):
-        return reverse("inbox_labels", args=(self.kwargs["inbox_id"],))
 
     def get_context_data(self, **kwargs):
         inbox = get_object_or_404(Inbox, pk=self.kwargs.get("inbox_id"))
 
-        context = super(UpdateView, self).get_context_data(**kwargs)
+        context = super(TemplateView, self).get_context_data(**kwargs)
         context['inbox'] = inbox
         context["coordinator"] = Inbox.get_coordinator(context["inbox"])
 

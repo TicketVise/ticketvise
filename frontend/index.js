@@ -76,6 +76,7 @@ let components = {
   '/inboxes/*/users': ['users'],
   '/inboxes/*/users/*': ['user'],
   '/inboxes/*/labels': ['labels'],
+  '/inboxes/*/labels/*': ['Label'],
   '/profile': ['profile'],
   '/admin': ['admin']
 }

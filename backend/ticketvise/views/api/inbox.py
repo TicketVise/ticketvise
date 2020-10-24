@@ -149,26 +149,8 @@ class UserInboxApiView(UserIsInboxManagerMixin, RetrieveUpdateDestroyAPIView):
         return get_object_or_404(UserInbox, inbox=inbox, user__id=self.kwargs["user_id"])
 
 
-class LabelsApiView(UserIsInboxStaffMixin, ListAPIView):
+class InboxLabelApiView(UserIsInboxManagerMixin, RetrieveUpdateDestroyAPIView):
     serializer_class = LabelSerializer
-    pagination_class = StandardResultsSetPagination
-
-    def get_queryset(self):
-        q = self.request.GET.get("q", "")
-
-        inbox = get_object_or_404(Inbox, pk=self.kwargs["inbox_id"])
-        labels = Label.objects.filter(inbox=inbox)
-
-        search_query = Q()
-        for term in q.split():
-            search_query |= (Q(name__icontains=term) | Q(color__icontains=term))
-
-        return labels.filter(search_query).order_by("name")
-
-
-class LabelApiView(UserIsInboxManagerMixin, RetrieveUpdateDestroyAPIView):
-    def get_serializer_class(self):
-        return LabelSerializer
 
     def get_object(self):
         inbox = get_object_or_404(Inbox, pk=self.kwargs["inbox_id"])
