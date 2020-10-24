@@ -1,7 +1,5 @@
-from django.core.paginator import Paginator
+from django.db.models import Case, BooleanField, When
 from django.http import JsonResponse
-from django.db.models import Value, Case, When, BooleanField
-from django.db.models.functions import Concat
 from django.shortcuts import get_object_or_404
 from rest_framework import serializers
 from rest_framework.generics import ListAPIView, RetrieveAPIView, RetrieveUpdateDestroyAPIView
@@ -35,7 +33,7 @@ class InboxSerializer(ModelSerializer):
     class Meta:
         model = Inbox
         fields = [
-            "name", "id", "color", "labels", "image", "scheduling_algorithm", 
+            "name", "id", "color", "labels", "image", "scheduling_algorithm",
             "is_active", "date_created"
         ]
 
@@ -89,7 +87,7 @@ class InboxStatsApiView(UserIsSuperUserMixin, APIView):
 
 class InboxesApiView(ListAPIView):
     serializer_class = InboxSerializer
-    
+
     def get_queryset(self):
         return Inbox.objects.all()
 
@@ -102,18 +100,13 @@ class InboxUsersApiView(UserIsInboxStaffMixin, ListAPIView):
         q = self.request.GET.get("q", "")
 
         inbox = get_object_or_404(Inbox, pk=self.kwargs["inbox_id"])
-        inbox_users = UserInbox.objects.annotate(fullname=Concat('user__first_name', Value(' '), 'user__last_name'))\
-            .filter(inbox=inbox)
+        users = User.objects.filter(inbox_relationship__inbox=inbox).search(q)
 
-        inbox_users = inbox_users.filter(user__username__icontains=q) | \
-                inbox_users.filter(fullname__icontains=q) | \
-                inbox_users.filter(user__email__icontains=q)
-
-        inbox_users = inbox_users.annotate(sort_staff=Case(
-            When(role=Role.GUEST, then=True),
-            default=False,
-            output_field=BooleanField()
-        )) \
+        inbox_users = UserInbox.objects.filter(user__in=users) \
+            .annotate(sort_staff=Case(
+                When(role=Role.GUEST, then=True),
+                default=False,
+                output_field=BooleanField())) \
             .select_related("user") \
             .order_by("sort_staff", "role", "user__first_name")
 
@@ -128,17 +121,10 @@ class InboxGuestsAPIView(UserIsInInboxMixin, ListAPIView):
         size = self.request.GET.get("size", "")
         size = int(size) if size.isdigit() else None
 
-        users = User.objects.annotate(fullname=Concat('first_name', Value(' '), 'last_name'))
+        users = User.objects.filter(inbox_relationship__role=Role.GUEST,
+                                    inbox_relationship__inbox_id=self.kwargs[self.inbox_key]).search(q)
 
-        users = users.filter(inbox_relationship__role=Role.GUEST,
-                             inbox_relationship__inbox_id=self.kwargs[self.inbox_key])
-        users = users.filter(username__icontains=q) | \
-                users.filter(fullname__icontains=q) | \
-                users.filter(email__icontains=q)
-
-        if size and size > 0:
-            return users[:size]
-        return users
+        return users[:size] if size and size > 0 else users
 
 
 class UpdateUserInboxSerializer(ModelSerializer):
