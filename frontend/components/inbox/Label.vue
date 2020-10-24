@@ -1,66 +1,69 @@
 <template>
   <div class="container mx-auto max-w-3xl">
-      <div v-if="label" class="sm:mt-4">
-        <div class="bg-gray-50 px-4 py-3 sm:gap-4 sm:px-6 border-b-2 hidden sm:block">
-          <h3 class="text-lg leading-6 font-medium text-gray-900">
-            Label
-          </h3>
-          <p class="mt-1 max-w-2xl text-sm leading-5 text-gray-500">
-            Manage properties related to a label.
-          </p>
-        </div>
-        <div class="bg-gray-50 px-4 py-3 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6 border-b-2">
-          <dt class="text-sm leading-5 font-medium text-gray-700 flex items-center">
-            Name
-          </dt>
-          <dd class="mt-1 text-sm leading-5 text-gray-900 sm:mt-0 sm:col-span-2">
-            <input type="text" v-model="label.name"
-                   class="block appearance-none w-full bg-white border border-gray-400 hover:border-gray-500 px-4 py-2 pr-8 rounded shadow-sm leading-tight focus:outline-none focus:shadow-outline">
-          </dd>
-        </div>
-        <div class="bg-gray-50 px-4 py-3 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6 border-b-2">
-          <dt class="text-sm leading-5 font-medium text-gray-700 flex items-center">
-            Color
-          </dt>
-          <dd class="mt-1 text-sm leading-5 text-gray-900 sm:mt-0 sm:col-span-2">
-            <input type="color" v-model="label.color"
-                   class="block appearance-none w-full bg-white border border-gray-400 hover:border-gray-500 {% endif %} overflow-hidden rounded shadow-sm leading-tight focus:outline-none focus:shadow-outline">
-          </dd>
-        </div>
-        <div class="bg-gray-50 px-4 py-3 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6 border-b-2">
-          <label for="is_visible_to_guest" class="text-sm leading-5 font-medium text-gray-700 flex items-center">
-            Visible for students
-          </label>
-          <dd class="mt-1 text-sm leading-5 text-gray-900 sm:mt-0 sm:col-span-2">
-            <input type="checkbox" class="block" v-model="label.is_visible_to_guest">
-          </dd>
-        </div>
-        <div class="bg-gray-50 px-4 py-3 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6 border-b-2">
-          <label for="is_active" class="text-sm leading-5 font-medium text-gray-700 flex items-center">
-            Enabled
-          </label>
-          <dd class="mt-1 text-sm leading-5 text-gray-900 sm:mt-0 sm:col-span-2">
-            <input type="checkbox" class="block" v-model="label.is_active">
-          </dd>
-        </div>
+    <div v-if="label" class="sm:mt-4">
+      <div class="bg-gray-50 px-4 py-3 sm:gap-4 sm:px-6 border-b-2 hidden sm:block">
+        <h3 class="text-lg leading-6 font-medium text-gray-900">
+          Label
+        </h3>
+        <p class="mt-1 max-w-2xl text-sm leading-5 text-gray-500">
+          Manage properties related to a label.
+        </p>
       </div>
+      <div class="bg-gray-50 px-4 py-3 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6 border-b-2">
+        <dt class="text-sm leading-5 font-medium text-gray-700 flex items-center">
+          Name
+        </dt>
+        <dd class="mt-1 text-sm leading-5 text-gray-900 sm:mt-0 sm:col-span-2">
+          <input type="text" v-model="label.name"
+                 class="block appearance-none w-full bg-white border border-gray-400 hover:border-gray-500 px-4 py-2 pr-8 rounded shadow-sm leading-tight focus:outline-none focus:shadow-outline"
+                 :class="{'mb-2 border-red-600 hover:border-red-700 ' : !label.name }" autofocus>
 
-      <div class="p-2 px-4 sm:pr-0 flex space-x-2 sm:mx-4 justify-end">
-        <button type="button" @click="onCancel()"
-           class="group inline-flex items-center px-4 py-2 border border-gray-300 text-sm leading-5 font-medium rounded-md text-gray-700 bg-white hover:text-gray-500 focus:outline-none focus:shadow-outline-blue focus:border-blue-300 active:text-gray-800 active:bg-gray-50">
-          <span class="left-0 inset-y-0 flex items-center">
-            <i class="fa fa-times mr-2"></i>
-          </span>
-          Cancel
-        </button>
-        <button type="button" @click="onSave()"
-                class="group inline-flex justify-center items-center px-4 py-2 border border-transparent text-sm leading-5 font-medium rounded-md bg-green-200 text-green-700 hover:bg-green-100 focus:outline-none focus:shadow-outline-indigo focus:border-green-700 active:bg-green-700 ">
-          <span class="left-0 inset-y-0 flex items-center">
-            <i class="fa fa-check mr-2"></i>
-          </span>
-          Save
-        </button>
+          <p v-if="!label.name" class="text-sm text-red-600">Omschrijving is verplicht</p>
+        </dd>
       </div>
+      <div class="bg-gray-50 px-4 py-3 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6 border-b-2">
+        <dt class="text-sm leading-5 font-medium text-gray-700 flex items-center">
+          Color
+        </dt>
+        <dd class="mt-1 text-sm leading-5 text-gray-900 sm:mt-0 sm:col-span-2">
+          <input type="color" v-model="label.color"
+                 class="block appearance-none w-full bg-white border border-gray-400 hover:border-gray-500 {% endif %} overflow-hidden rounded shadow-sm leading-tight focus:outline-none focus:shadow-outline">
+        </dd>
+      </div>
+      <div class="bg-gray-50 px-4 py-3 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6 border-b-2">
+        <label for="is_visible_to_guest" class="text-sm leading-5 font-medium text-gray-700 flex items-center">
+          Visible for students
+        </label>
+        <dd class="mt-1 text-sm leading-5 text-gray-900 sm:mt-0 sm:col-span-2">
+          <input type="checkbox" class="block" v-model="label.is_visible_to_guest">
+        </dd>
+      </div>
+      <div class="bg-gray-50 px-4 py-3 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6 border-b-2">
+        <label for="is_active" class="text-sm leading-5 font-medium text-gray-700 flex items-center">
+          Enabled
+        </label>
+        <dd class="mt-1 text-sm leading-5 text-gray-900 sm:mt-0 sm:col-span-2">
+          <input type="checkbox" class="block" v-model="label.is_active">
+        </dd>
+      </div>
+    </div>
+
+    <div class="p-2 px-4 sm:pr-0 flex space-x-2 sm:mx-4 justify-end">
+      <button type="button" @click="onCancel()"
+              class="group inline-flex items-center px-4 py-2 border border-gray-300 text-sm leading-5 font-medium rounded-md text-gray-700 bg-white hover:text-gray-500 focus:outline-none focus:shadow-outline-blue focus:border-blue-300 active:text-gray-800 active:bg-gray-50">
+        <span class="left-0 inset-y-0 flex items-center">
+          <i class="fa fa-times mr-2"></i>
+        </span>
+        Cancel
+      </button>
+      <button type="button" @click="onSave()"
+              class="group inline-flex justify-center items-center px-4 py-2 border border-transparent text-sm leading-5 font-medium rounded-md bg-green-200 text-green-700 hover:bg-green-100 focus:outline-none focus:shadow-outline-indigo focus:border-green-700 active:bg-green-700 ">
+        <span class="left-0 inset-y-0 flex items-center">
+          <i class="fa fa-check mr-2"></i>
+        </span>
+        Save
+      </button>
+    </div>
 
     <div v-if="label && label.id" class="bg-white shadow overflow-hidden sm:rounded-lg mt-4 mb-4 px-4 py-5">
       <h3 class="text-lg leading-6 font-medium text-gray-900">
@@ -93,18 +96,35 @@ export default {
     }
   },
   mounted() {
-    axios.get(`/api${window.location.pathname}`).then(response => {
-      this.label = response.data
-    })
+    if (window.location.pathname.includes("new")) {
+      this.label = {
+        id: null,
+        name: "",
+        color: '#' + Math.random().toString(16).substr(2, 6),
+        is_visible_to_guest: true,
+        is_active: true
+      }
+    } else {
+      axios.get(`/api${window.location.pathname}`).then(response => {
+        this.label = response.data
+      })
+    }
   },
   methods: {
     onSave: function () {
       axios.defaults.xsrfCookieName = 'csrftoken';
       axios.defaults.xsrfHeaderName = "X-CSRFTOKEN";
 
-      axios.put(`/api${window.location.pathname}`, this.label).then(_ => {
-        history.back()
-      })
+      if (this.label.id) {
+        axios.put(`/api${window.location.pathname}`, this.label).then(_ => {
+          history.back()
+        })
+      } else {
+        axios.post(`/api${window.location.pathname}`.replace("/new", ""), this.label).then(_ => {
+          history.back()
+        })
+      }
+
     },
     onCancel: function () {
       window.history.back();

@@ -3,7 +3,7 @@ from django.urls import path
 from ticketvise.views.api.comment import TicketCommentsApiView, CreateCommentApiView, CreateReplyApiView, \
     TicketRepliesApiView
 from ticketvise.views.api.inbox import InboxStaffApiView, InboxLabelsApiView, InboxApiView, InboxesApiView, \
-    InboxStatsApiView, InboxGuestsAPIView, InboxUsersApiView, UserInboxApiView, InboxLabelApiView
+    InboxStatsApiView, InboxGuestsAPIView, InboxUsersApiView, UserInboxApiView, InboxLabelApiView, AllInboxLabelsApiView
 from ticketvise.views.api.notification import NotificationsAPIView, NotificationFlipRead, NotificationsReadAll, \
     VisitTicketNotificationApi, NotificationUnreadCountAPI
 from ticketvise.views.api.statistics import InboxTicketsPerDateTypeStatisticsApiView, \
@@ -43,6 +43,8 @@ urlpatterns = [
     path("inboxes/<int:inbox_id>/users/<str:username>", UserGetFromUsernameApiView.as_view()),
     path("inboxes/<int:inbox_id>/staff", InboxStaffApiView.as_view()),
     path("inboxes/<int:inbox_id>/labels", InboxLabelsApiView.as_view()),
+    path("inboxes/<int:inbox_id>/labels/all", AllInboxLabelsApiView.as_view()),
+    path("inboxes/<int:inbox_id>/labels/new", InboxLabelsApiView.as_view()),
     path("inboxes/<int:inbox_id>/labels/<int:label_id>", InboxLabelApiView.as_view()),
     path("inboxes/<int:inbox_id>/statistics", InboxStatsApiView.as_view()),
     path("inboxes/<int:inbox_id>/statistics/tickets/count", InboxTicketsPerDateTypeStatisticsApiView.as_view()),

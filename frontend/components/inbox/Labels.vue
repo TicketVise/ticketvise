@@ -1,7 +1,14 @@
 <template>
   <div class="container mx-auto lg:px-4 pb-4">
 
-    <search-bar v-model="query" v-on:input="search" class="flex-grow px-2 my-2"/>
+    <div class="flex w-full p-2 sm:px-0 sm:pb-4 space-x-2">
+      <search-bar v-model="query" v-on:input="search" class="flex-grow px-2 my-2"/>
+      <a type="button" :href="add_url"
+         class="inline-flex items-center px-4 my-2 border border-transparent text-sm leading-5 font-medium rounded-md text-white bg-primary hover:bg-orange-500 focus:outline-none focus:shadow-outline-orange focus:border-orange-700 active:bg-orange-700 transition duration-150 ease-in-out">
+        <i class="fa fa-plus mr-2"></i>
+        Add
+      </a>
+    </div>
 
     <div class="flex flex-col">
       <div class="-my-2 py-2 overflow-x-auto px-2 sm:-mx-6 sm:px-6 lg:-mx-8 lg:px-8">
@@ -25,7 +32,7 @@
             </tr>
             </thead>
             <tbody class="bg-white">
-            <tr v-if="labels" v-for="label in labels">
+            <tr v-if="page" v-for="label in page.results">
               <td class="px-6 py-4 whitespace-no-wrap border-b border-gray-200">
                 <div class="text-sm leading-5 text-gray-900 font-medium">{{ label.name }}</div>
               </td>
@@ -49,7 +56,8 @@
                       class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
                   Active
                 </span>
-                <span v-else class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">
+                <span v-else
+                      class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">
                   Inactive
                 </span>
               </td>
@@ -61,20 +69,7 @@
             </tbody>
           </table>
           <div class="bg-white px-4 py-3 flex items-center justify-between border-t border-gray-200 sm:px-6">
-            <div v-if="labels" class="flex-1 flex items-center justify-between">
-              <div>
-                <p class="text-sm leading-5 text-gray-700">
-                  Showing
-                  <span class="font-medium">1</span>
-                  to
-                  <span class="font-medium">{{ labels.length }}</span>
-                  of
-                  <span class="font-medium">{{ labels.length }}</span>
-                  results
-                </p>
-              </div>
-            </div>
-
+            <pagination v-if="page" :page="page" @go="performSearch"/>
           </div>
         </div>
       </div>
@@ -87,27 +82,34 @@
 import SearchBar from "../elements/SearchBar";
 import axios from "axios";
 import {debounce} from "lodash";
+import Pagination from "./Pagination";
 
 export default {
   name: "Labels",
-  components: {SearchBar},
+  components: {SearchBar, Pagination},
   data() {
     return {
       query: "",
-      labels: null
+      page: null
     }
   },
   mounted() {
     this.performSearch()
+  },
+  computed: {
+    add_url: function () {
+      return window.location.pathname + '/new'
+    }
   },
   methods: {
     performSearch: function (page) {
       axios.get(`/api${window.location.pathname}`, {
         params: {
           q: this.query,
+          page: page
         }
       }).then(response => {
-        this.labels = response.data
+        this.page = response.data
       })
     },
     search: debounce(function () {
@@ -115,7 +117,7 @@ export default {
     }, 250),
     getLabelUrl: function (label) {
       return window.location.pathname + '/' + label.id
-    }
+    },
   }
 }
 </script>

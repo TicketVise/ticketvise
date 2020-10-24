@@ -2,7 +2,7 @@ from django.db.models import Case, BooleanField, When, Q
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
 from rest_framework import serializers
-from rest_framework.generics import ListAPIView, RetrieveAPIView, RetrieveUpdateDestroyAPIView
+from rest_framework.generics import ListAPIView, RetrieveAPIView, RetrieveUpdateDestroyAPIView, ListCreateAPIView
 from rest_framework.serializers import ModelSerializer
 from rest_framework.views import APIView
 
@@ -47,7 +47,7 @@ class InboxStaffApiView(UserIsInboxStaffMixin, ListAPIView):
                                    inbox_relationship__inbox_id=self.kwargs[self.inbox_key])
 
 
-class InboxLabelsApiView(UserIsInInboxMixin, ListAPIView):
+class AllInboxLabelsApiView(UserIsInInboxMixin, ListAPIView):
     serializer_class = LabelSerializer
 
     def get_queryset(self):
@@ -58,11 +58,27 @@ class InboxLabelsApiView(UserIsInInboxMixin, ListAPIView):
         if user and not user.is_assistant_or_coordinator(inbox):
             labels = labels.filter(is_visible_to_guest=True)
 
+        return labels.order_by("name")
+
+
+class InboxLabelsApiView(UserIsInboxManagerMixin, ListCreateAPIView):
+    serializer_class = LabelSerializer
+    pagination_class = StandardResultsSetPagination
+
+    def get_queryset(self):
+        inbox = get_object_or_404(Inbox, pk=self.kwargs[self.inbox_key])
+
         search_query = Q()
         for term in self.request.GET.get("q", "").split():
             search_query |= (Q(name__icontains=term) | Q(color__icontains=term))
 
-        return labels.filter(search_query).order_by("name")
+        return Label.objects.filter(inbox=inbox)\
+            .filter(search_query)\
+            .order_by("name")
+
+    def perform_create(self, serializer):
+        inbox = get_object_or_404(Inbox, pk=self.kwargs[self.inbox_key])
+        serializer.save(inbox=inbox)
 
 
 class InboxApiView(UserIsInInboxMixin, RetrieveAPIView):

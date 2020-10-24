@@ -90,7 +90,7 @@
         this.inbox = response.data
       })
 
-      axios.get("/api/inboxes/" + this.inbox_id + "/labels").then(response => {
+      axios.get("/api/inboxes/" + this.inbox_id + "/labels/all").then(response => {
         this.inbox_labels = response.data;
       })
     },
