@@ -8,14 +8,14 @@ from rest_framework.generics import ListAPIView, RetrieveAPIView, RetrieveUpdate
 from rest_framework.serializers import ModelSerializer
 from rest_framework.views import APIView
 
-from ticketvise import settings
 from ticketvise.middleware import CurrentUserMiddleware
 from ticketvise.models.inbox import Inbox
 from ticketvise.models.label import Label
 from ticketvise.models.ticket import Ticket
 from ticketvise.models.user import User, Role, UserInbox
 from ticketvise.utils import StandardResultsSetPagination
-from ticketvise.views.api.security import UserIsInboxStaffMixin, UserIsInInboxMixin, UserIsSuperUserMixin
+from ticketvise.views.api.security import UserIsInboxStaffMixin, UserIsInInboxMixin, UserIsSuperUserMixin, \
+    UserIsInboxManagerMixin
 from ticketvise.views.api.ticket import LabelSerializer
 from ticketvise.views.api.user import UserSerializer, UserInboxSerializer
 
@@ -147,7 +147,7 @@ class UpdateUserInboxSerializer(ModelSerializer):
         fields = ["role"]
 
 
-class UserInboxApiView(UserIsInboxStaffMixin, RetrieveUpdateDestroyAPIView):
+class UserInboxApiView(UserIsInboxManagerMixin, RetrieveUpdateDestroyAPIView):
     def get_serializer_class(self):
         if self.request.method == "PUT":
             return UpdateUserInboxSerializer
@@ -156,5 +156,4 @@ class UserInboxApiView(UserIsInboxStaffMixin, RetrieveUpdateDestroyAPIView):
 
     def get_object(self):
         inbox = get_object_or_404(Inbox, pk=self.kwargs["inbox_id"])
-
-        return UserInbox.objects.get(inbox=inbox, user__id=self.kwargs["user_id"])
+        return get_object_or_404(UserInbox, inbox=inbox, user__id=self.kwargs["user_id"])

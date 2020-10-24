@@ -10,7 +10,8 @@ class UsersTest(InboxTestCase):
     }
 
     def edit_user(self):
-        return self.client.put("/api/inboxes/{}/users/{}".format(self.inbox.id, self.student.id), self.data, follow=True)
+        return self.client.put("/api/inboxes/{}/users/{}".format(self.inbox.id, self.student.id), self.data,
+                               follow=True, content_type="application/json")
 
     def test_edit_user_as_coordinator(self):
         """
