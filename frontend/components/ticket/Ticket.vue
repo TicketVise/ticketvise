@@ -187,9 +187,7 @@
         this.user = response.data.me;
         this.role = response.data.role;
         this.inbox = response.data.inbox;
-
-        axios.defaults.xsrfCookieName = 'csrftoken';
-        axios.defaults.xsrfHeaderName = "X-CSRFTOKEN";
+        this.events = response.data.events;
 
         if (this.isStaff()) {
           axios.get("/api" + window.location.pathname + "/comments").then(response => {
@@ -209,10 +207,6 @@
             this.shared_with = response.data.shared_with;
           });
         }
-      });
-
-      axios.get("/api" + window.location.pathname + "/events").then(response => {
-        this.events = response.data;
       });
     },
     computed: {

@@ -274,12 +274,22 @@ class TicketApiView(UserHasAccessToTicketMixin, RetrieveAPIView):
         replies = Comment.objects.filter(ticket=ticket, is_reply=True).order_by("date_created")
         replies_data = CommentSerializer(replies, many=True).data
 
+        events = None
+        if self.request.user.is_assistant_or_coordinator(inbox):
+            events = TicketEvent.objects.filter(ticket=ticket).select_subclasses()
+        else:
+            events = TicketEvent.objects.filter(ticket=ticket).exclude(
+                ticketlabelevent__label__is_visible_to_guest=False).select_subclasses()
+
+        events_data = TicketEventSerializer(events).data
+
         response = {
             "ticket": ticket_data,
             "me": user_data,
             "role": current_role_data,
             "inbox": inbox_data,
-            "replies": replies_data
+            "replies": replies_data,
+            "events": events_data
         }
 
         return JsonResponse(response, safe=False)
