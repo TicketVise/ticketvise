@@ -126,7 +126,7 @@ class InboxUsersApiView(UserIsInboxStaffMixin, ListAPIView):
         inbox = get_object_or_404(Inbox, pk=self.kwargs["inbox_id"])
         users = User.objects.filter(inbox_relationship__inbox=inbox).search(q)
 
-        inbox_users = UserInbox.objects.filter(user__in=users) \
+        inbox_users = UserInbox.objects.filter(user__in=users, inbox=inbox) \
             .annotate(sort_staff=Case(
                 When(role=Role.GUEST, then=True),
                 default=False,
