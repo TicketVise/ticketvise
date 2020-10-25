@@ -18,9 +18,9 @@
                           v-if="is_staff"/>
 
         <!-- Sharing -->
-        <div class="px-4" v-if="canShare">
-          <edit-share-with :errors="errors" :inbox_id="ticket.inbox" :shared_with="shared_with" :author="ticket.author"
-                           v-on:input="updateSharedWith"></edit-share-with>
+        <div class="px-4">
+          <edit-share-with :errors="errors" :inbox_id="ticket.inbox" :shared_with="ticket.shared_with"
+                           :author="ticket.author" v-on:input="updateSharedWith" :can_share="canShare"></edit-share-with>
         </div>
 
         <!-- Labels -->
@@ -170,7 +170,6 @@
         activeTab: 'external',
         user: {},
         role: "",
-        shared_with: [],
         errors: [],
         status: {
           PNDG: 'Pending',
@@ -188,23 +187,11 @@
         this.role = response.data.role;
         this.inbox = response.data.inbox;
         this.events = response.data.events;
+        this.staff = response.data.staff;
 
         if (this.isStaff()) {
           axios.get("/api" + window.location.pathname + "/comments").then(response => {
             this.comments = response.data;
-          });
-
-          axios.get("/api/inboxes/" + this.ticket.inbox + "/staff").then(response => {
-            this.staff = response.data;
-          });
-
-          axios.get("/api/inboxes/" + this.ticket.inbox + "/users/" + this.ticket.author.id + "/roles").then(response => {
-            this.$set(this.ticket.author, 'role', response.data)
-          })
-        }
-        if (this.isStaff() || (this.ticket.author && this.ticket.author.id === this.user.id)) {
-          axios.get("/api" + window.location.pathname + "/shared").then(response => {
-            this.shared_with = response.data.shared_with;
           });
         }
       });
@@ -226,7 +213,7 @@
     methods: {
       date: calendarDate,
       isStaff: function () {
-        return (this.role && (this.role.key === 'AGENT' || this.role.key === 'MANAGER')) || (this.user && this.user.is_superuser)
+        return (this.role && (this.role === 'AGENT' || this.role === 'MANAGER')) || (this.user && this.user.is_superuser)
       },
       onReplyPost: function () {
         axios.get("/api" + window.location.pathname + "/replies").then(response => {
@@ -275,7 +262,7 @@
       },
       updateSharedWith() {
         let formData = new FormData();
-        this.shared_with.forEach(shared_with => formData.append("shared_with", shared_with.id));
+        this.ticket.shared_with.forEach(shared_with => formData.append("shared_with", shared_with.id));
 
         axios.defaults.xsrfCookieName = "csrftoken";
         axios.defaults.xsrfHeaderName = "X-CSRFTOKEN";

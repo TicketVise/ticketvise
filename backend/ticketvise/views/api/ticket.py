@@ -28,7 +28,7 @@ from ticketvise.models.inbox import Inbox, SchedulingAlgorithm
 from ticketvise.models.label import Label
 from ticketvise.models.ticket import Ticket, TicketAttachment, TicketEvent, Status, TicketStatusEvent, \
     TicketAssigneeEvent, TicketLabelEvent, TicketLabel, TicketSharedUser
-from ticketvise.models.user import User, UserInbox
+from ticketvise.models.user import User, UserInbox, Role
 from ticketvise.views.admin import SuperUserRequiredMixin
 from ticketvise.views.api import AUTOCOMPLETE_MAX_ENTRIES, DynamicFieldsModelSerializer
 from ticketvise.views.api.comment import CommentSerializer
@@ -104,6 +104,8 @@ class TicketSerializer(DynamicFieldsModelSerializer):
     Allows data to be converted into Python datatypes for the ticket.
     """
     author = UserSerializer(read_only=True, fields=(["first_name", "last_name", "username", "avatar_url", "id"]))
+    shared_with = UserSerializer(read_only=True, many=True,
+                                 fields=(["first_name", "last_name", "username", "avatar_url", "id"]))
     assignee = serializers.SerializerMethodField()
     labels = serializers.SerializerMethodField()
     participants = serializers.SerializerMethodField()
@@ -256,15 +258,11 @@ class TicketApiView(UserHasAccessToTicketMixin, RetrieveAPIView):
 
         unread_related_ticket_notifications(ticket, request.user)
 
-        current_role = request.user.get_role_by_inbox(inbox)
-        current_role_data = RoleSerializer(current_role).data
-
-        if request.user.is_superuser:
-            current_role_data = {}
+        current_role = request.user.get_entry_by_inbox(inbox).role
 
         ticket_data = TicketSerializer(ticket, fields=(
             "id", "inbox", "title", "ticket_inbox_id", "author", "content", "date_created", "status", "labels",
-            "assignee", "attachments", "participants", "role", "attachments", "shared_with_by")).data
+            "assignee", "attachments", "participants", "role", "attachments", "shared_with_by", "shared_with")).data
 
         user_data = UserSerializer(request.user,
                                    fields=(["first_name", "last_name", "username", "avatar_url", "id"])).data
@@ -282,16 +280,27 @@ class TicketApiView(UserHasAccessToTicketMixin, RetrieveAPIView):
 
         events_data = TicketEventSerializer(events, many=True).data
 
+        is_staff = current_role == Role.AGENT or current_role == Role.MANAGER or request.user.is_superuser
+
+        if is_staff:
+            staff = User.objects.filter(inbox_relationship__role__in=[Role.AGENT, Role.MANAGER],
+                                        inbox_relationship__inbox_id=self.kwargs[self.inbox_key]) \
+                .values("first_name", "last_name", "username", "avatar_url", "id")
+
+        else:
+            staff = []
+
         response = {
             "ticket": ticket_data,
             "me": user_data,
-            "role": current_role_data,
+            "role": current_role,
             "inbox": inbox_data,
             "replies": replies_data,
-            "events": events_data
+            "events": events_data,
+            "staff": staff
         }
 
-        return JsonResponse(response, safe=False)
+        return Response(response)
 
 
 class RecentTicketApiView(UserIsInboxStaffMixin, ListAPIView):
@@ -391,13 +400,6 @@ class TicketSharedWithRetrieveSerializer(ModelSerializer):
         model = Ticket
         fields = ["shared_with"]
 
-    def validate_shared_with(self, shared_with):
-        inbox = self.instance.inbox
-        for user in shared_with:
-            if not user.has_inbox(inbox) or user.is_assistant_or_coordinator(inbox):
-                raise ValidationError("This ticket cannot be shared with one of these users")
-        return shared_with
-
 
 class TicketSharedWithUpdateSerializer(ModelSerializer):
     shared_with = serializers.PrimaryKeyRelatedField(many=True, queryset=User.objects.all())
@@ -405,6 +407,13 @@ class TicketSharedWithUpdateSerializer(ModelSerializer):
     class Meta:
         model = Ticket
         fields = ["shared_with"]
+
+    def validate_shared_with(self, shared_with):
+        inbox = self.instance.inbox
+        for user in shared_with:
+            if not user.has_inbox(inbox) or user.is_assistant_or_coordinator(inbox):
+                raise ValidationError("This ticket cannot be shared with one of these users")
+        return shared_with
 
 
 class TicketStatusEventSerializer(ModelSerializer):

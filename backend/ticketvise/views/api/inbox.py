@@ -1,6 +1,6 @@
-from django.http import JsonResponse
 from django.db.models import Value
 from django.db.models.functions import Concat
+from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
 from rest_framework import serializers
 from rest_framework.generics import ListAPIView, RetrieveAPIView
@@ -32,15 +32,17 @@ class InboxSerializer(ModelSerializer):
     class Meta:
         model = Inbox
         fields = [
-            "name", "id", "color", "labels", "image", "scheduling_algorithm", 
+            "name", "id", "color", "labels", "image", "scheduling_algorithm",
             "is_active", "date_created"
         ]
 
 
 class InboxStaffApiView(UserIsInboxStaffMixin, ListAPIView):
-    serializer_class = UserSerializer
-    lookup_field = ["first_name", "last_name", "username", "avatar_url", "id"]
     staff_roles = [Role.AGENT, Role.MANAGER]
+
+    def get_serializer(self, *args, **kwargs):
+        return UserSerializer(many=True, read_only=True,
+                              fields=("first_name", "last_name", "username", "avatar_url", "id"))
 
     def get_queryset(self):
         return User.objects.filter(inbox_relationship__role__in=self.staff_roles,
@@ -87,7 +89,7 @@ class InboxStatsApiView(UserIsSuperUserMixin, APIView):
 
 class InboxesApiView(ListAPIView):
     serializer_class = InboxSerializer
-    
+
     def get_queryset(self):
         return Inbox.objects.all()
 
