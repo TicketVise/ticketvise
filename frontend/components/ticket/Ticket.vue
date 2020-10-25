@@ -187,12 +187,10 @@
         this.role = response.data.role;
         this.inbox = response.data.inbox;
         this.events = response.data.events;
-        this.staff = response.data.staff;
 
         if (this.isStaff()) {
-          axios.get("/api" + window.location.pathname + "/comments").then(response => {
-            this.comments = response.data;
-          });
+          this.staff = response.data.staff;
+          this.comments = response.data.comments;
         }
       });
     },

@@ -282,16 +282,6 @@ class TicketApiView(UserHasAccessToTicketMixin, RetrieveAPIView):
 
         events_data = TicketEventSerializer(events, many=True).data
 
-        is_staff = current_role == Role.AGENT or current_role == Role.MANAGER or request.user.is_superuser
-
-        if is_staff:
-            staff = User.objects.filter(inbox_relationship__role__in=[Role.AGENT, Role.MANAGER],
-                                        inbox_relationship__inbox_id=self.kwargs[self.inbox_key]) \
-                .values("first_name", "last_name", "username", "avatar_url", "id")
-
-        else:
-            staff = []
-
         response = {
             "ticket": ticket_data,
             "me": user_data,
@@ -299,8 +289,21 @@ class TicketApiView(UserHasAccessToTicketMixin, RetrieveAPIView):
             "inbox": inbox_data,
             "replies": replies_data,
             "events": events_data,
-            "staff": staff
         }
+
+        is_staff = current_role == Role.AGENT or current_role == Role.MANAGER or request.user.is_superuser
+
+        if is_staff:
+            staff = User.objects.filter(inbox_relationship__role__in=[Role.AGENT, Role.MANAGER],
+                                        inbox_relationship__inbox_id=self.kwargs[self.inbox_key]) \
+                .values("first_name", "last_name", "username", "avatar_url", "id")
+
+            response["staff"] = staff
+
+            comments = Comment.objects.filter(ticket=ticket, is_reply=False).order_by("date_created")
+            comments_data = CommentSerializer(comments, many=True).data
+
+            response["comments"] = comments_data
 
         return Response(response)
 
