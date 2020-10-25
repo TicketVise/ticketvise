@@ -17,6 +17,9 @@ class InboxTestCase(TestCase):
         self.student.set_password("test12345")
         self.student.save()
 
+        self.student2 = User.objects.create_user(username="dfg34gf", email="dfgdf@ticketvise.com")
+        self.student3 = User.objects.create_user(username="aaaaa", email="aaaaa@ticketvise.com")
+
         self.assistant = User.objects.create_user(
             username="assistant", email="assitant@ticketvise.com", password="test12345", is_staff=False
         )
@@ -37,6 +40,8 @@ class InboxTestCase(TestCase):
 
         self.student.add_inbox(self.inbox, Role.GUEST)
         self.student.add_inbox(self.inbox_2, Role.GUEST)
+        self.student2.add_inbox(self.inbox_2, Role.GUEST)
+        self.student3.add_inbox(self.inbox, Role.GUEST)
         self.assistant.add_inbox(self.inbox, Role.AGENT)
         self.coordinator.add_inbox(self.inbox, Role.MANAGER)
         self.coordinator_2.add_inbox(self.inbox_2, Role.MANAGER)

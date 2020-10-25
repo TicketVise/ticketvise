@@ -1,9 +1,8 @@
-from django.db.models import Value
-from django.db.models.functions import Concat
+from django.db.models import Case, BooleanField, When
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
 from rest_framework import serializers
-from rest_framework.generics import ListAPIView, RetrieveAPIView
+from rest_framework.generics import ListAPIView, RetrieveAPIView, RetrieveUpdateDestroyAPIView
 from rest_framework.serializers import ModelSerializer
 from rest_framework.views import APIView
 
@@ -11,10 +10,12 @@ from ticketvise.middleware import CurrentUserMiddleware
 from ticketvise.models.inbox import Inbox
 from ticketvise.models.label import Label
 from ticketvise.models.ticket import Ticket
-from ticketvise.models.user import User, Role
-from ticketvise.views.api.labels import LabelSerializer
-from ticketvise.views.api.security import UserIsInboxStaffMixin, UserIsInInboxMixin, UserIsSuperUserMixin
-from ticketvise.views.api.user import UserSerializer
+from ticketvise.models.user import User, Role, UserInbox
+from ticketvise.utils import StandardResultsSetPagination
+from ticketvise.views.api.security import UserIsInboxStaffMixin, UserIsInInboxMixin, UserIsSuperUserMixin, \
+    UserIsInboxManagerMixin
+from ticketvise.views.api.ticket import LabelSerializer
+from ticketvise.views.api.user import UserSerializer, UserInboxSerializer
 
 
 class InboxSerializer(ModelSerializer):
@@ -94,23 +95,56 @@ class InboxesApiView(ListAPIView):
         return Inbox.objects.all()
 
 
+class InboxUsersApiView(UserIsInboxStaffMixin, ListAPIView):
+    serializer_class = UserInboxSerializer
+    pagination_class = StandardResultsSetPagination
+
+    def get_queryset(self):
+        q = self.request.GET.get("q", "")
+
+        inbox = get_object_or_404(Inbox, pk=self.kwargs["inbox_id"])
+        users = User.objects.filter(inbox_relationship__inbox=inbox).search(q)
+
+        inbox_users = UserInbox.objects.filter(user__in=users) \
+            .annotate(sort_staff=Case(
+                When(role=Role.GUEST, then=True),
+                default=False,
+                output_field=BooleanField())) \
+            .select_related("user") \
+            .order_by("sort_staff", "role", "user__first_name")
+
+        return inbox_users
+
+
 class InboxGuestsAPIView(UserIsInInboxMixin, ListAPIView):
-    serializer_class = UserSerializer
-    lookup_field = ["first_name", "last_name", "username", "avatar_url", "id"]
+    def get_serializer(self, *args, **kwargs):
+        return UserSerializer(many=True, read_only=True,
+                              fields=("first_name", "last_name", "username", "avatar_url", "id"))
 
     def get_queryset(self):
         q = self.request.GET.get("q", "")
         size = self.request.GET.get("size", "")
         size = int(size) if size.isdigit() else None
 
-        users = User.objects.annotate(fullname=Concat('first_name', Value(' '), 'last_name'))
+        users = User.objects.filter(inbox_relationship__role=Role.GUEST,
+                                    inbox_relationship__inbox_id=self.kwargs[self.inbox_key]).search(q)
 
-        users = users.filter(inbox_relationship__role=Role.GUEST,
-                             inbox_relationship__inbox_id=self.kwargs[self.inbox_key])
-        users = users.filter(username__icontains=q) | \
-                users.filter(fullname__icontains=q) | \
-                users.filter(email__icontains=q)
+        return users[:size] if size and size > 0 else users
 
-        if size and size > 0:
-            return users[:size]
-        return users
+
+class UpdateUserInboxSerializer(ModelSerializer):
+    class Meta:
+        model = UserInbox
+        fields = ["role"]
+
+
+class UserInboxApiView(UserIsInboxManagerMixin, RetrieveUpdateDestroyAPIView):
+    def get_serializer_class(self):
+        if self.request.method == "PUT":
+            return UpdateUserInboxSerializer
+
+        return UserInboxSerializer
+
+    def get_object(self):
+        inbox = get_object_or_404(Inbox, pk=self.kwargs["inbox_id"])
+        return get_object_or_404(UserInbox, inbox=inbox, user__id=self.kwargs["user_id"])

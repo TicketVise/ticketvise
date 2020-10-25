@@ -10,7 +10,8 @@ class UsersTest(InboxTestCase):
     }
 
     def edit_user(self):
-        return self.client.post(reverse("inbox_user", args=(self.inbox.id, self.student.id)), self.data, follow=True)
+        return self.client.put("/api/inboxes/{}/users/{}".format(self.inbox.id, self.student.id), self.data,
+                               follow=True, content_type="application/json")
 
     def test_edit_user_as_coordinator(self):
         """
@@ -47,3 +48,19 @@ class UsersTest(InboxTestCase):
         self.assertEqual(self.edit_user().status_code, 403)
         self.assertNotEqual(UserInbox.objects.get(user_id=self.student.id, inbox__id=self.inbox.id).role,
                             self.data["role"])
+
+    def test_users(self):
+        self.client.force_login(self.coordinator)
+        response = self.client.get(f"/api/inboxes/{self.inbox.id}/users")
+        self.assertContains(response, self.student.username)
+        self.assertContains(response, self.student3.username)
+        self.assertNotContains(response, self.student2.username)
+
+    def test_users_search(self):
+        self.client.force_login(self.coordinator)
+
+        self.client.force_login(self.coordinator)
+        response = self.client.get(f"/api/inboxes/{self.inbox.id}/users", {"q": "aa"})
+        self.assertContains(response, self.student3.username)
+        self.assertNotContains(response, self.student2.username)
+        self.assertNotContains(response, self.student.username)
