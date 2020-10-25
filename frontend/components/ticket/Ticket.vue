@@ -9,7 +9,7 @@
             <span class="text-lg font-bold">
               {{ ticket.author.first_name }} {{ ticket.author.last_name }}
             </span>
-            <span v-if="ticket.author.role" class="text-sm">{{ ticket.author.role.label }}</span>
+            <span v-if="ticket.author_role" class="text-sm">{{ ticket.author_role.label }}</span>
           </div>
         </div>
 

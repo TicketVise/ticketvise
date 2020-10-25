@@ -109,13 +109,13 @@ class TicketSerializer(DynamicFieldsModelSerializer):
     assignee = serializers.SerializerMethodField()
     labels = serializers.SerializerMethodField()
     participants = serializers.SerializerMethodField()
-    role = serializers.SerializerMethodField()
+    author_role = serializers.SerializerMethodField()
     attachments = TicketAttachmentSerializer(many=True, read_only=True)
     shared_with_by = TicketSharedUserSerializer(many=True, read_only=True)
 
-    def get_role(self, obj):
-        role = UserInbox.objects.get(user=obj.author, inbox=obj.inbox).role
-        return RoleSerializer(role).data
+    def get_author_role(self, obj):
+        author_role = UserInbox.objects.get(user=obj.author, inbox=obj.inbox).role
+        return RoleSerializer(author_role).data
 
     def get_participants(self, obj):
         participants = list(User.objects.filter(comments__ticket=obj).distinct())
@@ -159,7 +159,8 @@ class TicketSerializer(DynamicFieldsModelSerializer):
         model = Ticket
         #: Tells the serializer to use these fields from the :class:`Ticket` model.
         fields = ["id", "inbox", "title", "ticket_inbox_id", "author", "content", "date_created", "status", "labels",
-                  "assignee", "shared_with", "participants", "role", "attachments", "shared_with_by", "attachments"]
+                  "assignee", "shared_with", "participants", "author_role", "attachments", "shared_with_by",
+                  "attachments"]
 
 
 class InboxTicketsApiView(UserIsInInboxMixin, APIView):
@@ -262,7 +263,8 @@ class TicketApiView(UserHasAccessToTicketMixin, RetrieveAPIView):
 
         ticket_data = TicketSerializer(ticket, fields=(
             "id", "inbox", "title", "ticket_inbox_id", "author", "content", "date_created", "status", "labels",
-            "assignee", "attachments", "participants", "role", "attachments", "shared_with_by", "shared_with")).data
+            "assignee", "attachments", "participants", "author_role", "attachments", "shared_with_by",
+            "shared_with")).data
 
         user_data = UserSerializer(request.user,
                                    fields=(["first_name", "last_name", "username", "avatar_url", "id"])).data
