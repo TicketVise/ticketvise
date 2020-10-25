@@ -17,7 +17,7 @@ from ticketvise.views.api.security import UserIsInboxStaffMixin, UserIsInInboxMi
 class UserSerializer(DynamicFieldsModelSerializer):
     class Meta:
         model = User
-        fields = ["first_name", "last_name", "email", "username", "avatar_url", "id", "is_active"]
+        fields = ["first_name", "last_name", "email", "username", "avatar_url", "id", "is_superuser", "is_active"]
 
 
 class UserInboxSerializer(ModelSerializer):
