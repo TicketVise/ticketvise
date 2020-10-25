@@ -476,7 +476,7 @@ class TicketTestBackendCase(TicketTestCase):
 
         response = self.client.get(f"/api/inboxes/{self.inbox.id}/tickets/{self.ticket.ticket_inbox_id}", follow=True)
         self.assertEqual(response.status_code, 200)
-        self.assertNotContains(response, self.ticket.assignee.username)
+        self.assertNotContains(response, "username: " + self.ticket.assignee.username)
 
         self.inbox.show_assignee_to_guest = True
         self.inbox.save()
