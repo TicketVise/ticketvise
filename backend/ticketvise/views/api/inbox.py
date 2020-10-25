@@ -14,7 +14,7 @@ from ticketvise.models.user import User, Role, UserInbox
 from ticketvise.utils import StandardResultsSetPagination
 from ticketvise.views.api.security import UserIsInboxStaffMixin, UserIsInInboxMixin, UserIsSuperUserMixin, \
     UserIsInboxManagerMixin
-from ticketvise.views.api.ticket import LabelSerializer
+from ticketvise.views.api.labels import LabelSerializer
 from ticketvise.views.api.user import UserSerializer, UserInboxSerializer
 
 
