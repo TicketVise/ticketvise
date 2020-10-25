@@ -20,7 +20,8 @@
         <!-- Sharing -->
         <div class="px-4">
           <edit-share-with :errors="errors" :inbox_id="ticket.inbox" :shared_with="ticket.shared_with"
-                           :author="ticket.author" v-on:input="updateSharedWith" :can_share="canShare"></edit-share-with>
+                           :author="ticket.author" v-on:input="updateSharedWith"
+                           :can_share="canShare"></edit-share-with>
         </div>
 
         <!-- Labels -->
@@ -180,7 +181,18 @@
       }
     },
     created() {
-      axios.get("/api" + window.location.pathname).then(response => {
+      let formData = {
+        "ticket": true,
+        "role": true,
+        "me": true,
+        "inbox": true,
+        "staff": true,
+        "comments": true,
+        "replies": true,
+        "events": true
+      };
+
+      axios.get("/api" + window.location.pathname, {params: formData}).then(response => {
         this.ticket = response.data.ticket;
         this.labels = response.data.ticket.labels;
         this.user = response.data.me;
@@ -214,46 +226,52 @@
         return (this.role && (this.role === 'AGENT' || this.role === 'MANAGER')) || (this.user && this.user.is_superuser)
       },
       onReplyPost: function () {
-        axios.get("/api" + window.location.pathname + "/replies").then(response => {
-          this.replies = response.data;
-
-          return axios.get("/api" + window.location.pathname + "/events")
-        }).then(response => {
-          this.events = response.data;
-        });
-
-
-        axios.get("/api" + window.location.pathname).then(response => {
+        let data = {
+          "ticket": true,
+          "replies": true,
+          "events": true,
+        };
+        axios.get("/api" + window.location.pathname, {params: data}).then(response => {
+          this.replies = response.data.replies;
+          this.events = response.data.events;
           this.ticket = response.data.ticket;
         });
       },
       onCommentPost: function () {
-        axios.get("/api" + window.location.pathname + "/comments").then(response => {
-          this.comments = response.data;
+        let data = {
+          "ticket": true,
+          "comments": true,
+        };
+        axios.get("/api" + window.location.pathname, {params: data}).then(response => {
+          this.ticket = response.data.ticket;
+          this.comments = response.data.comments;
         });
 
-        axios.get("/api" + window.location.pathname).then(response => {
-          this.ticket = response.data.ticket;
-        });
       },
       closeTicket: function () {
         axios.defaults.xsrfCookieName = 'csrftoken';
         axios.defaults.xsrfHeaderName = "X-CSRFTOKEN";
+        let data = {
+          "events": true
+        };
 
         this.ticket.status = "CLSD";
         axios.patch("/api" + window.location.pathname + "/status/close").then(_ => {
-          return axios.get("/api" + window.location.pathname + "/events")
+          return axios.get("/api" + window.location.pathname, {params: data})
         }).then(response => {
-          this.events = response.data;
+          this.events = response.data.events;
         });
 
       },
       openTicket: function () {
         axios.defaults.xsrfCookieName = 'csrftoken';
         axios.defaults.xsrfHeaderName = "X-CSRFTOKEN";
+        let data = {
+          "ticket": true
+        };
 
         axios.patch("/api" + window.location.pathname + "/status/open").then(_ => {
-          return axios.get("/api" + window.location.pathname)
+          return axios.get("/api" + window.location.pathname, {params: data})
         }).then(response => {
           this.ticket.status = response.data.ticket.status;
         });
@@ -266,36 +284,46 @@
         axios.defaults.xsrfHeaderName = "X-CSRFTOKEN";
 
         axios.put("/api" + window.location.pathname + "/shared", formData).then(_ => {
-          return axios.get("/api" + window.location.pathname)
+          return axios.get("/api" + window.location.pathname, {params: {"ticket": true}})
         }).then(response => {
           this.ticket = response.data.ticket;
         }).catch(error => {
           this.errors = error.response.data
         })
-      },
+      }
+      ,
       updateAssignee() {
-        axios.get("/api" + window.location.pathname).then(response => {
+        let data = {
+          "ticket": true,
+          "events": true
+        };
+        axios.get("/api" + window.location.pathname, {params: data}).then(response => {
           this.ticket = response.data.ticket;
-
-          return axios.get("/api" + window.location.pathname + "/events")
-        }).then(response => {
-          this.events = response.data;
+          this.events = response.data.events;
         });
-      },
+      }
+      ,
       updateLabels() {
         axios.defaults.xsrfCookieName = 'csrftoken';
         axios.defaults.xsrfHeaderName = "X-CSRFTOKEN";
+        let data = {
+          "events": true
+        };
 
         axios.put("/api" + window.location.pathname + "/labels",
             {
               "labels": this.labels.map(label => label.id)
             }).then(_ => {
-          return axios.get("/api" + window.location.pathname + "/events")
+          return axios.get("/api" + window.location.pathname, {params: data})
         }).then(response => {
-          this.events = response.data;
+          this.events = response.data.events;
         });
-      },
+      }
+      ,
       updateTicket() {
+        let data = {
+          "ticket": true
+        };
         axios.get("/api" + window.location.pathname).then(response => {
           this.ticket = response.data.ticket;
         })

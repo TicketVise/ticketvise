@@ -10,6 +10,7 @@ Contains classes for the API interface to dynamically load models using AJAX.
 * :class:`InboxUsersView`
 * :class:`InboxTicketView`
 """
+import json
 
 from django.core.exceptions import ValidationError
 from django.db.models import Exists, OuterRef
@@ -256,54 +257,62 @@ class TicketApiView(UserHasAccessToTicketMixin, RetrieveAPIView):
     def get(self, request, *args, **kwargs):
         inbox = get_object_or_404(Inbox, pk=self.kwargs["inbox_id"])
         ticket = get_object_or_404(Ticket, inbox=inbox, ticket_inbox_id=self.kwargs["ticket_inbox_id"])
+        current_role = request.user.get_entry_by_inbox(inbox).role
+
+        response = {}
 
         unread_related_ticket_notifications(ticket, request.user)
 
-        current_role = request.user.get_entry_by_inbox(inbox).role
+        if json.loads(request.GET.get("role", "false")):
+            response["role"] = current_role
 
-        ticket_data = TicketSerializer(ticket, fields=(
-            "id", "inbox", "title", "ticket_inbox_id", "author", "content", "date_created", "status", "labels",
-            "assignee", "attachments", "participants", "author_role", "attachments", "shared_with_by",
-            "shared_with")).data
+        if json.loads(request.GET.get("ticket", "false")):
+            ticket_data = TicketSerializer(ticket, fields=(
+                "id", "inbox", "title", "ticket_inbox_id", "author", "content", "date_created", "status", "labels",
+                "assignee", "attachments", "participants", "author_role", "attachments", "shared_with_by",
+                "shared_with")).data
+            response["ticket"] = ticket_data
 
-        user_data = UserSerializer(request.user,
-                                   fields=(["first_name", "last_name", "username", "avatar_url", "id"])).data
+        if json.loads(request.GET.get("me", "false")):
+            user_data = UserSerializer(request.user,
+                                       fields=(["first_name", "last_name", "username", "avatar_url", "id",
+                                                "is_superuser"])).data
+            response["me"] = user_data
 
-        inbox_data = InboxSerializer(inbox).data
+        if json.loads(request.GET.get("inbox", "false")):
+            inbox_data = InboxSerializer(inbox).data
+            response["inbox"] = inbox_data
 
-        replies = Comment.objects.filter(ticket=ticket, is_reply=True).order_by("date_created")
-        replies_data = CommentSerializer(replies, many=True).data
+        if json.loads(request.GET.get("replies", "false")):
+            replies = Comment.objects.filter(ticket=ticket, is_reply=True).order_by("date_created")
+            replies_data = CommentSerializer(replies, many=True).data
+            response["replies"] = replies_data
 
-        if self.request.user.is_assistant_or_coordinator(inbox):
-            events = TicketEvent.objects.filter(ticket=ticket).select_subclasses()
-        else:
-            events = TicketEvent.objects.filter(ticket=ticket).exclude(
-                ticketlabelevent__label__is_visible_to_guest=False).select_subclasses()
+        if json.loads(request.GET.get("events", "false")):
+            if self.request.user.is_assistant_or_coordinator(inbox):
+                events = TicketEvent.objects.filter(ticket=ticket).select_subclasses()
+            else:
+                events = TicketEvent.objects.filter(ticket=ticket).exclude(
+                    ticketlabelevent__label__is_visible_to_guest=False).select_subclasses()
 
-        events_data = TicketEventSerializer(events, many=True).data
-
-        response = {
-            "ticket": ticket_data,
-            "me": user_data,
-            "role": current_role,
-            "inbox": inbox_data,
-            "replies": replies_data,
-            "events": events_data,
-        }
+            events_data = TicketEventSerializer(events, many=True).data
+            response["events"] = events_data
 
         is_staff = current_role == Role.AGENT or current_role == Role.MANAGER or request.user.is_superuser
 
         if is_staff:
-            staff = User.objects.filter(inbox_relationship__role__in=[Role.AGENT, Role.MANAGER],
-                                        inbox_relationship__inbox_id=self.kwargs[self.inbox_key]) \
-                .values("first_name", "last_name", "username", "avatar_url", "id")
+            if json.loads(request.GET.get("staff", "false")):
+                staff = User.objects.filter(inbox_relationship__role__in=[Role.AGENT, Role.MANAGER],
+                                            inbox_relationship__inbox_id=self.kwargs[self.inbox_key]) \
+                    .values("first_name", "last_name", "username", "avatar_url", "id")
 
-            response["staff"] = staff
+                response["staff"] = staff
 
-            comments = Comment.objects.filter(ticket=ticket, is_reply=False).order_by("date_created")
-            comments_data = CommentSerializer(comments, many=True).data
+            if json.loads(request.GET.get("comments", "false")):
+                comments = Comment.objects.filter(ticket=ticket, is_reply=False).order_by("date_created")
+                comments_data = CommentSerializer(comments, many=True).data
 
-            response["comments"] = comments_data
+                response["comments"] = comments_data
 
         return Response(response)
 
