@@ -7,8 +7,9 @@ Contains all entity sets for the user database.
 * :class:`User`
 * :class:`UserInbox`
 """
-from django.contrib.auth.models import AbstractUser
+from django.contrib.auth.models import AbstractUser, UserManager
 from django.db import models
+from django.db.models import Q
 from django.utils.translation import gettext_lazy as _
 
 from ticketvise import settings
@@ -25,6 +26,28 @@ class Role(models.TextChoices):
     MANAGER = "MANAGER", _(settings.ROLE_MANAGER_DISPLAY_NAME)
 
 
+class UserQuerySet(models.QuerySet):
+
+    def search(self, query):
+        query_set = Q()
+        for term in query.split():
+            query_set |= (Q(username__icontains=term) |
+                          Q(email__icontains=term) |
+                          Q(first_name__icontains=term) |
+                          Q(last_name__icontains=term))
+
+        return self.filter(query_set)
+
+
+class CustomUserManager(UserManager):
+
+    def get_queryset(self):
+        return UserQuerySet(self.model, using=self._db)
+
+    def search(self, query):
+        return self.get_queryset().search(query)
+
+
 class User(AbstractUser):
     """
     This model represents a user. A user can have different inboxes and has one
@@ -35,7 +58,7 @@ class User(AbstractUser):
                         * **inbox_relationship** -- Set of :class:`UserInbox` s belonging to the user.
                         * **notifications** -- Set of :class:`Notification` s belonging to the user.
     """
-
+    objects = CustomUserManager()
     lti_id = models.CharField(max_length=150, null=True)
     inboxes = models.ManyToManyField("Inbox", through="UserInbox", related_name="users")
     avatar_url = models.URLField(default=DEFAULT_AVATAR_PATH)
