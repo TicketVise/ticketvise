@@ -17,8 +17,7 @@ from django.db.models import Exists, OuterRef
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
 from rest_framework import serializers
-from rest_framework.generics import UpdateAPIView, ListAPIView, RetrieveAPIView, CreateAPIView, RetrieveUpdateAPIView, \
-    DestroyAPIView
+from rest_framework.generics import UpdateAPIView, ListAPIView, RetrieveAPIView, CreateAPIView, DestroyAPIView
 from rest_framework.response import Response
 from rest_framework.serializers import ModelSerializer
 from rest_framework.views import APIView
@@ -474,30 +473,10 @@ class TicketEventSerializer(ModelSerializer):
         fields = "__all__"
 
 
-class TicketEventsApiView(UserHasAccessToTicketMixin, ListAPIView):
-    serializer_class = TicketEventSerializer
-
-    def get_queryset(self):
-        inbox = get_object_or_404(Inbox, pk=self.kwargs["inbox_id"])
-        ticket = get_object_or_404(Ticket, inbox=inbox, ticket_inbox_id=self.kwargs["ticket_inbox_id"])
-
-        if self.request.user.is_assistant_or_coordinator(inbox):
-            return TicketEvent.objects.filter(ticket=ticket).select_subclasses()
-
-        return TicketEvent.objects.filter(ticket=ticket) \
-            .exclude(ticketlabelevent__label__is_visible_to_guest=False). \
-            select_subclasses()
-
-
-class TicketSharedAPIView(UserIsTicketAuthorOrInboxStaffMixin, RetrieveUpdateAPIView):
+class TicketSharedAPIView(UserIsTicketAuthorOrInboxStaffMixin, UpdateAPIView):
+    serializer_class = TicketSharedWithUpdateSerializer
 
     def get_object(self):
         inbox = get_object_or_404(Inbox, pk=self.kwargs["inbox_id"])
 
         return Ticket.objects.get(inbox=inbox, ticket_inbox_id=self.kwargs["ticket_inbox_id"])
-
-    def get_serializer_class(self):
-        if self.request.method == "PUT":
-            return TicketSharedWithUpdateSerializer
-
-        return TicketSharedWithRetrieveSerializer

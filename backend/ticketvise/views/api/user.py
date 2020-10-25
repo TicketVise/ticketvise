@@ -61,19 +61,6 @@ class UserUsernameSerializer(ModelSerializer):
         model = User
         fields = ["first_name", "last_name", "username", "avatar_url", "id"]
 
-
-class UserRoleByIdApiView(UserIsInboxStaffMixin, View):
-
-    def get(self, request, user_id, inbox_id):
-        user = get_object_or_404(User, pk=user_id)
-        inbox = get_object_or_404(Inbox, pk=inbox_id)
-
-        role = user.get_role_by_inbox(inbox)
-        data = RoleSerializer(role).data
-
-        return JsonResponse(data, safe=False)
-
-
 class UserRoleApiView(UserIsInInboxMixin, View):
 
     def get(self, request, inbox_id):

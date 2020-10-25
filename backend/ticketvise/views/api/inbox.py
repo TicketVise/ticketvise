@@ -38,18 +38,6 @@ class InboxSerializer(ModelSerializer):
         ]
 
 
-class InboxStaffApiView(UserIsInboxStaffMixin, ListAPIView):
-    staff_roles = [Role.AGENT, Role.MANAGER]
-
-    def get_serializer(self, *args, **kwargs):
-        return UserSerializer( *args, **kwargs, many=True, read_only=True,
-                              fields=("first_name", "last_name", "username", "avatar_url", "id"))
-
-    def get_queryset(self):
-        return User.objects.filter(inbox_relationship__role__in=self.staff_roles,
-                                   inbox_relationship__inbox_id=self.kwargs[self.inbox_key])
-
-
 class InboxLabelsApiView(UserIsInInboxMixin, ListAPIView):
     serializer_class = LabelSerializer
 
