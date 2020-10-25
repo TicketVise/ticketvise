@@ -1,6 +1,5 @@
 from django.urls import reverse
 
-from ticketvise.models.inbox import Inbox
 from ticketvise.models.label import Label
 from ticketvise.tests.inbox.utils import InboxTestCase
 
@@ -13,9 +12,9 @@ class LabelsTest(InboxTestCase):
         """
         self.client.force_login(self.coordinator)
 
-        response = self.client.post(reverse("delete_inbox_label", args=(self.label.inbox.id, self.label.id)),
-                                    follow=True)
-        self.assertEqual(response.status_code, 200)
+        response = self.client.delete(reverse("api_inbox_label", args=(self.label.inbox.id, self.label.id)),
+                                      follow=True)
+        self.assertEqual(response.status_code, 204)
         self.assertFalse(Label.objects.filter(pk=self.label.id).exists())
 
     def test_delete_label_as_assistant(self):
@@ -25,8 +24,8 @@ class LabelsTest(InboxTestCase):
 
         self.client.force_login(self.assistant)
 
-        response = self.client.post(reverse("delete_inbox_label", args=(self.label.inbox.id, self.label.id)),
-                                    follow=True)
+        response = self.client.delete(reverse("api_inbox_label", args=(self.label.inbox.id, self.label.id)),
+                                      follow=True)
         self.assertEqual(response.status_code, 403)
         self.assertTrue(Label.objects.filter(pk=self.label.id).exists())
 
@@ -36,8 +35,8 @@ class LabelsTest(InboxTestCase):
         """
         self.client.force_login(self.student)
 
-        response = self.client.post(reverse("delete_inbox_label", args=(self.label.inbox.id, self.label.id)),
-                                    follow=True)
+        response = self.client.delete(reverse("api_inbox_label", args=(self.label.inbox.id, self.label.id)),
+                                      follow=True)
         self.assertEqual(response.status_code, 403)
         self.assertTrue(Label.objects.filter(pk=self.label.id).exists())
 
@@ -47,8 +46,8 @@ class LabelsTest(InboxTestCase):
         """
         self.client.force_login(self.coordinator_2)
 
-        response = self.client.post(reverse("delete_inbox_label", args=(self.label.inbox.id, self.label.id)),
-                                    follow=True)
+        response = self.client.delete(reverse("api_inbox_label", args=(self.label.inbox.id, self.label.id)),
+                                      follow=True)
         self.assertEqual(response.status_code, 403)
         self.assertTrue(Label.objects.filter(pk=self.label.id).exists())
 
@@ -65,8 +64,8 @@ class LabelsTest(InboxTestCase):
             "is_active": "on"
         }
 
-        response = self.client.post(reverse("create_inbox_label", args=(self.inbox.id,)), data, follow=True)
-        self.assertEqual(response.status_code, 200)
+        response = self.client.post(reverse("api_new_inbox_label", args=(self.inbox.id,)), data, follow=True)
+        self.assertEqual(response.status_code, 201)
         self.assertTrue(Label.objects.filter(name=data["name"]).exists())
 
     def test_add_label_as_assistant(self):
@@ -82,7 +81,7 @@ class LabelsTest(InboxTestCase):
             "active": "yes"
         }
 
-        response = self.client.post(reverse("create_inbox_label", args=(self.inbox.id,)), data, follow=True)
+        response = self.client.post(reverse("api_new_inbox_label", args=(self.inbox.id,)), data, follow=True)
         self.assertEqual(response.status_code, 403)
         self.assertFalse(Label.objects.filter(name=data["name"]).exists())
 
@@ -99,7 +98,7 @@ class LabelsTest(InboxTestCase):
             "active": "yes"
         }
 
-        response = self.client.post(reverse("create_inbox_label", args=(self.inbox.id,)), data, follow=True)
+        response = self.client.post(reverse("api_new_inbox_label", args=(self.inbox.id,)), data, follow=True)
         self.assertEqual(response.status_code, 403)
         self.assertFalse(Label.objects.filter(name=data["name"]).exists())
 
@@ -116,7 +115,8 @@ class LabelsTest(InboxTestCase):
             "active": "yes"
         }
 
-        self.client.post(reverse("create_inbox_label", args=(self.inbox.id,)), data, follow=True)
+        response = self.client.post(reverse("api_new_inbox_label", args=(self.inbox.id,)), data, follow=True)
+        self.assertEqual(response.status_code, 400)
         self.assertFalse(Label.objects.filter(name=data["name"]).exists())
 
     def test_edit_label_as_coordinator(self):
@@ -132,8 +132,8 @@ class LabelsTest(InboxTestCase):
             "active": "yes"
         }
 
-        response = self.client.post(reverse("edit_inbox_label", args=(self.inbox.id, self.label.id)), data,
-                                    follow=True)
+        response = self.client.put(reverse("api_inbox_label", args=(self.inbox.id, self.label.id)), data, follow=True,
+                                   content_type="application/json")
         self.assertEqual(response.status_code, 200)
         self.assertEqual(Label.objects.get(pk=self.label.id).name, data["name"])
 
@@ -150,8 +150,8 @@ class LabelsTest(InboxTestCase):
             "active": "yes"
         }
 
-        response = self.client.post(reverse("edit_inbox_label", args=(self.inbox.id, self.label.id)), data,
-                                    follow=True)
+        response = self.client.put(reverse("api_inbox_label", args=(self.inbox.id, self.label.id)), data,
+                                   follow=True)
         self.assertEqual(response.status_code, 403)
         self.assertNotEqual(Label.objects.get(pk=self.label.id).name, data["name"])
 
@@ -168,8 +168,8 @@ class LabelsTest(InboxTestCase):
             "active": "yes"
         }
 
-        response = self.client.post(reverse("edit_inbox_label", args=(self.inbox.id, self.label.id)), data,
-                                    follow=True)
+        response = self.client.put(reverse("api_inbox_label", args=(self.inbox.id, self.label.id)), data,
+                                   follow=True)
         self.assertEqual(response.status_code, 403)
         self.assertNotEqual(Label.objects.get(pk=self.label.id).name, data["name"])
 
@@ -186,15 +186,15 @@ class LabelsTest(InboxTestCase):
             "active": "yes"
         }
 
-        response = self.client.post(reverse("edit_inbox_label", args=(self.inbox.id, self.label.id)), data,
-                                    follow=True)
+        response = self.client.put(reverse("api_inbox_label", args=(self.inbox.id, self.label.id)), data,
+                                   follow=True)
         self.assertEqual(response.status_code, 403)
         self.assertNotEqual(Label.objects.get(pk=self.label.id).name, data["name"])
 
     def test_inbox_invisible_label_student(self):
         self.client.force_login(self.student)
 
-        response = self.client.get(f"/api/inboxes/{self.inbox.id}/labels", content_type="application/json")
+        response = self.client.get(reverse("api_all_inbox_labels", args=(self.inbox.id,)))
 
         self.assertEqual(response.status_code, 200)
         self.assertNotContains(response, self.invisible_label.name)
@@ -202,7 +202,7 @@ class LabelsTest(InboxTestCase):
     def test_inbox_invisible_label_agent(self):
         self.client.force_login(self.assistant)
 
-        response = self.client.get(f"/api/inboxes/{self.inbox.id}/labels")
+        response = self.client.get(reverse("api_all_inbox_labels", args=(self.inbox.id,)))
 
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, self.invisible_label.name)
@@ -210,7 +210,7 @@ class LabelsTest(InboxTestCase):
     def test_inbox_invisible_label_manager(self):
         self.client.force_login(self.coordinator)
 
-        response = self.client.get(f"/api/inboxes/{self.inbox.id}/labels")
+        response = self.client.get(reverse("api_all_inbox_labels", args=(self.inbox.id,)))
 
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, self.invisible_label.name)
@@ -218,7 +218,7 @@ class LabelsTest(InboxTestCase):
     def test_inbox_inactive_label_student(self):
         self.client.force_login(self.student)
 
-        response = self.client.get(f"/api/inboxes/{self.inbox.id}/labels", content_type="application/json")
+        response = self.client.get(reverse("api_all_inbox_labels", args=(self.inbox.id,)))
 
         self.assertEqual(response.status_code, 200)
         self.assertNotContains(response, self.disabled_label.name)
@@ -226,7 +226,7 @@ class LabelsTest(InboxTestCase):
     def test_inbox_inactive_label_agent(self):
         self.client.force_login(self.assistant)
 
-        response = self.client.get(f"/api/inboxes/{self.inbox.id}/labels")
+        response = self.client.get(reverse("api_all_inbox_labels", args=(self.inbox.id,)))
 
         self.assertEqual(response.status_code, 200)
         self.assertNotContains(response, self.disabled_label.name)
@@ -234,8 +234,7 @@ class LabelsTest(InboxTestCase):
     def test_inbox_inactive_label_manager(self):
         self.client.force_login(self.coordinator)
 
-        response = self.client.get(f"/api/inboxes/{self.inbox.id}/labels")
+        response = self.client.get(reverse("api_all_inbox_labels", args=(self.inbox.id,)))
 
         self.assertEqual(response.status_code, 200)
         self.assertNotContains(response, self.disabled_label.name)
-

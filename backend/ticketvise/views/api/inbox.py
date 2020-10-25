@@ -76,6 +76,10 @@ class InboxLabelsApiView(UserIsInboxManagerMixin, ListCreateAPIView):
             .filter(search_query)\
             .order_by("name")
 
+    def create(self, request, *args, **kwargs):
+        x =1
+        return super().create(request, *args, **kwargs)
+
     def perform_create(self, serializer):
         inbox = get_object_or_404(Inbox, pk=self.kwargs[self.inbox_key])
         serializer.save(inbox=inbox)

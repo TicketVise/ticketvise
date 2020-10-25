@@ -54,10 +54,10 @@ class InboxTestCase(TestCase):
             ("inbox_user", (self.inbox.id, self.student.id)),
             ("inbox_users", (self.inbox.id,)),
             ("inbox_labels", (self.inbox.id,)),
+            ("api_inbox_labels", (self.inbox.id,)),
             ("inbox_settings", (self.inbox.id,)),
             ("create_inbox_label", (self.inbox.id,)),
             ("inbox_statistics", (self.inbox.id,)),
-            ("edit_inbox_label", (self.inbox.id, self.label.id)),
-            ("delete_inbox_label", (self.inbox.id, self.label.id)),
+            ("api_inbox_label", (self.inbox.id, self.label.id)),
             ("inbox_user_delete", (self.inbox.id, self.student.id)),
         ]

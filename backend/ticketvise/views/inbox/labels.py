@@ -1,12 +1,9 @@
-from django.core.paginator import Paginator
 from django.shortcuts import get_object_or_404
-from django.urls import reverse
-from django.views.generic import TemplateView, UpdateView, CreateView, DeleteView
+from django.shortcuts import get_object_or_404
+from django.views.generic import TemplateView
 
-from ticketvise import settings
 from ticketvise.models.inbox import Inbox
-from ticketvise.models.label import Label
-from ticketvise.views.inbox.base import LabelCoordinatorRequiredMixin, InboxCoordinatorRequiredMixin
+from ticketvise.views.inbox.base import InboxCoordinatorRequiredMixin, LabelCoordinatorRequiredMixin
 
 
 class InboxLabelsView(InboxCoordinatorRequiredMixin, TemplateView):
@@ -20,6 +17,10 @@ class InboxLabelsView(InboxCoordinatorRequiredMixin, TemplateView):
         context["coordinator"] = Inbox.get_coordinator(context["inbox"])
 
         return context
+
+
+class AddInboxLabelView(InboxLabelsView):
+    template_name = "inbox/label.html"
 
 
 class LabelView(LabelCoordinatorRequiredMixin, TemplateView):

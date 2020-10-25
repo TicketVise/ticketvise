@@ -204,8 +204,7 @@ class TicketTestBackendCase(TicketTestCase):
         """
         self.client.force_login(self.student2)
 
-        response = self.client.get(f"/api/inboxes/{self.inbox.id}/labels",
-                                   follow=True)
+        response = self.client.get(reverse("api_all_inbox_labels", args=(self.inbox.id,)))
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, self.label.name)
 
@@ -215,8 +214,7 @@ class TicketTestBackendCase(TicketTestCase):
         """
         self.client.force_login(self.assistant)
 
-        response = self.client.get(f"/api/inboxes/{self.inbox.id}/labels",
-                                   follow=True)
+        response = self.client.get(reverse("api_all_inbox_labels", args=(self.inbox.id,)))
         self.assertEqual(response.status_code, 200)
 
         self.assertContains(response, self.label.name)
