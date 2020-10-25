@@ -238,3 +238,27 @@ class LabelsTest(InboxTestCase):
 
         self.assertEqual(response.status_code, 200)
         self.assertNotContains(response, self.disabled_label.name)
+
+    def test_inbox_labels_student(self):
+        self.client.force_login(self.student)
+
+        response = self.client.get(reverse("api_inbox_labels", args=(self.inbox.id,)))
+
+        self.assertEqual(response.status_code, 403)
+
+    def test_inbox_labels_assistant(self):
+        self.client.force_login(self.assistant)
+
+        response = self.client.get(reverse("api_inbox_labels", args=(self.inbox.id,)))
+
+        self.assertEqual(response.status_code, 403)
+
+    def test_inbox_labels_manager(self):
+        self.client.force_login(self.coordinator)
+
+        response = self.client.get(reverse("api_inbox_labels", args=(self.inbox.id,)))
+
+        self.assertEqual(response.status_code, 200)
+
+        self.assertContains(response, self.disabled_label.name)
+        self.assertContains(response, self.invisible_label.name)
