@@ -42,7 +42,7 @@ class InboxStaffApiView(UserIsInboxStaffMixin, ListAPIView):
     staff_roles = [Role.AGENT, Role.MANAGER]
 
     def get_serializer(self, *args, **kwargs):
-        return UserSerializer(many=True, read_only=True,
+        return UserSerializer( *args, **kwargs, many=True, read_only=True,
                               fields=("first_name", "last_name", "username", "avatar_url", "id"))
 
     def get_queryset(self):
