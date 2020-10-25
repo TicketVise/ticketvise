@@ -1,7 +1,7 @@
 from django.urls import path
 
 from ticketvise.views.api.comment import CreateCommentApiView, CreateReplyApiView
-from ticketvise.views.api.inbox import InboxStaffApiView, InboxLabelsApiView, InboxApiView, InboxesApiView, \
+from ticketvise.views.api.inbox import InboxLabelsApiView, InboxApiView, InboxesApiView, \
     InboxStatsApiView, InboxGuestsAPIView, InboxUsersApiView, UserInboxApiView
 from ticketvise.views.api.notification import NotificationsAPIView, NotificationFlipRead, NotificationsReadAll, \
     NotificationUnreadCountAPI
