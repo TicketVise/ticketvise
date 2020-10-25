@@ -8,10 +8,10 @@ from rest_framework.serializers import ModelSerializer
 
 from ticketvise.models.inbox import Inbox
 from ticketvise.models.notification import Notification
-from ticketvise.views.api import DynamicFieldsModelSerializer
 from ticketvise.models.user import User, Role, UserInbox
-from ticketvise.views.api.security import UserIsInboxStaffMixin, UserIsInInboxMixin
 from ticketvise.views.admin import SuperUserRequiredMixin
+from ticketvise.views.api import DynamicFieldsModelSerializer
+from ticketvise.views.api.security import UserIsInboxStaffMixin, UserIsInInboxMixin
 
 
 class UserSerializer(DynamicFieldsModelSerializer):
@@ -21,7 +21,8 @@ class UserSerializer(DynamicFieldsModelSerializer):
 
 
 class UserInboxSerializer(ModelSerializer):
-    user = UserSerializer("first_name", "last_name", "email", "username", "avatar_url", "id", "is_superuser", "is_active")
+    user = UserSerializer(
+        fields=("first_name", "last_name", "email", "username", "avatar_url", "id", "is_superuser", "is_active"))
     role_label = serializers.SerializerMethodField()
 
     def get_role_label(self, user_inbox):
