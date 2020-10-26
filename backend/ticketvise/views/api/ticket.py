@@ -297,9 +297,7 @@ class TicketApiView(UserHasAccessToTicketMixin, RetrieveAPIView):
             events_data = TicketEventSerializer(events, many=True).data
             response["events"] = events_data
 
-        is_staff = current_role == Role.AGENT or current_role == Role.MANAGER or request.user.is_superuser
-
-        if is_staff:
+        if request.user.is_assistant_or_coordinator(inbox):
             if json.loads(request.GET.get("staff", "false")):
                 staff = User.objects.filter(inbox_relationship__role__in=[Role.AGENT, Role.MANAGER],
                                             inbox_relationship__inbox_id=self.kwargs[self.inbox_key]) \
