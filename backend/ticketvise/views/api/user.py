@@ -8,15 +8,29 @@ from rest_framework.serializers import ModelSerializer
 
 from ticketvise.models.inbox import Inbox
 from ticketvise.models.notification import Notification
-from ticketvise.models.user import User, Role
-from ticketvise.views.api.security import UserIsInboxStaffMixin, UserIsInInboxMixin
+from ticketvise.models.user import User, Role, UserInbox
 from ticketvise.views.admin import SuperUserRequiredMixin
+from ticketvise.views.api import DynamicFieldsModelSerializer
+from ticketvise.views.api.security import UserIsInboxStaffMixin, UserIsInInboxMixin
 
 
-class UserSerializer(ModelSerializer):
+class UserSerializer(DynamicFieldsModelSerializer):
     class Meta:
         model = User
-        fields = ["first_name", "last_name", "email", "username", "avatar_url", "id", "is_superuser"]
+        fields = ["first_name", "last_name", "email", "username", "avatar_url", "id", "is_superuser", "is_active"]
+
+
+class UserInboxSerializer(ModelSerializer):
+    user = UserSerializer(
+        fields=("first_name", "last_name", "email", "username", "avatar_url", "id", "is_superuser", "is_active"))
+    role_label = serializers.SerializerMethodField()
+
+    def get_role_label(self, user_inbox):
+        return Role[user_inbox.role].label
+
+    class Meta:
+        model = UserInbox
+        fields = ["id", "role", "role_label", "user", "is_bookmarked"]
 
 
 class UserNotificationSettingsSerializer(ModelSerializer):
@@ -47,24 +61,11 @@ class UserUsernameSerializer(ModelSerializer):
         model = User
         fields = ["first_name", "last_name", "username", "avatar_url", "id"]
 
-
-class UserRoleByIdApiView(UserIsInboxStaffMixin, View):
-
-    def get(self, request, user_id, inbox_id):
-        user = get_object_or_404(User, pk=user_id)
-        inbox = get_object_or_404(Inbox, pk=inbox_id)
-
-        role = user.get_role_by_inbox(inbox)
-        data = RoleSerializer(role).data
-
-        return JsonResponse(data, safe=False)
-
-
 class UserRoleApiView(UserIsInInboxMixin, View):
 
     def get(self, request, inbox_id):
         inbox = get_object_or_404(Inbox, pk=inbox_id)
-        
+
         # A superuser hasn't got any role inside an inbox.
         if self.request.user.is_superuser:
             return JsonResponse({}, safe=False)

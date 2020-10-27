@@ -52,8 +52,12 @@ class TestTicketEvent(TicketTestCase):
         self.ticket.status = Status.CLOSED
         self.ticket.save()
 
-        url = "/api/inboxes/{}/tickets/{}/events".format(self.ticket.inbox.id, self.ticket.ticket_inbox_id)
-        response = self.client.get(url)
+        params = {
+            "events": "true"
+        }
+
+        url = "/api/inboxes/{}/tickets/{}".format(self.ticket.inbox.id, self.ticket.ticket_inbox_id)
+        response = self.client.get(url, params)
 
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "\"new_status\":\"CLSD\"")
@@ -70,9 +74,12 @@ class TestTicketEvent(TicketTestCase):
         self.ticket.add_label(self.label)
         self.ticket.add_label(self.label2)
 
+        params = {
+            "events": "true"
+        }
 
-        url = "/api/inboxes/{}/tickets/{}/events".format(self.ticket.inbox.id, self.ticket.ticket_inbox_id)
-        response = self.client.get(url)
+        url = "/api/inboxes/{}/tickets/{}".format(self.ticket.inbox.id, self.ticket.ticket_inbox_id)
+        response = self.client.get(url, params)
 
         self.assertEqual(response.status_code, 200)
         self.assertNotContains(response, self.label.name)
@@ -87,8 +94,12 @@ class TestTicketEvent(TicketTestCase):
         self.ticket.add_label(self.label)
         self.ticket.add_label(self.label2)
 
-        url = "/api/inboxes/{}/tickets/{}/events".format(self.ticket.inbox.id, self.ticket.ticket_inbox_id)
-        response = self.client.get(url)
+        params = {
+            "events": "true"
+        }
+
+        url = "/api/inboxes/{}/tickets/{}".format(self.ticket.inbox.id, self.ticket.ticket_inbox_id)
+        response = self.client.get(url, params)
 
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, self.label.name)

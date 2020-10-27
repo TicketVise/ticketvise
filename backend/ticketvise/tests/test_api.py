@@ -57,7 +57,7 @@ class ApiTestCase(TestCase):
         Testing if a HTTP 404 is returned when a inbox id does not exist.
         :return: None
         """
-        self.client.login(username="ta1", password="ta1")
+        self.client.force_login(self.ta1)
         response = self.client.get("/api/inboxes/345345/users", follow=True)
         self.assertEqual(response.status_code, 404)
 
@@ -123,17 +123,6 @@ class ApiTestCase(TestCase):
         self.client.force_login(self.ta4)
         response = self.client.get(f"/api/inboxes/{self.inbox2.id}/users/{self.student1}", follow=True)
         self.assertEqual(response.status_code, 404)
-
-    def test_get_user_role_by_id(self):
-        self.client.force_login(self.ta1)
-        response = self.client.get(f"/api/inboxes/{self.inbox1.id}/users/{self.student1.id}/roles")
-        self.assertContains(response, "GUEST")
-
-        response = self.client.get(f"/api/inboxes/{self.inbox1.id}/users/{self.ta2.id}/roles")
-        self.assertContains(response, "AGENT")
-
-        response = self.client.get(f"/api/inboxes/{self.inbox1.id}/users/{self.manager1.id}/roles")
-        self.assertContains(response, "MANAGER")
 
     def test_get_self_role(self):
         self.client.force_login(self.student1)

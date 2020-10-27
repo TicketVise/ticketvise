@@ -1,15 +1,16 @@
 <template>
   <div class="w-full">
     <div class="block text-gray-700 font-semibold mb-2" for="username">
-      Share with
+      Shared with
     </div>
     <div class="flex flex-wrap mb-2" v-if="shared_with.length > 0">
       <chip v-for="(user, index) in shared_with" :key="user.id" class="my-1 mx-1">
         {{ user.first_name }} {{ user.last_name }}
-        <a class="fa fa-close cursor-pointer" @click="removeSharedWith(index)"></a>
+        <a class="fa fa-close cursor-pointer ml-1" @click="removeSharedWith(index)" v-if="can_share"></a>
       </chip>
     </div>
-    <form @submit.prevent="username.length ? getUsername(username) : {}" class="flex space-x-2 w-full mb-2">
+    <form @submit.prevent="username.length ? getUsername(username) : {}" class="flex space-x-2 w-full mb-2"
+          v-if="can_share">
       <div class="space-y-1 flex-grow" v-on-clickaway="away">
         <div class="relative">
           <input class="appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none flex-grow focus:border-gray-800"
@@ -51,7 +52,7 @@
     name: "EditShareWith",
     components: {SubmitButton},
     mixins: [clickaway],
-    props: ["inbox_id", "shared_with", "errors", "author"],
+    props: ["inbox_id", "shared_with", "errors", "author", "can_share"],
     data() {
       return {
         username: "",
