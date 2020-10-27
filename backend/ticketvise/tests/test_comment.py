@@ -17,8 +17,8 @@ class CommentTestCase(TicketTestCase):
         """
         self.client.force_login(self.student2)
 
-        response = self.client.get(f"/api/inboxes/{self.inbox.id}/tickets/{self.ticket.ticket_inbox_id}/comments",
-                                   follow=True)
+        response = self.client.get(f"/api/inboxes/{self.inbox.id}/tickets/{self.ticket.ticket_inbox_id}",
+                                   {"comments": "true"}, follow=True)
         self.assertEqual(response.status_code, 403)
 
     def test_get_comment_as_shared_with(self):
@@ -27,9 +27,10 @@ class CommentTestCase(TicketTestCase):
         """
         self.client.force_login(self.student2)
 
-        response = self.client.get(f"/api/inboxes/{self.inbox.id}/tickets/{self.ticket2.ticket_inbox_id}/comments",
-                                   follow=True)
-        self.assertEqual(response.status_code, 403)
+        response = self.client.get(f"/api/inboxes/{self.inbox.id}/tickets/{self.ticket2.ticket_inbox_id}",
+                                   {"comments": "true"}, follow=True)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.content, b"{}")
 
     def test_get_comment_as_author(self):
         """
@@ -37,9 +38,10 @@ class CommentTestCase(TicketTestCase):
         """
         self.client.force_login(self.student)
 
-        response = self.client.get(f"/api/inboxes/{self.inbox.id}/tickets/{self.ticket.ticket_inbox_id}/comments",
-                                   follow=True)
-        self.assertEqual(response.status_code, 403)
+        response = self.client.get(f"/api/inboxes/{self.inbox.id}/tickets/{self.ticket.ticket_inbox_id}",
+                                   {"comments": "true"}, follow=True)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.content, b"{}")
 
     def test_get_comment_as_ta_in_inbox(self):
         """
@@ -47,8 +49,8 @@ class CommentTestCase(TicketTestCase):
         """
         self.client.force_login(self.assistant)
 
-        response = self.client.get(f"/api/inboxes/{self.inbox.id}/tickets/{self.ticket.ticket_inbox_id}/comments",
-                                   follow=True)
+        response = self.client.get(f"/api/inboxes/{self.inbox.id}/tickets/{self.ticket.ticket_inbox_id}",
+                                   {"comments": "true"}, follow=True)
         self.assertEqual(response.status_code, 200)
 
     def test_get_comment_as_ta_not_in_inbox(self):
@@ -57,8 +59,8 @@ class CommentTestCase(TicketTestCase):
         """
         self.client.force_login(self.assistant2)
 
-        response = self.client.get(f"/api/inboxes/{self.inbox.id}/tickets/{self.ticket.ticket_inbox_id}/comments",
-                                   follow=True)
+        response = self.client.get(f"/api/inboxes/{self.inbox.id}/tickets/{self.ticket.ticket_inbox_id}",
+                                   {"comments": "true"}, follow=True)
         self.assertEqual(response.status_code, 403)
 
     def test_post_comment_as_student(self):
@@ -141,8 +143,8 @@ class CommentTestCase(TicketTestCase):
         """
         self.client.force_login(self.student3)
 
-        response = self.client.get(f"/api/inboxes/{self.inbox.id}/tickets/{self.ticket.ticket_inbox_id}/replies",
-                                   follow=True)
+        response = self.client.get(f"/api/inboxes/{self.inbox.id}/tickets/{self.ticket.ticket_inbox_id}",
+                                   {"replies": "true"}, follow=True)
         self.assertEqual(response.status_code, 403)
 
     def test_get_replies_as_shared_with(self):
@@ -151,8 +153,8 @@ class CommentTestCase(TicketTestCase):
         """
         self.client.force_login(self.student2)
 
-        response = self.client.get(f"/api/inboxes/{self.inbox.id}/tickets/{self.ticket2.ticket_inbox_id}/replies",
-                                   follow=True)
+        response = self.client.get(f"/api/inboxes/{self.inbox.id}/tickets/{self.ticket2.ticket_inbox_id}",
+                                   {"replies": "true"}, follow=True)
         self.assertEqual(response.status_code, 200)
 
     def test_get_replies_as_author(self):
@@ -161,8 +163,8 @@ class CommentTestCase(TicketTestCase):
         """
         self.client.force_login(self.student)
 
-        response = self.client.get(f"/api/inboxes/{self.inbox.id}/tickets/{self.ticket.ticket_inbox_id}/replies",
-                                   follow=True)
+        response = self.client.get(f"/api/inboxes/{self.inbox.id}/tickets/{self.ticket.ticket_inbox_id}",
+                                   {"replies": "true"}, follow=True)
         self.assertEqual(response.status_code, 200)
 
     def test_get_replies_as_ta_in_inbox(self):
@@ -171,8 +173,8 @@ class CommentTestCase(TicketTestCase):
         """
         self.client.force_login(self.assistant)
 
-        response = self.client.get(f"/api/inboxes/{self.inbox.id}/tickets/{self.ticket.ticket_inbox_id}/replies",
-                                   follow=True)
+        response = self.client.get(f"/api/inboxes/{self.inbox.id}/tickets/{self.ticket.ticket_inbox_id}",
+                                   {"replies": "true"}, follow=True)
         self.assertEqual(response.status_code, 200)
 
     def test_get_replies_as_ta_not_in_inbox(self):
@@ -181,8 +183,8 @@ class CommentTestCase(TicketTestCase):
         """
         self.client.force_login(self.assistant2)
 
-        response = self.client.get(f"/api/inboxes/{self.inbox.id}/tickets/{self.ticket.ticket_inbox_id}/replies",
-                                   follow=True)
+        response = self.client.get(f"/api/inboxes/{self.inbox.id}/tickets/{self.ticket.ticket_inbox_id}",
+                                   {"replies": "true"}, follow=True)
         self.assertEqual(response.status_code, 403)
 
     def test_post_replies_as_student(self):

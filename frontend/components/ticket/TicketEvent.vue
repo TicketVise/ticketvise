@@ -5,7 +5,7 @@
          :class="{'border-gray-400 border-b-2 mb-4': ticket_event.new_status === `CLSD`}">
       <div class="flex flex-col">
         <div class="flex flex-shrink-0 w-6 h-6 bg-gray-100 rounded-full mr-2 items-center justify-center text-gray-500"
-          :class="{'bg-red-500': ticket_event.new_status === 'CLSD', 'bg-green-500': ticket_event.old_status === 'CLSD'}">
+             :class="{'bg-red-500': ticket_event.new_status === 'CLSD', 'bg-green-500': ticket_event.old_status === 'CLSD'}">
           <i class="fa" v-bind:class="{
                   'fa-user': ticket_event.hasOwnProperty('assignee'),
                   'fa-tag': ticket_event.hasOwnProperty('label'),
@@ -22,11 +22,12 @@
         'pb-6': ticket_event.new_status !== 'CLSD'
       }">
 
-        <div v-if="ticket_event.labels" class="inline-block" >
-          <avatar v-if="ticket_event.initiator" :source="ticket_event.initiator.avatar_url" class="inline-block w-5 h-5 mr-1"/>
+        <div v-if="ticket_event.labels" class="inline-block">
+          <avatar v-if="ticket_event.initiator" :source="ticket_event.initiator.avatar_url"
+                  class="inline-block w-5 h-5 mr-1"/>
           <span class="font-medium">{{ full_name(ticket_event.initiator) }}</span>
           <span v-if="ticket_event.initiator">has <span v-if="ticket_event.is_added">added</span><span
-              v-else>removed</span>
+                  v-else>removed</span>
             the</span>
           <span v-else>The label<span v-if="ticket_event.labels.length > 1">s</span></span>
           <chip :background="label.color" :key="`label-${label.id}`"
@@ -40,7 +41,8 @@
         </div>
 
         <div v-else-if="ticket_event.assignee" class="inline-block">
-          <avatar v-if="ticket_event.initiator" :source="ticket_event.initiator.avatar_url" class="inline-block w-5 h-5 mr-1"/>
+          <avatar v-if="ticket_event.initiator" :source="ticket_event.initiator.avatar_url"
+                  class="inline-block w-5 h-5 mr-1"/>
           <span class="font-medium">{{ full_name(ticket_event.initiator) }}</span>
           <span v-if="ticket_event.initiator">has assigned the ticket to</span>
           <span v-else>The ticket has been assigned to</span>
@@ -52,7 +54,8 @@
         </div>
 
         <div v-else-if="ticket_event.new_status" class="inline-block">
-          <avatar v-if="ticket_event.initiator" :source="ticket_event.initiator.avatar_url" class="inline-block w-5 h-5 mr-1"/>
+          <avatar v-if="ticket_event.initiator" :source="ticket_event.initiator.avatar_url"
+                  class="inline-block w-5 h-5 mr-1"/>
           <span class="font-medium">{{ full_name(ticket_event.initiator) }}</span>
           <span v-if="ticket_event.initiator">has changed the status to</span>
           <span v-else>The status has been changed to </span>
@@ -97,36 +100,39 @@
 </template>
 
 <script>
-import Avatar from "../elements/Avatar";
-import Chip from "../elements/chip/Chip";
-import {calendarDate} from "../../utils";
-import Attachment from "./Attachment";
+  import Avatar from "../elements/Avatar";
+  import Chip from "../elements/chip/Chip";
+  import {calendarDate} from "../../utils";
+  import Attachment from "./Attachment";
 
-export default {
-  name: "TicketEvent",
-  props: ["ticket_event"],
-  components: {
-    Attachment,
-    Avatar,
-    Chip,
-  },
-  data() {
-    return {
-      date: calendarDate,
-      status: {
-        PNDG: 'Pending',
-        ASGD: 'Assigned',
-        ANSD: 'Awaiting response',
-        CLSD: 'Closed'
-      }
-    }
-  },
-  methods: {
-    full_name: function (user) {
-      return `${user.first_name} ${user.last_name}`
+  export default {
+    name: "TicketEvent",
+    props: ["ticket_event"],
+    components: {
+      Attachment,
+      Avatar,
+      Chip,
     },
+    data() {
+      return {
+        date: calendarDate,
+        status: {
+          PNDG: 'Pending',
+          ASGD: 'Assigned',
+          ANSD: 'Awaiting response',
+          CLSD: 'Closed'
+        }
+      }
+    },
+    methods: {
+      full_name: function (user) {
+        if (user) {
+          return `${user.first_name} ${user.last_name}`
+        }
+        return ""
+      },
+    }
   }
-}
 </script>
 
 <style scoped>
