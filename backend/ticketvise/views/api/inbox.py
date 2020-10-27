@@ -12,9 +12,9 @@ from ticketvise.models.label import Label
 from ticketvise.models.ticket import Ticket
 from ticketvise.models.user import User, Role, UserInbox
 from ticketvise.utils import StandardResultsSetPagination
+from ticketvise.views.api.labels import LabelSerializer
 from ticketvise.views.api.security import UserIsInboxStaffMixin, UserIsInInboxMixin, UserIsSuperUserMixin, \
     UserIsInboxManagerMixin
-from ticketvise.views.api.ticket import LabelSerializer
 from ticketvise.views.api.user import UserSerializer, UserInboxSerializer
 
 
@@ -36,15 +36,6 @@ class InboxSerializer(ModelSerializer):
             "name", "id", "color", "labels", "image", "scheduling_algorithm",
             "is_active", "date_created"
         ]
-
-
-class InboxStaffApiView(UserIsInboxStaffMixin, ListAPIView):
-    serializer_class = UserSerializer
-    staff_roles = [Role.AGENT, Role.MANAGER]
-
-    def get_queryset(self):
-        return User.objects.filter(inbox_relationship__role__in=self.staff_roles,
-                                   inbox_relationship__inbox_id=self.kwargs[self.inbox_key])
 
 
 class InboxLabelsApiView(UserIsInInboxMixin, ListAPIView):
@@ -104,9 +95,9 @@ class InboxUsersApiView(UserIsInboxStaffMixin, ListAPIView):
 
         inbox_users = UserInbox.objects.filter(user__in=users) \
             .annotate(sort_staff=Case(
-                When(role=Role.GUEST, then=True),
-                default=False,
-                output_field=BooleanField())) \
+            When(role=Role.GUEST, then=True),
+            default=False,
+            output_field=BooleanField())) \
             .select_related("user") \
             .order_by("sort_staff", "role", "user__first_name")
 
@@ -114,7 +105,9 @@ class InboxUsersApiView(UserIsInboxStaffMixin, ListAPIView):
 
 
 class InboxGuestsAPIView(UserIsInInboxMixin, ListAPIView):
-    serializer_class = UserSerializer
+    def get_serializer(self, *args, **kwargs):
+        return UserSerializer(*args, **kwargs, fields=(
+            "first_name", "last_name", "email", "username", "avatar_url", "id", "is_active"))
 
     def get_queryset(self):
         q = self.request.GET.get("q", "")
