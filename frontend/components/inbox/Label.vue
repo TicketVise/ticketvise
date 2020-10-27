@@ -96,11 +96,25 @@ export default {
     }
   },
   mounted() {
+    const colors = [
+        "#686F7D",
+        "#6B7280",
+        "#EC5050",
+        "#F05252",
+        "#FF5A1F",
+        "#C27803",
+        "#0E9F6E",
+        "#0694A2",
+        "#3F83F8",
+        "#6875F5",
+        "#9061F9"
+    ]
+
     if (window.location.pathname.includes("new")) {
       this.label = {
         id: null,
         name: "",
-        color: '#' + Math.random().toString(16).substr(2, 6),
+        color: _.sample(colors),
         is_visible_to_guest: true,
         is_active: true
       }
