@@ -31,41 +31,41 @@
               <th class="px-6 py-3 border-b border-gray-200 bg-gray-50"></th>
             </tr>
             </thead>
-            <tbody class="bg-white">
-            <tr v-if="page" v-for="label in page.results">
-              <td class="px-6 py-4 whitespace-no-wrap border-b border-gray-200">
-                <div class="text-sm leading-5 text-gray-900 font-medium">{{ label.name }}</div>
-              </td>
-              <td class="px-6 py-4 whitespace-no-wrap border-b border-gray-200">
-                <span class="flex rounded-full shadow uppercase px-2 py-1 text-xs font-bold mr-3"
-                      :style="{ background: label.color }"></span>
-                <div class="text-sm leading-5 text-gray-500 uppercase">{{ label.color }}</div>
-              </td>
-              <td class="px-6 py-4 whitespace-no-wrap border-b border-gray-200">
-                <span v-if="label.is_visible_to_guest"
-                      class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
-                  Visible
-                </span>
-                <span v-else
-                      class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-gray-100 text-gray-800">
-                  Invisible
-                </span>
-              </td>
-              <td class="px-6 py-4 whitespace-no-wrap border-b border-gray-200">
-                <span v-if="label.is_active"
-                      class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
-                  Active
-                </span>
-                <span v-else
-                      class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">
-                  Inactive
-                </span>
-              </td>
-              <td class="px-6 py-4 whitespace-no-wrap text-right border-b border-gray-200 text-sm leading-5 font-medium">
-                <a :href="getLabelUrl(label)"
-                   class="text-indigo-600 hover:text-indigo-900">Edit</a>
-              </td>
-            </tr>
+            <tbody v-if="page" class="bg-white">
+              <tr :key="label.name" v-for="label in page.results">
+                <td class="px-6 py-4 whitespace-no-wrap border-b border-gray-200">
+                  <div class="text-sm leading-5 text-gray-900 font-medium">{{ label.name }}</div>
+                </td>
+                <td class="px-6 py-4 whitespace-no-wrap border-b border-gray-200">
+                  <span class="flex rounded-full shadow uppercase px-2 py-1 text-xs font-bold mr-3"
+                        :style="{ background: label.color }"></span>
+                  <div class="text-sm leading-5 text-gray-500 uppercase">{{ label.color }}</div>
+                </td>
+                <td class="px-6 py-4 whitespace-no-wrap border-b border-gray-200">
+                  <span v-if="label.is_visible_to_guest"
+                        class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+                    Visible
+                  </span>
+                  <span v-else
+                        class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-gray-100 text-gray-800">
+                    Invisible
+                  </span>
+                </td>
+                <td class="px-6 py-4 whitespace-no-wrap border-b border-gray-200">
+                  <span v-if="label.is_active"
+                        class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+                    Active
+                  </span>
+                  <span v-else
+                        class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">
+                    Inactive
+                  </span>
+                </td>
+                <td class="px-6 py-4 whitespace-no-wrap text-right border-b border-gray-200 text-sm leading-5 font-medium">
+                  <a :href="getLabelUrl(label)"
+                    class="text-indigo-600 hover:text-indigo-900">Edit</a>
+                </td>
+              </tr>
             </tbody>
           </table>
           <div class="bg-white px-4 py-3 flex items-center justify-between border-t border-gray-200 sm:px-6">
