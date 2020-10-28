@@ -68,7 +68,7 @@
             <avatar :source="ticket_event.uploader.avatar_url" class="inline-block w-5 h-5 mr-1"/>
             <span class="font-medium">{{ full_name(ticket_event.uploader) }}</span> uploaded
             <span v-if="ticket_event.attachments.length > 1">{{ ticket_event.attachments.length }}</span>
-            <span v-else>a</span>
+            <span v-else>an</span>
             attachment<span v-if="ticket_event.attachments.length > 1">s</span>
             <span class="lowercase">{{ date(ticket_event.date_created) }}</span>
           </div>
