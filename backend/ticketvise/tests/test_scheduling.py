@@ -5,7 +5,7 @@ This file tests the scheduling algorithms to divide the workload amond TAs.
 """
 from django.test import TestCase, Client
 
-from ticketvise.models.inbox import SchedulingAlgorithm, Inbox
+from ticketvise.models.inbox import InboxSection, InboxUserSection, SchedulingAlgorithm, Inbox
 from ticketvise.models.ticket import Ticket
 from ticketvise.models.user import User, UserInbox, Role
 
@@ -21,8 +21,13 @@ class TicketTestCase(TestCase):
 
         self.inbox = Inbox.objects.create(name="TestInbox", code="TestCode", color="#FF6600")
 
+        self.section1 = InboxSection.objects.create(code="1111", inbox=self.inbox)
+        self.section2 = InboxSection.objects.create(code="2222", inbox=self.inbox)
+        self.section3 = InboxSection.objects.create(code="3333", inbox=self.inbox)
+
         self.student = User.objects.create(username="student", email="student@test.com")
         UserInbox.objects.create(user=self.student, inbox=self.inbox, role=Role.GUEST)
+        InboxUserSection.objects.create(user=self.student, section=self.section2)
 
         self.assistant1 = User.objects.create(username="assistant1", email="assistant1@test.com")
         UserInbox.objects.create(user=self.assistant1, inbox=self.inbox, role=Role.AGENT)
@@ -97,6 +102,35 @@ class TicketTestCase(TestCase):
 
         self.assertEqual(self.inbox.round_robin_parameter,
                          schedule_amount * len(self.assistants))
+
+    def test_sections_scheduling(self):
+        """
+        Test sections scheduling algorithm for the inbox.
+
+        :return: None.
+        """
+        self.inbox.scheduling_algorithm = SchedulingAlgorithm.SECTIONS
+        self.inbox.save()
+
+        # Test that if no TA is linked we just choose a random TA.
+        ticket = Ticket.objects.create(author=self.student, title="Ticket4", content="", inbox=self.inbox)
+        self.assertIn(ticket.assignee, self.assistants)
+        Ticket.objects.get(pk=ticket.id).delete()
+
+        # Test that tickets always get assigned to assistant 2 because of their section.
+        InboxUserSection.objects.create(user=self.assistant2, section=self.section2)
+        for _ in range(3):
+            ticket = Ticket.objects.create(author=self.student, title="Ticket4", content="", inbox=self.inbox)
+            self.assertEqual(ticket.assignee, self.assistant2)
+            Ticket.objects.get(pk=ticket.id).delete()
+
+        # Test that a random assistant gets the ticket if more than 1 assistant is linked.
+        InboxUserSection.objects.create(user=self.assistant1, section=self.section2)
+        InboxUserSection.objects.create(user=self.assistant3, section=self.section2)
+        for _ in range(5):
+            ticket = Ticket.objects.create(author=self.student, title="Ticket4", content="", inbox=self.inbox)
+            self.assertIn(ticket.assignee, self.assistants)
+            Ticket.objects.get(pk=ticket.id).delete()
 
     def test_not_implemented_algorithm(self):
         self.inbox.scheduling_algorithm = "Test"

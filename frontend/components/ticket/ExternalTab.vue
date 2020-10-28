@@ -2,9 +2,9 @@
   <div class="flex flex-column flex-wrap w-full pr-4">
     <div class="mt-3 w-full">
       <comment :comment="ticket"/>
-      <div v-for="entry in content">
+      <div v-for="entry in content" :key="entry.id">
         <comment v-if="entry.content" :comment="entry" :key="`comment-${entry.id}`" :ticket="ticket"/>
-        <ticket-event v-else :ticket_event="entry" :key="`event-${entry.id}`" @remove_attachment="removeAttachment"/>
+        <ticket-event v-else :ticket_event="entry" :key="`event-${entry.id}`"/>
       </div>
     </div>
 

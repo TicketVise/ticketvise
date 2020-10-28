@@ -107,6 +107,9 @@ export default {
       return url.substring(url.lastIndexOf('.') + 1);
     },
     remove(attachment) {
+      axios.defaults.xsrfCookieName = 'csrftoken'
+      axios.defaults.xsrfHeaderName = "X-CSRFTOKEN"
+
       this.menu = false
       axios.delete('/api' + window.location.pathname + '/attachments/' + attachment.id)
       this.$emit('remove')

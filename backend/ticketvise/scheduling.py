@@ -4,7 +4,13 @@ Scheduling
 Schedules the ticket according to its labels or the scheduling policy of
 the inbox.
 """
-from ticketvise.models.inbox import SchedulingAlgorithm
+from functools import reduce
+import operator
+import random
+
+from django.db.models import Q
+
+from ticketvise.models.inbox import InboxUserSection, SchedulingAlgorithm
 
 
 def schedule_ticket(ticket):
@@ -22,6 +28,8 @@ def schedule_ticket(ticket):
         schedule_round_robin(ticket)
     elif ticket.inbox.scheduling_algorithm == SchedulingAlgorithm.LEAST_ASSIGNED_FIRST:
         schedule_least_assigned_first(ticket)
+    elif ticket.inbox.scheduling_algorithm == SchedulingAlgorithm.SECTIONS:
+        schedule_sections(ticket)
     elif ticket.inbox.scheduling_algorithm == SchedulingAlgorithm.FIXED:
         return ticket.assign_to(ticket.inbox.fixed_scheduling_assignee)
     else:
@@ -72,3 +80,22 @@ def schedule_least_assigned_first(ticket):
             min_count = assigned_count
 
     ticket.assign_to(min_assignee)
+
+
+def schedule_sections(ticket):
+    """
+    Assign a ticket to the assistant that corresponds to the section.
+
+    :param Ticket ticket: :class:`Ticket` that needs to be assigned.
+
+    :return: None.
+    """
+    inbox_staff = ticket.inbox.get_assistants_and_coordinators()
+    sections = InboxUserSection.objects.filter(reduce(operator.or_, (Q(section=x.section) for x in ticket.author.inbox_sections.all())))
+    staff = inbox_staff.filter(reduce(operator.or_, (Q(inbox_sections=x) for x in sections)))
+    
+    # If no assistant in linked through sections we just choose one out of every TA.
+    if len(staff) == 0:
+        staff = inbox_staff
+
+    ticket.assign_to(random.choice(staff))
