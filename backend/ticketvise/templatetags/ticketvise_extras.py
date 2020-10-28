@@ -24,6 +24,18 @@ def user_is_coordinator(user, inbox):
 
 
 @register.simple_tag
+def user_is_staff(user, inbox):
+    """
+    Check if a user is a coordinator.
+    :param User user: The user.
+    :param Inbox inbox: The inbox.
+    :return: If the user is assistant or coordinator in the inbox.
+    :rtype: bool
+    """
+    return user.is_assistant_or_coordinator(inbox)
+
+
+@register.simple_tag
 def abs_value(value):
     return abs(value)
 

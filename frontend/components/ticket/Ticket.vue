@@ -321,10 +321,12 @@
       }
       ,
       updateTicket() {
+        axios.defaults.xsrfCookieName = 'csrftoken'
+        axios.defaults.xsrfHeaderName = "X-CSRFTOKEN"
         let data = {
           "ticket": true
         };
-        axios.get("/api" + window.location.pathname).then(response => {
+        axios.get("/api" + window.location.pathname, {params: data}).then(response => {
           this.ticket = response.data.ticket;
         })
       }

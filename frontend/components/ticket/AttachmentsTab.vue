@@ -9,7 +9,7 @@
     </div>
 
     <div class="flex flex-col justify-center w-full p-4 px-0">
-      <file-upload v-bind:value="files" v-on:input="setFiles" class="mb-4 w-full" :preview="false"></file-upload>
+      <file-upload ref="upload" v-bind:value="files" v-on:input="setFiles" class="mb-4 w-full" :preview="false"></file-upload>
       <error v-for="error in this.errors.attachments" :key="error" :message="error"></error>
     </div>
   </div>
@@ -51,8 +51,10 @@
           }
         }).then(() => {
           this.$emit('uploaded')
+          this.$refs.upload.clear()
         }).catch(error => {
           this.errors = error.response.data
+          this.$refs.upload.clear()
         })
       },
       setFiles(files) {
