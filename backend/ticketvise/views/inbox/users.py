@@ -19,6 +19,7 @@ class InboxUsersView(InboxCoordinatorRequiredMixin, TemplateView):
         context = super(TemplateView, self).get_context_data(**kwargs)
 
         context['inbox'] = inbox
+        context["coordinator"] = Inbox.get_coordinator(context["inbox"])
 
         return context
 
@@ -29,6 +30,7 @@ class InboxUserView(UserCoordinatorRequiredMixin, TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["inbox"] = get_object_or_404(Inbox, pk=self.kwargs["inbox_id"])
+        context["coordinator"] = Inbox.get_coordinator(context["inbox"])
 
         return context
 

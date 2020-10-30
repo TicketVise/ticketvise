@@ -12,7 +12,7 @@
           </span>
           <span class="text-xs flex-grow ml-1">· {{ date(comment.date_created) }}</span>
           <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-gray-200 text-gray-800">
-            {{ comment.role.label }}
+            {{ comment.author_role.label }}
           </span>
         </div>
         <viewer :initialValue="content" class="px-2"></viewer>

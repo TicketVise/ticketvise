@@ -36,6 +36,8 @@ class LtiLaunchForm(forms.Form):
     context_label = forms.CharField()
     #: The role of user in the inbox.
     roles = forms.CharField()
+    #: The section ids of user in the inbox.
+    custom_section_ids = forms.CharField(required=False)
 
     def __init__(self, *args, **kwargs):
         self.request = kwargs.pop("request")
