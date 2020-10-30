@@ -2,23 +2,25 @@ from django.db.models import Case, BooleanField, When
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
 from rest_framework import serializers
-from rest_framework.generics import ListAPIView, RetrieveAPIView, RetrieveUpdateDestroyAPIView
+from rest_framework.generics import ListAPIView, RetrieveAPIView, RetrieveUpdateDestroyAPIView, RetrieveUpdateAPIView
+from rest_framework.response import Response
 from rest_framework.serializers import ModelSerializer
 from rest_framework.views import APIView
 
 from ticketvise.middleware import CurrentUserMiddleware
-from ticketvise.models.inbox import Inbox
+from ticketvise.models.inbox import Inbox, SchedulingAlgorithm
 from ticketvise.models.label import Label
 from ticketvise.models.ticket import Ticket
 from ticketvise.models.user import User, Role, UserInbox
 from ticketvise.utils import StandardResultsSetPagination
+from ticketvise.views.api import DynamicFieldsModelSerializer
 from ticketvise.views.api.labels import LabelSerializer
 from ticketvise.views.api.security import UserIsInboxStaffMixin, UserIsInInboxMixin, UserIsSuperUserMixin, \
     UserIsInboxManagerMixin
 from ticketvise.views.api.user import UserSerializer, UserInboxSerializer
 
 
-class InboxSerializer(ModelSerializer):
+class InboxSerializer(DynamicFieldsModelSerializer):
     labels = serializers.SerializerMethodField()
 
     def get_labels(self, obj):
@@ -33,8 +35,9 @@ class InboxSerializer(ModelSerializer):
     class Meta:
         model = Inbox
         fields = [
-            "name", "id", "color", "labels", "image", "scheduling_algorithm",
-            "is_active", "date_created"
+            "name", "id", "color", "labels", "image", "scheduling_algorithm", "code", "show_assignee_to_guest",
+            "fixed_scheduling_assignee", "is_active", "date_created", "close_answered_weeks",
+            "alert_coordinator_unanswered_days"
         ]
 
 
@@ -136,3 +139,20 @@ class UserInboxApiView(UserIsInboxManagerMixin, RetrieveUpdateDestroyAPIView):
     def get_object(self):
         inbox = get_object_or_404(Inbox, pk=self.kwargs["inbox_id"])
         return get_object_or_404(UserInbox, inbox=inbox, user__id=self.kwargs["user_id"])
+
+
+class InboxSettingsApiView(UserIsInboxManagerMixin, RetrieveUpdateAPIView):
+    serializer_class = InboxSerializer
+    queryset = Inbox
+    lookup_url_kwarg = "inbox_id"
+
+    def retrieve(self, request, *args, **kwargs):
+        inbox = self.get_object()
+
+        response = {
+            "inbox": self.get_serializer(inbox).data,
+            "scheduling_options": SchedulingAlgorithm.choices,
+            "staff": UserSerializer(inbox.get_assistants_and_coordinators(), many=True).data
+        }
+
+        return Response(response)

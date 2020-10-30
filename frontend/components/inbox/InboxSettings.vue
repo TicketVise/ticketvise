@@ -1,0 +1,221 @@
+<template>
+  <div class="container mx-auto lg:px-4 pb-4">
+    <h3 class="text-xl leading-6 font-medium text-gray-900 p-2 pb-1">
+      Inbox
+    </h3>
+    <div class="bg-gray-50 px-4 py-3 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6 border-b-2">
+      <dt class="text-sm leading-5 font-medium text-gray-700 flex items-center">
+        Name
+      </dt>
+      <dd class="mt-1 text-sm leading-5 text-gray-900 sm:mt-0 sm:col-span-2">
+        <input type="text"
+               v-model="inbox.name"
+               class="block appearance-none w-full bg-white border px-4 py-2 pr-8 rounded shadow-sm leading-tight focus:outline-none focus:shadow-outline"
+               name="name">
+        <div v-for="error in errors.name">
+          <p class="text-sm text-red-600">{{ error }}</p>
+        </div>
+      </dd>
+    </div>
+    <div class="bg-gray-50 px-4 py-3 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6 border-b-2">
+      <dt class="text-sm leading-5 font-medium text-gray-700 flex items-center">
+        Code
+      </dt>
+      <dd class="mt-1 text-sm leading-5 text-gray-900 sm:mt-0 sm:col-span-2">
+        <input type="text"
+               v-model="inbox.code"
+               class="block appearance-none w-full bg-white border px-4 py-2 pr-8 rounded shadow-sm leading-tight focus:outline-none focus:shadow-outline"
+               name="code">
+        <div v-for="error in errors.code">
+          <p class="text-sm text-red-600">{{ error }}</p>
+        </div>
+      </dd>
+    </div>
+    <div class="bg-gray-50 px-4 py-3 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6 border-b-2">
+      <dt class="text-sm leading-5 font-medium text-gray-700 flex items-center">
+        Color
+      </dt>
+      <dd class="mt-1 text-sm leading-5 text-gray-900 sm:mt-0 sm:col-span-2">
+        <input type="color"
+               v-model="inbox.color"
+               class="block appearance-none w-full bg-white border border-gray-400 hover:border-gray-500 overflow-hidden rounded shadow-sm leading-tight focus:outline-none focus:shadow-outline"
+               name="color">
+        <div v-for="error in errors.color">
+          <p class="text-sm text-red-600">{{ error }}</p>
+        </div>
+      </dd>
+    </div>
+    <div class="bg-gray-50 px-4 py-3 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6 border-b-2">
+      <dt class="text-sm leading-5 font-medium text-gray-700 flex items-center">
+        Photo
+      </dt>
+      <dd class="mt-1 text-sm leading-5 text-gray-900 sm:mt-0 sm:col-span-2 flex items-center">
+        <img class="object-contain h-32 w-32 overflow-hidden rounded border-dashed border-4 border-gray-400"
+             style="outline-offset: -6px" :src="inbox.image" id="inbox-image" alt="Inbox image">
+        <span class="block shadow-sm rounded-md">
+            <button type="button" id="image-button"
+                    class="ml-4 inline-flex items-center px-4 py-2 border border-gray-300 text-sm leading-5 font-medium rounded-md text-gray-700 bg-white hover:text-gray-500 focus:outline-none focus:shadow-outline-blue focus:border-blue-300 active:text-gray-800 active:bg-gray-50">
+              <svg class="-ml-1 mr-2 h-5 w-5 text-gray-500" viewBox="0 0 20 20" fill="currentColor">
+                <path
+                        d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z"/>
+              </svg>
+              Change
+            </button>
+          </span>
+        <input class="hidden" type="file" id="image" name="image">
+        <div v-for="error in errors.image">
+          <p class="text-sm text-red-600">{{ error }}</p>
+        </div>
+      </dd>
+    </div>
+    <div class="bg-gray-50 px-4 py-3 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6 border-b-2">
+      <label for="show_assignee_to_guest" class="text-sm leading-5 font-medium text-gray-700 flex items-center">
+        Assignee visible to students
+      </label>
+      <dd class="mt-1 text-sm leading-5 text-gray-900 sm:mt-0 sm:col-span-2">
+        <input type="checkbox"
+               v-model="inbox.show_assignee_to_guest"
+               class="block" name="show_assignee_to_guest" id="show_assignee_to_guest">
+      </dd>
+    </div>
+    <h3 class="text-xl mt-4 leading-6 font-medium text-gray-900 p-2 pb-1">
+      Tickets
+    </h3>
+    <div class="bg-gray-50 px-4 py-3 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6 border-b-2">
+      <label for="close_answered_weeks" class="text-sm leading-5 font-medium text-gray-700 flex items-center">
+        Close answered ticket automatically after
+      </label>
+      <dd class="text-sm leading-5 text-gray-900 sm:mt-0 sm:col-span-2">
+        <select name="close_answered_weeks" id="close_answered_weeks"
+                class="block appearance-none bg-white border border-gray-400 hover:border-gray-500 px-4 py-1 pr-8 rounded shadow-sm leading-tight focus:outline-none focus:shadow-outline"
+                v-model="inbox.close_answered_weeks">
+          <option value="0">Disabled</option>
+          <option value="1"> 1 week</option>
+          <option value="2"> 2 weeks</option>
+          <option value="3"> 3 weeks</option>
+          <option value="4"> 4 weeks</option>
+        </select>
+      </dd>
+    </div>
+    <div class="bg-gray-50 px-4 py-3 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6 border-b-2">
+      <label for="alert_coordinator_unanswered_days"
+             class="text-sm leading-5 font-medium text-gray-700 flex items-center">
+        Send alert of unanswered tickets after
+      </label>
+      <dd class="text-sm leading-5 text-gray-900 sm:mt-0 sm:col-span-2">
+        <select name="alert_coordinator_unanswered_days" id="alert_coordinator_unanswered_days"
+                class="block appearance-none bg-white border border-gray-400 hover:border-gray-500 px-4 py-1 pr-8 rounded shadow-sm leading-tight focus:outline-none focus:shadow-outline"
+                v-model="inbox.alert_coordinator_unanswered_days">
+          <option value="0">Disabled</option>
+          <option value="1">1 day</option>
+          <option :value="i" v-for="i in [2,3,4,5,6,7]">{{ i }} days</option>
+        </select>
+      </dd>
+    </div>
+    <div class="bg-gray-50 px-4 py-3 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6 border-b-2">
+      <label for="scheduling_algorithm" class="text-sm leading-5 font-medium text-gray-700 flex items-center">
+        Scheduling algorithm
+      </label>
+      <dd class="text-sm leading-5 text-gray-900 sm:mt-0 sm:col-span-2">
+        <select name="scheduling_algorithm" id="scheduling_algorithm"
+                class="block appearance-none bg-white border border-gray-400 hover:border-gray-500 px-4 py-1 pr-8 rounded shadow-sm leading-tight focus:outline-none focus:shadow-outline"
+                v-model="inbox.scheduling_algorithm">
+          <option :value="option[0]" v-for="option in scheduling_options">
+            {{ option[1] }}
+          </option>
+        </select>
+      </dd>
+      <label for="fixed_scheduling_assignee"
+             class="text-sm leading-5 font-medium text-gray-700 flex items-center">
+        Fixed scheduling assignee
+      </label>
+      <dd class="text-sm leading-5 text-gray-900 sm:mt-0 sm:col-span-2">
+        <select name="fixed_scheduling_assignee" id="fixed_scheduling_assignee"
+                class="block appearance-none bg-white border border-gray-400 hover:border-gray-500 px-4 py-1 pr-8 rounded shadow-sm leading-tight focus:outline-none focus:shadow-outline"
+                v-model="inbox.fixed_scheduling_assignee">
+          <option :value="undefined">None</option>
+          <option :value="value.id" v-for="value in staff">
+            {{ value.first_name }} {{ value.last_name }}
+          </option>
+        </select>
+      </dd>
+    </div>
+
+    <div class="bg-teal-100 border-t-4 border-teal-500 rounded-b text-teal-900 px-4 py-3 shadow-md" role="alert"
+         v-if="saved">
+      <p class="text-sm ">Settings saved successfully.</p>
+    </div>
+    <div class="p-2 px-4 sm:pr-0 flex space-x-2 sm:mx-4 justify-end">
+      <button type="button" @click="onCancel()"
+              class="group inline-flex items-center px-4 py-2 border border-gray-300 text-sm leading-5 font-medium rounded-md text-gray-700 bg-white hover:text-gray-500 focus:outline-none focus:shadow-outline-blue focus:border-blue-300 active:text-gray-800 active:bg-gray-50">
+        <span class="left-0 inset-y-0 flex items-center">
+          <i class="fa fa-times mr-2"></i>
+        </span>
+        Cancel
+      </button>
+      <button type="button" @click="onSave()"
+              class="group inline-flex justify-center items-center px-4 py-2 border border-transparent text-sm leading-5 font-medium rounded-md bg-green-200 text-green-700 hover:bg-green-100 focus:outline-none focus:shadow-outline-indigo focus:border-green-700 active:bg-green-700 ">
+        <span class="left-0 inset-y-0 flex items-center">
+          <i class="fa fa-check mr-2"></i>
+        </span>
+        Save
+      </button>
+    </div>
+  </div>
+</template>
+
+<script>
+  import axios from "axios";
+
+  export default {
+    name: "InboxSettings",
+    data() {
+      return {
+        inbox_id: window.location.pathname.split('/')[2],
+        inbox: {},
+        staff: [],
+        scheduling_options: [],
+        errors: [],
+        saved: false
+      }
+    },
+    created() {
+      axios.get("/api/inboxes/" + this.inbox_id + "/settings").then(response => {
+        this.inbox = response.data.inbox;
+        this.staff = response.data.staff;
+        this.scheduling_options = response.data.scheduling_options
+      })
+    },
+    methods: {
+      onSave: function () {
+        axios.defaults.xsrfCookieName = 'csrftoken';
+        axios.defaults.xsrfHeaderName = "X-CSRFTOKEN";
+
+        let formData = new FormData();
+
+        for (let key in this.inbox) {
+          if (key !== "image") {
+            formData.append(key, this.inbox[key]);
+          } else {
+            console.log(this.inbox[key])
+          }
+        }
+        const config = {
+          headers: {'content-type': 'multipart/form-data'}
+        }
+
+        axios.put("/api/inboxes/" + this.inbox_id + "/settings", formData, config).then(response => {
+          this.errors = [];
+          this.saved = true;
+          this.inbox = response.data
+        }).catch(error => {
+          this.saved = false;
+          this.errors = error.response.data
+        })
+      },
+      onCancel: function () {
+        window.history.back();
+      },
+    }
+  }
+</script>
