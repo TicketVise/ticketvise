@@ -187,7 +187,7 @@
         for (let key in this.inbox) {
           if (key !== "image") {
             formData.append(key, this.inbox[key]);
-          } else if (this.inbox[key] !== this.im_url){
+          } else if (this.inbox[key] !== this.im_url) {
             formData.append(key, this.inbox[key]);
           }
         }
@@ -209,7 +209,9 @@
       },
 
       onChange(event) {
-        this.inbox.image = event.target.files[0];
+        if (event) {
+          this.inbox.image = event.target.files[0];
+        }
         let reader = new FileReader;
         reader.onload = e => {
           this.im_url = e.target.result
@@ -229,8 +231,9 @@
       },
       drop(event) {
         event.preventDefault();
+        this.inbox.image = event.dataTransfer.files[0];
 
-        this.onChange(event);
+        this.onChange();
         this.dragleave(event)
       }
     }
