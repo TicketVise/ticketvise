@@ -41,15 +41,14 @@
         Photo
       </dt>
       <div @dragleave="dragleave" @dragover="dragover" @drop="drop"
-           class="p-6 bg-gray-100 border border-dashed border-gray-300 rounded">
-        <img class="object-contain h-32 w-32 overflow-hidden rounded border-dashed border-4 border-gray-400"
-             style="outline-offset: -6px" :src="im_url" id="inbox-image" alt="Inbox image">
+           class="bg-contain bg-center bg-no-repeat text-sm p-6 border border-dashed border-gray-300 rounded h-36 w-36"
+           :style="{ 'background-image': `url(${im_url})` }">
+<!--        <img class="object-contain h-32 w-32 overflow-hidden rounded border-dashed border-4 border-gray-400"-->
+<!--             style="outline-offset: -6px" :src="im_url" id="inbox-image" alt="Inbox image">-->
         <input accept="image/*" @change="onChange" class="w-px h-px opacity-0 overflow-hidden absolute" id="attachment"
                name="fields[attachment][]" ref="file" type="file"/>
         <label class="block cursor-pointer" for="attachment">
-          <div>
             <span class="underline">Browse</span> or drop your photo here.
-          </div>
         </label>
       </div>
       <error v-for="error in errors.attachments" :key="error" :message="error"></error>
