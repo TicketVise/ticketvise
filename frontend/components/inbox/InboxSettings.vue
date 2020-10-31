@@ -12,9 +12,7 @@
                v-model="inbox.name"
                class="block appearance-none w-full bg-white border px-4 py-2 pr-8 rounded shadow-sm leading-tight focus:outline-none focus:shadow-outline"
                name="name">
-        <div v-for="error in errors.name">
-          <p class="text-sm text-red-600">{{ error }}</p>
-        </div>
+        <error v-for="error in errors.name" :key="error" :message="error"></error>
       </dd>
     </div>
     <div class="bg-gray-50 px-4 py-3 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6 border-b-2">
@@ -26,9 +24,7 @@
                v-model="inbox.code"
                class="block appearance-none w-full bg-white border px-4 py-2 pr-8 rounded shadow-sm leading-tight focus:outline-none focus:shadow-outline"
                name="code">
-        <div v-for="error in errors.code">
-          <p class="text-sm text-red-600">{{ error }}</p>
-        </div>
+        <error v-for="error in errors.code" :key="error" :message="error"></error>
       </dd>
     </div>
     <div class="bg-gray-50 px-4 py-3 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6 border-b-2">
@@ -40,33 +36,26 @@
                v-model="inbox.color"
                class="block appearance-none w-full bg-white border border-gray-400 hover:border-gray-500 overflow-hidden rounded shadow-sm leading-tight focus:outline-none focus:shadow-outline"
                name="color">
-        <div v-for="error in errors.color">
-          <p class="text-sm text-red-600">{{ error }}</p>
-        </div>
+        <error v-for="error in errors.color" :key="error" :message="error"></error>
       </dd>
     </div>
     <div class="bg-gray-50 px-4 py-3 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6 border-b-2">
       <dt class="text-sm leading-5 font-medium text-gray-700 flex items-center">
         Photo
       </dt>
-      <dd class="mt-1 text-sm leading-5 text-gray-900 sm:mt-0 sm:col-span-2 flex items-center">
+      <div @dragleave="dragleave" @dragover="dragover" @drop="drop"
+           class="p-6 bg-gray-100 border border-dashed border-gray-300 rounded">
         <img class="object-contain h-32 w-32 overflow-hidden rounded border-dashed border-4 border-gray-400"
-             style="outline-offset: -6px" :src="inbox.image" id="inbox-image" alt="Inbox image">
-        <span class="block shadow-sm rounded-md">
-            <button type="button" id="image-button"
-                    class="ml-4 inline-flex items-center px-4 py-2 border border-gray-300 text-sm leading-5 font-medium rounded-md text-gray-700 bg-white hover:text-gray-500 focus:outline-none focus:shadow-outline-blue focus:border-blue-300 active:text-gray-800 active:bg-gray-50">
-              <svg class="-ml-1 mr-2 h-5 w-5 text-gray-500" viewBox="0 0 20 20" fill="currentColor">
-                <path
-                        d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z"/>
-              </svg>
-              Change
-            </button>
-          </span>
-        <input class="hidden" type="file" id="image" name="image">
-        <div v-for="error in errors.image">
-          <p class="text-sm text-red-600">{{ error }}</p>
-        </div>
-      </dd>
+             style="outline-offset: -6px" :src="im_url" id="inbox-image" alt="Inbox image">
+        <input accept="image/*" @change="onChange" class="w-px h-px opacity-0 overflow-hidden absolute" id="attachment"
+               name="fields[attachment][]" ref="file" type="file"/>
+        <label class="block cursor-pointer" for="attachment">
+          <div>
+            <span class="underline">Browse</span> or drop your photo here.
+          </div>
+        </label>
+      </div>
+      <error v-for="error in errors.attachments" :key="error" :message="error"></error>
     </div>
     <div class="bg-gray-50 px-4 py-3 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6 border-b-2">
       <label for="show_assignee_to_guest" class="text-sm leading-5 font-medium text-gray-700 flex items-center">
@@ -166,13 +155,17 @@
 
 <script>
   import axios from "axios";
+  import Error from "../elements/message/Error";
+  import FileUpload from "../elements/FileUpload";
 
   export default {
     name: "InboxSettings",
+    components: {FileUpload, Error},
     data() {
       return {
         inbox_id: window.location.pathname.split('/')[2],
         inbox: {},
+        im_url: "",
         staff: [],
         scheduling_options: [],
         errors: [],
@@ -184,6 +177,7 @@
         this.inbox = response.data.inbox;
         this.staff = response.data.staff;
         this.scheduling_options = response.data.scheduling_options
+        this.im_url = this.inbox.image;
       })
     },
     methods: {
@@ -196,8 +190,8 @@
         for (let key in this.inbox) {
           if (key !== "image") {
             formData.append(key, this.inbox[key]);
-          } else {
-            console.log(this.inbox[key])
+          } else if (this.inbox[key] !== this.im_url){
+            formData.append(key, this.inbox[key]);
           }
         }
         const config = {
@@ -216,6 +210,32 @@
       onCancel: function () {
         window.history.back();
       },
+
+      onChange(event) {
+        this.inbox.image = event.target.files[0];
+        let reader = new FileReader;
+        reader.onload = e => {
+          this.im_url = e.target.result
+        };
+        reader.readAsDataURL(this.inbox.image)
+      },
+      dragover(event) {
+        event.preventDefault();
+        if (!event.currentTarget.classList.contains('bg-orange-300')) {
+          event.currentTarget.classList.remove('bg-gray-100');
+          event.currentTarget.classList.add('bg-orange-300');
+        }
+      },
+      dragleave(event) {
+        event.currentTarget.classList.add('bg-gray-100');
+        event.currentTarget.classList.remove('bg-orange-300');
+      },
+      drop(event) {
+        event.preventDefault();
+
+        this.onChange(event);
+        this.dragleave(event)
+      }
     }
   }
 </script>
