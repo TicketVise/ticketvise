@@ -1,6 +1,4 @@
-from django.urls import reverse
-
-from ticketvise.models.inbox import Inbox
+from ticketvise.models.inbox import Inbox, SchedulingAlgorithm
 from ticketvise.tests.inbox.utils import InboxTestCase
 
 
@@ -15,13 +13,13 @@ class SettingsTestCase(InboxTestCase):
             "name": "Andere naam",
             "code": "5062STRE6Y22",
             "color": "#1c7225",
-            "image": "",
             "close_answered_weeks": "1",
             "alert_coordinator_unanswered_days": "2",
             "scheduling_algorithm": "fixed"
         }
 
-        response = self.client.post(reverse("inbox_settings", args=(self.inbox.id,)), data, follow=True)
+        response = self.client.put(f"/api/inboxes/{self.inbox.id}/settings", data, follow=True,
+                                   content_type="application/json")
         self.assertEqual(response.status_code, 200)
         self.assertEqual(Inbox.objects.get(pk=self.inbox.id).name, data["name"])
 
@@ -35,13 +33,13 @@ class SettingsTestCase(InboxTestCase):
             "name": "Andere naam",
             "code": "5062STRE6Y22",
             "color": "#1c7225",
-            "image": "",
             "close_answered_weeks": "1",
             "alert_coordinator_unanswered_days": "2",
             "scheduling_algorithm": "fixed"
         }
 
-        response = self.client.post(reverse("inbox_settings", args=(self.inbox.id,)), data, follow=True)
+        response = self.client.put(f"/api/inboxes/{self.inbox.id}/settings", data, follow=True,
+                                   content_type="application/json")
         self.assertEqual(response.status_code, 403)
         self.assertNotEqual(Inbox.objects.get(pk=self.inbox.id).name, data["name"])
 
@@ -55,13 +53,13 @@ class SettingsTestCase(InboxTestCase):
             "name": "Andere naam",
             "code": "5062STRE6Y22",
             "color": "#1c7225",
-            "image": "",
             "close_answered_weeks": "1",
             "alert_coordinator_unanswered_days": "2",
             "scheduling_algorithm": "fixed"
         }
 
-        response = self.client.post(reverse("inbox_settings", args=(self.inbox.id,)), data, follow=True)
+        response = self.client.put(f"/api/inboxes/{self.inbox.id}/settings", data, follow=True,
+                                   content_type="application/json")
         self.assertEqual(response.status_code, 403)
         self.assertNotEqual(Inbox.objects.get(pk=self.inbox.id).name, data["name"])
 
@@ -75,12 +73,20 @@ class SettingsTestCase(InboxTestCase):
             "name": "Andere naam",
             "code": "5062STRE6Y22",
             "color": "#1c7225",
-            "image": "",
             "close_answered_weeks": "1",
             "alert_coordinator_unanswered_days": "2",
             "scheduling_algorithm": "fixed"
         }
 
-        response = self.client.post(reverse("inbox_settings", args=(self.inbox.id,)), data, follow=True)
+        response = self.client.put(f"/api/inboxes/{self.inbox.id}/settings", data, follow=True,
+                                   content_type="application/json")
         self.assertEqual(response.status_code, 403)
         self.assertNotEqual(Inbox.objects.get(pk=self.inbox.id).name, data["name"])
+
+    def test_get_inbox_attributes(self):
+        self.client.force_login(self.coordinator)
+        response = self.client.get(f"/api/inboxes/{self.inbox.id}/settings")
+        self.assertContains(response, self.inbox.name)
+        self.assertContains(response, self.assistant)
+        self.assertContains(response, "Workgroup")
+
