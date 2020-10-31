@@ -1,8 +1,5 @@
 <template>
   <div class="container mx-auto lg:px-4 pb-4">
-    <h3 class="text-xl leading-6 font-medium text-gray-900 p-2 pb-1">
-      Inbox
-    </h3>
     <div class="bg-gray-50 px-4 py-3 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6 border-b-2">
       <dt class="text-sm leading-5 font-medium text-gray-700 flex items-center">
         Name
