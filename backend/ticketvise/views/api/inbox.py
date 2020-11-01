@@ -2,23 +2,26 @@ from django.db.models import Case, BooleanField, When, Q
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
 from rest_framework import serializers
+from rest_framework.generics import ListAPIView, RetrieveUpdateDestroyAPIView, RetrieveUpdateAPIView
+from rest_framework.response import Response
 from rest_framework.generics import ListAPIView, RetrieveAPIView, RetrieveUpdateDestroyAPIView, ListCreateAPIView
 from rest_framework.serializers import ModelSerializer
 from rest_framework.views import APIView
 
 from ticketvise.middleware import CurrentUserMiddleware
-from ticketvise.models.inbox import Inbox
+from ticketvise.models.inbox import Inbox, SchedulingAlgorithm
 from ticketvise.models.label import Label
 from ticketvise.models.ticket import Ticket
 from ticketvise.models.user import User, Role, UserInbox
 from ticketvise.utils import StandardResultsSetPagination
+from ticketvise.views.api import DynamicFieldsModelSerializer
 from ticketvise.views.api.labels import LabelSerializer
 from ticketvise.views.api.security import UserIsInboxStaffMixin, UserIsInInboxMixin, UserIsSuperUserMixin, \
     UserIsInboxManagerMixin
 from ticketvise.views.api.user import UserSerializer, UserInboxSerializer
 
 
-class InboxSerializer(ModelSerializer):
+class InboxSerializer(DynamicFieldsModelSerializer):
     labels = serializers.SerializerMethodField()
 
     def get_labels(self, obj):
@@ -33,8 +36,9 @@ class InboxSerializer(ModelSerializer):
     class Meta:
         model = Inbox
         fields = [
-            "name", "id", "color", "labels", "image", "scheduling_algorithm",
-            "is_active", "date_created"
+            "name", "id", "color", "labels", "image", "scheduling_algorithm", "code", "show_assignee_to_guest",
+            "fixed_scheduling_assignee", "is_active", "date_created", "close_answered_weeks",
+            "alert_coordinator_unanswered_days"
         ]
 
 
@@ -81,12 +85,6 @@ class InboxLabelsApiView(UserIsInboxManagerMixin, ListCreateAPIView):
         serializer.save(inbox=inbox)
 
 
-class InboxApiView(UserIsInInboxMixin, RetrieveAPIView):
-    serializer_class = InboxSerializer
-    queryset = Inbox
-    lookup_url_kwarg = "inbox_id"
-
-
 class CoordinatorSerializer(ModelSerializer):
     class Meta:
         model = User
@@ -106,10 +104,12 @@ class InboxStatsApiView(UserIsSuperUserMixin, APIView):
 
 
 class InboxesApiView(ListAPIView):
-    serializer_class = InboxSerializer
+    def get_serializer(self, *args, **kwargs):
+        return InboxSerializer(*args, **kwargs, fields=(
+            "name", "id", "color", "image", "scheduling_algorithm", "fixed_scheduling_assignee", "date_created"))
 
     def get_queryset(self):
-        return Inbox.objects.all()
+        return Inbox.objects.all().order_by("-date_created")
 
 
 class InboxUsersApiView(UserIsInboxStaffMixin, ListAPIView):
@@ -173,3 +173,24 @@ class InboxLabelApiView(UserIsInboxManagerMixin, RetrieveUpdateDestroyAPIView):
     def get_object(self):
         inbox = get_object_or_404(Inbox, pk=self.kwargs["inbox_id"])
         return get_object_or_404(Label, inbox=inbox, pk=self.kwargs["label_id"])
+
+
+class InboxSettingsApiView(UserIsInboxManagerMixin, RetrieveUpdateAPIView):
+    queryset = Inbox
+    lookup_url_kwarg = "inbox_id"
+
+    def get_serializer(self, *args, **kwargs):
+        return InboxSerializer(*args, **kwargs, fields=(
+            "name", "id", "color", "image", "scheduling_algorithm", "code", "show_assignee_to_guest",
+            "fixed_scheduling_assignee", "close_answered_weeks", "alert_coordinator_unanswered_days"))
+
+    def retrieve(self, request, *args, **kwargs):
+        inbox = self.get_object()
+
+        response = {
+            "inbox": self.get_serializer(inbox).data,
+            "scheduling_options": SchedulingAlgorithm.choices,
+            "staff": UserSerializer(inbox.get_assistants_and_coordinators(), many=True).data
+        }
+
+        return Response(response)

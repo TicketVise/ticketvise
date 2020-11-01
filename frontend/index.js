@@ -72,6 +72,7 @@ let components = {
   '/inboxes/*/tickets/new': ['ticket-form'],
   '/inboxes/*/tickets/*': ['ticket'],
   '/inboxes/*/statistics': ['inbox-statistics'],
+  '/inboxes/*/settings': ['inbox-settings'],
   '/inboxes/*/automation': ['automation'],
   '/inboxes/*/users': ['users'],
   '/inboxes/*/users/*': ['user'],
