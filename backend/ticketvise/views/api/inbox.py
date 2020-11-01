@@ -1,5 +1,6 @@
 from datetime import datetime, timedelta
 
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db.models import Case, BooleanField, When, Q
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
@@ -8,12 +9,10 @@ from rest_framework.generics import ListAPIView, RetrieveUpdateDestroyAPIView, L
 from rest_framework.generics import RetrieveUpdateAPIView
 from rest_framework.response import Response
 from rest_framework.serializers import ModelSerializer
-from rest_framework.views import APIView
 
 from ticketvise.middleware import CurrentUserMiddleware
 from ticketvise.models.inbox import Inbox, SchedulingAlgorithm
 from ticketvise.models.label import Label
-from ticketvise.models.ticket import Ticket, TicketStatusEvent, Status
 from ticketvise.models.user import User, Role, UserInbox
 from ticketvise.utils import StandardResultsSetPagination
 from ticketvise.views.api import DynamicFieldsModelSerializer
@@ -87,7 +86,8 @@ class InboxLabelsApiView(UserIsInboxManagerMixin, ListCreateAPIView):
         inbox = get_object_or_404(Inbox, pk=self.kwargs[self.inbox_key])
         serializer.save(inbox=inbox)
 
-class InboxesApiView(ListAPIView):
+
+class InboxesApiView(UserIsSuperUserMixin, ListAPIView):
     def get_serializer(self, *args, **kwargs):
         return InboxSerializer(*args, **kwargs, fields=(
             "name", "id", "color", "image", "scheduling_algorithm", "fixed_scheduling_assignee", "date_created"))
@@ -178,3 +178,22 @@ class InboxSettingsApiView(UserIsInboxManagerMixin, RetrieveUpdateAPIView):
         }
 
         return Response(response)
+
+
+class CurrentUserInboxSerializer(ModelSerializer):
+    inbox = InboxSerializer(fields=["name", "id", "color", "labels", "image", "code"])
+    role_label = serializers.SerializerMethodField()
+
+    def get_role_label(self, user_inbox):
+        return Role[user_inbox.role].label
+
+    class Meta:
+        model = UserInbox
+        fields = ["id", "role", "role_label", "inbox", "is_bookmarked"]
+
+
+class CurrentUserInboxesApiView(LoginRequiredMixin, ListAPIView):
+    serializer_class = CurrentUserInboxSerializer
+
+    def get_queryset(self):
+        return UserInbox.objects.filter(user=self.request.user)

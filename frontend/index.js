@@ -68,6 +68,7 @@ let create_vue = (components) => {
  */
 let components = {
   '/notifications': ['notifications'],
+  '/inboxes': ['inboxes'],
   '/inboxes/*/tickets': ['ticket-overview'],
   '/inboxes/*/tickets/new': ['ticket-form'],
   '/inboxes/*/tickets/*': ['ticket'],
