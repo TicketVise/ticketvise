@@ -74,20 +74,22 @@
 </template>
 
 <script>
+import InboxStats from "./InboxStats";
 export default {
+  components: {InboxStats},
   data: () => ({
     inboxes: [],
     users: 0,
     tickets: 0
   }),
   async mounted() {
-    const response = await axios.get(`/api/inboxes`)
+    const response = await axios.get("/api/inboxes")
     this.inboxes = response.data
 
-    const users = await axios.get(`/api/admin/statistics/users/count`)
+    const users = await axios.get("/api/admin/statistics/users/count")
     this.users = users.data.users
 
-    const tickets = await axios.get(`/api/admin/statistics/tickets/count`)
+    const tickets = await axios.get("/api/admin/statistics/tickets/count")
     this.tickets = tickets.data.tickets
   }
 }

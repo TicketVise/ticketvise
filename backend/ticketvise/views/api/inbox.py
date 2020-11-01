@@ -2,7 +2,7 @@ from django.db.models import Case, BooleanField, When
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
 from rest_framework import serializers
-from rest_framework.generics import ListAPIView, RetrieveAPIView, RetrieveUpdateDestroyAPIView, RetrieveUpdateAPIView
+from rest_framework.generics import ListAPIView, RetrieveUpdateDestroyAPIView, RetrieveUpdateAPIView
 from rest_framework.response import Response
 from rest_framework.serializers import ModelSerializer
 from rest_framework.views import APIView
@@ -55,12 +55,6 @@ class InboxLabelsApiView(UserIsInInboxMixin, ListAPIView):
         return labels
 
 
-class InboxApiView(UserIsInInboxMixin, RetrieveAPIView):
-    serializer_class = InboxSerializer
-    queryset = Inbox
-    lookup_url_kwarg = "inbox_id"
-
-
 class CoordinatorSerializer(ModelSerializer):
     class Meta:
         model = User
@@ -80,10 +74,12 @@ class InboxStatsApiView(UserIsSuperUserMixin, APIView):
 
 
 class InboxesApiView(ListAPIView):
-    serializer_class = InboxSerializer
+    def get_serializer(self, *args, **kwargs):
+        return InboxSerializer(*args, **kwargs, fields=(
+            "name", "id", "color", "image", "scheduling_algorithm", "fixed_scheduling_assignee", "date_created"))
 
     def get_queryset(self):
-        return Inbox.objects.all()
+        return Inbox.objects.all().order_by("-date_created")
 
 
 class InboxUsersApiView(UserIsInboxStaffMixin, ListAPIView):
@@ -142,9 +138,13 @@ class UserInboxApiView(UserIsInboxManagerMixin, RetrieveUpdateDestroyAPIView):
 
 
 class InboxSettingsApiView(UserIsInboxManagerMixin, RetrieveUpdateAPIView):
-    serializer_class = InboxSerializer
     queryset = Inbox
     lookup_url_kwarg = "inbox_id"
+
+    def get_serializer(self, *args, **kwargs):
+        return InboxSerializer(*args, **kwargs, fields=(
+            "name", "id", "color", "image", "scheduling_algorithm", "code", "show_assignee_to_guest",
+            "fixed_scheduling_assignee", "close_answered_weeks", "alert_coordinator_unanswered_days"))
 
     def retrieve(self, request, *args, **kwargs):
         inbox = self.get_object()
