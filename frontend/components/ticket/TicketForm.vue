@@ -75,7 +75,6 @@
     components: {EditShareWith, Error, SubmitButton, FileUpload, LabelDropdown, Editor, Chip},
     data() {
       return {
-        inbox: null,
         files: [],
         title: "",
         labels: [],
@@ -86,10 +85,6 @@
       }
     },
     mounted() {
-      axios.get("/api/inboxes/" + this.inbox_id).then(response => {
-        this.inbox = response.data
-      })
-
       axios.get("/api/inboxes/" + this.inbox_id + "/labels").then(response => {
         this.inbox_labels = response.data;
       })

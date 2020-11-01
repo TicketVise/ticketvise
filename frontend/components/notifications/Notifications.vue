@@ -53,9 +53,11 @@
 
 <script>
   import axios from "axios";
+  import NotificationCard from "./NotificationCard";
 
   export default {
     name: "Notifications",
+    components: {NotificationCard},
     data() {
       return {
         notifications: [],

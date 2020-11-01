@@ -279,7 +279,7 @@ class TicketApiView(UserHasAccessToTicketMixin, RetrieveAPIView):
             response["me"] = user_data
 
         if json.loads(request.GET.get("inbox", "false")):
-            inbox_data = InboxSerializer(inbox).data
+            inbox_data = InboxSerializer(inbox, fields=("name", "id", "labels")).data
             response["inbox"] = inbox_data
 
         if json.loads(request.GET.get("replies", "false")):
