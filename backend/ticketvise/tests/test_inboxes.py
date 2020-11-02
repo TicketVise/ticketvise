@@ -78,17 +78,17 @@ class InboxConfigureTestCase(TestCase):
         }
 
         # Check if bookmarked can be flipped to true
-        response = self.client.post("/inboxes", urlencode(data), follow=True,
+        response = self.client.post("/api/me/inboxes", urlencode(data), follow=True,
                                     content_type="application/x-www-form-urlencoded")
-        self.assertTrue(response.redirect_chain, "/inboxes")
+        self.assertTrue(response.status_code, 200)
 
         relation = self.coordinator.get_entry_by_inbox(inbox)
         self.assertTrue(relation.is_bookmarked)
 
         # Check if bookrmarked can be flipped to false
-        response = self.client.post("/inboxes", urlencode(data), follow=True,
+        response = self.client.post("/api/me/inboxes", urlencode(data), follow=True,
                                     content_type="application/x-www-form-urlencoded")
-        self.assertTrue(response.redirect_chain, "/inboxes")
+        self.assertTrue(response.status_code, 200)
 
         relation = self.coordinator.get_entry_by_inbox(inbox)
         self.assertFalse(relation.is_bookmarked)
@@ -106,5 +106,5 @@ class InboxConfigureTestCase(TestCase):
         }
 
         with self.assertRaises(ValueError):
-            self.client.post("/inboxes", urlencode(data), follow=True,
+            self.client.post("/api/me/inboxes", urlencode(data), follow=True,
                                         content_type="application/x-www-form-urlencoded")

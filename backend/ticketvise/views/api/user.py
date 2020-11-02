@@ -3,7 +3,7 @@ from django.http import JsonResponse, Http404
 from django.shortcuts import get_object_or_404
 from django.views import View
 from rest_framework import serializers
-from rest_framework.generics import RetrieveUpdateAPIView, RetrieveAPIView
+from rest_framework.generics import RetrieveUpdateAPIView, RetrieveAPIView, ListAPIView
 from rest_framework.serializers import ModelSerializer
 
 from ticketvise.models.inbox import Inbox
@@ -11,7 +11,7 @@ from ticketvise.models.notification import Notification
 from ticketvise.models.user import User, Role, UserInbox
 from ticketvise.views.admin import SuperUserRequiredMixin
 from ticketvise.views.api import DynamicFieldsModelSerializer
-from ticketvise.views.api.security import UserIsInboxStaffMixin, UserIsInInboxMixin
+from ticketvise.views.api.security import UserIsInInboxMixin
 
 
 class UserSerializer(DynamicFieldsModelSerializer):

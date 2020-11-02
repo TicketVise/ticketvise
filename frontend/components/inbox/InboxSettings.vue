@@ -41,7 +41,7 @@
         Photo
       </dt>
       <div @dragleave="dragleave" @dragover="dragover" @drop="drop"
-           class="bg-contain bg-center bg-no-repeat text-sm border border-dashed border-gray-500 border-2 rounded h-36 w-36"
+           class="bg-contain bg-center bg-no-repeat text-sm border-dashed border-gray-500 border-2 rounded h-36 w-36"
            :style="{ 'background-image': `url(${im_url})` }">
         <input accept="image/*" @change="onChange" class="w-px h-px opacity-0 overflow-hidden absolute" id="attachment"
                name="fields[attachment][]" ref="file" type="file"/>
@@ -93,7 +93,7 @@
                 v-model="inbox.alert_coordinator_unanswered_days">
           <option value="0">Disabled</option>
           <option value="1">1 day</option>
-          <option :value="i" v-for="i in [2,3,4,5,6,7]">{{ i }} days</option>
+          <option :value="i" v-for="i in [2,3,4,5,6,7]" :key="i">{{ i }} days</option>
         </select>
       </dd>
     </div>
@@ -105,7 +105,7 @@
         <select name="scheduling_algorithm" id="scheduling_algorithm"
                 class="block appearance-none bg-white border border-gray-400 hover:border-gray-500 px-4 py-1 pr-8 rounded shadow-sm leading-tight focus:outline-none focus:shadow-outline"
                 v-model="inbox.scheduling_algorithm">
-          <option :value="option[0]" v-for="option in scheduling_options">
+          <option :value="option[0]" v-for="option in scheduling_options" :key="option[0]">
             {{ option[1] }}
           </option>
         </select>
@@ -119,7 +119,7 @@
                 class="block appearance-none bg-white border border-gray-400 hover:border-gray-500 px-4 py-1 pr-8 rounded shadow-sm leading-tight focus:outline-none focus:shadow-outline"
                 v-model="inbox.fixed_scheduling_assignee">
           <option :value="null">None</option>
-          <option :value="value.id" v-for="value in staff">
+          <option :value="value.id" v-for="value in staff" :key="value.id">
             {{ value.first_name }} {{ value.last_name }}
           </option>
         </select>
