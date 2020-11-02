@@ -196,4 +196,16 @@ class CurrentUserInboxesApiView(LoginRequiredMixin, ListAPIView):
     serializer_class = CurrentUserInboxSerializer
 
     def get_queryset(self):
-        return UserInbox.objects.filter(user=self.request.user)
+        return UserInbox.objects.filter(user=self.request.user).order_by("-date_created")
+
+    def post(self, request):
+        if request.POST.get("inbox_id"):
+            inbox = Inbox.objects.get(pk=request.POST["inbox_id"])
+            if not request.user.has_inbox(inbox):
+                raise ValueError(f"User is not assigned to or enrolled in inbox {inbox}")
+
+            relation = request.user.get_entry_by_inbox(inbox)
+            relation.is_bookmarked = not relation.is_bookmarked
+            relation.save()
+
+        return Response()
