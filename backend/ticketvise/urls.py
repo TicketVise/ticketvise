@@ -12,8 +12,7 @@ from django.urls import path, re_path
 
 from ticketvise.views.admin import AdminView
 from ticketvise.views.error import ErrorHandler
-from ticketvise.views.inbox.labels import InboxLabelsView, CreateInboxLabelView, EditInboxLabelView, \
-    DeleteInboxLabelView
+from ticketvise.views.inbox.labels import InboxLabelsView, LabelView, AddInboxLabelView
 from ticketvise.views.inbox.overview import InboxView
 from ticketvise.views.inbox.settings import InboxSettingsView
 from ticketvise.views.inbox.statistics import InboxStatisticsView
@@ -43,10 +42,8 @@ urlpatterns = [
                   path("inboxes/<int:pk>/settings", InboxSettingsView.as_view(), name="inbox_settings"),
                   path("inboxes/<int:pk>/statistics", InboxStatisticsView.as_view(), name="inbox_statistics"),
                   path("inboxes/<int:pk>/automation", InboxAutomationView.as_view(), name="inbox_automation"),
-                  path("inboxes/<int:pk>/labels/new", CreateInboxLabelView.as_view(), name="create_inbox_label"),
-                  path("inboxes/<int:inbox_id>/labels/<int:pk>", EditInboxLabelView.as_view(), name="edit_inbox_label"),
-                  path("inboxes/<int:inbox_id>/labels/<int:pk>/delete", DeleteInboxLabelView.as_view(),
-                       name="delete_inbox_label"),
+                  path("inboxes/<int:pk>/labels/new", AddInboxLabelView.as_view(), name="create_inbox_label"),
+                  path("inboxes/<int:inbox_id>/labels/<int:pk>", LabelView.as_view(), name="edit_inbox_label"),
                   path("inboxes/<int:inbox_id>/tickets", InboxView.as_view(), name="inbox"),
                   path("profile", ProfileView.as_view(), name="profile"),
                   path("inboxes", InboxesView.as_view(), name="inboxes"),

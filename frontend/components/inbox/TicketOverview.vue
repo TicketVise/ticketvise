@@ -161,7 +161,7 @@ export default {
     let inbox_view = localStorage.getItem('inbox_view')
     if (inbox_view) this.list = inbox_view === 'list'
 
-    axios.get("/api/inboxes/" + this.inbox_id + "/labels").then(response => {
+    axios.get("/api/inboxes/" + this.inbox_id + "/labels/all").then(response => {
       this.inbox_labels = response.data.concat([UNLABELLED_LABEL])
     })
 

@@ -256,7 +256,7 @@ class TicketApiView(UserHasAccessToTicketMixin, RetrieveAPIView):
     def get(self, request, *args, **kwargs):
         inbox = get_object_or_404(Inbox, pk=self.kwargs["inbox_id"])
         ticket = get_object_or_404(Ticket, inbox=inbox, ticket_inbox_id=self.kwargs["ticket_inbox_id"])
-        current_role = request.user.get_entry_by_inbox(inbox).role
+        current_role = Role.MANAGER if request.user.is_superuser else request.user.get_entry_by_inbox(inbox).role
 
         response = {}
 
