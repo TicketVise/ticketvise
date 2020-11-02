@@ -1,17 +1,19 @@
+from datetime import datetime, timedelta
+
 from django.db.models import Case, BooleanField, When, Q
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
 from rest_framework import serializers
-from rest_framework.generics import ListAPIView, RetrieveUpdateDestroyAPIView, RetrieveUpdateAPIView
+from rest_framework.generics import ListAPIView, RetrieveUpdateDestroyAPIView, ListCreateAPIView
+from rest_framework.generics import RetrieveUpdateAPIView
 from rest_framework.response import Response
-from rest_framework.generics import ListAPIView, RetrieveAPIView, RetrieveUpdateDestroyAPIView, ListCreateAPIView
 from rest_framework.serializers import ModelSerializer
 from rest_framework.views import APIView
 
 from ticketvise.middleware import CurrentUserMiddleware
 from ticketvise.models.inbox import Inbox, SchedulingAlgorithm
 from ticketvise.models.label import Label
-from ticketvise.models.ticket import Ticket
+from ticketvise.models.ticket import Ticket, TicketStatusEvent, Status
 from ticketvise.models.user import User, Role, UserInbox
 from ticketvise.utils import StandardResultsSetPagination
 from ticketvise.views.api import DynamicFieldsModelSerializer
@@ -26,6 +28,7 @@ class InboxSerializer(DynamicFieldsModelSerializer):
 
     def get_labels(self, obj):
         user = CurrentUserMiddleware.get_current_user()
+
         labels = obj.labels.filter(is_active=True)
 
         if user and not user.is_assistant_or_coordinator(obj):
@@ -76,32 +79,13 @@ class InboxLabelsApiView(UserIsInboxManagerMixin, ListCreateAPIView):
         for term in self.request.GET.get("q", "").split():
             search_query |= (Q(name__icontains=term) | Q(color__icontains=term))
 
-        return Label.objects.filter(inbox=inbox)\
-            .filter(search_query)\
+        return Label.objects.filter(inbox=inbox) \
+            .filter(search_query) \
             .order_by("name")
 
     def perform_create(self, serializer):
         inbox = get_object_or_404(Inbox, pk=self.kwargs[self.inbox_key])
         serializer.save(inbox=inbox)
-
-
-class CoordinatorSerializer(ModelSerializer):
-    class Meta:
-        model = User
-        fields = ["first_name", "last_name"]
-
-
-class InboxStatsApiView(UserIsSuperUserMixin, APIView):
-    def get(self, request, inbox_id):
-        inbox = get_object_or_404(Inbox, pk=inbox_id)
-
-        return JsonResponse({
-            'labels': Label.objects.filter(inbox=inbox).count(),
-            'tickets': Ticket.objects.filter(inbox=inbox).count(),
-            'users': User.objects.filter(inbox_relationship__inbox_id=inbox).count(),
-            'coordinator': CoordinatorSerializer(inbox.get_coordinator()).data
-        }, safe=False)
-
 
 class InboxesApiView(ListAPIView):
     def get_serializer(self, *args, **kwargs):
