@@ -178,3 +178,11 @@ class InboxSettingsApiView(UserIsInboxManagerMixin, RetrieveUpdateAPIView):
         }
 
         return Response(response)
+
+    def update(self, request, *args, **kwargs):
+        if "fixed_scheduling_assignee" in request.POST.keys() and not request.POST["fixed_scheduling_assignee"].isdigit():
+            request.POST._mutable = True
+            request.POST["fixed_scheduling_assignee"] = None
+        return super().update(request, *args, **kwargs)
+
+

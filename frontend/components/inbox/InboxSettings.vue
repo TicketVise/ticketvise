@@ -118,7 +118,7 @@
         <select name="fixed_scheduling_assignee" id="fixed_scheduling_assignee"
                 class="block appearance-none bg-white border border-gray-400 hover:border-gray-500 px-4 py-1 pr-8 rounded shadow-sm leading-tight focus:outline-none focus:shadow-outline"
                 v-model="inbox.fixed_scheduling_assignee">
-          <option :value="undefined">None</option>
+          <option :value="null">None</option>
           <option :value="value.id" v-for="value in staff">
             {{ value.first_name }} {{ value.last_name }}
           </option>
