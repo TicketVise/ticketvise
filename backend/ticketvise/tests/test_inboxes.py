@@ -106,5 +106,5 @@ class InboxConfigureTestCase(TestCase):
         }
 
         with self.assertRaises(ValueError):
-            self.client.post("/inboxes", urlencode(data), follow=True,
+            self.client.post("/api/me/inboxes", urlencode(data), follow=True,
                                         content_type="application/x-www-form-urlencoded")
