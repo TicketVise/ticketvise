@@ -1,9 +1,23 @@
 import Vue from 'vue'
 import 'alpinejs'
 import './email/index.js'
-import * as Sentry from "@sentry/browser";
-import {Vue as VueIntegration} from "@sentry/integrations";
-import {Integrations} from '@sentry/tracing';
+import Notifications from "./components/notifications/Notifications";
+import Inboxes from "./components/inbox/Inboxes";
+import TicketOverview from "./components/inbox/TicketOverview";
+import InboxSettings from "./components/inbox/InboxSettings";
+import InboxStatistics from "./components/inbox_statistics/InboxStatistics";
+import Ticket from "./components/ticket/Ticket";
+import Users from "./components/inbox/Users";
+import User from "./components/inbox/User";
+import Labels from "./components/inbox/Labels";
+import Label from "./components/inbox/Label";
+import Profile from "./components/profile/Profile";
+import Admin from "./components/admin/Admin";
+import TicketForm from "./components/ticket/TicketForm";
+import VueRouter from 'vue-router'
+import App from "./App";
+
+Vue.use(VueRouter)
 
 // global is declared using DefinePlugin in the webpack.config.js
 if (typeof SENTRY_DSN !== 'undefined') {
@@ -20,6 +34,25 @@ if (typeof SENTRY_DSN !== 'undefined') {
         tracesSampleRate: 1 / 100
     });
 }
+
+const router = new VueRouter({
+    routes: [
+        {path: "/notifications", component: Notifications},
+        {path: "/", component: Inboxes},
+        {path: "/inboxes", component: Inboxes},
+        {path: "/inboxes/:inboxId/tickets", component: TicketOverview},
+        {path: "/inboxes/:inboxId/tickets/new", component: TicketForm},
+        {path: "/inboxes/:inboxId/tickets/:ticketInboxId", component: Ticket},
+        {path: "/inboxes/:inboxId/statistics", component: InboxStatistics},
+        {path: "/inboxes/:inboxId/settings", component: InboxSettings},
+        {path: "/inboxes/:inboxId/users", component: Users},
+        {path: "/inboxes/:inboxId/users/:userId", component: User},
+        {path: "/inboxes/:inboxId/labels", component: Labels},
+        {path: "/inboxes/:inboxId/labels/:labelId", component: Label},
+        {path: "/profile", component: Profile},
+        {path: "/admin", component: Admin}
+    ]
+})
 
 window.Vue = Vue
 window.axios = require('axios')
@@ -39,50 +72,9 @@ files.keys().map(key =>
     )
 )
 
-/**
- * Create a vue component if the url path suffice.
- * @param {String} el = the name of the vue component.
- */
-let create_vue = (components) => {
-    for (let key in components) {
-        if (window.location.pathname.match('^' + key.replace(/\*/g, '[^.]*') + '$')) {
-            for (let el of components[key]) {
-                new Vue({
-                    el: '#' + el,
-                    template: `
-          <${el}></${el}>
-          `
-                })
-            }
-
-            return
-        }
-    }
-}
-
-/**
- * Next let's enable the application containers.
- * As a key you can define on which page the vue component show render.
- * The value is than a list of the vue components for that page.
- * The name of the vue component if the lowercase name with dashes in between.
- */
-let components = {
-  '/notifications': ['notifications'],
-  '/': ['inboxes'],
-  '/inboxes': ['inboxes'],
-  '/inboxes/*/tickets': ['ticket-overview'],
-  '/inboxes/*/tickets/new': ['ticket-form'],
-  '/inboxes/*/tickets/*': ['ticket'],
-  '/inboxes/*/statistics': ['inbox-statistics'],
-  '/inboxes/*/settings': ['inbox-settings'],
-  '/inboxes/*/automation': ['automation'],
-  '/inboxes/*/users': ['users'],
-  '/inboxes/*/users/*': ['user'],
-  '/inboxes/*/labels': ['labels'],
-  '/inboxes/*/labels/*': ['Label'],
-  '/profile': ['profile'],
-  '/admin': ['admin']
-}
-
-/* Now lets set them all up. */
-create_vue(components)
+new Vue({
+    router,
+    el: "#app",
+    components: {App},
+    template: "<App/>",
+});

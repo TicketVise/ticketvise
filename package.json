@@ -42,6 +42,7 @@
     "vue": "^2.6.12",
     "vue-chartjs": "^3.5.1",
     "vue-clickaway": "^2.2.2",
+    "vue-router": "^3.4.9",
     "vue-tribute": "^1.0.6"
   },
   "devDependencies": {

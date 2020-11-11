@@ -91,6 +91,7 @@ const UNLABELLED_LABEL = {
 }
 
 export default {
+  name: "TicketOverview",
   components: {
     TicketList,
     TicketColumn,
