@@ -21,7 +21,6 @@ SEND_MAIL = int(os.environ.get("SEND_MAIL", False))
 DOMAIN = os.environ.get("DOMAIN", "uva.ticketvise.com")
 ALLOWED_HOSTS = ["*"]
 
-
 #: Application definition
 #: ~~~~~~~~~~~~~~~~~~~~~~
 
@@ -39,6 +38,7 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "django.contrib.humanize",
     "rest_framework",
+    'rest_framework.authtoken',
 ]
 
 #: Middleware used for Django.
@@ -228,3 +228,14 @@ if SENTRY_DSN:
         traces_sample_rate=1.0,
         send_default_pii=False
     )
+
+TOKEN_EXPIRED_AFTER_SECONDS = 86400
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'ticketvise.security.token.ExpiringTokenAuthentication',
+    ),
+    'DEFAULT_PERMISSION_CLASSES': (
+        'rest_framework.permissions.IsAuthenticated',
+    )
+}
