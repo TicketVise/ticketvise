@@ -58,6 +58,15 @@ window.Vue = Vue
 window.axios = require('axios')
 Vue.config.productionTip = false
 
+axios.interceptors.request.use((config) => {
+    const token = localStorage.getItem("token")
+    if (token) {
+        config.headers["Authorization"] = "Token " + token
+    }
+
+    return config;
+});
+
 /**
  * Load every vue single file components.
  */
