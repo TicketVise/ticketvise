@@ -1,5 +1,6 @@
 from django.urls import path
 
+from ticketvise.views.api.auth import LoginApiView
 from ticketvise.views.api.inbox import InboxStaffApiView, InboxLabelApiView, AllInboxLabelsApiView
 from ticketvise.views.api.comment import CreateCommentApiView, CreateReplyApiView
 from ticketvise.views.api.inbox import InboxLabelsApiView, InboxesApiView, InboxGuestsAPIView, InboxUsersApiView, \
@@ -17,6 +18,7 @@ from ticketvise.views.api.user import UserRoleApiView, CurrentUserApiView, Notif
     UserGetFromUsernameApiView, UsersApiView
 
 urlpatterns = [
+    path("login", LoginApiView.as_view()),
     path("inboxes", InboxesApiView.as_view()),
     path("inboxes/<int:inbox_id>/settings", InboxSettingsApiView.as_view()),
     path("inboxes/<int:inbox_id>/tickets", InboxTicketsApiView.as_view()),

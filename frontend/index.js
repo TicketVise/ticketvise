@@ -16,6 +16,7 @@ import Admin from "./components/admin/Admin";
 import TicketForm from "./components/ticket/TicketForm";
 import VueRouter from 'vue-router'
 import App from "./App";
+import Login from "./components/Login";
 
 Vue.use(VueRouter)
 
@@ -39,6 +40,7 @@ const router = new VueRouter({
     routes: [
         {path: "/notifications", component: Notifications},
         {path: "/", component: Inboxes},
+        {path: "/login", component: Login},
         {path: "/inboxes", component: Inboxes},
         {path: "/inboxes/:inboxId/tickets", component: TicketOverview},
         {path: "/inboxes/:inboxId/tickets/new", component: TicketForm},

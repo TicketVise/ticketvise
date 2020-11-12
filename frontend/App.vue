@@ -1,6 +1,6 @@
 <template>
   <div>
-    <navigation v-if="isAuthenticated" :user="user">
+    <navigation v-if="user && isAuthenticated" :user="user">
       <router-view></router-view>
     </navigation>
     <router-view v-else></router-view>
