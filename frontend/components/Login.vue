@@ -55,8 +55,6 @@
 </template>
 
 <script>
-import axios from "axios";
-
 export default {
   name: "Login",
   data: () => ({
@@ -65,15 +63,7 @@ export default {
   }),
   methods: {
     login: function () {
-      const data = {
-        "username": this.username,
-        "password": this.password
-      }
-
-      axios.post('/api/login', data).then(response => {
-        this.user = response.data.user
-        localStorage.setItem("token", response.data.token)
-      })
+      this.$store.dispatch("login", this.username, this.password)
     }
   }
 }
