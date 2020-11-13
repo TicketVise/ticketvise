@@ -43,6 +43,8 @@ services:
   mail:
     image: ticketvise/mail
     build: ./postfix
+    environment:
+      DOMAIN: ticketvise.com
 
   cronjob:
     image: ticketvise/cronjob

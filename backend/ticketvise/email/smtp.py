@@ -17,7 +17,7 @@ from ticketvise.models.user import User
 class SmtpServer:
 
     def __init__(self) -> None:
-        self.controller = Controller(self, hostname="127.0.0.1", port=settings.SMTP_INBOUND_PORT)
+        self.controller = Controller(self, hostname="0.0.0.0", port=settings.SMTP_INBOUND_PORT)
         super().__init__()
 
     def parse_message_id(self, raw_message_id):
@@ -29,6 +29,7 @@ class SmtpServer:
 
     @sync_to_async
     def handle_RCPT(self, server, session, envelope, address, rcpt_options):
+        print("receipt")
         if not Inbox.objects.filter(email=address).exists():
             return '550 not relaying to that domain'
 
@@ -38,6 +39,7 @@ class SmtpServer:
 
     @sync_to_async
     def handle_DATA(self, server, session, envelope):
+        print("data")
         mail_from = envelope.mail_from
 
         message = BytesParser(policy=policy.default).parsebytes(envelope.content)
