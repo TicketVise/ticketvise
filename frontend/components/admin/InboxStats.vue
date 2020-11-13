@@ -62,11 +62,12 @@ import {calendarDate} from "../../utils";
 import { library } from '@fortawesome/fontawesome-svg-core'
 import { faClipboardList } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
+import TicketsChart from "../inbox_statistics/TicketsChart";
 
 library.add(faClipboardList)
 
 export default {
-  components: { FontAwesomeIcon },
+  components: {TicketsChart, FontAwesomeIcon },
   data: () => ({
     open: false,
     stats: null

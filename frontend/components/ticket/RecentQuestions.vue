@@ -22,7 +22,7 @@
   export default {
     name: "RecentQuestions",
     components: {Card, Avatar},
-    props: ["author", "inbox_id", "role"],
+    props: ["author", "inbox_id"],
     data() {
       return {
         tickets: null,

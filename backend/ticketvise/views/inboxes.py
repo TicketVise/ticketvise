@@ -54,15 +54,3 @@ class InboxesView(LoginRequiredMixin, TemplateView):
         context['extra_tiles_list'] = list(range(context['num_tiles_needed']))
 
         return context
-
-    def post(self, request):
-        if request.POST["inbox_id"]:
-            inbox = Inbox.objects.get(pk=request.POST["inbox_id"])
-            if not request.user.has_inbox(inbox):
-                raise ValueError(f"User is not assigned to or enrolled in inbox {inbox}")
-
-            relation = request.user.get_entry_by_inbox(inbox)
-            relation.is_bookmarked = not relation.is_bookmarked
-            relation.save()
-
-        return HttpResponseRedirect(reverse("inboxes"))

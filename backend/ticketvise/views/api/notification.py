@@ -8,11 +8,6 @@ from rest_framework.serializers import ModelSerializer
 
 from ticketvise.models.inbox import Inbox
 from ticketvise.models.notification import Notification
-from ticketvise.models.notification.assigned import TicketAssignedNotification
-from ticketvise.models.notification.comment import CommentNotification
-from ticketvise.models.notification.mention import MentionNotification
-from ticketvise.models.notification.new import NewTicketNotification
-from ticketvise.models.notification.reminder import TicketReminderNotification
 from ticketvise.models.ticket import Ticket
 from ticketvise.views.api.inbox import InboxSerializer
 from ticketvise.views.api.security import UserHasAccessToTicketMixin
@@ -22,9 +17,9 @@ from ticketvise.views.notifications import unread_related_ticket_notifications
 
 
 class NotificationSerializer(ModelSerializer):
-    receiver = UserSerializer(read_only=True)
-    ticket = TicketSerializer(read_only=True)
-    inbox = InboxSerializer(read_only=True)
+    receiver = UserSerializer(read_only=True, fields=(["first_name", "last_name", "username", "avatar_url", "id"]))
+    ticket = TicketSerializer(read_only=True, fields=("id", "title", "name", "ticket_inbox_id", "date_created"))
+    inbox = InboxSerializer(read_only=True, fields=("id", "name", "color"))
 
     class Meta:
         model = Notification
@@ -67,18 +62,6 @@ class NotificationsReadAll(LoginRequiredMixin, UpdateAPIView):
 
     def put(self, request, *args, **kwargs):
         Notification.objects.filter(receiver=request.user).update(is_read=True)
-        return Response()
-
-
-class VisitTicketNotificationApi(UserHasAccessToTicketMixin, UpdateAPIView):
-    serializer_class = NotificationSerializer
-
-    def put(self, request, *args, **kwargs):
-        inbox = get_object_or_404(Inbox, pk=self.kwargs["inbox_id"])
-        ticket = get_object_or_404(Ticket, inbox=inbox, ticket_inbox_id=self.kwargs["ticket_inbox_id"])
-
-        unread_related_ticket_notifications(ticket, request.user)
-
         return Response()
 
 

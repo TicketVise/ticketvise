@@ -90,6 +90,9 @@
 
         this.onChange();
         this.dragleave(event)
+      },
+      clear() {
+        this.files = []
       }
     }
   }
