@@ -2,24 +2,11 @@ import Vue from 'vue'
 import Vuex from 'vuex'
 import 'alpinejs'
 import './email/index.js'
-import Notifications from "./components/notifications/Notifications";
-import Inboxes from "./components/inbox/Inboxes";
-import TicketOverview from "./components/inbox/TicketOverview";
-import InboxSettings from "./components/inbox/InboxSettings";
-import InboxStatistics from "./components/inbox_statistics/InboxStatistics";
-import Ticket from "./components/ticket/Ticket";
-import Users from "./components/inbox/Users";
-import User from "./components/inbox/User";
-import Labels from "./components/inbox/Labels";
-import Label from "./components/inbox/Label";
-import Profile from "./components/profile/Profile";
-import Admin from "./components/admin/Admin";
-import TicketForm from "./components/ticket/TicketForm";
 import VueRouter from 'vue-router'
 import App from "./App";
-import Login from "./components/Login";
 import store from "./store";
 import router from "./router";
+import axios from 'axios'
 
 Vue.use(Vuex)
 Vue.use(VueRouter)

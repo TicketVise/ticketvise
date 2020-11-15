@@ -20,11 +20,11 @@ export default new Vuex.Store({
         },
     },
     actions: {
-        login({commit}, username, password) {
+        login({commit}, payload) {
             return new Promise((resolve, reject) => {
                 const data = {
-                    "username": username,
-                    "password": password
+                    "username": payload.username,
+                    "password": payload.password
                 }
 
                 axios.post('/api/login', data)
