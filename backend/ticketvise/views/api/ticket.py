@@ -190,6 +190,7 @@ class InboxTicketsApiView(UserIsInInboxMixin, APIView):
             users = User.objects.filter(inbox_relationship__inbox=inbox).search(q)
 
             tickets = Ticket.objects.filter(inbox=inbox, title__icontains=q) | \
+                      Ticket.objects.filter(inbox=inbox, content__icontains=q) | \
                       Ticket.objects.filter(inbox=inbox, ticket_inbox_id__icontains=q) | \
                       Ticket.objects.filter(inbox=inbox, author__in=users) | \
                       Ticket.objects.filter(inbox=inbox, assignee__in=users) | \
