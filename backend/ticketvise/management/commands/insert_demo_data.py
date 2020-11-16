@@ -761,7 +761,7 @@ class Command(BaseCommand):
         add_date_to_comment(comment_11, datetime.timedelta(days=5, hours=1))
 
         Comment.objects.create(
-            author=user_jelle,
+            author=assistant_rkempen,
             ticket=ticket_15,
             is_reply=True,
             content="Good question! The linked list in the hash table is simply used to handle\
