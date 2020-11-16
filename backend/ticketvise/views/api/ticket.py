@@ -185,15 +185,20 @@ class InboxTicketsApiView(UserIsInInboxMixin, APIView):
         labels = list(map(int, request.GET.getlist("labels[]", [])))
 
         inbox = get_object_or_404(Inbox, pk=inbox_id)
-        tickets = Ticket.objects.filter(inbox=inbox, title__icontains=q) | \
-                  Ticket.objects.filter(inbox=inbox, ticket_inbox_id__icontains=q).order_by("-date_created")
+        if q:
+            # Only search when q exists to improve speed
+            users = User.objects.filter(inbox_relationship__inbox=inbox).search(q)
 
-        for term in q.split():
-            tickets = tickets | \
-                      (Ticket.objects.filter(author__username__icontains=term) |
-                       Ticket.objects.filter(author__first_name__icontains=term) |
-                       Ticket.objects.filter(author__last_name__icontains=term) |
-                       Ticket.objects.filter(author__email__contains=term))
+            tickets = Ticket.objects.filter(inbox=inbox, title__icontains=q) | \
+                      Ticket.objects.filter(inbox=inbox, ticket_inbox_id__icontains=q) | \
+                      Ticket.objects.filter(inbox=inbox, author__in=users) | \
+                      Ticket.objects.filter(inbox=inbox, assignee__in=users) | \
+                      Ticket.objects.filter(inbox=inbox, shared_with__in=users)
+
+        else:
+            tickets = Ticket.objects.filter(inbox=inbox)
+
+        tickets.order_by("-date_created")
 
         if not request.user.is_assistant_or_coordinator(inbox) and not request.user.is_superuser:
             tickets = tickets.filter(author=request.user) | tickets.filter(shared_with__id__contains=request.user.id)
