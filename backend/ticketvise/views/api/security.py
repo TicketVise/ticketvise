@@ -1,29 +1,50 @@
 from django.contrib.auth.mixins import AccessMixin
 from django.shortcuts import get_object_or_404
+from rest_framework.permissions import IsAuthenticated
 
 from ticketvise.models.inbox import Inbox
 from ticketvise.models.ticket import Ticket
 
 
-class UserIsInInboxMixin(AccessMixin):
-    inbox_key = "inbox_id"
+class UserIsInInboxPermission(IsAuthenticated):
 
-    def dispatch(self, request, *args, **kwargs):
+    def has_permission(self, request, view):
         if not request.user.is_authenticated:
-            return self.handle_no_permission()
+            return False
 
         if request.user.is_superuser:
-            return super().dispatch(request, *args, **kwargs)
+            return True
 
         inbox_id = kwargs.get(self.inbox_key)
         if not inbox_id:
-            return self.handle_no_permission()
+            return False
 
         inbox = get_object_or_404(Inbox, pk=inbox_id)
         if not request.user.has_inbox(inbox) and not request.user.is_assistant_or_coordinator(inbox):
-            return self.handle_no_permission()
+            return False
 
-        return super().dispatch(request, *args, **kwargs)
+        return True
+
+
+# class UserIsInInboxMixin(AccessMixin):
+#     inbox_key = "inbox_id"
+#
+#     def dispatch(self, request, *args, **kwargs):
+#         if not request.user.is_authenticated:
+#             return self.handle_no_permission()
+#
+#         if request.user.is_superuser:
+#             return super().dispatch(request, *args, **kwargs)
+#
+#         inbox_id = kwargs.get(self.inbox_key)
+#         if not inbox_id:
+#             return self.handle_no_permission()
+#
+#         inbox = get_object_or_404(Inbox, pk=inbox_id)
+#         if not request.user.has_inbox(inbox) and not request.user.is_assistant_or_coordinator(inbox):
+#             return self.handle_no_permission()
+#
+#         return super().dispatch(request, *args, **kwargs)
 
 
 class UserIsInboxStaffMixin(AccessMixin):
