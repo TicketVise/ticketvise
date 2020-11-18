@@ -13,12 +13,13 @@ import Labels from "./components/inbox/Labels";
 import Label from "./components/inbox/Label";
 import Profile from "./components/profile/Profile";
 import Admin from "./components/admin/Admin";
+import store from "./store";
 
 const router = new VueRouter({
     routes: [
         {path: "/notifications", component: Notifications},
         {path: "/", component: Inboxes},
-        {path: "/login", component: Login},
+        {path: "/login", component: Login, name: "Login"},
         {path: "/inboxes", component: Inboxes},
         {path: "/inboxes/:inboxId/tickets", component: TicketOverview},
         {path: "/inboxes/:inboxId/tickets/new", component: TicketForm},
@@ -35,14 +36,11 @@ const router = new VueRouter({
 })
 
 router.beforeEach((to, from, next) => {
-  if(to.matched.some(record => record.meta.requiresAuth)) {
-    if (store.getters.isAuthenticated) {
+  if (to.name !== 'Login' && !store.getters.isAuthenticated) {
+      next({ name: 'Login' })
+  }
+  else {
       next()
-      return
-    }
-    next('/login')
-  } else {
-    next()
   }
 })
 
