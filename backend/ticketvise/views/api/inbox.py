@@ -198,7 +198,7 @@ class CurrentUserInboxSerializer(ModelSerializer):
         fields = ["id", "role", "role_label", "inbox", "is_bookmarked"]
 
 
-class CurrentUserInboxesApiView(LoginRequiredMixin, ListAPIView):
+class CurrentUserInboxesApiView(ListAPIView):
     serializer_class = CurrentUserInboxSerializer
 
     def get_queryset(self):
