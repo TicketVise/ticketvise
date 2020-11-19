@@ -1,4 +1,3 @@
-from django.contrib.auth.mixins import AccessMixin
 from django.shortcuts import get_object_or_404
 from rest_framework.permissions import IsAuthenticated
 
@@ -15,7 +14,7 @@ class UserIsInInboxPermission(IsAuthenticated):
         if request.user.is_superuser:
             return True
 
-        inbox_id = kwargs.get(self.inbox_key)
+        inbox_id = view.kwargs.get("inbox_id")
         if not inbox_id:
             return False
 
@@ -26,116 +25,95 @@ class UserIsInInboxPermission(IsAuthenticated):
         return True
 
 
-# class UserIsInInboxMixin(AccessMixin):
-#     inbox_key = "inbox_id"
-#
-#     def dispatch(self, request, *args, **kwargs):
-#         if not request.user.is_authenticated:
-#             return self.handle_no_permission()
-#
-#         if request.user.is_superuser:
-#             return super().dispatch(request, *args, **kwargs)
-#
-#         inbox_id = kwargs.get(self.inbox_key)
-#         if not inbox_id:
-#             return self.handle_no_permission()
-#
-#         inbox = get_object_or_404(Inbox, pk=inbox_id)
-#         if not request.user.has_inbox(inbox) and not request.user.is_assistant_or_coordinator(inbox):
-#             return self.handle_no_permission()
-#
-#         return super().dispatch(request, *args, **kwargs)
+class UserIsInboxStaffPermission(IsAuthenticated):
 
-
-class UserIsInboxStaffMixin(AccessMixin):
-    inbox_key = "inbox_id"
-
-    def dispatch(self, request, *args, **kwargs):
+    def has_permission(self, request, view):
         if not request.user.is_authenticated:
-            return self.handle_no_permission()
+            return False
 
-        inbox_id = kwargs.get(self.inbox_key)
+        if request.user.is_superuser:
+            return True
+
+        inbox_id = view.kwargs.get("inbox_id")
         if not inbox_id:
-            return self.handle_no_permission()
+            return False
 
         inbox = get_object_or_404(Inbox, pk=inbox_id)
         if not request.user.is_assistant_or_coordinator(inbox):
-            return self.handle_no_permission()
+            return False
 
-        return super().dispatch(request, *args, **kwargs)
+        return True
 
 
-class UserIsInboxManagerMixin(AccessMixin):
-    inbox_key = "inbox_id"
+class UserIsInboxManagerPermission(IsAuthenticated):
 
-    def dispatch(self, request, *args, **kwargs):
+    def has_permission(self, request, view):
         if not request.user.is_authenticated:
-            return self.handle_no_permission()
+            return False
 
-        inbox_id = kwargs.get(self.inbox_key)
+        inbox_id = view.kwargs.get("inbox_id")
         if not inbox_id:
-            return self.handle_no_permission()
+            return False
 
         inbox = get_object_or_404(Inbox, pk=inbox_id)
         if not request.user.is_coordinator_for_inbox(inbox):
-            return self.handle_no_permission()
+            return False
 
-        return super().dispatch(request, *args, **kwargs)
+        return True
 
 
-class UserIsTicketAuthorOrInboxStaffMixin(AccessMixin):
-    inbox_key = "inbox_id"
-    ticket_key = "ticket_inbox_id"
+class UserIsTicketAuthorOrInboxStaffPermission(IsAuthenticated):
 
-    def dispatch(self, request, *args, **kwargs):
+    def has_permission(self, request, view):
         if not request.user.is_authenticated:
-            return self.handle_no_permission()
+            return False
 
-        inbox_id = kwargs.get(self.inbox_key)
+        inbox_id = view.kwargs.get("inbox_id")
         if not inbox_id:
-            return self.handle_no_permission()
+            return False
 
-        ticket_inbox_id = kwargs.get(self.ticket_key)
+        ticket_inbox_id = view.kwargs.get("ticket_inbox_id")
         if not ticket_inbox_id:
-            return self.handle_no_permission()
+            return False
 
         ticket = get_object_or_404(Ticket, inbox_id=inbox_id, ticket_inbox_id=ticket_inbox_id)
         if not (request.user.id == ticket.author.id or request.user.is_assistant_or_coordinator(ticket.inbox)):
-            return self.handle_no_permission()
+            return False
 
-        return super().dispatch(request, *args, **kwargs)
+        return True
 
 
-class UserHasAccessToTicketMixin(AccessMixin):
+class UserHasAccessToTicketMixin(IsAuthenticated):
     inbox_key = "inbox_id"
     ticket_key = "ticket_inbox_id"
 
-    def dispatch(self, request, *args, **kwargs):
+    def has_permission(self, request, view):
         if not request.user.is_authenticated:
-            return self.handle_no_permission()
+            return False
 
-        inbox_id = kwargs.get(self.inbox_key)
+        inbox_id = view.kwargs.get(self.inbox_key)
         if not inbox_id:
-            return self.handle_no_permission()
+            return False
 
-        ticket_inbox_id = kwargs.get(self.ticket_key)
+        ticket_inbox_id = view.kwargs.get(self.ticket_key)
         if not ticket_inbox_id:
-            return self.handle_no_permission()
+            return False
 
         ticket = get_object_or_404(Ticket, inbox_id=inbox_id, ticket_inbox_id=ticket_inbox_id)
         if not (request.user.id == ticket.author.id or request.user.is_assistant_or_coordinator(
                 ticket.inbox) or ticket.shared_with.filter(pk=request.user.id).exists()):
-            return self.handle_no_permission()
+            return False
 
-        return super().dispatch(request, *args, **kwargs)
+        return True
 
 
-class UserIsSuperUserMixin(AccessMixin):
-    def dispatch(self, request, *args, **kwargs):
+class UserIsSuperUserPermission(IsAuthenticated):
+
+    def has_permission(self, request, view):
         if not request.user.is_authenticated:
-            return self.handle_no_permission()
+            return False
 
         if not request.user.is_superuser:
-            return self.handle_no_permission()
-        
-        return super().dispatch(request, *args, **kwargs)
+            return False
+
+        return True

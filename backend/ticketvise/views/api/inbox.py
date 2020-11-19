@@ -17,8 +17,8 @@ from ticketvise.models.user import User, Role, UserInbox
 from ticketvise.utils import StandardResultsSetPagination
 from ticketvise.views.api import DynamicFieldsModelSerializer
 from ticketvise.views.api.labels import LabelSerializer
-from ticketvise.views.api.security import UserIsInboxStaffMixin, UserIsInInboxMixin, UserIsSuperUserMixin, \
-    UserIsInboxManagerMixin
+from ticketvise.views.api.security import UserIsInInboxPermission, UserIsInboxStaffPermission, \
+    UserIsSuperUserPermission, UserIsInboxManagerPermission
 from ticketvise.views.api.user import UserSerializer, UserInboxSerializer
 
 
@@ -44,20 +44,23 @@ class InboxSerializer(DynamicFieldsModelSerializer):
         ]
 
 
-class InboxStaffApiView(UserIsInboxStaffMixin, ListAPIView):
+class InboxStaffApiView(ListAPIView):
     serializer_class = UserSerializer
+    permission_classes = [UserIsInboxStaffPermission]
     staff_roles = [Role.AGENT, Role.MANAGER]
+
 
     def get_queryset(self):
         return User.objects.filter(inbox_relationship__role__in=self.staff_roles,
-                                   inbox_relationship__inbox_id=self.kwargs[self.inbox_key])
+                                   inbox_relationship__inbox_id=self.kwargs["inbox_id"])
 
 
-class AllInboxLabelsApiView(UserIsInInboxMixin, ListAPIView):
+class AllInboxLabelsApiView(ListAPIView):
+    permission_classes = [UserIsInInboxPermission]
     serializer_class = LabelSerializer
 
     def get_queryset(self):
-        inbox = get_object_or_404(Inbox, pk=self.kwargs[self.inbox_key])
+        inbox = get_object_or_404(Inbox, pk=self.kwargs["inbox_id"])
         user = CurrentUserMiddleware.get_current_user()
 
         labels = Label.objects.filter(inbox=inbox, is_active=True)
@@ -67,12 +70,13 @@ class AllInboxLabelsApiView(UserIsInInboxMixin, ListAPIView):
         return labels.order_by("name")
 
 
-class InboxLabelsApiView(UserIsInboxManagerMixin, ListCreateAPIView):
+class InboxLabelsApiView(ListCreateAPIView):
     serializer_class = LabelSerializer
     pagination_class = StandardResultsSetPagination
+    permission_classes = [UserIsInboxManagerPermission]
 
     def get_queryset(self):
-        inbox = get_object_or_404(Inbox, pk=self.kwargs[self.inbox_key])
+        inbox = get_object_or_404(Inbox, pk=self.kwargs["inbox_id"])
 
         search_query = Q()
         for term in self.request.GET.get("q", "").split():
@@ -87,7 +91,9 @@ class InboxLabelsApiView(UserIsInboxManagerMixin, ListCreateAPIView):
         serializer.save(inbox=inbox)
 
 
-class InboxesApiView(UserIsSuperUserMixin, ListAPIView):
+class InboxesApiView(ListAPIView):
+    permission_classes = [UserIsSuperUserPermission]
+
     def get_serializer(self, *args, **kwargs):
         return InboxSerializer(*args, **kwargs, fields=(
             "name", "id", "color", "image", "scheduling_algorithm", "fixed_scheduling_assignee", "date_created"))
@@ -96,9 +102,10 @@ class InboxesApiView(UserIsSuperUserMixin, ListAPIView):
         return Inbox.objects.all().order_by("-date_created")
 
 
-class InboxUsersApiView(UserIsInboxStaffMixin, ListAPIView):
+class InboxUsersApiView(ListAPIView):
     serializer_class = UserInboxSerializer
     pagination_class = StandardResultsSetPagination
+    permission_classes = [UserIsInboxStaffPermission]
 
     def get_queryset(self):
         q = self.request.GET.get("q", "")
@@ -117,7 +124,9 @@ class InboxUsersApiView(UserIsInboxStaffMixin, ListAPIView):
         return inbox_users
 
 
-class InboxGuestsAPIView(UserIsInInboxMixin, ListAPIView):
+class InboxGuestsAPIView(ListAPIView):
+    permission_classes = [UserIsInInboxPermission]
+
     def get_serializer(self, *args, **kwargs):
         return UserSerializer(*args, **kwargs, fields=(
             "first_name", "last_name", "email", "username", "avatar_url", "id", "is_active"))
@@ -128,7 +137,7 @@ class InboxGuestsAPIView(UserIsInInboxMixin, ListAPIView):
         size = int(size) if size.isdigit() else None
 
         users = User.objects.filter(inbox_relationship__role=Role.GUEST,
-                                    inbox_relationship__inbox_id=self.kwargs[self.inbox_key]).search(q)
+                                    inbox_relationship__inbox_id=self.kwargs["inbox_id"]).search(q)
 
         return users[:size] if size and size > 0 else users
 
@@ -139,7 +148,9 @@ class UpdateUserInboxSerializer(ModelSerializer):
         fields = ["role"]
 
 
-class UserInboxApiView(UserIsInboxManagerMixin, RetrieveUpdateDestroyAPIView):
+class UserInboxApiView(RetrieveUpdateDestroyAPIView):
+    permission_classes = [UserIsInboxManagerPermission]
+
     def get_serializer_class(self):
         if self.request.method == "PUT":
             return UpdateUserInboxSerializer
@@ -151,16 +162,19 @@ class UserInboxApiView(UserIsInboxManagerMixin, RetrieveUpdateDestroyAPIView):
         return get_object_or_404(UserInbox, inbox=inbox, user__id=self.kwargs["user_id"])
 
 
-class InboxLabelApiView(UserIsInboxManagerMixin, RetrieveUpdateDestroyAPIView):
+class InboxLabelApiView(RetrieveUpdateDestroyAPIView):
     serializer_class = LabelSerializer
+    permission_classes = [UserIsInboxManagerPermission]
+
 
     def get_object(self):
         inbox = get_object_or_404(Inbox, pk=self.kwargs["inbox_id"])
         return get_object_or_404(Label, inbox=inbox, pk=self.kwargs["label_id"])
 
 
-class InboxSettingsApiView(UserIsInboxManagerMixin, RetrieveUpdateAPIView):
+class InboxSettingsApiView(RetrieveUpdateAPIView):
     queryset = Inbox
+    permission_classes = [UserIsInboxManagerPermission]
     lookup_url_kwarg = "inbox_id"
 
     def get_serializer(self, *args, **kwargs):

@@ -6,7 +6,7 @@ from rest_framework.serializers import ModelSerializer
 from ticketvise.models.comment import Comment
 from ticketvise.models.ticket import Ticket
 from ticketvise.models.user import UserInbox
-from ticketvise.views.api.security import UserHasAccessToTicketMixin, UserIsInboxStaffMixin
+from ticketvise.views.api.security import UserHasAccessToTicketMixin, UserIsInboxStaffPermission
 from ticketvise.views.api.user import UserSerializer, RoleSerializer
 
 
@@ -23,7 +23,8 @@ class CommentSerializer(ModelSerializer):
         fields = ["author", "content", "id", "date_created", "role"]
 
 
-class CreateCommentApiView(UserIsInboxStaffMixin, CreateAPIView):
+class CreateCommentApiView(CreateAPIView):
+    permission_classes = [UserIsInboxStaffPermission]
     serializer_class = CommentSerializer
 
     def perform_create(self, serializer):

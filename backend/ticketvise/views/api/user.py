@@ -5,13 +5,14 @@ from django.views import View
 from rest_framework import serializers
 from rest_framework.generics import RetrieveUpdateAPIView, RetrieveAPIView, ListAPIView
 from rest_framework.serializers import ModelSerializer
+from rest_framework.views import APIView
 
 from ticketvise.models.inbox import Inbox
 from ticketvise.models.notification import Notification
 from ticketvise.models.user import User, Role, UserInbox
 from ticketvise.views.admin import SuperUserRequiredMixin
 from ticketvise.views.api import DynamicFieldsModelSerializer
-from ticketvise.views.api.security import UserIsInInboxMixin
+from ticketvise.views.api.security import UserIsInInboxPermission
 
 
 class UserSerializer(DynamicFieldsModelSerializer):
@@ -61,7 +62,9 @@ class UserUsernameSerializer(ModelSerializer):
         model = User
         fields = ["first_name", "last_name", "username", "avatar_url", "id"]
 
-class UserRoleApiView(UserIsInInboxMixin, View):
+
+class UserRoleApiView(APIView):
+    permission_classes = [UserIsInInboxPermission]
 
     def get(self, request, inbox_id):
         inbox = get_object_or_404(Inbox, pk=inbox_id)
@@ -76,7 +79,8 @@ class UserRoleApiView(UserIsInInboxMixin, View):
         return JsonResponse(data, safe=False)
 
 
-class UserGetFromUsernameApiView(UserIsInInboxMixin, RetrieveUpdateAPIView):
+class UserGetFromUsernameApiView(RetrieveUpdateAPIView):
+    permission_classes = [UserIsInInboxPermission]
     serializer_class = UserUsernameSerializer
 
     def get_object(self):
