@@ -5,26 +5,30 @@ VOLUME ["/var/spool/postfix"]
 RUN apt update && apt upgrade -y
 RUN apt install postfix -y postfix-pgsql
 
-COPY docker-entrypoint.sh /docker-entrypoint.sh
+COPY transport /etc/postfix/transport
 
 RUN mkdir -p /var/spool/postfix/pid
 RUN mkdir -p /var/spool/postfix/etc
 
-# Disable local mail delivery
-#RUN postconf -e "mydestination="
+# Basic config
+RUN postconf -e "myhostname = mail.ticketvise.com"
+RUN postconf -e "myorigin = ticketvise.com"
+RUN postconf -e "inet_protocols = ipv4"
 
 # Log to stdout
 RUN postconf -e "maillog_file=/dev/stdout"
 
-# Configure Postfix to receive mail on all interfaces, which includes the internet
-RUN postconf -e "inet_interfaces = all"
-RUN postconf -e "mynetworks = 127.0.0.0/8, 10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16"
-RUN postconf -e "relay_domains = ticketvise.com"
+# Disable local mail delivery
+RUN postconf -e "mydestination ="
+RUN postconf -e "local_recipient_maps ="
+RUN postconf -e "local_transport = error:local mail delivery is disabled"
 
-# Redirect all email to web container
-RUN postconf -e "myhostname = mail.ticketvise.com"
-RUN postconf -e "relayhost = [web]:2525"
+# Relay all incomming mail to web container
+RUN postconf -e "relay_domains = ticketvise.com"
+RUN postconf -e "transport_maps = hash:/etc/postfix/transport"
+RUN postconf -e "relay_recipient_maps ="
+
+RUN postmap hash:/etc/postfix/transport
 
 EXPOSE 25/tcp 465/tcp 587/tcp
-#ENTRYPOINT ["/docker-entrypoint.sh"]
-CMD ["postfix", "start-fg"]
+CMD mkdir -p /var/spool/postfix/etc && cp /etc/resolv.conf /var/spool/postfix/etc/resolv.conf && postfix start-fg
