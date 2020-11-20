@@ -25,7 +25,7 @@ class SmtpServer:
         if len(parts) > 1:
             try:
                 return UUID(parts[0].replace("<", ""))
-            finally:
+            except:
                 return None
 
         return None
@@ -68,7 +68,7 @@ class SmtpServer:
 
                 Comment.objects.create(ticket=ticket, author=author, is_reply=ticket.reply_message_id == message_id,
                                        content=reply)
-                UserInbox.objects.create(user=author, inbox=ticket.inbox)
+                UserInbox.objects.get_or_create(user=author, inbox=ticket.inbox)
 
             else:
                 inbox = Inbox.objects.get(email__in=envelope.rcpt_tos, )
@@ -76,7 +76,7 @@ class SmtpServer:
                     return '450 Creation of ticket by email is disabled for the inbox'
 
                 Ticket.objects.create(author=author, inbox=inbox, title=message["Subject"], content=reply)
-                UserInbox.objects.create(user=author, inbox=inbox)
+                UserInbox.objects.get_or_create(user=author, inbox=inbox)
 
         return '250 OK'
 
