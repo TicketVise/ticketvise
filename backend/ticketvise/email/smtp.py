@@ -70,14 +70,11 @@ class SmtpServer:
                                        content=reply)
                 UserInbox.objects.create(user=author, inbox=ticket.inbox)
 
-
             else:
                 inbox = Inbox.objects.get(email__in=envelope.rcpt_tos, )
-                print(inbox.enable_create_new_ticket_by_email)
                 if not inbox.enable_create_new_ticket_by_email:
                     return '450 Creation of ticket by email is disabled for the inbox'
 
-                print("create ticket")
                 Ticket.objects.create(author=author, inbox=inbox, title=message["Subject"], content=reply)
                 UserInbox.objects.create(user=author, inbox=inbox)
 
