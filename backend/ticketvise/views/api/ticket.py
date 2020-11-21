@@ -29,7 +29,6 @@ from ticketvise.models.label import Label
 from ticketvise.models.ticket import Ticket, TicketAttachment, TicketEvent, Status, TicketStatusEvent, \
     TicketAssigneeEvent, TicketLabelEvent, TicketLabel, TicketSharedUser
 from ticketvise.models.user import User, UserInbox, Role
-from ticketvise.views.admin import SuperUserRequiredMixin
 from ticketvise.views.api import AUTOCOMPLETE_MAX_ENTRIES, DynamicFieldsModelSerializer
 from ticketvise.views.api.comment import CommentSerializer
 from ticketvise.views.api.inbox import InboxSerializer
@@ -37,7 +36,6 @@ from ticketvise.views.api.labels import LabelSerializer
 from ticketvise.views.api.security import UserHasAccessToTicketMixin, \
     UserIsInInboxPermission, UserIsInboxStaffPermission, UserIsTicketAuthorOrInboxStaffPermission
 from ticketvise.views.api.user import UserSerializer, RoleSerializer
-from ticketvise.views.notifications import unread_related_ticket_notifications
 
 
 class CreateTicketSerializer(ModelSerializer):
@@ -246,6 +244,7 @@ class InboxTicketsApiView(APIView):
 
 
 class TicketsApiView(SuperUserRequiredMixin, APIView):
+    permission_classes = [SuperUserRequiredPermission]
     def get(self, request):
         data = {
             'tickets': Ticket.objects.count()

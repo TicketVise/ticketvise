@@ -32,15 +32,5 @@ class ProfileTestCase(TestCase):
 
         :return: None.
         """
-        response = self.client.get("/profile")
-        self.assertRedirects(response, '/login/?next=/profile')
-
-    def test_correct_template_used(self):
-        """
-        The profile page should use the profile.html template.
-
-        :return: None.
-        """
-        self.client.force_authenticate(self.guest)
-        response = self.client.get("/profile")
-        self.assertTemplateUsed(response, 'profile.html')
+        response = self.client.get("/me")
+        self.assertEqual(response.status_code, 401)

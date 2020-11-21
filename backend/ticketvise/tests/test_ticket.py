@@ -99,7 +99,7 @@ class TicketTestBackendCase(TicketTestCase):
         :return: None.
         """
         self.client.force_authenticate(self.student)
-        response = self.client.get(reverse("ticket", args=[self.ticket.inbox.id, self.ticket.ticket_inbox_id]))
+        response = self.client.get(reverse("api_inbox_ticket", args=[self.ticket.inbox.id, self.ticket.ticket_inbox_id]))
         self.assertTemplateUsed(response, 'ticket.html')
 
     def test_error_dispatch(self):
@@ -110,7 +110,7 @@ class TicketTestBackendCase(TicketTestCase):
         :return: None.
         """
         self.client.force_authenticate(self.student2)
-        response = self.client.get(reverse("ticket", args=[self.ticket.inbox.id, self.ticket.ticket_inbox_id]))
+        response = self.client.get(reverse("api_inbox_ticket", args=[self.ticket.inbox.id, self.ticket.ticket_inbox_id]))
         self.assertEqual(response.status_code, 403)
 
     def test_get_ticket_as_unauthorized_student(self):
@@ -119,7 +119,7 @@ class TicketTestBackendCase(TicketTestCase):
         """
         self.client.force_authenticate(self.student2)
 
-        response = self.client.get(f"/api/inboxes/{self.inbox.id}/tickets/{self.ticket.ticket_inbox_id}", follow=True)
+        response = self.client.get(reverse("api_inbox_ticket", args=[self.ticket.inbox.id, self.ticket.ticket_inbox_id]))
         self.assertEqual(response.status_code, 403)
 
     def test_get_ticket_as_author(self):
@@ -128,7 +128,7 @@ class TicketTestBackendCase(TicketTestCase):
         """
         self.client.force_authenticate(self.student)
 
-        response = self.client.get(f"/api/inboxes/{self.inbox.id}/tickets/{self.ticket.ticket_inbox_id}", follow=True)
+        response = self.client.get(reverse("api_inbox_ticket", args=[self.ticket.inbox.id, self.ticket.ticket_inbox_id]))
         self.assertEqual(response.status_code, 200)
 
     def test_get_ticket_as_shared_with(self):
@@ -137,7 +137,7 @@ class TicketTestBackendCase(TicketTestCase):
         """
         self.client.force_authenticate(self.student2)
 
-        response = self.client.get(f"/api/inboxes/{self.inbox.id}/tickets/{self.ticket2.ticket_inbox_id}", follow=True)
+        response = self.client.get(reverse("api_inbox_ticket", args=[self.ticket.inbox.id, self.ticket2.ticket_inbox_id]), follow=True)
         self.assertEqual(response.status_code, 200)
 
     def test_get_ticket_as_ta_in_inbox(self):
@@ -146,7 +146,7 @@ class TicketTestBackendCase(TicketTestCase):
         """
         self.client.force_authenticate(self.assistant)
 
-        response = self.client.get(f"/api/inboxes/{self.inbox.id}/tickets/{self.ticket.ticket_inbox_id}", follow=True)
+        response = self.client.get(reverse("api_inbox_ticket", args=[self.ticket.inbox.id, self.ticket.ticket_inbox_id]))
         self.assertEqual(response.status_code, 200)
 
     def test_get_ticket_as_ta_not_in_inbox(self):
@@ -155,7 +155,7 @@ class TicketTestBackendCase(TicketTestCase):
         """
         self.client.force_authenticate(self.assistant2)
 
-        response = self.client.get(f"/api/inboxes/{self.inbox.id}/tickets/{self.ticket.ticket_inbox_id}", follow=True)
+        response = self.client.get(reverse("api_inbox_ticket", args=[self.ticket.inbox.id, self.ticket.ticket_inbox_id]))
         self.assertEqual(response.status_code, 403)
 
     def test_get_staff_as_student(self):
@@ -164,7 +164,7 @@ class TicketTestBackendCase(TicketTestCase):
         """
         self.client.force_authenticate(self.student2)
 
-        response = self.client.get(f"/api/inboxes/{self.inbox.id}/tickets/{self.ticket.ticket_inbox_id}",
+        response = self.client.get(reverse("api_inbox_ticket", args=[self.ticket.inbox.id, self.ticket.ticket_inbox_id]),
                                    {"staff": "true"},
                                    follow=True)
         self.assertEqual(response.status_code, 403)
@@ -175,7 +175,7 @@ class TicketTestBackendCase(TicketTestCase):
         """
         self.client.force_authenticate(self.student)
 
-        response = self.client.get(f"/api/inboxes/{self.inbox.id}/tickets/{self.ticket.ticket_inbox_id}",
+        response = self.client.get(reverse("api_inbox_ticket", args=[self.ticket.inbox.id, self.ticket.ticket_inbox_id]),
                                    {"staff": "true"}, follow=True)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.content, b"{}")
@@ -186,7 +186,7 @@ class TicketTestBackendCase(TicketTestCase):
         """
         self.client.force_authenticate(self.assistant)
 
-        response = self.client.get(f"/api/inboxes/{self.inbox.id}/tickets/{self.ticket.ticket_inbox_id}",
+        response = self.client.get(reverse("api_inbox_ticket", args=[self.ticket.inbox.id, self.ticket.ticket_inbox_id]),
                                    {"staff": "true"}, follow=True)
         self.assertEqual(response.status_code, 200)
 
@@ -196,7 +196,7 @@ class TicketTestBackendCase(TicketTestCase):
         """
         self.client.force_authenticate(self.assistant2)
 
-        response = self.client.get(f"/api/inboxes/{self.inbox.id}/tickets/{self.ticket.ticket_inbox_id}",
+        response = self.client.get(reverse("api_inbox_ticket", args=[self.ticket.inbox.id, self.ticket.ticket_inbox_id]),
                                    {"staff": "true"}, follow=True)
         self.assertEqual(response.status_code, 403)
 

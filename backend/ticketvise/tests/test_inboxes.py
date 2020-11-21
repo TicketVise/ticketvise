@@ -35,7 +35,7 @@ class InboxConfigureTestCase(TestCase):
         self.client.force_authenticate(self.student)
         inbox = create_inbox("TestInbox", "TestInbox")
         self.student.add_inbox(inbox, Role.GUEST)
-        response = self.client.get(reverse("inboxes"))
+        response = self.client.get(reverse("api_me_inboxes"))
         self.assertEqual(response.status_code, 200)
 
     def test_inboxes_page_assistant_200(self):
@@ -47,7 +47,7 @@ class InboxConfigureTestCase(TestCase):
         self.client.force_authenticate(self.assistant)
         inbox = create_inbox("TestInbox", "TestInbox")
         self.assistant.add_inbox(inbox, Role.AGENT)
-        response = self.client.get(reverse("inboxes"))
+        response = self.client.get(reverse("api_me_inboxes"))
         self.assertEqual(response.status_code, 200)
 
     def test_inboxes_page_coordinator_200(self):
@@ -59,7 +59,7 @@ class InboxConfigureTestCase(TestCase):
         self.client.login(username=self.coordinator.username, password="test12345")
         inbox = create_inbox("TestInbox", "TestInbox")
         self.coordinator.add_inbox(inbox, Role.MANAGER)
-        response = self.client.get(reverse("inboxes"))
+        response = self.client.get(reverse("api_me_inboxes"))
         self.assertEqual(response.status_code, 200)
 
     def test_flip_bookmark(self):

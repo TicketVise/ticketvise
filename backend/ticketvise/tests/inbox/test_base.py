@@ -43,9 +43,8 @@ class BaseTestCase(InboxTestCase):
         """
         for template_name, args in self.template_names:
             url = reverse(template_name, args=args)
-            response = self.client.get(url, follow=True)
-            self.assertRedirects(response, '/login/?next=' + url, status_code=302,
-                                 target_status_code=200, fetch_redirect_response=True)
+            response = self.client.get(url, follow=False)
+            self.assertEqual(response.status_code, 401)
 
     def test_coordinator_not_in_inbox(self):
         """

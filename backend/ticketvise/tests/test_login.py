@@ -13,6 +13,7 @@ from ticketvise.models.user import User
 
 
 class LoginTestCase(TestCase):
+
     def setUp(self):
         """
         Setup for each of these tests.
@@ -25,40 +26,6 @@ class LoginTestCase(TestCase):
             username="root", email="root@ticketvise.com", password="correct"
         )
 
-    def test_show_page(self):
-        """
-        Make sure we can get the login page.
-
-        :return: None.
-        """
-        response = self.client.get("/login/")
-        self.assertEqual(response.status_code, 200)
-
-    def test_redirect_to_login_page(self):
-        """
-        Check that we get redirected to the login page.
-
-        :return: None.
-        """
-        inbox = Inbox.objects.create(name="name", code="code")
-        response = self.client.get(reverse("inbox", args=(inbox.id,)))
-        self.assertRedirects(response, "/login/?next=%2Finboxes%2F{}%2Ftickets".format(inbox.id))
-
-    # def test_preserve_username_when_login_failed(self):
-    #     """
-    #     Check that the username is preserved when the login fails.
-
-    #     :return: None.
-    #     """
-    #     data = {
-    #         "username": "fout",
-    #         "password": "ook fout"
-    #     }
-    #     response = self.client.post('/login/', urlencode(data), follow=True,
-    #                                 content_type="application/x-www-form-urlencoded")
-    #     self.assertContains(response, "<input name=\"username\" placeholder=\"12345678\" class=\"input\" "
-    #                                   "required value=\"fout\">", html=True)
-
     def test_login(self):
         """
         Testing the login functionality.
@@ -66,34 +33,23 @@ class LoginTestCase(TestCase):
 
         :return: None.
         """
-        response = self.client.post("/login/", {"username": "root", "password": "correct"}, follow=True)
-        self.assertRedirects(response, "/inboxes")
+        response = self.client.post("/api/login", {"username": "root", "password": "correct"}, follow=True)
+        self.assertEqual(response.status_code, 200)
 
         self.client.logout()
 
         # Also test putting in the wrong password.
-        response = self.client.post("/login/", {"username": "root", "password": "wrong"}, follow=True)
+        response = self.client.post("/api/login", {"username": "root", "password": "wrong"}, follow=True)
         self.assertTemplateUsed(response, "registration/login.html")
 
         # Also test putting in no password.
-        response = self.client.post("/login/", {"username": "root", "password": ""}, follow=True)
+        response = self.client.post("/api/login", {"username": "root", "password": ""}, follow=True)
         self.assertTemplateUsed(response, "registration/login.html")
 
         # Also test putting in no username.
-        response = self.client.post("/login/", {"username": "", "password": "correct"}, follow=True)
+        response = self.client.post("/api/login", {"username": "", "password": "correct"}, follow=True)
         self.assertTemplateUsed(response, "registration/login.html")
 
         # Also test putting in nothing.
-        response = self.client.post("/login/", {}, follow=True)
+        response = self.client.post("/api/login", {}, follow=True)
         self.assertTemplateUsed(response, "registration/login.html")
-
-    def test_logout(self):
-        """
-        Test that we can also logout and are being
-        redirected back to the login page.
-
-        :return: None.
-        """
-        self.client.login(username="root", password="test1234")
-        response = self.client.post("/logout/", follow=True)
-        self.assertRedirects(response, "/login/?next=%2F")

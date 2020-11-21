@@ -1,4 +1,3 @@
-from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import JsonResponse, Http404
 from django.shortcuts import get_object_or_404
 from django.views import View
@@ -98,7 +97,7 @@ class UserGetFromUsernameApiView(RetrieveUpdateAPIView):
         return super().handle_exception(exc)
 
 
-class CurrentUserApiView(LoginRequiredMixin, RetrieveAPIView):
+class CurrentUserApiView(RetrieveAPIView):
     serializer_class = UserSerializer
 
     def get_object(self):
@@ -113,7 +112,7 @@ class RoleSerializer(serializers.BaseSerializer):
         }
 
 
-class NotificationsSettingsAPIView(LoginRequiredMixin, RetrieveUpdateAPIView):
+class NotificationsSettingsAPIView(RetrieveUpdateAPIView):
     serializer_class = UserNotificationSettingsSerializer
 
     def get_object(self):

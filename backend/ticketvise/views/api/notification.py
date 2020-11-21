@@ -1,4 +1,3 @@
-from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db.models import Q
 from django.http import JsonResponse
 from rest_framework.generics import ListAPIView, UpdateAPIView, get_object_or_404, RetrieveAPIView
@@ -30,7 +29,7 @@ class NotificationPagination(PageNumberPagination):
     page_size = 20
 
 
-class NotificationsAPIView(LoginRequiredMixin, ListAPIView):
+class NotificationsAPIView(ListAPIView):
     serializer_class = NotificationSerializer
     pagination_class = NotificationPagination
 
@@ -48,7 +47,7 @@ class NotificationsAPIView(LoginRequiredMixin, ListAPIView):
         return notifications
 
 
-class NotificationFlipRead(LoginRequiredMixin, UpdateAPIView):
+class NotificationFlipRead(UpdateAPIView):
     serializer_class = NotificationSerializer
     queryset = Notification
 
@@ -57,7 +56,7 @@ class NotificationFlipRead(LoginRequiredMixin, UpdateAPIView):
         return Response()
 
 
-class NotificationsReadAll(LoginRequiredMixin, UpdateAPIView):
+class NotificationsReadAll(UpdateAPIView):
     serializer_class = NotificationSerializer
 
     def put(self, request, *args, **kwargs):
@@ -65,6 +64,6 @@ class NotificationsReadAll(LoginRequiredMixin, UpdateAPIView):
         return Response()
 
 
-class NotificationUnreadCountAPI(LoginRequiredMixin, RetrieveAPIView):
+class NotificationUnreadCountAPI(RetrieveAPIView):
     def get(self, request, *args, **kwargs):
         return JsonResponse(Notification.objects.filter(receiver=request.user, is_read=False).count(), safe=False)

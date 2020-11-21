@@ -142,20 +142,20 @@ class ApiTestCase(TestCase):
 
     def test_get_current_user(self):
         self.client.force_authenticate(self.student1)
-        response = self.client.get(f"/api/me")
+        response = self.client.get("/api/me")
         self.assertContains(response, self.student1.username)
 
         self.client.force_authenticate(self.ta1)
-        response = self.client.get(f"/api/me")
+        response = self.client.get("/api/me")
         self.assertContains(response, self.ta1.username)
 
         self.client.force_authenticate(self.manager1)
-        response = self.client.get(f"/api/me")
+        response = self.client.get("/api/me")
         self.assertContains(response, self.manager1.username)
 
     def test_get_user_settings(self):
         self.client.force_authenticate(self.student1)
-        response = self.client.get(f"/api/me/settings")
+        response = self.client.get("/api/me/settings")
 
         notifications = [
             "notification_mention_mail",

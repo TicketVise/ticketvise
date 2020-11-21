@@ -65,7 +65,7 @@ class NotificationsTestCase(TestCase):
         :return: None.
         """
         self.client.force_authenticate(self.student)
-        response = self.client.get("/notifications")
+        response = self.client.get("/api/notifications")
         self.assertEqual(response.status_code, 200)
 
     def test_notification_page_401(self):
@@ -75,8 +75,8 @@ class NotificationsTestCase(TestCase):
 
         :return: None.
         """
-        response = self.client.get("/notifications")
-        self.assertRedirects(response, "/login/?next=/notifications")
+        response = self.client.get("/api/notifications")
+        self.assertEqual(response.status_code, 401)
 
     def test_assigned_ticket(self):
         """
@@ -351,7 +351,7 @@ class NotificationsTestCase(TestCase):
 
     def test_get_notifications_unauthorized(self):
         response = self.client.get("/api/notifications")
-        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.status_code, 401)
         self.assertEqual(response.url, "/login/?next=/api/notifications")
 
     def test_get_notifications_count(self):
