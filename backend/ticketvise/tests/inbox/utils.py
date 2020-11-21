@@ -1,4 +1,5 @@
 from django.test import TestCase, Client
+from rest_framework.test import APIClient
 
 from ticketvise.models.label import Label
 from ticketvise.models.user import User, Role
@@ -10,7 +11,7 @@ class InboxTestCase(TestCase):
         """
         Set up the database for the inbox related tests.
         """
-        self.client = Client()
+        self.client = APIClient()
         self.student = User.objects.create_user(
             username="student", email="root@ticketvise.com", password="test12345", is_staff=False
         )

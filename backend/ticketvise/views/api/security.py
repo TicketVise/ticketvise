@@ -8,7 +8,7 @@ from ticketvise.models.ticket import Ticket
 class UserIsInInboxPermission(IsAuthenticated):
 
     def has_permission(self, request, view):
-        if not request.user.is_authenticated:
+        if not request.user or not request.user.is_authenticated:
             return False
 
         if request.user.is_superuser:
@@ -28,7 +28,7 @@ class UserIsInInboxPermission(IsAuthenticated):
 class UserIsInboxStaffPermission(IsAuthenticated):
 
     def has_permission(self, request, view):
-        if not request.user.is_authenticated:
+        if not request.user or not request.user.is_authenticated:
             return False
 
         if request.user.is_superuser:
@@ -48,7 +48,7 @@ class UserIsInboxStaffPermission(IsAuthenticated):
 class UserIsInboxManagerPermission(IsAuthenticated):
 
     def has_permission(self, request, view):
-        if not request.user.is_authenticated:
+        if not request.user or not request.user.is_authenticated:
             return False
 
         inbox_id = view.kwargs.get("inbox_id")
@@ -65,7 +65,7 @@ class UserIsInboxManagerPermission(IsAuthenticated):
 class UserIsTicketAuthorOrInboxStaffPermission(IsAuthenticated):
 
     def has_permission(self, request, view):
-        if not request.user.is_authenticated:
+        if not request.user or not request.user.is_authenticated:
             return False
 
         inbox_id = view.kwargs.get("inbox_id")
@@ -88,7 +88,7 @@ class UserHasAccessToTicketMixin(IsAuthenticated):
     ticket_key = "ticket_inbox_id"
 
     def has_permission(self, request, view):
-        if not request.user.is_authenticated:
+        if not request.user or not request.user.is_authenticated:
             return False
 
         inbox_id = view.kwargs.get(self.inbox_key)
@@ -110,7 +110,7 @@ class UserHasAccessToTicketMixin(IsAuthenticated):
 class UserIsSuperUserPermission(IsAuthenticated):
 
     def has_permission(self, request, view):
-        if not request.user.is_authenticated:
+        if not request.user or not request.user.is_authenticated:
             return False
 
         if not request.user.is_superuser:

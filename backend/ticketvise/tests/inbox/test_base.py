@@ -9,7 +9,7 @@ class BaseTestCase(InboxTestCase):
         Test to verify that a assistant is unable to access inbox related pages. Pages should return a HTTP 403
         status code when a assistant tries to access a page.
         """
-        self.client.force_login(self.assistant)
+        self.client.force_authenticate(self.assistant)
 
         for template_name, args in self.template_names:
             response = self.client.get(reverse(template_name, args=args), follow=True)
@@ -20,7 +20,7 @@ class BaseTestCase(InboxTestCase):
         Test to verify that a coordinator is able to access inbox related pages. Pages should return a HTTP 200
         status code when a coordinator tries to access a page.
         """
-        self.client.force_login(self.coordinator)
+        self.client.force_authenticate(self.coordinator)
 
         for template_name, args in self.template_names:
             response = self.client.get(reverse(template_name, args=args), follow=True)
@@ -31,7 +31,7 @@ class BaseTestCase(InboxTestCase):
         Test to verify that a student is unable to access inbox related pages. Pages should return a HTTP 403
         status code when a student tries to access a page.
         """
-        self.client.force_login(self.student)
+        self.client.force_authenticate(self.student)
 
         for template_name, args in self.template_names:
             response = self.client.get(reverse(template_name, args=args), follow=True)
@@ -52,7 +52,7 @@ class BaseTestCase(InboxTestCase):
         Test to verify that a coordinator which is not associated with the inbox is unable to access inbox related
         pages. Pages should return a HTTP 403 status code when a coordinator from a other inbox tries to access a page.
         """
-        self.client.force_login(self.coordinator_2)
+        self.client.force_authenticate(self.coordinator_2)
 
         for template_name, args in self.template_names:
             response = self.client.get(reverse(template_name, args=args), follow=True)
@@ -62,7 +62,7 @@ class BaseTestCase(InboxTestCase):
         """
         Test to verify that when a path variable is not a numeric value, no unexpected behaviour occurs.
         """
-        self.client.force_login(self.coordinator)
+        self.client.force_authenticate(self.coordinator)
 
         for template_name, args in self.template_names:
             url = reverse(template_name, args=args).replace("1", "1a")

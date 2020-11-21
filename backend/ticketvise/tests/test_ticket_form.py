@@ -17,7 +17,7 @@ class TicketFormTestCase(TicketTestCase):
 
         :return: None.
         """
-        self.client.force_login(self.student)
+        self.client.force_authenticate(self.student)
         response = self.client.get(reverse("new_ticket", args=[self.inbox.id]))
         self.assertEqual(response.status_code, 200)
 
@@ -37,14 +37,14 @@ class TicketFormTestCase(TicketTestCase):
 
         :return: None.
         """
-        self.client.force_login(self.student)
+        self.client.force_authenticate(self.student)
         response = self.client.get(reverse("new_ticket", args=(self.inbox.id,)))
         self.assertTemplateUsed(response, "new_ticket.html")
 
 
 class TicketFormTestAPI(APITestCase, TicketTestCase):
     def test_create_ticket(self):
-        self.client.force_login(self.student)
+        self.client.force_authenticate(self.student)
 
         url = f"/api/inboxes/{self.inbox.id}/tickets/new"
         data = {
@@ -60,7 +60,7 @@ class TicketFormTestAPI(APITestCase, TicketTestCase):
         self.assertEqual(response.data, data)
 
     def test_create_ticket_attachment(self):
-        self.client.force_login(self.student)
+        self.client.force_authenticate(self.student)
 
         url = f"/api/inboxes/{self.inbox.id}/tickets/new"
 
@@ -76,7 +76,7 @@ class TicketFormTestAPI(APITestCase, TicketTestCase):
         self.assertEqual(response.status_code, 201)
 
     def test_create_ticket_shared(self):
-        self.client.force_login(self.student)
+        self.client.force_authenticate(self.student)
 
         url = f"/api/inboxes/{self.inbox.id}/tickets/new"
         data = {
@@ -92,7 +92,7 @@ class TicketFormTestAPI(APITestCase, TicketTestCase):
         self.assertEqual(response.data, data)
 
     def test_create_ticket_shared_assistant(self):
-        self.client.force_login(self.student)
+        self.client.force_authenticate(self.student)
 
         url = f"/api/inboxes/{self.inbox.id}/tickets/new"
         data = {

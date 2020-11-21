@@ -1,11 +1,12 @@
 from django.test import TestCase, Client
+from rest_framework.test import APIClient
 
 from ticketvise.models.user import User
 
 
 class ProfileTestCase(TestCase):
     def setUp(self):
-        self.client = Client()
+        self.client = APIClient()
         self.guest = User.objects.create(username="guest", password="test12345", email="guest@ticketvise.com")
         self.ta = User.objects.create(username="ta", password="test12345", email="ta@ticketvise.com")
         self.manager = User.objects.create(username="manager", password="test12345", email="manager@ticketvise.com")
@@ -20,7 +21,7 @@ class ProfileTestCase(TestCase):
         :return: None.
         """
         for user in self.users:
-            self.client.force_login(user)
+            self.client.force_authenticate(user)
             response = self.client.get("/profile")
             self.assertEqual(response.status_code, 200)
 
@@ -40,6 +41,6 @@ class ProfileTestCase(TestCase):
 
         :return: None.
         """
-        self.client.force_login(self.guest)
+        self.client.force_authenticate(self.guest)
         response = self.client.get("/profile")
         self.assertTemplateUsed(response, 'profile.html')

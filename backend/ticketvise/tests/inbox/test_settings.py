@@ -7,7 +7,7 @@ class SettingsTestCase(InboxTestCase):
         """
         Test to verify a coordinator is able to edit a inbox.
         """
-        self.client.force_login(self.coordinator)
+        self.client.force_authenticate(self.coordinator)
 
         data = {
             "name": "Andere naam",
@@ -27,7 +27,7 @@ class SettingsTestCase(InboxTestCase):
         """
         Test to verify a coordinator from another inbox is unable to edit a inbox.
         """
-        self.client.force_login(self.coordinator_2)
+        self.client.force_authenticate(self.coordinator_2)
 
         data = {
             "name": "Andere naam",
@@ -47,7 +47,7 @@ class SettingsTestCase(InboxTestCase):
         """
         Test to verify a assistant is unable to edit a inbox.
         """
-        self.client.force_login(self.assistant)
+        self.client.force_authenticate(self.assistant)
 
         data = {
             "name": "Andere naam",
@@ -67,7 +67,7 @@ class SettingsTestCase(InboxTestCase):
         """
         Test to verify a student is unable to edit a inbox.
         """
-        self.client.force_login(self.student)
+        self.client.force_authenticate(self.student)
 
         data = {
             "name": "Andere naam",
@@ -84,7 +84,7 @@ class SettingsTestCase(InboxTestCase):
         self.assertNotEqual(Inbox.objects.get(pk=self.inbox.id).name, data["name"])
 
     def test_get_inbox_attributes(self):
-        self.client.force_login(self.coordinator)
+        self.client.force_authenticate(self.coordinator)
         response = self.client.get(f"/api/inboxes/{self.inbox.id}/settings")
         self.assertContains(response, self.inbox.name)
         self.assertContains(response, self.assistant)

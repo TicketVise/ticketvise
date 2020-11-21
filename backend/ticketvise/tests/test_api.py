@@ -5,6 +5,7 @@ This file tests the API endpoints of the website.
 """
 
 from django.test import TestCase, Client
+from rest_framework.test import APIClient
 
 from ticketvise.models.user import User, Role
 from ticketvise.tests.utils import create_inbox, create_ticket
@@ -17,7 +18,7 @@ class ApiTestCase(TestCase):
 
         :return: None.
         """
-        self.client = Client()
+        self.client = APIClient()
         self.inbox1 = create_inbox("coures1", "c1")
         self.inbox2 = create_inbox("coures2", "c2")
         self.inbox3 = create_inbox("coures3", "c3")
@@ -59,7 +60,7 @@ class ApiTestCase(TestCase):
         Testing if a HTTP 404 is returned when a inbox id does not exist.
         :return: None
         """
-        self.client.force_login(self.ta1)
+        self.client.force_authenticate(self.ta1)
         response = self.client.get("/api/inboxes/345345/users", follow=True)
         self.assertEqual(response.status_code, 404)
 
@@ -68,7 +69,7 @@ class ApiTestCase(TestCase):
         Testing if a HTTP 404 is returned when a inbox id does not exist.
         :return: None
         """
-        self.client.force_login(self.ta1)
+        self.client.force_authenticate(self.ta1)
         response = self.client.get("/api/inboxes/345345/tickets", follow=True)
         self.assertEqual(response.status_code, 404)
 
@@ -77,7 +78,7 @@ class ApiTestCase(TestCase):
         Testing if the correct tickets which are associated with the inbox are returned.
         :return: None
         """
-        self.client.force_login(self.ta1)
+        self.client.force_authenticate(self.ta1)
         response = self.client.get(f"/api/inboxes/{self.inbox1.id}/tickets", follow=True)
 
         self.assertEqual(response.status_code, 200)
@@ -94,7 +95,7 @@ class ApiTestCase(TestCase):
         Test get username by valid user
         :return: None
         """
-        self.client.force_login(self.student1)
+        self.client.force_authenticate(self.student1)
         response = self.client.get(f"/api/inboxes/{self.inbox1.id}/users/{self.student2.username}", follow=True)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.data["id"], self.student2.id)
@@ -104,7 +105,7 @@ class ApiTestCase(TestCase):
         Test get username by unauthorized user
         :return: None
         """
-        self.client.force_login(self.ta4)
+        self.client.force_authenticate(self.ta4)
         response = self.client.get(f"/api/inboxes/{self.inbox1.id}/users/{self.student2.username}", follow=True)
         self.assertEqual(response.status_code, 403)
 
@@ -113,7 +114,7 @@ class ApiTestCase(TestCase):
         Test get unknown username by valid user
         :return: None
         """
-        self.client.force_login(self.ta1)
+        self.client.force_authenticate(self.ta1)
         response = self.client.get(f"/api/inboxes/{self.inbox1.id}/users/unknown", follow=True)
         self.assertEqual(response.status_code, 404)
 
@@ -122,38 +123,38 @@ class ApiTestCase(TestCase):
         Test get username not in inbox by valid user
         :return: None
         """
-        self.client.force_login(self.ta4)
+        self.client.force_authenticate(self.ta4)
         response = self.client.get(f"/api/inboxes/{self.inbox2.id}/users/{self.student1}", follow=True)
         self.assertEqual(response.status_code, 404)
 
     def test_get_self_role(self):
-        self.client.force_login(self.student1)
+        self.client.force_authenticate(self.student1)
         response = self.client.get(f"/api/inboxes/{self.inbox1.id}/role")
         self.assertContains(response, "GUEST")
 
-        self.client.force_login(self.ta1)
+        self.client.force_authenticate(self.ta1)
         response = self.client.get(f"/api/inboxes/{self.inbox1.id}/role")
         self.assertContains(response, "AGENT")
 
-        self.client.force_login(self.manager1)
+        self.client.force_authenticate(self.manager1)
         response = self.client.get(f"/api/inboxes/{self.inbox1.id}/role")
         self.assertContains(response, "MANAGER")
 
     def test_get_current_user(self):
-        self.client.force_login(self.student1)
+        self.client.force_authenticate(self.student1)
         response = self.client.get(f"/api/me")
         self.assertContains(response, self.student1.username)
 
-        self.client.force_login(self.ta1)
+        self.client.force_authenticate(self.ta1)
         response = self.client.get(f"/api/me")
         self.assertContains(response, self.ta1.username)
 
-        self.client.force_login(self.manager1)
+        self.client.force_authenticate(self.manager1)
         response = self.client.get(f"/api/me")
         self.assertContains(response, self.manager1.username)
 
     def test_get_user_settings(self):
-        self.client.force_login(self.student1)
+        self.client.force_authenticate(self.student1)
         response = self.client.get(f"/api/me/settings")
 
         notifications = [
@@ -173,7 +174,7 @@ class ApiTestCase(TestCase):
             self.assertContains(response, notification)
 
     def test_get_users_filter(self):
-        self.client.force_login(self.student1)
+        self.client.force_authenticate(self.student1)
         response = self.client.get(f"/api/inboxes/{self.inbox1.id}/guests")
         self.assertContains(response, "s1")
         self.assertEqual(str(response.content).count("s1"), 1)
@@ -185,7 +186,7 @@ class ApiTestCase(TestCase):
         self.assertNotContains(response, "s2")
 
     def test_get_users(self):
-        self.client.force_login(self.manager1)
+        self.client.force_authenticate(self.manager1)
 
         response = self.client.get(f"/api/inboxes/{self.inbox1.id}/users")
 

@@ -9,6 +9,7 @@ from django.db import transaction
 from django.http import JsonResponse
 from django.test import Client, TransactionTestCase
 from django.urls import reverse
+from rest_framework.test import APIClient
 
 from ticketvise.models.comment import Comment
 from ticketvise.models.inbox import Inbox, SchedulingAlgorithm
@@ -28,7 +29,7 @@ class TicketTestCase(TransactionTestCase):
 
         :return: None.
         """
-        self.client = Client()
+        self.client = APIClient()
         self.inbox = Inbox.objects.create(name="TestInbox", code="TestCode", color="#FF6600")
         self.student = User.objects.create(username="student", password="test12345", email="student@ticketvise.com")
         self.student.add_inbox(self.inbox)
@@ -76,7 +77,7 @@ class TicketTestBackendCase(TicketTestCase):
 
         :return: None.
         """
-        self.client.force_login(self.student)
+        self.client.force_authenticate(self.student)
         response = self.client.get(reverse("ticket", args=[self.ticket.inbox.id, self.ticket.ticket_inbox_id]))
         self.assertEqual(response.status_code, 200)
 
@@ -97,7 +98,7 @@ class TicketTestBackendCase(TicketTestCase):
 
         :return: None.
         """
-        self.client.force_login(self.student)
+        self.client.force_authenticate(self.student)
         response = self.client.get(reverse("ticket", args=[self.ticket.inbox.id, self.ticket.ticket_inbox_id]))
         self.assertTemplateUsed(response, 'ticket.html')
 
@@ -108,7 +109,7 @@ class TicketTestBackendCase(TicketTestCase):
 
         :return: None.
         """
-        self.client.force_login(self.student2)
+        self.client.force_authenticate(self.student2)
         response = self.client.get(reverse("ticket", args=[self.ticket.inbox.id, self.ticket.ticket_inbox_id]))
         self.assertEqual(response.status_code, 403)
 
@@ -116,7 +117,7 @@ class TicketTestBackendCase(TicketTestCase):
         """
         Test to verify a student cannot get the ticket
         """
-        self.client.force_login(self.student2)
+        self.client.force_authenticate(self.student2)
 
         response = self.client.get(f"/api/inboxes/{self.inbox.id}/tickets/{self.ticket.ticket_inbox_id}", follow=True)
         self.assertEqual(response.status_code, 403)
@@ -125,7 +126,7 @@ class TicketTestBackendCase(TicketTestCase):
         """
         Test to verify an author can get the ticket
         """
-        self.client.force_login(self.student)
+        self.client.force_authenticate(self.student)
 
         response = self.client.get(f"/api/inboxes/{self.inbox.id}/tickets/{self.ticket.ticket_inbox_id}", follow=True)
         self.assertEqual(response.status_code, 200)
@@ -134,7 +135,7 @@ class TicketTestBackendCase(TicketTestCase):
         """
         Test to verify an author can get the ticket
         """
-        self.client.force_login(self.student2)
+        self.client.force_authenticate(self.student2)
 
         response = self.client.get(f"/api/inboxes/{self.inbox.id}/tickets/{self.ticket2.ticket_inbox_id}", follow=True)
         self.assertEqual(response.status_code, 200)
@@ -143,7 +144,7 @@ class TicketTestBackendCase(TicketTestCase):
         """
         Test to verify an assistant of the inbox can get the ticket
         """
-        self.client.force_login(self.assistant)
+        self.client.force_authenticate(self.assistant)
 
         response = self.client.get(f"/api/inboxes/{self.inbox.id}/tickets/{self.ticket.ticket_inbox_id}", follow=True)
         self.assertEqual(response.status_code, 200)
@@ -152,7 +153,7 @@ class TicketTestBackendCase(TicketTestCase):
         """
         Test to verify an assistant not in the inbox cannot get the ticket
         """
-        self.client.force_login(self.assistant2)
+        self.client.force_authenticate(self.assistant2)
 
         response = self.client.get(f"/api/inboxes/{self.inbox.id}/tickets/{self.ticket.ticket_inbox_id}", follow=True)
         self.assertEqual(response.status_code, 403)
@@ -161,7 +162,7 @@ class TicketTestBackendCase(TicketTestCase):
         """
         Test to verify a student cannot get staff
         """
-        self.client.force_login(self.student2)
+        self.client.force_authenticate(self.student2)
 
         response = self.client.get(f"/api/inboxes/{self.inbox.id}/tickets/{self.ticket.ticket_inbox_id}",
                                    {"staff": "true"},
@@ -172,7 +173,7 @@ class TicketTestBackendCase(TicketTestCase):
         """
         Test to verify an author cannot get staff
         """
-        self.client.force_login(self.student)
+        self.client.force_authenticate(self.student)
 
         response = self.client.get(f"/api/inboxes/{self.inbox.id}/tickets/{self.ticket.ticket_inbox_id}",
                                    {"staff": "true"}, follow=True)
@@ -183,7 +184,7 @@ class TicketTestBackendCase(TicketTestCase):
         """
         Test to verify an assistant of the inbox can get staff
         """
-        self.client.force_login(self.assistant)
+        self.client.force_authenticate(self.assistant)
 
         response = self.client.get(f"/api/inboxes/{self.inbox.id}/tickets/{self.ticket.ticket_inbox_id}",
                                    {"staff": "true"}, follow=True)
@@ -193,7 +194,7 @@ class TicketTestBackendCase(TicketTestCase):
         """
         Test to verify an assistant not in the inbox cannot get staff
         """
-        self.client.force_login(self.assistant2)
+        self.client.force_authenticate(self.assistant2)
 
         response = self.client.get(f"/api/inboxes/{self.inbox.id}/tickets/{self.ticket.ticket_inbox_id}",
                                    {"staff": "true"}, follow=True)
@@ -203,7 +204,7 @@ class TicketTestBackendCase(TicketTestCase):
         """
         Test to verify a student cannot get labels
         """
-        self.client.force_login(self.student2)
+        self.client.force_authenticate(self.student2)
 
         response = self.client.get(reverse("api_all_inbox_labels", args=(self.inbox.id,)))
         self.assertEqual(response.status_code, 200)
@@ -213,7 +214,7 @@ class TicketTestBackendCase(TicketTestCase):
         """
         Test to verify an assistant of the inbox can get labels
         """
-        self.client.force_login(self.assistant)
+        self.client.force_authenticate(self.assistant)
 
         response = self.client.get(reverse("api_all_inbox_labels", args=(self.inbox.id,)))
         self.assertEqual(response.status_code, 200)
@@ -224,7 +225,7 @@ class TicketTestBackendCase(TicketTestCase):
         """
         Test to verify an assistant not in the inbox cannot get labels
         """
-        self.client.force_login(self.assistant2)
+        self.client.force_authenticate(self.assistant2)
 
         response = self.client.get(f"/api/inboxes/{self.inbox.id}/labels",
                                    follow=True)
@@ -234,7 +235,7 @@ class TicketTestBackendCase(TicketTestCase):
         """
         Test to verify a student cannot get recent tickets
         """
-        self.client.force_login(self.student2)
+        self.client.force_authenticate(self.student2)
 
         response = self.client.get(f"/api/inboxes/{self.inbox.id}/users/{self.ticket.author.id}/tickets/recent",
                                    follow=True)
@@ -244,7 +245,7 @@ class TicketTestBackendCase(TicketTestCase):
         """
         Test to verify an assistant of the inbox can get recent tickets
         """
-        self.client.force_login(self.assistant)
+        self.client.force_authenticate(self.assistant)
 
         response = self.client.get(f"/api/inboxes/{self.inbox.id}/users/{self.ticket.author.id}/tickets/recent",
                                    follow=True)
@@ -254,7 +255,7 @@ class TicketTestBackendCase(TicketTestCase):
         """
         Test to verify an assistant not in the inbox cannot get recent tickets
         """
-        self.client.force_login(self.assistant2)
+        self.client.force_authenticate(self.assistant2)
 
         response = self.client.get(f"/api/inboxes/{self.inbox.id}/users/{self.ticket.author.id}/tickets/recent",
                                    follow=True)
@@ -264,7 +265,7 @@ class TicketTestBackendCase(TicketTestCase):
         """
         Test to verify a student cannot change assignees
         """
-        self.client.force_login(self.student2)
+        self.client.force_authenticate(self.student2)
 
         response = self.client.put(f"/api/inboxes/{self.inbox.id}/tickets/{self.ticket.ticket_inbox_id}/assignee",
                                    data={"assignee": self.assistant.id}, content_type="application/json")
@@ -277,7 +278,7 @@ class TicketTestBackendCase(TicketTestCase):
         """
         Test to verify an assistant of the inbox can change assignees
         """
-        self.client.force_login(self.assistant)
+        self.client.force_authenticate(self.assistant)
 
         response = self.client.put(f"/api/inboxes/{self.inbox.id}/tickets/{self.ticket.ticket_inbox_id}/assignee",
                                    data={"assignee": self.assistant3.id}, content_type="application/json")
@@ -290,7 +291,7 @@ class TicketTestBackendCase(TicketTestCase):
         """
         Test to verify an assistant not in the inbox cannot change assignees
         """
-        self.client.force_login(self.assistant2)
+        self.client.force_authenticate(self.assistant2)
 
         response = self.client.put(f"/api/inboxes/{self.inbox.id}/tickets/{self.ticket.ticket_inbox_id}/assignee",
                                    data={"assignee": self.assistant.id}, content_type="application/json")
@@ -303,7 +304,7 @@ class TicketTestBackendCase(TicketTestCase):
         """
         Test to verify an assistant of the inbox can change assignees
         """
-        self.client.force_login(self.assistant)
+        self.client.force_authenticate(self.assistant)
         self.ticket.status = Status.PENDING
         self.ticket.assignee = None
         self.ticket.save()
@@ -320,7 +321,7 @@ class TicketTestBackendCase(TicketTestCase):
         """
         Test to verify an assistant of the inbox can change assignees
         """
-        self.client.force_login(self.assistant)
+        self.client.force_authenticate(self.assistant)
         self.ticket.status = Status.ASSIGNED
         self.ticket.save()
 
@@ -336,7 +337,7 @@ class TicketTestBackendCase(TicketTestCase):
         """
         Test to verify an assistant of the inbox can change assignees
         """
-        self.client.force_login(self.assistant)
+        self.client.force_authenticate(self.assistant)
 
         response = self.client.put(f"/api/inboxes/{self.inbox.id}/tickets/{self.ticket.ticket_inbox_id}/assignee",
                                    data={"assignee": self.student.id}, content_type="application/json")
@@ -346,7 +347,7 @@ class TicketTestBackendCase(TicketTestCase):
         """
         Test to verify a author cannot change shared_with
         """
-        self.client.force_login(self.student)
+        self.client.force_authenticate(self.student)
 
         response = self.client.put(f"/api/inboxes/{self.inbox.id}/tickets/{self.ticket.ticket_inbox_id}/shared",
                                    data={"shared_with": [self.student3.id]}, content_type="application/json")
@@ -359,7 +360,7 @@ class TicketTestBackendCase(TicketTestCase):
         """
         Test to verify a shared_with cannot change shared_with
         """
-        self.client.force_login(self.student2)
+        self.client.force_authenticate(self.student2)
 
         response = self.client.put(f"/api/inboxes/{self.inbox.id}/tickets/{self.ticket2.ticket_inbox_id}/shared",
                                    data={"shared_with": [self.student3.id]}, content_type="application/json")
@@ -372,7 +373,7 @@ class TicketTestBackendCase(TicketTestCase):
         """
         Test to verify an assistant of the inbox can change shared_with
         """
-        self.client.force_login(self.assistant)
+        self.client.force_authenticate(self.assistant)
 
         response = self.client.put(f"/api/inboxes/{self.inbox.id}/tickets/{self.ticket.ticket_inbox_id}/shared",
                                    data={"shared_with": [self.student3.id]}, content_type="application/json")
@@ -385,7 +386,7 @@ class TicketTestBackendCase(TicketTestCase):
         """
         Test to verify an assistant not in the inbox cannot change shared_with
         """
-        self.client.force_login(self.assistant2)
+        self.client.force_authenticate(self.assistant2)
 
         response = self.client.put(f"/api/inboxes/{self.inbox.id}/tickets/{self.ticket.ticket_inbox_id}/shared",
                                    data={"shared_with": [self.student3.id]}, content_type="application/json")
@@ -398,7 +399,7 @@ class TicketTestBackendCase(TicketTestCase):
         """
         Test to verify an author can retrieve shared with users.
         """
-        self.client.force_login(self.student)
+        self.client.force_authenticate(self.student)
 
         response = self.client.get(f"/api/inboxes/{self.inbox.id}/tickets/{self.ticket2.ticket_inbox_id}",
                                    {"ticket": "true"}, )
@@ -410,7 +411,7 @@ class TicketTestBackendCase(TicketTestCase):
         """
         Test to verify a shared_with cannot change shared_with
         """
-        self.client.force_login(self.student2)
+        self.client.force_authenticate(self.student2)
         response = self.client.get(f"/api/inboxes/{self.inbox.id}/tickets/{self.ticket2.ticket_inbox_id}",
                                    {"ticket": "true"}, )
 
@@ -421,7 +422,7 @@ class TicketTestBackendCase(TicketTestCase):
         """
         Test to verify an assistant of the inbox can change shared_with
         """
-        self.client.force_login(self.assistant)
+        self.client.force_authenticate(self.assistant)
 
         response = self.client.get(f"/api/inboxes/{self.inbox.id}/tickets/{self.ticket2.ticket_inbox_id}",
                                    {"ticket": "true"}, )
@@ -433,7 +434,7 @@ class TicketTestBackendCase(TicketTestCase):
         """
         Test to verify an assistant not in the inbox cannot change shared_with
         """
-        self.client.force_login(self.assistant2)
+        self.client.force_authenticate(self.assistant2)
         response = self.client.get(f"/api/inboxes/{self.inbox.id}/tickets/{self.ticket2.ticket_inbox_id}",
                                    {"ticket": "true"}, )
 
@@ -471,7 +472,7 @@ class TicketTestBackendCase(TicketTestCase):
         """
         Test to verify that the assignee is hidden to a guest when the manager has disabled it in the inbox settings.
         """
-        self.client.force_login(self.student)
+        self.client.force_authenticate(self.student)
 
         self.inbox.show_assignee_to_guest = False
         self.inbox.save()
@@ -497,7 +498,7 @@ class TicketTestBackendCase(TicketTestCase):
         Test to verify that the assignee is always visible to a staff member.
         """
         for user in [self.assistant3, self.manager]:
-            self.client.force_login(user)
+            self.client.force_authenticate(user)
 
             self.inbox.show_assignee_to_guest = False
             self.inbox.save()
@@ -548,7 +549,7 @@ class TicketTestBackendCase(TicketTestCase):
         test_ticket.shared_with.set([self.student3])
         test_ticket.save()
 
-        self.client.force_login(self.student)
+        self.client.force_authenticate(self.student)
 
         data = {
             "columns": False
@@ -562,7 +563,7 @@ class TicketTestBackendCase(TicketTestCase):
         """
         Test InboxTicketsApiView for guest
         """
-        self.client.force_login(self.student)
+        self.client.force_authenticate(self.student)
 
         data = {
             "columns": False
@@ -578,7 +579,7 @@ class TicketTestBackendCase(TicketTestCase):
         """
         Test InboxTicketsApiView for agent
         """
-        self.client.force_login(self.assistant)
+        self.client.force_authenticate(self.assistant)
 
         data = {
             "columns": False
@@ -594,7 +595,7 @@ class TicketTestBackendCase(TicketTestCase):
         """
         Test InboxTicketsApiView for manager
         """
-        self.client.force_login(self.assistant)
+        self.client.force_authenticate(self.assistant)
 
         data = {
             "columns": False
@@ -610,7 +611,7 @@ class TicketTestBackendCase(TicketTestCase):
         """
         Test InboxTicketsApiView for agent
         """
-        self.client.force_login(self.assistant)
+        self.client.force_authenticate(self.assistant)
 
         data = {
             "show_personal": "true"
@@ -625,7 +626,7 @@ class TicketTestBackendCase(TicketTestCase):
         """
         Test InboxTicketsApiView for agent
         """
-        self.client.force_login(self.assistant)
+        self.client.force_authenticate(self.assistant)
 
         data = {
             "show_personal": "false"
@@ -640,7 +641,7 @@ class TicketTestBackendCase(TicketTestCase):
         """
         Test InboxTicketsApiView for guest
         """
-        self.client.force_login(self.student)
+        self.client.force_authenticate(self.student)
         self.inbox.show_assignee_to_guest = True
         self.inbox.save()
         Ticket.objects.create(inbox=self.inbox, status=Status.CLOSED, content="CLOSED", title="CLOSED",
@@ -663,7 +664,7 @@ class TicketTestBackendCase(TicketTestCase):
         """
         Test InboxTicketsApiView for agent
         """
-        self.client.force_login(self.assistant)
+        self.client.force_authenticate(self.assistant)
         Ticket.objects.create(inbox=self.inbox, status=Status.CLOSED, content="CLOSED", title="CLOSED",
                               author=self.student)
 
@@ -682,7 +683,7 @@ class TicketTestBackendCase(TicketTestCase):
         """
         Test InboxTicketsApiView for manager
         """
-        self.client.force_login(self.assistant)
+        self.client.force_authenticate(self.assistant)
         Ticket.objects.create(inbox=self.inbox, status=Status.CLOSED, content="CLOSED", title="CLOSED",
                               author=self.student)
 
@@ -701,7 +702,7 @@ class TicketTestBackendCase(TicketTestCase):
         """
         Test InboxTicketsApiView for manager
         """
-        self.client.force_login(self.assistant)
+        self.client.force_authenticate(self.assistant)
         Ticket.objects.create(inbox=self.inbox, status=Status.CLOSED, content="CLOSED", title="CLOSED",
                               author=self.student)
 
@@ -718,7 +719,7 @@ class TicketTestBackendCase(TicketTestCase):
         """
         Test InboxTicketsApiView for manager
         """
-        self.client.force_login(self.assistant)
+        self.client.force_authenticate(self.assistant)
         Ticket.objects.create(inbox=self.inbox, status=Status.CLOSED, content="CLOSED", title="CLOSED",
                               author=self.student)
 
@@ -736,7 +737,7 @@ class TicketTestBackendCase(TicketTestCase):
         """
         Test InboxTicketsApiView for manager
         """
-        self.client.force_login(self.assistant)
+        self.client.force_authenticate(self.assistant)
 
         data = {"columns": "true"}
         self.inbox.tickets.all().delete()
@@ -770,7 +771,7 @@ class TicketTestBackendCase(TicketTestCase):
         self.assertContains(response, Status.PENDING.label)
 
     def test_close_ticket_api(self):
-        self.client.force_login(self.assistant)
+        self.client.force_authenticate(self.assistant)
 
         self.assertNotEqual(self.ticket.status, Status.CLOSED)
 
@@ -779,7 +780,7 @@ class TicketTestBackendCase(TicketTestCase):
         self.assertEqual(Ticket.objects.get(pk=self.ticket.id).status, Status.CLOSED)
 
     def test_open_ticket_api(self):
-        self.client.force_login(self.assistant)
+        self.client.force_authenticate(self.assistant)
 
         # Testing reopen Closed to Assigned
         self.ticket.status = Status.CLOSED
@@ -809,7 +810,7 @@ class TicketTestBackendCase(TicketTestCase):
         self.assertEqual(Ticket.objects.get(pk=self.ticket.id).status, Status.ANSWERED)
 
     def test_get_ticket_search(self):
-        self.client.force_login(self.student)
+        self.client.force_authenticate(self.student)
         self.ticket.shared_with.set([self.student])
         self.ticket2.shared_with.set([self.student])
         self.ticket3.shared_with.set([self.student])

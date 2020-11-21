@@ -7,6 +7,7 @@ from urllib.parse import urlencode
 
 from django.test import TestCase, Client
 from django.urls import reverse
+from rest_framework.test import APIClient
 
 from ticketvise.models.user import User, Role
 from ticketvise.tests.utils import create_inbox
@@ -19,7 +20,7 @@ class InboxConfigureTestCase(TestCase):
 
         :return: None.
         """
-        self.client = Client()
+        self.client = APIClient()
         self.student = User.objects.create_user(username="student", email="root@ticketvise.com", password="test12345",
                                                 is_staff=False)
         self.assistant = User.objects.create_user(username="assistant", email="assitant@ticketvise.com",
@@ -31,7 +32,7 @@ class InboxConfigureTestCase(TestCase):
         """
         Authorized users should see the inboxes page.
         """
-        self.client.force_login(self.student)
+        self.client.force_authenticate(self.student)
         inbox = create_inbox("TestInbox", "TestInbox")
         self.student.add_inbox(inbox, Role.GUEST)
         response = self.client.get(reverse("inboxes"))
@@ -43,7 +44,7 @@ class InboxConfigureTestCase(TestCase):
 
         :return: None.
         """
-        self.client.force_login(self.assistant)
+        self.client.force_authenticate(self.assistant)
         inbox = create_inbox("TestInbox", "TestInbox")
         self.assistant.add_inbox(inbox, Role.AGENT)
         response = self.client.get(reverse("inboxes"))
@@ -99,7 +100,7 @@ class InboxConfigureTestCase(TestCase):
         """
         student2 = User.objects.create_user(username="student2", email="student2@ticketvise.com", password="test12345",
                                            is_staff=False)
-        self.client.force_login(student2)
+        self.client.force_authenticate(student2)
         inbox = create_inbox("TestInbox", "TestInbox")
         data = {
             "inbox_id": inbox.id,

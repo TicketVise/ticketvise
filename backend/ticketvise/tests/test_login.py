@@ -6,6 +6,7 @@ This file tests the login page of the website.
 
 from django.test import TestCase, Client
 from django.urls import reverse
+from rest_framework.test import APIClient
 
 from ticketvise.models.inbox import Inbox
 from ticketvise.models.user import User
@@ -19,7 +20,7 @@ class LoginTestCase(TestCase):
 
         :return: None.
         """
-        self.client = Client()
+        self.client = APIClient()
         self.user = User.objects.create_user(
             username="root", email="root@ticketvise.com", password="correct"
         )

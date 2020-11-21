@@ -12,7 +12,7 @@ This file tests the periodic routine tasks that the platform runs.
 #
 #         :return: None.
 #         """
-#         self.client = Client()
+#         self.client = APIClient()
 #
 #         self.inbox = create_inbox()
 #         self.inbox.close_answered_weeks = 2

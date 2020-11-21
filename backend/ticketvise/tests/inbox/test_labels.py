@@ -10,7 +10,7 @@ class LabelsTest(InboxTestCase):
         """
         Test to verify a coordinator is able to delete a label.
         """
-        self.client.force_login(self.coordinator)
+        self.client.force_authenticate(self.coordinator)
 
         response = self.client.delete(reverse("api_inbox_label", args=(self.label.inbox.id, self.label.id)),
                                       follow=True)
@@ -22,7 +22,7 @@ class LabelsTest(InboxTestCase):
         Test to verify a assistant is unable to delete a label.
         """
 
-        self.client.force_login(self.assistant)
+        self.client.force_authenticate(self.assistant)
 
         response = self.client.delete(reverse("api_inbox_label", args=(self.label.inbox.id, self.label.id)),
                                       follow=True)
@@ -33,7 +33,7 @@ class LabelsTest(InboxTestCase):
         """
         Test to verify a student is unable to delete a label.
         """
-        self.client.force_login(self.student)
+        self.client.force_authenticate(self.student)
 
         response = self.client.delete(reverse("api_inbox_label", args=(self.label.inbox.id, self.label.id)),
                                       follow=True)
@@ -44,7 +44,7 @@ class LabelsTest(InboxTestCase):
         """
         Test to verify a coordinator from another inbox is unable to delete a label.
         """
-        self.client.force_login(self.coordinator_2)
+        self.client.force_authenticate(self.coordinator_2)
 
         response = self.client.delete(reverse("api_inbox_label", args=(self.label.inbox.id, self.label.id)),
                                       follow=True)
@@ -55,7 +55,7 @@ class LabelsTest(InboxTestCase):
         """
         Test to verify a coordinator is able to create a label.
         """
-        self.client.force_login(self.coordinator)
+        self.client.force_authenticate(self.coordinator)
 
         data = {
             "name": "test_name",
@@ -72,7 +72,7 @@ class LabelsTest(InboxTestCase):
         """
         Test to verify a assistant is unable to create a label.
         """
-        self.client.force_login(self.assistant)
+        self.client.force_authenticate(self.assistant)
 
         data = {
             "name": "test_name",
@@ -89,7 +89,7 @@ class LabelsTest(InboxTestCase):
         """
         Test to verify a student is unable to create a label.
         """
-        self.client.force_login(self.assistant)
+        self.client.force_authenticate(self.assistant)
 
         data = {
             "name": "test_name",
@@ -106,7 +106,7 @@ class LabelsTest(InboxTestCase):
         """
         Test to verify an invalid submission of invalid label data shouldn't be processed.
         """
-        self.client.force_login(self.coordinator)
+        self.client.force_authenticate(self.coordinator)
 
         data = {
             "name": "",
@@ -123,7 +123,7 @@ class LabelsTest(InboxTestCase):
         """
         Test to verify a coordinator is able to edit a label.
         """
-        self.client.force_login(self.coordinator)
+        self.client.force_authenticate(self.coordinator)
 
         data = {
             "name": "345345",
@@ -141,7 +141,7 @@ class LabelsTest(InboxTestCase):
         """
         Test to verify a coordinator form another inbox is unable to edit a label.
         """
-        self.client.force_login(self.coordinator_2)
+        self.client.force_authenticate(self.coordinator_2)
 
         data = {
             "name": "345345",
@@ -159,7 +159,7 @@ class LabelsTest(InboxTestCase):
         """
         Test to verify a assistant is unable to edit a label.
         """
-        self.client.force_login(self.assistant)
+        self.client.force_authenticate(self.assistant)
 
         data = {
             "name": "345345",
@@ -177,7 +177,7 @@ class LabelsTest(InboxTestCase):
         """
         Test to verify a student is unable to edit a label.
         """
-        self.client.force_login(self.student)
+        self.client.force_authenticate(self.student)
 
         data = {
             "name": "345345",
@@ -192,7 +192,7 @@ class LabelsTest(InboxTestCase):
         self.assertNotEqual(Label.objects.get(pk=self.label.id).name, data["name"])
 
     def test_inbox_invisible_label_student(self):
-        self.client.force_login(self.student)
+        self.client.force_authenticate(self.student)
 
         response = self.client.get(reverse("api_all_inbox_labels", args=(self.inbox.id,)))
 
@@ -200,7 +200,7 @@ class LabelsTest(InboxTestCase):
         self.assertNotContains(response, self.invisible_label.name)
 
     def test_inbox_invisible_label_agent(self):
-        self.client.force_login(self.assistant)
+        self.client.force_authenticate(self.assistant)
 
         response = self.client.get(reverse("api_all_inbox_labels", args=(self.inbox.id,)))
 
@@ -208,7 +208,7 @@ class LabelsTest(InboxTestCase):
         self.assertContains(response, self.invisible_label.name)
 
     def test_inbox_invisible_label_manager(self):
-        self.client.force_login(self.coordinator)
+        self.client.force_authenticate(self.coordinator)
 
         response = self.client.get(reverse("api_all_inbox_labels", args=(self.inbox.id,)))
 
@@ -216,7 +216,7 @@ class LabelsTest(InboxTestCase):
         self.assertContains(response, self.invisible_label.name)
 
     def test_inbox_inactive_label_student(self):
-        self.client.force_login(self.student)
+        self.client.force_authenticate(self.student)
 
         response = self.client.get(reverse("api_all_inbox_labels", args=(self.inbox.id,)))
 
@@ -224,7 +224,7 @@ class LabelsTest(InboxTestCase):
         self.assertNotContains(response, self.disabled_label.name)
 
     def test_inbox_inactive_label_agent(self):
-        self.client.force_login(self.assistant)
+        self.client.force_authenticate(self.assistant)
 
         response = self.client.get(reverse("api_all_inbox_labels", args=(self.inbox.id,)))
 
@@ -232,7 +232,7 @@ class LabelsTest(InboxTestCase):
         self.assertNotContains(response, self.disabled_label.name)
 
     def test_inbox_inactive_label_manager(self):
-        self.client.force_login(self.coordinator)
+        self.client.force_authenticate(self.coordinator)
 
         response = self.client.get(reverse("api_all_inbox_labels", args=(self.inbox.id,)))
 
@@ -240,21 +240,21 @@ class LabelsTest(InboxTestCase):
         self.assertNotContains(response, self.disabled_label.name)
 
     def test_inbox_labels_student(self):
-        self.client.force_login(self.student)
+        self.client.force_authenticate(self.student)
 
         response = self.client.get(reverse("api_inbox_labels", args=(self.inbox.id,)))
 
         self.assertEqual(response.status_code, 403)
 
     def test_inbox_labels_assistant(self):
-        self.client.force_login(self.assistant)
+        self.client.force_authenticate(self.assistant)
 
         response = self.client.get(reverse("api_inbox_labels", args=(self.inbox.id,)))
 
         self.assertEqual(response.status_code, 403)
 
     def test_inbox_labels_manager(self):
-        self.client.force_login(self.coordinator)
+        self.client.force_authenticate(self.coordinator)
 
         response = self.client.get(reverse("api_inbox_labels", args=(self.inbox.id,)))
 
