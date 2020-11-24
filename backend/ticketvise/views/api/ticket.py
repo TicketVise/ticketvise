@@ -12,7 +12,7 @@ Contains classes for the API interface to dynamically load models using AJAX.
 """
 import json
 
-from django.contrib.postgres.search import SearchVector
+from django.contrib.postgres.search import SearchVector, SearchQuery
 from django.core.exceptions import ValidationError
 from django.db.models import Exists, OuterRef, Q
 from django.http import JsonResponse
@@ -187,14 +187,19 @@ class InboxTicketsApiView(UserIsInInboxMixin, APIView):
 
         inbox = get_object_or_404(Inbox, pk=inbox_id)
         if q:
+            query = SearchQuery(q)
             # Only search when q exists to improve speed
-            users = User.objects.filter(inbox_relationship__inbox=inbox).search(q)
+            users = User.objects.annotate(search=SearchVector("first_name", "username", "last_name", "email")).filter(
+                search=query, inbox_relationship__inbox=inbox)
+            replies = Comment.objects.annotate(search=SearchVector("content")).filter(search=query,
+                                                                                      ticket__inbox=inbox,
+                                                                                      is_reply=True).values("ticket")
 
             tickets = Ticket.objects.annotate(
-                search=SearchVector("title", "content", "ticket_inbox_id")).filter(search=q, inbox=inbox)
+                search=SearchVector("title", "content", "ticket_inbox_id")).filter(search=query, inbox=inbox)
 
             tickets = tickets | Ticket.objects.filter(
-                Q(author__in=users) | Q(assignee__in=users) | Q(shared_with__in=users), inbox=inbox)
+                Q(author__in=users) | Q(assignee__in=users) | Q(shared_with__in=users) | Q(id__in=replies), inbox=inbox)
 
         else:
             tickets = Ticket.objects.filter(inbox=inbox)
