@@ -186,14 +186,21 @@ class InboxTicketsApiView(UserIsInInboxMixin, APIView):
         labels = list(map(int, request.GET.getlist("labels[]", [])))
 
         inbox = get_object_or_404(Inbox, pk=inbox_id)
+        # Only search if q for improved speed.
         if q:
             query = SearchQuery(q)
-            # Only search when q exists to improve speed
+
+            # Load comments and replies if permissions are right, else load only replies.
+            is_reply = [True]
+            if not request.user.is_assistant_or_coordinator(inbox) and not request.user.is_superuser:
+                is_reply = [True, False]
+
             users = User.objects.annotate(search=SearchVector("first_name", "username", "last_name", "email")).filter(
                 search=query, inbox_relationship__inbox=inbox)
+
             replies = Comment.objects.annotate(search=SearchVector("content")).filter(search=query,
                                                                                       ticket__inbox=inbox,
-                                                                                      is_reply=True).values("ticket")
+                                                                                      is_reply__in=is_reply).values("ticket")
 
             tickets = Ticket.objects.annotate(
                 search=SearchVector("title", "content", "ticket_inbox_id")).filter(search=query, inbox=inbox)
