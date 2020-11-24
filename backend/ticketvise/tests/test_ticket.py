@@ -830,7 +830,7 @@ class TicketTestBackendCase(TicketTestCase):
         }
 
         response = self.client.get(f"/api/inboxes/{self.inbox.id}/tickets", data=data)
-        queryset = Ticket.objects.filter(inbox=self.inbox, author=self.student2).order_by("-date_created")
+        queryset = Ticket.objects.filter(inbox=self.inbox, author=self.student2).order_by("date_created")
         json_data = JsonResponse(TicketSerializer(queryset, many=True, fields=(
             "id", "title", "name", "assignee", "ticket_inbox_id", "date_created", "labels")).data, safe=False)
         self.assertEqual(response.content, json_data.content)
@@ -840,7 +840,7 @@ class TicketTestBackendCase(TicketTestCase):
         }
 
         response = self.client.get(f"/api/inboxes/{self.inbox.id}/tickets", data=data)
-        queryset = Ticket.objects.filter(inbox=self.inbox, title="Ticket3").order_by("-date_created")
+        queryset = Ticket.objects.filter(inbox=self.inbox, title="Ticket3").order_by("date_created")
         json_data = JsonResponse(TicketSerializer(queryset, many=True, fields=(
             "id", "title", "name", "assignee", "ticket_inbox_id", "date_created", "labels")).data, safe=False)
         self.assertEqual(response.content, json_data.content)
