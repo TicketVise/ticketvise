@@ -819,7 +819,7 @@ class TicketTestBackendCase(TicketTestCase):
         }
 
         response = self.client.get(f"/api/inboxes/{self.inbox.id}/tickets", data=data)
-        queryset = Ticket.objects.filter(inbox=self.inbox).order_by("-date_created")
+        queryset = Ticket.objects.filter(inbox=self.inbox).order_by("date_created")
 
         json_data = JsonResponse(TicketSerializer(queryset, many=True, fields=(
             "id", "title", "name", "assignee", "ticket_inbox_id", "date_created", "labels")).data, safe=False)
@@ -844,3 +844,29 @@ class TicketTestBackendCase(TicketTestCase):
         json_data = JsonResponse(TicketSerializer(queryset, many=True, fields=(
             "id", "title", "name", "assignee", "ticket_inbox_id", "date_created", "labels")).data, safe=False)
         self.assertEqual(response.content, json_data.content)
+
+    def test_get_ticket_search_reply(self):
+        self.client.force_login(self.student)
+        Comment.objects.create(ticket=self.ticket, author=self.assistant, content="Elephant", is_reply=True)
+
+        data = {
+            "q": "elephant",
+        }
+
+        response = self.client.get(f"/api/inboxes/{self.inbox.id}/tickets", data=data)
+        json_data = JsonResponse(TicketSerializer(self.ticket, fields=(
+            "id", "title", "name", "assignee", "ticket_inbox_id", "date_created", "labels")).data, safe=False)
+        self.assertEqual(response.content, b"[" + json_data.content + b"]")
+
+    def test_get_ticket_search_comment_student(self):
+        self.client.force_login(self.student)
+        Comment.objects.create(ticket=self.ticket, author=self.assistant, content="Fairy tale", is_reply=False)
+
+        data = {
+            "q": "fairy tale",
+        }
+
+        response = self.client.get(f"/api/inboxes/{self.inbox.id}/tickets", data=data)
+        json_data = JsonResponse(TicketSerializer(self.ticket, fields=(
+            "id", "title", "name", "assignee", "ticket_inbox_id", "date_created", "labels")).data, safe=False)
+        self.assertNotEqual(response.content, b"[" + json_data.content + b"]")

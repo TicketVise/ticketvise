@@ -192,7 +192,7 @@ class InboxTicketsApiView(UserIsInInboxMixin, APIView):
 
             # Load comments and replies if permissions are right, else load only replies.
             is_reply = [True]
-            if not request.user.is_assistant_or_coordinator(inbox) and not request.user.is_superuser:
+            if request.user.is_assistant_or_coordinator(inbox) or request.user.is_superuser:
                 is_reply = [True, False]
 
             users = User.objects.annotate(search=SearchVector("first_name", "username", "last_name", "email")).filter(
