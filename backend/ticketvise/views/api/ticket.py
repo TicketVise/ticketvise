@@ -12,8 +12,9 @@ Contains classes for the API interface to dynamically load models using AJAX.
 """
 import json
 
+from django.contrib.postgres.search import SearchVector
 from django.core.exceptions import ValidationError
-from django.db.models import Exists, OuterRef
+from django.db.models import Exists, OuterRef, Q
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
 from rest_framework import serializers
@@ -189,12 +190,11 @@ class InboxTicketsApiView(UserIsInInboxMixin, APIView):
             # Only search when q exists to improve speed
             users = User.objects.filter(inbox_relationship__inbox=inbox).search(q)
 
-            tickets = Ticket.objects.filter(inbox=inbox, title__icontains=q) | \
-                      Ticket.objects.filter(inbox=inbox, content__icontains=q) | \
-                      Ticket.objects.filter(inbox=inbox, ticket_inbox_id__icontains=q) | \
-                      Ticket.objects.filter(inbox=inbox, author__in=users) | \
-                      Ticket.objects.filter(inbox=inbox, assignee__in=users) | \
-                      Ticket.objects.filter(inbox=inbox, shared_with__in=users)
+            tickets = Ticket.objects.annotate(
+                search=SearchVector("title", "content", "ticket_inbox_id")).filter(search=q, inbox=inbox)
+
+            tickets = tickets | Ticket.objects.filter(
+                Q(author__in=users) | Q(assignee__in=users) | Q(shared_with__in=users), inbox=inbox)
 
         else:
             tickets = Ticket.objects.filter(inbox=inbox)
