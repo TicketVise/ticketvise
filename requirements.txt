@@ -11,4 +11,4 @@ oauthlib==3.1.0
 tblib==1.7.0
 aiosmtpd==1.2.2
 email_reply_parser==0.5.9
-sentry-sdk==0.19.3
+sentry-sdk==0.19.4
