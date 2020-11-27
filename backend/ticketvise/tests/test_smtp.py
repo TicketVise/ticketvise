@@ -1,6 +1,7 @@
 from smtplib import SMTP, SMTPDataError
 from django.test import TestCase, LiveServerTestCase
 
+from ticketvise import settings
 from ticketvise.email.smtp import SmtpServer
 from ticketvise.models.comment import Comment
 from ticketvise.models.inbox import Inbox
@@ -26,9 +27,9 @@ class SmtpServerTestCase(LiveServerSingleThreadedTestCase):
         self.address = (self.smtp_server.controller.hostname, self.smtp_server.controller.port)
 
         # setup test data
-        self.inbox = Inbox.objects.create(code="test", name="test-inbox", email="ticket@ticketvise.com", enable_create_new_ticket_by_email=True)
-        self.student = User.objects.create(username="student", email="student@ticketvise.com")
-        self.assistant = User.objects.create(username="assistant", email="assistant@ticketvise.com")
+        self.inbox = Inbox.objects.create(code="test", name="test-inbox", email="ticket@" + settings.DOMAIN, enable_create_new_ticket_by_email=True)
+        self.student = User.objects.create(username="student", email="student@" + settings.DOMAIN)
+        self.assistant = User.objects.create(username="assistant", email="assistant@" + settings.DOMAIN)
         self.ticket = Ticket.objects.create(inbox=self.inbox, author=self.student, assignee=self.assistant,
                                             title="help", content="pls")
 
@@ -55,7 +56,7 @@ class SmtpServerTestCase(LiveServerSingleThreadedTestCase):
         self.assertTrue(Ticket.objects.filter(title=title, content=content).exists())
 
     def test_send_new_email_with_unknown_user(self):
-        from_email = "tom.wassing@ticketvise.com"
+        from_email = "tom.wassing@" + settings.DOMAIN
         to_email = self.inbox.email
         title = "This must be the title2343!!?"
         content = "This is the content!!??"
@@ -81,7 +82,7 @@ class SmtpServerTestCase(LiveServerSingleThreadedTestCase):
             f"From: {from_email}",
             f"To: {to_email}",
             f"Subject: This must be the title2343!!?",
-            f"Message-ID: <{self.ticket.reply_message_id}@ticketvise.com>",
+            f"Message-ID: <{self.ticket.reply_message_id}@{settings.DOMAIN}>",
             "",
             content
         ])
@@ -92,14 +93,14 @@ class SmtpServerTestCase(LiveServerSingleThreadedTestCase):
         self.assertTrue(Comment.objects.filter(ticket=self.ticket, content=content, is_reply=True).exists())
 
     def test_send_reply_email_with_unknown_user(self):
-        from_email = "tom.wassing@ticketvise.com"
+        from_email = "tom.wassing@" + settings.DOMAIN
         to_email = self.inbox.email
         content = "This is the content!!??"
         email_message = "\n".join([
             f"From: {from_email}",
             f"To: {to_email}",
             f"Subject: This must be the title2343!!?",
-            f"Message-ID: <{self.ticket.reply_message_id}@ticketvise.com>",
+            f"Message-ID: <{self.ticket.reply_message_id}@{settings.DOMAIN}>",
             "",
             content
         ])
@@ -117,7 +118,7 @@ class SmtpServerTestCase(LiveServerSingleThreadedTestCase):
             f"From: {from_email}",
             f"To: {to_email}",
             f"Subject: This must be the title2343!!?",
-            f"Message-ID: <{self.ticket.comment_message_id}@ticketvise.com>",
+            f"Message-ID: <{self.ticket.comment_message_id}@{settings.DOMAIN}>",
             "",
             content
         ])
@@ -128,14 +129,14 @@ class SmtpServerTestCase(LiveServerSingleThreadedTestCase):
         self.assertTrue(Comment.objects.filter(ticket=self.ticket, content=content, is_reply=False).exists())
 
     def test_send_comment_email_with_unknown_user(self):
-        from_email = "tom.wassing@ticketvise.com"
+        from_email = "tom.wassing@" + settings.DOMAIN
         to_email = self.inbox.email
         content = "This is the content!!??"
         email_message = "\n".join([
             f"From: {from_email}",
             f"To: {to_email}",
             f"Subject: This must be the title2343!!?",
-            f"Message-ID: <{self.ticket.comment_message_id}@ticketvise.com>",
+            f"Message-ID: <{self.ticket.comment_message_id}@{settings.DOMAIN}",
             "",
             content
         ])
@@ -156,7 +157,7 @@ class SmtpServerTestCase(LiveServerSingleThreadedTestCase):
             f"From: {from_email}",
             f"To: {to_email}",
             f"Subject: This must be the title2343!!?",
-            f"Message-ID: <{self.ticket.comment_message_id}@ticketvise.com>",
+            f"Message-ID: <{self.ticket.comment_message_id}@{settings.DOMAIN}>",
             "",
             content
         ])
