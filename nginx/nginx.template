@@ -3,9 +3,7 @@ include cache.conf;
 server {
     listen 8080;
     listen [::]:8080;
-    server_name ${
-        NGINX_DOMAIN
-    };
+    server_name ${NGINX_DOMAIN};
 
     location /.well-known/acme-challenge/ {
         root /var/www/certbot;
@@ -17,9 +15,7 @@ server {
 server {
     listen 8443 ssl http2;
     listen [::]:8443 ssl http2;
-    server_name ${
-        NGINX_DOMAIN
-    };
+    server_name ${NGINX_DOMAIN};
 
 
     keepalive_timeout 20s;
@@ -32,18 +28,9 @@ server {
     # Specify file cache expiration.
     expires $expires;
 
-    ssl_certificate /etc/letsencrypt/live/${
-        NGINX_DOMAIN
-    }
-    /fullchain.pem;
-    ssl_certificate_key /etc/letsencrypt/live/${
-        NGINX_DOMAIN
-    }
-    /privkey.pem;
-    ssl_trusted_certificate /etc/letsencrypt/live/${
-        NGINX_DOMAIN
-    }
-    /chain.pem;
+    ssl_certificate /etc/letsencrypt/live/${NGINX_DOMAIN}/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/${NGINX_DOMAIN}/privkey.pem;
+    ssl_trusted_certificate /etc/letsencrypt/live/${NGINX_DOMAIN}/chain.pem;
 
     ssl_session_timeout 1d;
     ssl_session_cache shared:MozSSL:10m;  # about 40000 sessions
@@ -76,39 +63,3 @@ server {
         alias /home/media/;
     }
 }
-
-stream {
-    server {
-        listen 25;
-        proxy_pass mail:25;
-    }
-
-    server {
-        listen 465;
-        proxy_pass mail:465;
-    }
-
-    server {
-        listen 587;
-        proxy_pass mail:587;
-    }
-}
-
-#mail {
-#    server_name ${NGINX_DOMAIN};
-#    proxy_pass_error_message on;
-#
-#    starttls            on;
-#    ssl_certificate     /etc/ssl/certs/server.crt;
-#    ssl_certificate_key /etc/ssl/certs/server.key;
-#    ssl_protocols       TLSv1 TLSv1.1 TLSv1.2;
-#    ssl_ciphers         HIGH:!aNULL:!MD5;
-#    ssl_session_cache   shared:SSL:10m;
-#    ssl_session_timeout 10m;
-#
-#    server {
-#        listen    25;
-#        protocol  smtp;
-#        smtp_auth login plain cram-md5;
-#    }
-#}
