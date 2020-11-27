@@ -30,6 +30,9 @@ class MentionNotification(Notification):
     def get_email_comments(self):
         return self.ticket.comments.filter(is_reply=False)
 
+    def get_message_id(self):
+        return self.ticket.comment_message_id
+
     def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
         if self.receiver == self.comment.author:
             return

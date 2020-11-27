@@ -426,8 +426,8 @@ class TicketTestBackendCase(TicketTestCase):
         response = self.client.get(f"/api/inboxes/{self.inbox.id}/tickets/{self.ticket2.ticket_inbox_id}",
                                    {"ticket": "true"}, )
         self.assertEqual(response.status_code, 200)
-        self.assertEqual((response.data["ticket"]["shared_with"][0]), UserSerializer(self.student2, fields=(
-            ["first_name", "last_name", "username", "avatar_url", "id"])).data)
+        self.assertTrue(UserSerializer(self.student2, fields=(
+            ["first_name", "last_name", "username", "avatar_url", "id"])).data in response.data["ticket"]["shared_with"])
 
     def test_get_shared_with_as_ta_not_in_inbox(self):
         """
