@@ -27,6 +27,7 @@ docker run -it --rm --name certbot -p 80:80 \
 ```shell script
 docker stack deploy -c docker-compose.yml -c docker-compose.prod.yml ticketvise
 ```
+NOTE: IPv6 has to be disabled, because Docker Swawrm does not support it.
 
 ## Troubleshooting
 #### Cronjobs
