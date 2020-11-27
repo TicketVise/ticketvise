@@ -199,6 +199,7 @@
         this.role = response.data.role;
         this.inbox = response.data.inbox;
         this.events = response.data.events;
+        this.replies = response.data.replies;
 
         if (this.isStaff()) {
           this.staff = response.data.staff;
