@@ -16,8 +16,8 @@ from ticketvise.models.user import User, UserInbox
 
 class SmtpServer:
 
-    def __init__(self) -> None:
-        self.controller = Controller(self, hostname="0.0.0.0", port=settings.SMTP_INBOUND_PORT)
+    def __init__(self, port=settings.SMTP_INBOUND_PORT) -> None:
+        self.controller = Controller(self, hostname="0.0.0.0", port=port)
         super().__init__()
 
     def parse_message_id(self, raw_message_id):

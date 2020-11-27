@@ -1,5 +1,4 @@
 from smtplib import SMTP, SMTPDataError
-from django.test import TestCase, LiveServerTestCase
 
 from ticketvise import settings
 from ticketvise.email.smtp import SmtpServer
@@ -19,7 +18,7 @@ class SmtpServerTestCase(LiveServerSingleThreadedTestCase):
     def setUp(self):
 
         # setup of test SMTP server
-        self.smtp_server = SmtpServer()
+        self.smtp_server = SmtpServer(port=2524)
         self.smtp_server.start()
 
         self.controller = self.smtp_server.controller
