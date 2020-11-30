@@ -107,7 +107,7 @@ services:
     entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done;'"
 
   mail:
-    image: ticketvise/mail
+    image: "ticketvise/mail:sha-${GIT_DIGEST}"
     volumes:
       - cert_conf:/etc/letsencrypt
 
