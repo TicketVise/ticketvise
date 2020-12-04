@@ -51,7 +51,7 @@ def schedule_round_robin(ticket):
 
     """
     inbox = ticket.inbox
-    inbox_assistants = inbox.get_assistants_and_coordinators()
+    inbox_assistants = inbox.get_assignable_assistants_and_coordinators()
     num_assistants = inbox_assistants.count()
     new_assignee = inbox_assistants[inbox.round_robin_parameter % num_assistants]
     inbox.round_robin_parameter_increase()
@@ -67,7 +67,7 @@ def schedule_least_assigned_first(ticket):
     :return: None.
     """
     inbox = ticket.inbox
-    inbox_assistants = inbox.get_assistants_and_coordinators()
+    inbox_assistants = inbox.get_assignable_assistants_and_coordinators()
     min_assignee = None
     min_count = None
 
@@ -90,7 +90,7 @@ def schedule_sections(ticket):
 
     :return: None.
     """
-    inbox_staff = ticket.inbox.get_assistants_and_coordinators()
+    inbox_staff = ticket.inbox.get_assignable_assistants_and_coordinators()
     sections = InboxUserSection.objects.filter(reduce(operator.or_, (Q(section=x.section) for x in ticket.author.inbox_sections.all())))
     staff = inbox_staff.filter(reduce(operator.or_, (Q(inbox_sections=x) for x in sections)))
     
