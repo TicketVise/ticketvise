@@ -8,7 +8,7 @@
       </div>
     </header>
     <main>
-      <div class="max-w-7xl mx-auto sm:py-6 sm:px-6 lg:px-8">
+      <div class="max-w-7xl mx-auto sm:py-6 px-6 lg:px-8">
         <div v-if="bookmarked.length" class="mb-8">
           <h2 class="text-xl mb-2 font-bold leading-tight text-gray-900">
             Bookmarked
