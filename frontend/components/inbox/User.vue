@@ -56,7 +56,7 @@
           </div>
           <div class="bg-white px-4 py-3 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6 ">
             <dt class="text-sm leading-5 font-medium text-gray-500">
-              Is assignable
+              Is assignable by automatic scheduling
             </dt>
             <dd class="text-sm leading-5 text-gray-900 sm:mt-0 sm:col-span-2">
               <input type="checkbox" v-model="inbox_user.is_assignable" class="block" name="is_assignable" id="is_assignable">
