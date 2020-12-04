@@ -86,4 +86,12 @@ if test -d /lib64; then
   cond_copy '/lib64/ld-linux-x86-64.so*' lib64
 fi
 
+# enable tls if volume is attached
+if test -d /etc/letsencrypt; then
+  echo "Let's Encrypt volume attached, enabling TLS"
+  postconf -e "smtpd_tls_cert_file = /etc/letsencrypt/live/${DOMAIN}/fullchain.pem"
+  postconf -e "smtpd_tls_key_file = /etc/letsencrypt/live/${DOMAIN}/privkey.pem"
+  postconf -e "smtpd_tls_security_level=may"
+fi
+
 exec "$@"
