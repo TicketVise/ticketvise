@@ -9,7 +9,6 @@ Contains all entity sets for the inbox database.
 from django.db import models
 
 from ticketvise.models.user import User, Role
-from ticketvise.models.label import Label
 from ticketvise.models.validators import validate_hex_color
 from ticketvise.settings import INBOX_IMAGE_DIRECTORY, DEFAULT_INBOX_IMAGE_PATH
 from ticketvise.utils import random_preselected_color
@@ -87,6 +86,15 @@ class Inbox(models.Model):
         """
         roles = [Role.AGENT, Role.MANAGER]
         return User.objects.filter(inbox_relationship__inbox=self, inbox_relationship__role__in=roles)
+
+    def get_assignable_assistants_and_coordinators(self):
+        """
+        :return: All assistants and coordinators in the inbox.
+        :rtype: QuerySet<:class:`User`>
+        """
+        roles = [Role.AGENT, Role.MANAGER]
+        return User.objects.filter(inbox_relationship__inbox=self, inbox_relationship__role__in=roles,
+                                   inbox_relationship__is_assignable=True)
 
     def get_coordinator(self):
         """
