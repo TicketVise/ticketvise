@@ -6,6 +6,7 @@ RUN apt update && apt upgrade -y
 RUN apt install postfix -y postfix-pgsql
 
 COPY transport /etc/postfix/transport
+COPY docker-entrypoint.sh /
 
 RUN mkdir -p /var/spool/postfix/pid
 RUN mkdir -p /var/spool/postfix/etc
@@ -70,5 +71,5 @@ RUN postconf -e "smtpd_data_restrictions = \
 
 EXPOSE 25/tcp 465/tcp 587/tcp
 
-# https://askubuntu.com/questions/38106/using-dns-lookup-in-chroot-postfix
-CMD mkdir -p /var/spool/postfix/etc && cp /etc/resolv.conf /var/spool/postfix/etc/resolv.conf && mkdir -p /var/spool/postfix/lib64 && cp /lib/x86_64-linux-gnu/libnss_* /var/spool/postfix/lib64 && postfix start-fg
+ENTRYPOINT ["/docker-entrypoint.sh"]
+CMD ["postfix", "start-fg"]
