@@ -10,7 +10,7 @@
 
     <div class="flex flex-col justify-center w-full p-4 px-0">
       <file-upload ref="upload" v-bind:value="files" v-on:input="setFiles" class="mb-4 w-full" :preview="false"></file-upload>
-      <error v-for="error in this.errors.attachments" :key="error" :message="error"></error>
+      <error :key="errors" :message="errors" v-if="errors"></error>
     </div>
   </div>
 </template>
@@ -21,9 +21,13 @@
   import 'codemirror/lib/codemirror.css';
 
   import '@toast-ui/editor/dist/toastui-editor.css';
+  import FileUpload from "../elements/FileUpload";
+  import Error from "../elements/message/Error";
 
   export default {
     components: {
+      Error,
+      FileUpload,
       Card
     },
     props: {
@@ -34,7 +38,7 @@
     },
     data: () => ({
       files: [],
-      errors: []
+      errors: ""
     }),
     methods: {
       submit() {
@@ -53,7 +57,9 @@
           this.$emit('uploaded')
           this.$refs.upload.clear()
         }).catch(error => {
-          this.errors = error.response.data
+          if (error.response && error.response.status === 413) {
+            this.errors = "Filesize too large, max filesize is 25MB."
+          }
           this.$refs.upload.clear()
         })
       },

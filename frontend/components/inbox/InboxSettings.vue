@@ -99,7 +99,7 @@
     </div>
     <div class="bg-gray-50 px-4 py-3 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6 border-b-2">
       <label for="scheduling_algorithm" class="text-sm leading-5 font-medium text-gray-700 flex items-center">
-        Scheduling algorithm
+        Scheduling algorithm <i class="fa fa-info-circle fill-current text-gray-400 ml-2" title="Persons can be excluded from automatic scheduling by editing the user in the Users tab"></i>
       </label>
       <dd class="text-sm leading-5 text-gray-900 sm:mt-0 sm:col-span-2">
         <select name="scheduling_algorithm" id="scheduling_algorithm"
