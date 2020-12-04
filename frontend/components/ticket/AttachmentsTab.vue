@@ -57,7 +57,7 @@
           this.$emit('uploaded')
           this.$refs.upload.clear()
         }).catch(error => {
-          if (error.response.data.includes("413")) {
+          if (error.response && error.response.status === 413) {
             this.errors = "Filesize too large, max filesize is 25MB."
           }
           this.$refs.upload.clear()
