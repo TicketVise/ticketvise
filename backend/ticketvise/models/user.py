@@ -236,6 +236,7 @@ class UserInbox(models.Model):
     inbox = models.ForeignKey("Inbox", related_name="user_relationship", on_delete=models.CASCADE)
     role = models.CharField(max_length=40, choices=Role.choices, default=Role.GUEST)
     is_bookmarked = models.BooleanField(default=False)
+    is_assignable = models.BooleanField(default=True)
     date_edited = models.DateTimeField(auto_now=True)
     date_created = models.DateTimeField(auto_now_add=True)
 
