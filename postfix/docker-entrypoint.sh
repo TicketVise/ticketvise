@@ -61,8 +61,7 @@ set -e
 umask 022
 
 POSTFIX_DIR=${POSTFIX_DIR-/var/spool/postfix}
-echo ${POSTFIX_DIR}
-cd
+cd ${POSTFIX_DIR}
 
 mkdir -p etc lib usr/lib/zoneinfo
 test -d /lib64 && mkdir -p lib64
