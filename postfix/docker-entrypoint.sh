@@ -83,7 +83,7 @@ cond_copy '/lib/x86_64-linux-gnu/libnss_*.so*' lib
 cond_copy '/lib/x86_64-linux-gnu/libresolv.so*' lib
 cond_copy '/lib/x86_64-linux-gnu/libdb.so*' lib
 if test -d /lib64; then
-  cond_copy '/lib64/xld-linux-x86-64.so*' lib64
+  cond_copy '/lib64/ld-linux-x86-64.so*' lib64
 fi
 
 exec "$@"
