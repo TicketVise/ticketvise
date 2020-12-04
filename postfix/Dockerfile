@@ -69,4 +69,6 @@ RUN postconf -e "smtpd_data_restrictions = \
     permit"
 
 EXPOSE 25/tcp 465/tcp 587/tcp
-CMD mkdir -p /var/spool/postfix/etc && cp /etc/resolv.conf /var/spool/postfix/etc/resolv.conf && postfix start-fg
+
+# https://askubuntu.com/questions/38106/using-dns-lookup-in-chroot-postfix
+CMD mkdir -p /var/spool/postfix/etc && cp /etc/resolv.conf /var/spool/postfix/etc/resolv.conf && mkdir -p /var/spool/postfix/lib64 && cp /lib/x86_64-linux-gnu/libnss_* /var/spool/postfix/lib64 && postfix start-fg
