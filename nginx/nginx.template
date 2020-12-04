@@ -62,4 +62,6 @@ server {
     location /media/ {
         alias /home/media/;
     }
+
+    client_max_body_size 25M;
 }
