@@ -45,7 +45,7 @@
 # 20060101 /lib64 support by Keith Owens.
 #
 
-CP="cp -p"
+CP="cp -pv"
 
 cond_copy() {
   # find files as per pattern in $1
@@ -61,7 +61,8 @@ set -e
 umask 022
 
 POSTFIX_DIR=${POSTFIX_DIR-/var/spool/postfix}
-cd ${POSTFIX_DIR}
+echo ${POSTFIX_DIR}
+cd
 
 mkdir -p etc lib usr/lib/zoneinfo
 test -d /lib64 && mkdir -p lib64
@@ -79,13 +80,11 @@ $CP -f /etc/host.conf /etc/hosts /etc/passwd etc
 ln -s -f /etc/localtime usr/lib/zoneinfo
 
 # copy required libraries into the chroot
-cond_copy '/lib/libnss_*.so*' lib
-cond_copy '/lib/libresolv.so*' lib
-cond_copy '/lib/libdb.so*' lib
+cond_copy '/lib/x86_64-linux-gnu/libnss_*.so*' lib
+cond_copy '/lib/x86_64-linux-gnu/libresolv.so*' lib
+cond_copy '/lib/x86_64-linux-gnu/libdb.so*' lib
 if test -d /lib64; then
-  cond_copy '/lib64/libnss_*.so*' lib64
-  cond_copy '/lib64/libresolv.so*' lib64
-  cond_copy '/lib64/libdb.so*' lib64
+  cond_copy '/lib64/xld-linux-x86-64.so*' lib64
 fi
 
 exec "$@"
