@@ -183,7 +183,7 @@ STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.ManifestStaticFilesSto
 #: Email settings
 #: ~~~~~~~~~~~~~~~~~~~
 
-SMTP_INBOUND_PORT = os.getenv("SMTP_INBOUND_PORT", 1337)
+SMTP_INBOUND_PORT = os.getenv("SMTP_INBOUND_PORT", 2525)
 
 if SEND_MAIL:
     EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'

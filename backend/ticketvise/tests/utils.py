@@ -6,6 +6,9 @@ These are the utils that are used for the tests.
 from random import choice
 from string import ascii_uppercase, ascii_lowercase, digits
 
+from django.core.servers.basehttp import WSGIServer
+from django.test.testcases import LiveServerThread, QuietWSGIRequestHandler, LiveServerTestCase
+
 from ticketvise.models.comment import Comment
 from ticketvise.models.inbox import Inbox
 from ticketvise.models.label import Label
@@ -156,3 +159,25 @@ def create_comment(ticket=None, author=None, content="",
     content = content or random_string()
 
     return Comment.objects.create(ticket=ticket, author=author, content=content, is_reply=is_reply, is_active=is_active)
+
+
+class LiveServerSingleThread(LiveServerThread):
+    """Runs a single threaded server rather than multi threaded. Reverts https://github.com/django/django/pull/7832.
+    Source: https://stackoverflow.com/questions/48353002/sqlite-database-table-is-locked-on-tests"""
+
+    def _create_server(self):
+
+        """
+        the keep-alive fixes introduced in Django 2.1.4 (934acf1126995f6e6ccba5947ec8f7561633c27f)
+        cause problems when serving the static files in a stream.
+        We disable the helper handle method that calls handle_one_request multiple times.
+        """
+        QuietWSGIRequestHandler.handle = QuietWSGIRequestHandler.handle_one_request
+
+        return WSGIServer((self.host, self.port), QuietWSGIRequestHandler, allow_reuse_address=False)
+
+
+class LiveServerSingleThreadedTestCase(LiveServerTestCase):
+    """A thin sub-class which only sets the single-threaded server as a class.
+    Source: https://stackoverflow.com/questions/48353002/sqlite-database-table-is-locked-on-tests"""
+    server_thread_class = LiveServerSingleThread

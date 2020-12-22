@@ -30,7 +30,7 @@ class UserInboxSerializer(ModelSerializer):
 
     class Meta:
         model = UserInbox
-        fields = ["id", "role", "role_label", "user", "is_bookmarked"]
+        fields = ["id", "role", "role_label", "user", "is_bookmarked", "is_assignable"]
 
 
 class UserNotificationSettingsSerializer(ModelSerializer):

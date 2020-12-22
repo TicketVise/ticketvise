@@ -109,3 +109,22 @@ class InboxConfigureTestCase(TestCase):
         with self.assertRaises(ValueError):
             self.client.post("/api/me/inboxes", urlencode(data), follow=True,
                                         content_type="application/x-www-form-urlencoded")
+
+    def test_inbox_sorting(self):
+        """
+        Test if Inboxes are sorted by user joined date
+        """
+
+        self.client.force_login(self.student)
+
+        inbox1 = create_inbox("TestInbox1", "TestInbox1")
+        inbox2 = create_inbox("TestInbox2", "TestInbox2")
+        inbox3 = create_inbox("TestInbox3", "TestInbox3")
+        self.student.add_inbox(inbox1, Role.GUEST)
+        self.student.add_inbox(inbox3, Role.GUEST)
+        self.student.add_inbox(inbox2, Role.GUEST)
+
+        response = self.client.get("/api/me/inboxes")
+
+        self.assertEqual(response.data[0]["inbox"]["name"], "TestInbox2")
+        self.assertEqual(response.data[1]["inbox"]["name"], "TestInbox3")

@@ -12,8 +12,9 @@ Contains classes for the API interface to dynamically load models using AJAX.
 """
 import json
 
+from django.contrib.postgres.search import SearchVector, SearchQuery
 from django.core.exceptions import ValidationError
-from django.db.models import Exists, OuterRef
+from django.db.models import Exists, OuterRef, Q
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
 from rest_framework import serializers
@@ -185,15 +186,32 @@ class InboxTicketsApiView(APIView):
         labels = list(map(int, request.GET.getlist("labels[]", [])))
 
         inbox = get_object_or_404(Inbox, pk=inbox_id)
-        tickets = Ticket.objects.filter(inbox=inbox, title__icontains=q) | \
-                  Ticket.objects.filter(inbox=inbox, ticket_inbox_id__icontains=q).order_by("-date_created")
+        # Only search if q for improved speed.
+        if q:
+            query = SearchQuery(q)
 
-        for term in q.split():
-            tickets = tickets | \
-                      (Ticket.objects.filter(author__username__icontains=term) |
-                       Ticket.objects.filter(author__first_name__icontains=term) |
-                       Ticket.objects.filter(author__last_name__icontains=term) |
-                       Ticket.objects.filter(author__email__contains=term))
+            # Load comments and replies if permissions are right, else load only replies.
+            is_reply = [True]
+            if request.user.is_assistant_or_coordinator(inbox) or request.user.is_superuser:
+                is_reply = [True, False]
+
+            users = User.objects.annotate(search=SearchVector("first_name", "username", "last_name", "email")).filter(
+                search=query, inbox_relationship__inbox=inbox)
+
+            replies = Comment.objects.annotate(search=SearchVector("content")).filter(search=query,
+                                                                                      ticket__inbox=inbox,
+                                                                                      is_reply__in=is_reply).values("ticket")
+
+            tickets = Ticket.objects.annotate(
+                search=SearchVector("title", "content", "ticket_inbox_id")).filter(search=query, inbox=inbox)
+
+            tickets = tickets | Ticket.objects.filter(
+                Q(author__in=users) | Q(assignee__in=users) | Q(shared_with__in=users) | Q(id__in=replies), inbox=inbox)
+
+        else:
+            tickets = Ticket.objects.filter(inbox=inbox)
+
+        tickets.order_by("-date_created")
 
         if not request.user.is_assistant_or_coordinator(inbox) and not request.user.is_superuser:
             tickets = tickets.filter(author=request.user) | tickets.filter(shared_with__id__contains=request.user.id)

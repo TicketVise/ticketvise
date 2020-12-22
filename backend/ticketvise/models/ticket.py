@@ -8,6 +8,7 @@ Contains all entity sets for the ticket database and TicketStatusChangedNotifica
 * :class:`TicketStatuscChangedNotification`
 """
 import os
+import uuid
 
 from django.db import models, transaction
 from django.db.models import Max
@@ -55,8 +56,8 @@ class Ticket(models.Model):
     status = models.CharField(max_length=8, choices=Status.choices, default=Status.PENDING)
     content = models.TextField()
     labels = models.ManyToManyField("Label", blank=True, related_name="tickets", through="TicketLabel")
-    # reply_message_id = models.UUIDField(default=uuid.uuid4, editable=False, unique=True, null=False)
-    # comment_message_id = models.UUIDField(default=uuid.uuid4, editable=False, unique=True, null=False)
+    reply_message_id = models.UUIDField(default=uuid.uuid4, editable=False, unique=True, null=False)
+    comment_message_id = models.UUIDField(default=uuid.uuid4, editable=False, unique=True, null=False)
     date_edited = models.DateTimeField(auto_now=True)
     date_created = models.DateTimeField(auto_now_add=True)
 

@@ -9,7 +9,6 @@ Contains all entity sets for the inbox database.
 from django.db import models
 
 from ticketvise.models.user import User, Role
-from ticketvise.models.label import Label
 from ticketvise.models.validators import validate_hex_color
 from ticketvise.settings import INBOX_IMAGE_DIRECTORY, DEFAULT_INBOX_IMAGE_PATH
 from ticketvise.utils import random_preselected_color
@@ -54,6 +53,9 @@ class Inbox(models.Model):
     show_assignee_to_guest = models.BooleanField(default=False)
     close_answered_weeks = models.PositiveIntegerField(default=0)
     alert_coordinator_unanswered_days = models.PositiveIntegerField(default=0)
+    email = models.EmailField(null=True, unique=True)
+    enable_create_new_ticket_by_email = models.BooleanField(default=False)
+    enable_reply_by_email = models.BooleanField(default=True)
     is_active = models.BooleanField(default=True)
     date_edited = models.DateTimeField(auto_now=True)
     date_created = models.DateTimeField(auto_now_add=True)
@@ -84,6 +86,15 @@ class Inbox(models.Model):
         """
         roles = [Role.AGENT, Role.MANAGER]
         return User.objects.filter(inbox_relationship__inbox=self, inbox_relationship__role__in=roles)
+
+    def get_assignable_assistants_and_coordinators(self):
+        """
+        :return: All assistants and coordinators in the inbox.
+        :rtype: QuerySet<:class:`User`>
+        """
+        roles = [Role.AGENT, Role.MANAGER]
+        return User.objects.filter(inbox_relationship__inbox=self, inbox_relationship__role__in=roles,
+                                   inbox_relationship__is_assignable=True)
 
     def get_coordinator(self):
         """

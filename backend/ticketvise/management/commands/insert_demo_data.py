@@ -103,7 +103,8 @@ class Command(BaseCommand):
 
         # Creating Courses
         inbox_pse = Inbox.objects.create(
-            code="5062STRE6Y", name="Project Software Engineering", round_robin_parameter=4
+            code="5062STRE6Y", name="Project Software Engineering", round_robin_parameter=4, email="pse@ticketvise.com",
+            enable_create_new_ticket_by_email=True, enable_reply_by_email=True
         )
         inbox_ip = Inbox.objects.create(code="5062BEST6Y", name="Inleiding Programmeren")
         inbox_ds = Inbox.objects.create(code="2020DS1864", name="Datastructuren")
@@ -761,7 +762,7 @@ class Command(BaseCommand):
         add_date_to_comment(comment_11, datetime.timedelta(days=5, hours=1))
 
         Comment.objects.create(
-            author=user_jelle,
+            author=assistant_rkempen,
             ticket=ticket_15,
             is_reply=True,
             content="Good question! The linked list in the hash table is simply used to handle\

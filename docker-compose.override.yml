@@ -37,6 +37,14 @@ services:
       POSTGRES_DB: ticketvise
       POSTGRES_USER: ticketvise
       POSTGRES_PASSWORD: Welkom01
+    ports:
+      - 5432:5432
+
+  mail:
+    image: ticketvise/mail
+    build: ./postfix
+    environment:
+      DOMAIN: ticketvise.com
 
   cronjob:
     image: ticketvise/cronjob
