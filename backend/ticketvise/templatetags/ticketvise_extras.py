@@ -3,6 +3,8 @@ TicketVise Extras
 -------------------------------
 Contains various templatetags that can be used in the html templates.
 """
+import datetime
+
 from django import template
 
 from ..models.notification import Notification
@@ -98,3 +100,14 @@ def times(x):
     :rtype: Range object
     """
     return range(x)
+
+
+@register.simple_tag
+def is_december():
+    """
+    Check the date and return true if it is december.
+
+    :return: True if the current month is december.
+    """
+    today = datetime.date.today()
+    return today.month == 12

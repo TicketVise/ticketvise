@@ -6,8 +6,18 @@
 
 <nav class="bg-gray-800 sticky top-0 z-20"
      x-data="{ openProfile: false, openSupport: false, mobile: false, url: location.pathname }">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="flex items-center justify-between h-16">
+    <div class="relative px-4">
+        {% is_december as snow %}
+        {% if snow %}
+        {% with ''|center:50 as range %}
+        <div class="absolute h-16 w-screen top-0 left-0 overflow-hidden z-0">
+            {% for _ in range %}
+                <div class="snow"></div>
+            {% endfor %}
+        </div>
+        {% endwith %}
+        {% endif %}
+        <div class="relative flex items-center justify-between h-16 z-10">
             <div class="flex items-center">
                 <div class="flex-shrink-0">
                     {% load static %}
@@ -86,6 +96,10 @@
 
                     <!-- Profile dropdown -->
                     <div class="ml-3 relative">
+                        {% is_december as snow %}
+                        {% if snow %}
+                        <img class="absolute h-full w-full ml-1/5 -mt-2/5" src="/static/img/images/christmas.png" alt="Christmas hat">
+                        {% endif %}
                         <div>
                             <button
                                     class="max-w-xs flex items-center text-sm rounded-full text-white focus:outline-none focus:shadow-solid"

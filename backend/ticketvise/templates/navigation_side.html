@@ -5,8 +5,18 @@
 {% block body %}
 <div class="h-screen items-stretch overflow-y-hidden" x-data="{ openProfile: false, openSupport: false, mobile: false, url: location.pathname, side: false }">
     <nav class="bg-gray-800 sticky top-0 z-20">
-        <div class="px-4">
-            <div class="flex items-center justify-between h-16">
+        <div class="relative px-4">
+            {% is_december as snow %}
+            {% if snow %}
+            {% with ''|center:50 as range %}
+            <div class="absolute h-16 w-screen top-0 left-0 overflow-hidden z-0">
+                {% for _ in range %}
+                    <div class="snow"></div>
+                {% endfor %}
+            </div>
+            {% endwith %}
+            {% endif %}
+            <div class="relative flex items-center justify-between h-16 z-10">
                 <div class="flex items-center">
                     <div class="flex-shrink-0">
                         {% load static %}
@@ -85,6 +95,10 @@
     
                         <!-- Profile dropdown -->
                         <div class="ml-3 relative">
+                            {% is_december as snow %}
+                            {% if snow %}
+                            <img class="absolute h-full w-full ml-1/5 -mt-2/5" src="/static/img/images/christmas.png" alt="Christmas hat">
+                            {% endif %}
                             <div>
                                 <button
                                         class="max-w-xs flex items-center text-sm rounded-full text-white focus:outline-none focus:shadow-solid"
@@ -118,8 +132,12 @@
                 <div class="flex items-center md:hidden">
                     <!-- Mobile menu button-->
                     <button
-                            class="inline-flex items-center justify-center rounded-md text-gray-400 hover:text-white hover:bg-gray-700 focus:outline-none focus:bg-gray-700 focus:text-white transition duration-150 ease-in-out"
+                            class="relative inline-flex items-center justify-center rounded-md text-gray-400 hover:text-white hover:bg-gray-700 focus:outline-none focus:bg-gray-700 focus:text-white transition duration-150 ease-in-out"
                             aria-label="Main menu" aria-expanded="false" @click="mobile = !mobile">
+                            {% is_december as snow %}
+                            {% if snow %}
+                            <img class="absolute h-full w-full ml-1/5 -mt-2/5" src="/static/img/images/christmas.png" alt="Christmas hat">
+                            {% endif %}
                             <img class="h-8 w-8 rounded-full" src="{{ user.avatar_url }}" alt="Profile image">
                     </button>
                 </div>
@@ -151,7 +169,11 @@
             </div>
             <div class="pt-4 pb-3 border-t border-gray-700">
                 <div class="flex items-center px-5">
-                    <div class="flex-shrink-0">
+                    <div class="relative flex-shrink-0">
+                        {% is_december as snow %}
+                        {% if snow %}
+                        <img class="absolute h-full w-full ml-1/5 -mt-2/5" src="/static/img/images/christmas.png" alt="Christmas hat">
+                        {% endif %}
                         <img class="h-10 w-10 rounded-full" src="{{ user.avatar_url }}" alt="Profile image">
                     </div>
                     <div class="ml-3">
