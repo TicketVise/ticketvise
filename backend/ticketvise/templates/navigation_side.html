@@ -3,7 +3,7 @@
 {% load ticketvise_extras %}
 
 {% block body %}
-<div class="h-screen items-stretch overflow-y-hidden" x-data="{ openProfile: false, openSupport: false, mobile: false, url: location.pathname, side: false }">
+<div class="h-screen items-stretch overflow-y-hidden" x-data="{ openAccount: false, openSupport: false, mobile: false, url: location.pathname, side: false }">
     <nav class="bg-gray-800 sticky top-0 z-20">
         <div class="relative px-4">
             {% is_december as snow %}
@@ -93,7 +93,7 @@
                             {% endif %}
                         </a>
     
-                        <!-- Profile dropdown -->
+                        <!-- Account dropdown -->
                         <div class="ml-3 relative">
                             {% is_december as snow %}
                             {% if snow %}
@@ -103,16 +103,16 @@
                                 <button
                                         class="max-w-xs flex items-center text-sm rounded-full text-white focus:outline-none focus:shadow-solid"
                                         id="user-menu" aria-label="User menu" aria-haspopup="true"
-                                        @click="openProfile = !openProfile">
+                                        @click="openAccount = !openAccount">
                                     <img class="h-8 w-8 rounded-full"
                                          src="{{ user.avatar_url }}"
-                                         alt="User profile">
+                                         alt="User account">
                                 </button>
     
                             </div>
                             <div class="origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg"
-                                 x-show="openProfile"
-                                 @click.away="openProfile = false" x-transition:enter="transition ease-out duration-100"
+                                 x-show="openAccount"
+                                 @click.away="openAccount = false" x-transition:enter="transition ease-out duration-100"
                                  x-transition:enter-start="transform opacity-0 scale-95"
                                  x-transition:enter-end="transform opacity-100 scale-100"
                                  x-transition:leave="transition ease-in duration-75"
@@ -120,8 +120,8 @@
                                  x-transition:leave-end="transform opacity-0 scale-95" style="display: none">
                                 <div class="py-1 rounded-md bg-white shadow-xs" role="menu" aria-orientation="vertical"
                                      aria-labelledby="user-menu">
-                                    <a href="/profile" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                                       role="menuitem">Your Profile</a>
+                                    <a href="/account" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                                       role="menuitem">Account</a>
                                     <a href="/logout/" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                                        role="menuitem">Sign out</a>
                                 </div>
@@ -138,7 +138,7 @@
                             {% if snow %}
                             <img class="absolute h-full w-full ml-1/5 -mt-2/5" src="/static/img/images/christmas.png" alt="Christmas hat">
                             {% endif %}
-                            <img class="h-8 w-8 rounded-full" src="{{ user.avatar_url }}" alt="Profile image">
+                            <img class="h-8 w-8 rounded-full" src="{{ user.avatar_url }}" alt="Account image">
                     </button>
                 </div>
             </div>
@@ -174,7 +174,7 @@
                         {% if snow %}
                         <img class="absolute h-full w-full ml-1/5 -mt-2/5" src="/static/img/images/christmas.png" alt="Christmas hat">
                         {% endif %}
-                        <img class="h-10 w-10 rounded-full" src="{{ user.avatar_url }}" alt="Profile image">
+                        <img class="h-10 w-10 rounded-full" src="{{ user.avatar_url }}" alt="Account image">
                     </div>
                     <div class="ml-3">
                         <div class="text-base font-medium leading-none text-white">{{ user.get_full_name }}</div>
@@ -182,9 +182,8 @@
                     </div>
                 </div>
                 <div class="mt-3 px-2 space=y-1">
-                    <a href="/profile"
-                       class="block px-3 py-2 rounded-md text-base font-medium text-gray-400 hover:text-white hover:bg-gray-700 focus:outline-none focus:text-white focus:bg-gray-700">Your
-                        Profile</a>
+                    <a href="/account"
+                       class="block px-3 py-2 rounded-md text-base font-medium text-gray-400 hover:text-white hover:bg-gray-700 focus:outline-none focus:text-white focus:bg-gray-700">Account</a>
                     <a href="/logout/"
                        class="block px-3 py-2 rounded-md text-base font-medium text-gray-400 hover:text-white hover:bg-gray-700 focus:outline-none focus:text-white focus:bg-gray-700">Sign
                         out</a>
@@ -196,10 +195,10 @@
     <div class="flex flex-row flex-grow h-full max-w-full pt-16 -mt-16">
         <!-- Side Menu -->
         <div class="min-w-side max-w-side border-r hidden lg:flex flex-col flex-grow">
-            <!-- Profile section -->
+            <!-- Account section -->
             <div class="flex items-center px-6 py-4">
                 <div class="flex-shrink-0">
-                    <img class="h-10 w-10 rounded-full" src="{{ user.avatar_url }}" alt="Profile image">
+                    <img class="h-10 w-10 rounded-full" src="{{ user.avatar_url }}" alt="Account image">
                 </div>
                 <div class="ml-3">
                     <div class="text-base font-bold leading-none text-gray-900">{{ user.get_full_name }}</div>

@@ -9,7 +9,7 @@
             Dashboard
           </a>
           <h2 class="text-2xl font-bold leading-7 text-gray-900 sm:text-3xl sm:leading-9 sm:truncate">
-            Your profile
+            Your account
           </h2>
         </div>
       </div>

@@ -3,7 +3,7 @@ from django.test import TestCase, Client
 from ticketvise.models.user import User
 
 
-class ProfileTestCase(TestCase):
+class AccountTestCase(TestCase):
     def setUp(self):
         self.client = Client()
         self.guest = User.objects.create(username="guest", password="test12345", email="guest@ticketvise.com")
@@ -15,31 +15,31 @@ class ProfileTestCase(TestCase):
 
     def test_ticket_page_200(self):
         """
-        Authorized users should see their own profile.
+        Authorized users should see their own account.
 
         :return: None.
         """
         for user in self.users:
             self.client.force_login(user)
-            response = self.client.get("/profile")
+            response = self.client.get("/account")
             self.assertEqual(response.status_code, 200)
 
     def test_ticket_page_401(self):
         """
         Unauthorized users should be redirected to the login page. When logged in
-        it should redirect to the profile.
+        it should redirect to the account.
 
         :return: None.
         """
-        response = self.client.get("/profile")
-        self.assertRedirects(response, '/login/?next=/profile')
+        response = self.client.get("/account")
+        self.assertRedirects(response, '/login/?next=/account')
 
     def test_correct_template_used(self):
         """
-        The profile page should use the profile.html template.
+        The account page should use the account.html template.
 
         :return: None.
         """
         self.client.force_login(self.guest)
-        response = self.client.get("/profile")
-        self.assertTemplateUsed(response, 'profile.html')
+        response = self.client.get("/account")
+        self.assertTemplateUsed(response, 'account.html')

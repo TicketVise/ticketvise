@@ -4,7 +4,7 @@
     <div v-if="inbox_user" class="bg-white shadow overflow-hidden sm:rounded-lg sm:mt-4 sm:mx-4">
       <div class="px-4 py-5 border-b border-gray-200 sm:px-6 flex">
         <div class="flex-shrink-0 h-10 w-10 mr-4">
-          <img class="h-10 w-10 rounded-full" :src="inbox_user.user.avatar_url" alt="Profile picture"/>
+          <img class="h-10 w-10 rounded-full" :src="inbox_user.user.avatar_url" alt="Account picture"/>
         </div>
         <div>
           <h3 class="text-lg leading-6 font-medium text-gray-900">
