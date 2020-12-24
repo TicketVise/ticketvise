@@ -6,20 +6,20 @@
       <div class="flex items-center justify-between h-16">
         <div class="flex items-center">
           <div class="flex-shrink-0">
-            <a href="/" class="flex items-center">
+            <router-link to="/" class="flex items-center">
               <img class="h-8 w-8" src="/img/logo/logo.svg" alt="Logo">
               <span class="text-2xl ml-2 text-white">Ticket</span><span
                 class="text-2xl text-primary font-bold">Vise</span>
-            </a>
+            </router-link>
           </div>
           <div class="hidden md:block">
             <div class="ml-10 flex items-baseline space-x-4">
-              <a href="/inboxes"
+              <router-link to="/inboxes"
                  class="px-3 py-2 rounded-md text-sm font-medium text-gray-300 hover:text-white hover:bg-gray-700 focus:outline-none focus:text-white focus:bg-gray-700"
-                 :class="{ 'text-white bg-gray-900 ': url === '/inboxes'}">Inboxes</a>
-              <a v-if="user.is_superuser" href="/admin"
+                 :class="{ 'text-white bg-gray-900 ': url === '/inboxes'}">Inboxes</router-link>
+              <router-link v-if="user.is_superuser" to="/admin"
                  class="px-3 py-2 rounded-md text-sm font-medium text-gray-300 hover:text-white hover:bg-gray-700 focus:outline-none focus:text-white focus:bg-gray-700"
-                 :class="{ 'text-white bg-gray-900 ': url === '/admin'}">Admin</a>
+                 :class="{ 'text-white bg-gray-900 ': url === '/admin'}">Admin</router-link>
             </div>
           </div>
         </div>
@@ -50,20 +50,20 @@
                      x-transition:leave-end="transform opacity-0 scale-95" style="display: none">
                   <div class="py-1 rounded-md bg-white shadow-xs" role="menu" aria-orientation="vertical"
                        aria-labelledby="user-menu">
-                    <a href="https://ticketvise.com/getting-started/" target="_blank"
+                    <router-link to="https://ticketvise.com/getting-started/" target="_blank"
                        class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                       role="menuitem">Getting started</a>
-                    <a href="mailto:info@ticketvise.com?subject=Feedback&body=Hi%20TicketVise,"
+                       role="menuitem">Getting started</router-link>
+                    <router-link to="mailto:info@ticketvise.com?subject=Feedback&body=Hi%20TicketVise,"
                        target="_blank"
                        rel="noopener noreferrer"
                        class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                       role="menuitem">Send feedback</a>
+                       role="menuitem">Send feedback</router-link>
                   </div>
                 </div>
               </div>
             </div>
 
-            <a href="/notifications"
+            <router-link to="/notifications"
                class="relative cursor-pointer p-1 border-2 border-transparent text-gray-400 rounded-full hover:text-white focus:outline-none focus:text-white focus:bg-gray-700"
                aria-label="Notifications">
               <svg class="h-6 w-6" stroke="currentColor" fill="none" viewBox="0 0 24 24">
@@ -77,7 +77,7 @@
 <!--                <span class="rounded-full text-white text-center text-2xs">{{ count }}</span>-->
 <!--              </div>-->
 <!--              {% endif %}-->
-            </a>
+            </router-link>
 
             <!-- Profile dropdown -->
             <div class="ml-3 relative">
@@ -102,10 +102,10 @@
                    x-transition:leave-end="transform opacity-0 scale-95" style="display: none">
                 <div class="py-1 rounded-md bg-white shadow-xs" role="menu" aria-orientation="vertical"
                      aria-labelledby="user-menu">
-                  <a href="/profile" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                     role="menuitem">Your Profile</a>
-                  <a href="/logout/" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                     role="menuitem">Sign out</a>
+                  <router-link to="/profile" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                     role="menuitem">Your Profile</router-link>
+                  <router-link to="/logout/" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                     role="menuitem">Sign out</router-link>
                 </div>
               </div>
             </div>
@@ -135,10 +135,10 @@
 
     <div x-show="mobile" style="display: none" @click.away="mobile = false">
       <div class="px-2 pt-2 pb-3 sm:px-3 space-y-1">
-        <a href="/inboxes"
+        <router-link to="/inboxes"
            class="block px-3 py-2 rounded-md text-base font-medium text-gray-300 hover:text-white hover:bg-gray-700 focus:outline-none focus:text-white focus:bg-gray-700"
-           :class="{ 'text-white bg-gray-900 ': url === '/inboxes'}">Inboxes</a>
-        <a href="/notifications"
+           :class="{ 'text-white bg-gray-900 ': url === '/inboxes'}">Inboxes</router-link>
+        <router-link to="/notifications"
            class="flex flex-row items-center px-3 py-2 rounded-md text-base font-medium text-gray-300 hover:text-white hover:bg-gray-700 focus:outline-none focus:text-white focus:bg-gray-700"
            :class="{ 'text-white bg-gray-900 ': url === '/notifications'}">
           Notifications
@@ -150,10 +150,10 @@
 <!--          </div>-->
 <!--          {% endif %}-->
 
-        </a>
-        <a v-if="user.is_superuser" href="/admin"
+        </router-link>
+        <router-link v-if="user.is_superuser" href="/admin"
            class="block px-3 py-2 rounded-md text-base font-medium text-gray-300 hover:text-white hover:bg-gray-700 focus:outline-none focus:text-white focus:bg-gray-700"
-           :class="{ 'text-white bg-gray-900 ': url === '/admin'}">Admin</a>
+           :class="{ 'text-white bg-gray-900 ': url === '/admin'}">Admin</router-link>
       </div>
       <div class="pt-4 pb-3 border-t border-gray-700">
         <div class="flex items-center px-5">
@@ -166,12 +166,12 @@
           </div>
         </div>
         <div class="mt-3 px-2 space=y-1">
-          <a href="/profile"
+          <router-link to="/profile"
              class="block px-3 py-2 rounded-md text-base font-medium text-gray-400 hover:text-white hover:bg-gray-700 focus:outline-none focus:text-white focus:bg-gray-700">Your
-            Profile</a>
-          <a href="/logout/"
+            Profile</router-link>
+          <router-link to="/logout/"
              class="block px-3 py-2 rounded-md text-base font-medium text-gray-400 hover:text-white hover:bg-gray-700 focus:outline-none focus:text-white focus:bg-gray-700">Sign
-            out</a>
+            out</router-link>
         </div>
       </div>
     </div>
