@@ -80,7 +80,7 @@ let components = {
   '/inboxes/*/users/*': ['user'],
   '/inboxes/*/labels': ['labels'],
   '/inboxes/*/labels/*': ['Label'],
-  '/profile': ['profile'],
+  '/account': ['account'],
   '/admin': ['admin']
 }
 

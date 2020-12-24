@@ -22,7 +22,7 @@ from ticketvise.views.inboxes import InboxesView
 from ticketvise.views.lti.config import LtiConfigView
 from ticketvise.views.lti.lti import LtiView
 from ticketvise.views.notifications import NotificationsView
-from ticketvise.views.profile import ProfileView
+from ticketvise.views.account import AccountView
 from ticketvise.views.ticket import TicketView
 from ticketvise.views.new_ticket import NewTicketView
 
@@ -45,7 +45,7 @@ urlpatterns = [
                   path("inboxes/<int:pk>/labels/new", AddInboxLabelView.as_view(), name="create_inbox_label"),
                   path("inboxes/<int:inbox_id>/labels/<int:pk>", LabelView.as_view(), name="edit_inbox_label"),
                   path("inboxes/<int:inbox_id>/tickets", InboxView.as_view(), name="inbox"),
-                  path("profile", ProfileView.as_view(), name="profile"),
+                  path("account", AccountView.as_view(), name="account"),
                   path("inboxes", InboxesView.as_view(), name="inboxes"),
                   path("notifications", NotificationsView.as_view(), name="notifications"),
                   path("error/<int:error_code>", ErrorHandler.as_view(), name="error"),
