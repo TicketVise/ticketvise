@@ -35,7 +35,8 @@ from ticketvise.views.api.comment import CommentSerializer
 from ticketvise.views.api.inbox import InboxSerializer
 from ticketvise.views.api.labels import LabelSerializer
 from ticketvise.views.api.security import UserHasAccessToTicketMixin, \
-    UserIsInInboxPermission, UserIsInboxStaffPermission, UserIsTicketAuthorOrInboxStaffPermission
+    UserIsInInboxPermission, UserIsInboxStaffPermission, UserIsTicketAuthorOrInboxStaffPermission, \
+    UserIsSuperUserPermission
 from ticketvise.views.api.user import UserSerializer, RoleSerializer
 
 
@@ -261,8 +262,9 @@ class InboxTicketsApiView(APIView):
         return JsonResponse(data=columns, safe=False)
 
 
-class TicketsApiView(SuperUserRequiredMixin, APIView):
-    permission_classes = [SuperUserRequiredPermission]
+class TicketsApiView(APIView):
+    permission_classes = [UserIsSuperUserPermission]
+
     def get(self, request):
         data = {
             'tickets': Ticket.objects.count()
@@ -271,7 +273,9 @@ class TicketsApiView(SuperUserRequiredMixin, APIView):
         return JsonResponse(data, safe=False)
 
 
-class TicketApiView(UserHasAccessToTicketMixin, RetrieveAPIView):
+class TicketApiView(RetrieveAPIView):
+    permission_classes = [UserIsTicketAuthorOrInboxStaffPermission]
+
     def get(self, request, *args, **kwargs):
         inbox = get_object_or_404(Inbox, pk=self.kwargs["inbox_id"])
         ticket = get_object_or_404(Ticket, inbox=inbox, ticket_inbox_id=self.kwargs["ticket_inbox_id"])
@@ -279,7 +283,8 @@ class TicketApiView(UserHasAccessToTicketMixin, RetrieveAPIView):
 
         response = {}
 
-        unread_related_ticket_notifications(ticket, request.user)
+        # TODO:
+        # unread_related_ticket_notifications(ticket, request.user)
 
         if json.loads(request.GET.get("role", "false")):
             response["role"] = current_role

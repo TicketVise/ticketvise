@@ -9,9 +9,8 @@ from rest_framework.views import APIView
 from ticketvise.models.inbox import Inbox
 from ticketvise.models.notification import Notification
 from ticketvise.models.user import User, Role, UserInbox
-from ticketvise.views.admin import SuperUserRequiredMixin
 from ticketvise.views.api import DynamicFieldsModelSerializer
-from ticketvise.views.api.security import UserIsInInboxPermission
+from ticketvise.views.api.security import UserIsInInboxPermission, UserIsSuperUserPermission
 
 
 class UserSerializer(DynamicFieldsModelSerializer):
@@ -119,7 +118,9 @@ class NotificationsSettingsAPIView(RetrieveUpdateAPIView):
         return self.request.user
 
 
-class UsersApiView(SuperUserRequiredMixin, View):
+class UsersApiView(APIView):
+    permission_classes = [UserIsSuperUserPermission]
+
     def get(self, request):
         data = {
             'users': User.objects.count()

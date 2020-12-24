@@ -5,14 +5,10 @@ from rest_framework.pagination import PageNumberPagination
 from rest_framework.response import Response
 from rest_framework.serializers import ModelSerializer
 
-from ticketvise.models.inbox import Inbox
 from ticketvise.models.notification import Notification
-from ticketvise.models.ticket import Ticket
 from ticketvise.views.api.inbox import InboxSerializer
-from ticketvise.views.api.security import UserHasAccessToTicketMixin
 from ticketvise.views.api.ticket import TicketSerializer
 from ticketvise.views.api.user import UserSerializer
-from ticketvise.views.notifications import unread_related_ticket_notifications
 
 
 class NotificationSerializer(ModelSerializer):

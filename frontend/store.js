@@ -15,8 +15,9 @@ export default new Vuex.Store({
             state.token = token
             state.user = user
         },
-        logout(state) {
+        unauth_success(state) {
             state.token = ''
+            state.user = {}
         },
     },
     actions: {
@@ -43,6 +44,12 @@ export default new Vuex.Store({
                     })
             })
         },
+        logout({commit}) {
+            localStorage.removeItem('token')
+            axios.defaults.headers.common['Authorization'] = ""
+            commit('unauth_success')
+            router.push({ path: 'login' })
+        }
     },
     getters: {
         isAuthenticated: state => !!state.token,
