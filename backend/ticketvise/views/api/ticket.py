@@ -324,7 +324,7 @@ class TicketApiView(RetrieveAPIView):
         if request.user.is_assistant_or_coordinator(inbox):
             if json.loads(request.GET.get("staff", "false")):
                 staff = User.objects.filter(inbox_relationship__role__in=[Role.AGENT, Role.MANAGER],
-                                            inbox_relationship__inbox_id=self.kwargs[self.inbox_key]) \
+                                            inbox_relationship__inbox_id=self.kwargs["inbox_id"]) \
                     .values("first_name", "last_name", "username", "avatar_url", "id")
 
                 response["staff"] = staff

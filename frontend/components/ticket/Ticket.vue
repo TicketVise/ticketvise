@@ -192,7 +192,10 @@
         "events": true
       };
 
-      axios.get("/api" + window.location.pathname, {params: formData}).then(response => {
+      const inboxId = this.$route.params.inboxId
+      const ticketInboxId = this.$route.params.ticketInboxId
+
+      axios.get(`/api/inboxes/${inboxId}/tickets/${ticketInboxId}`, {params: formData}).then(response => {
         this.ticket = response.data.ticket;
         this.labels = response.data.ticket.labels;
         this.user = response.data.me;
@@ -208,7 +211,6 @@
       });
     },
     computed: {
-
       is_staff: function () {
         return this.isStaff()
       },
