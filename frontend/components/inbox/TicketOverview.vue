@@ -124,7 +124,9 @@ export default {
       let labels_ids = [];
       this.labels.forEach(label => labels_ids.push(label.id));
 
-      axios.get(`/api${window.location.pathname}`, {
+      const inboxId = this.$route.params.inboxId
+
+      axios.get(`/api/inboxes/${inboxId}/tickets`, {
         params: {
           columns: true,
           q: this.search,
@@ -162,7 +164,9 @@ export default {
     let inbox_view = localStorage.getItem('inbox_view')
     if (inbox_view) this.list = inbox_view === 'list'
 
-    axios.get("/api/inboxes/" + this.inbox_id + "/labels/all").then(response => {
+    const inboxId = this.$route.params.inboxId
+
+    axios.get(`/api/inboxes/${inboxId}/labels/all`).then(response => {
       this.inbox_labels = response.data.concat([UNLABELLED_LABEL])
     })
 
@@ -170,7 +174,7 @@ export default {
       this.user = response.data
     })
 
-    axios.get("/api/inboxes/" + this.inbox_id + "/role").then(response => {
+    axios.get(`/api/inboxes/${inboxId}/role`).then(response => {
       this.is_staff = response.data && (response.data.key === 'AGENT' || response.data.key === 'MANAGER')
 
       let inbox_view = localStorage.getItem('inbox_view')

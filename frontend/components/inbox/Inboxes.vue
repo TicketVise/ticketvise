@@ -38,9 +38,7 @@ export default {
   }),
   computed: {
     bookmarked() {
-      return this.userInboxes.filter((inbox) => {
-        return inbox.is_bookmarked
-      })
+      return this.userInboxes.filter((inbox) => inbox.is_bookmarked)
     }
   },
   async mounted() {

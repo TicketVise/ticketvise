@@ -16,16 +16,15 @@
             <div class="ml-10 flex items-baseline space-x-4">
               <router-link to="/inboxes"
                  class="px-3 py-2 rounded-md text-sm font-medium text-gray-300 hover:text-white hover:bg-gray-700 focus:outline-none focus:text-white focus:bg-gray-700"
-                 :class="{ 'text-white bg-gray-900 ': url === '/inboxes'}">Inboxes</router-link>
+                 active-class="text-white bg-gray-900">Inboxes</router-link>
               <router-link v-if="user.is_superuser" to="/admin"
                  class="px-3 py-2 rounded-md text-sm font-medium text-gray-300 hover:text-white hover:bg-gray-700 focus:outline-none focus:text-white focus:bg-gray-700"
-                 :class="{ 'text-white bg-gray-900 ': url === '/admin'}">Admin</router-link>
+                 active-class="ext-white bg-gray-900">Admin</router-link>
             </div>
           </div>
         </div>
         <div class="hidden md:block">
           <div class="ml-4 flex items-center md:ml-6">
-
             <div class="relative flex">
               <button type="button"
                       class="relative cursor-pointer px-2 py-1 border-2 border-transparent text-gray-400 rounded-full hover:text-white focus:outline-none focus:text-white focus:bg-gray-700"
@@ -137,10 +136,10 @@
       <div class="px-2 pt-2 pb-3 sm:px-3 space-y-1">
         <router-link to="/inboxes"
            class="block px-3 py-2 rounded-md text-base font-medium text-gray-300 hover:text-white hover:bg-gray-700 focus:outline-none focus:text-white focus:bg-gray-700"
-           :class="{ 'text-white bg-gray-900 ': url === '/inboxes'}">Inboxes</router-link>
+           active-class="text-white bg-gray-900">Inboxes</router-link>
         <router-link to="/notifications"
            class="flex flex-row items-center px-3 py-2 rounded-md text-base font-medium text-gray-300 hover:text-white hover:bg-gray-700 focus:outline-none focus:text-white focus:bg-gray-700"
-           :class="{ 'text-white bg-gray-900 ': url === '/notifications'}">
+           active-class="text-white bg-gray-900">
           Notifications
 
 <!--          {% number_of_unread_notifications user as count %}-->

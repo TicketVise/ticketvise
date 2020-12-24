@@ -1,12 +1,12 @@
 <template>
   <div class="bg-white relative">
-    <a :href="`/inboxes/${inbox.inbox.id}/tickets`" class="" aria-label="more options">
+    <router-link :to="`/inboxes/${inbox.inbox.id}/tickets`" class="" aria-label="more options">
       <div class="h-64 w-full rounded hover:shadow-lg transition-shadow ease-in-out duration-100"
           :style="{'background-color': inbox.inbox.color}">
         <img class="h-64 w-full rounded object-cover opacity-75" :src="inbox.inbox.image"
             :alt="inbox.inbox.name">
       </div>
-    </a>
+    </router-link>
 
     <div class="absolute bottom-0 bg-gray-800 bg-opacity-50 w-full text-white flex py-2 px-4 space-x-2 rounded-br rounded-bl shadow-lg"
         style="overflow: hidden; text-overflow: ellipsis;">
@@ -15,7 +15,7 @@
         <i v-else class="fa fa-bookmark-o"></i>
       </button>
 
-      <a :href="`/inboxes/${inbox.inbox.id}/tickets`">{{ inbox.inbox.name }}</a>
+      <router-link :to="`/inboxes/${inbox.inbox.id}/tickets`">{{ inbox.inbox.name }}</router-link>
     </div>
   </div>
 </template>
