@@ -33,7 +33,6 @@ export default new Vuex.Store({
                         const token = resp.data.token
                         const user = resp.data.user
                         localStorage.setItem('token', token)
-                        axios.defaults.headers.common['Authorization'] = "Token " + token
                         commit('auth_success', token, user)
                         router.push({ path: 'inboxes', query: { plan: 'private' } })
                         resolve(resp)
@@ -46,7 +45,6 @@ export default new Vuex.Store({
         },
         logout({commit}) {
             localStorage.removeItem('token')
-            axios.defaults.headers.common['Authorization'] = ""
             commit('unauth_success')
             router.push({ path: 'login' })
         }

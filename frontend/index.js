@@ -27,6 +27,15 @@ if (typeof SENTRY_DSN !== 'undefined') {
     });
 }
 
+axios.interceptors.request.use((config) => {
+    const token = localStorage.getItem("token")
+    if (token) {
+        config.headers["Authorization"] = "Token " + token
+    }
+
+    return config;
+});
+
 axios.interceptors.response.use(response => response, error => {
     if (401 === error.response.status) {
         store.dispatch("logout")
