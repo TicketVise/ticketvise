@@ -68,6 +68,11 @@ def schedule_least_assigned_first(ticket):
     """
     inbox = ticket.inbox
     inbox_assistants = inbox.get_assignable_assistants_and_coordinators()
+
+    if not inbox_assistants:
+        ticket.assign_to(None)
+        return
+
     min_assigned = []
     min_count = float("inf")
 
