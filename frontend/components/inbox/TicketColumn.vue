@@ -5,7 +5,7 @@
   >
     <div class="py-1 text-center border-t-2 bg-white rounded-tl rounded-tr" :style="`border-color: ${color};`">
       <p v-if="title === 'Closed'">{{ title }}</p>
-      <p v-else>{{ title }} (<strong>{{ ticketList.length }}</strong>)</p>
+      <p v-else>{{ title }} (<strong>{{ length }}</strong>)</p>
     </div>
 
     <div class="flex-grow border-t border-gray-700 border-opacity-50 overflow-y-auto">
@@ -15,6 +15,8 @@
           :ticket="ticket"
           :assignee_show="title !== 'Pending'"
           v-for="ticket in ticketList"/>
+
+        <submit-button v-if="has_next" @click="$emit('input')">Load More</submit-button>
       </div>
     </div>
   </div>
@@ -23,10 +25,11 @@
 <script>
   import TicketCard from "./TicketCard";
   import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
+  import SubmitButton from "../elements/buttons/SubmitButton";
   export default {
-    components: {TicketCard, FontAwesomeIcon},
+    components: {SubmitButton, TicketCard, FontAwesomeIcon},
     name: "TicketColumn",
-    props: ['title', 'color', 'ticketList']
+    props: ['title', 'color', 'ticketList', "has_next", "length"]
   }
 </script>
 

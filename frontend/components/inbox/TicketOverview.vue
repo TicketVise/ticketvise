@@ -62,6 +62,9 @@
         :title="column.label"
         :personal="showPersonal"
         :ticket-list="column.tickets"
+        :has_next="column.has_next"
+        :length="column.total"
+        @input="load_status(column.label)"
         class="min-w-3/4 sm:min-w-1/2 md:min-w-0"
       />
     </div>
@@ -115,7 +118,7 @@ export default {
     inbox_id: window.location.pathname.split('/')[2],
     is_staff: false,
     user: null,
-    list: false
+    list: false,
   }),
   methods: {
     get_tickets() {
@@ -154,6 +157,35 @@ export default {
       this.showPersonal = !this.showPersonal
       localStorage.setItem('inbox_show_personal_tickets', this.showPersonal)
       this.get_tickets()
+    },
+    load_status(status) {
+      let labels_ids = [];
+      this.labels.forEach(label => labels_ids.push(label.id));
+      let index = 0
+
+        if (status === "Pending"){
+          index = 0
+        } else if (status === "Assigned"){
+          index = 1
+        } else if (status === "Awaiting response"){
+          index = 2
+        } else if (status === "Closed"){
+          index = 3
+        }
+
+      axios.get(`/api${window.location.pathname}`, {
+        params: {
+          q: this.search,
+          show_personal: this.showPersonal,
+          labels: labels_ids,
+          status: status,
+          page: this.tickets[index].page_num + 1
+        }
+      }).then(response => {
+        this.tickets[index].tickets.push(response.data.results)
+        this.tickets[index].num_page += 1
+        this.tickets[index].has_next = response.data.has_next
+      })
     }
   },
   created() {

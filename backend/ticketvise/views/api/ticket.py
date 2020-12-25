@@ -164,10 +164,12 @@ class TicketSerializer(DynamicFieldsModelSerializer):
                   "assignee", "shared_with", "participants", "author_role", "attachments", "shared_with_by",
                   "attachments"]
 
+
 class InboxTicketsApiView(UserIsInInboxMixin, ListAPIView):
     """
     Load the tickets connected to the given :class:`Inbox`.
     """
+    page_size = 2
 
     def get_queryset(self):
         inbox = get_object_or_404(Inbox, pk=self.kwargs["inbox_id"])
@@ -241,10 +243,15 @@ class InboxTicketsApiView(UserIsInInboxMixin, ListAPIView):
             return self.get_column_tickets(inbox, tickets)
 
         tickets = tickets.filter(status=status)
-        paginator = Paginator(tickets, 25)
+        paginator = Paginator(tickets, self.page_size)
 
-        return paginator.get_page(page_num)
+        page = paginator.get_page(page_num)
 
+        return Response({
+            "results": TicketSerializer(page.object_list, many=True, fields=(
+                "id", "title", "name", "assignee", "ticket_inbox_id", "date_created", "labels")).data,
+            "has_next": page.has_next(),
+        })
 
     def get_column_tickets(self, inbox, query_set):
         """
@@ -256,10 +263,12 @@ class InboxTicketsApiView(UserIsInInboxMixin, ListAPIView):
         """
         columns = [
             {
+                "has_next": len(query_set.filter(status=status)) > self.page_size,
+                "total": len(query_set.filter(status=status)),
+                "page_num": 1,
                 "label": status.label,
                 "tickets": TicketSerializer(
-                    query_set.filter(status=status)[:25] if status == Status.CLOSED else query_set.filter(
-                        status=status), many=True, fields=(
+                    query_set.filter(status=status)[:self.page_size], many=True, fields=(
                         "id", "title", "name", "assignee", "ticket_inbox_id", "date_created", "labels")).data
             } for status in Status if status != Status.PENDING
                                       or (inbox.scheduling_algorithm == SchedulingAlgorithm.FIXED
