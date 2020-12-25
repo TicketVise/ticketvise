@@ -14,6 +14,7 @@ import json
 
 from django.contrib.postgres.search import SearchVector, SearchQuery
 from django.core.exceptions import ValidationError
+from django.core.paginator import Paginator
 from django.db.models import Exists, OuterRef, Q
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
@@ -163,7 +164,6 @@ class TicketSerializer(DynamicFieldsModelSerializer):
                   "assignee", "shared_with", "participants", "author_role", "attachments", "shared_with_by",
                   "attachments"]
 
-
 class InboxTicketsApiView(UserIsInInboxMixin, ListAPIView):
     """
     Load the tickets connected to the given :class:`Inbox`.
@@ -233,9 +233,18 @@ class InboxTicketsApiView(UserIsInInboxMixin, ListAPIView):
         :rtype: JsonResponse
         """
         inbox = get_object_or_404(Inbox, pk=kwargs["inbox_id"])
+        status = self.request.GET.get("status", "")
         tickets = self.get_queryset()
+        page_num = self.request.GET.get("page", 1)
 
-        return self.get_column_tickets(inbox, tickets)
+        if not status:
+            return self.get_column_tickets(inbox, tickets)
+
+        tickets = tickets.filter(status=status)
+        paginator = Paginator(tickets, 25)
+
+        return paginator.get_page(page_num)
+
 
     def get_column_tickets(self, inbox, query_set):
         """
