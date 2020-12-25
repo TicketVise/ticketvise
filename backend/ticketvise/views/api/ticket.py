@@ -31,7 +31,7 @@ from ticketvise.models.ticket import Ticket, TicketAttachment, TicketEvent, Stat
     TicketAssigneeEvent, TicketLabelEvent, TicketLabel, TicketSharedUser
 from ticketvise.models.user import User, UserInbox, Role
 from ticketvise.views.admin import SuperUserRequiredMixin
-from ticketvise.views.api import AUTOCOMPLETE_MAX_ENTRIES, DynamicFieldsModelSerializer
+from ticketvise.views.api import DynamicFieldsModelSerializer
 from ticketvise.views.api.comment import CommentSerializer
 from ticketvise.views.api.inbox import InboxSerializer
 from ticketvise.views.api.labels import LabelSerializer
@@ -164,35 +164,23 @@ class TicketSerializer(DynamicFieldsModelSerializer):
                   "attachments"]
 
 
-class InboxTicketsApiView(UserIsInInboxMixin, APIView):
+class InboxTicketsApiView(UserIsInInboxMixin, ListAPIView):
     """
     Load the tickets connected to the given :class:`Inbox`.
     """
 
-    def get(self, request, inbox_id):
-        """
-        Loads the tickets connected to the given inbox.
+    def get_queryset(self):
+        inbox = get_object_or_404(Inbox, pk=self.kwargs["inbox_id"])
+        show_personal = str(self.request.GET.get("show_personal", False)) == "true"
+        labels = list(map(int, self.request.GET.getlist("labels[]", [])))
+        q = self.request.GET.get("q", "")
 
-        :param HttpRequest request: The request.
-        :param int id: The id.
-
-        :return:  A list of tickets that are associated with the inbox.
-        :rtype: JsonResponse
-        """
-        q = request.GET.get("q", "")
-        size = int(request.GET.get("size", AUTOCOMPLETE_MAX_ENTRIES))
-        columns = str(request.GET.get("columns", False)) == "true"
-        show_personal = str(request.GET.get("show_personal", False)) == "true"
-        labels = list(map(int, request.GET.getlist("labels[]", [])))
-
-        inbox = get_object_or_404(Inbox, pk=inbox_id)
-        # Only search if q for improved speed.
         if q:
             query = SearchQuery(q)
 
             # Load comments and replies if permissions are right, else load only replies.
             is_reply = [True]
-            if request.user.is_assistant_or_coordinator(inbox) or request.user.is_superuser:
+            if self.request.user.is_assistant_or_coordinator(inbox) or self.request.user.is_superuser:
                 is_reply = [True, False]
 
             users = User.objects.annotate(search=SearchVector("first_name", "username", "last_name", "email")).filter(
@@ -200,7 +188,8 @@ class InboxTicketsApiView(UserIsInInboxMixin, APIView):
 
             replies = Comment.objects.annotate(search=SearchVector("content")).filter(search=query,
                                                                                       ticket__inbox=inbox,
-                                                                                      is_reply__in=is_reply).values("ticket")
+                                                                                      is_reply__in=is_reply).values(
+                "ticket")
 
             tickets = Ticket.objects.annotate(
                 search=SearchVector("title", "content", "ticket_inbox_id")).filter(search=query, inbox=inbox)
@@ -211,13 +200,14 @@ class InboxTicketsApiView(UserIsInInboxMixin, APIView):
         else:
             tickets = Ticket.objects.filter(inbox=inbox)
 
-        tickets.order_by("-date_created")
+        tickets = tickets.order_by("-date_created")
 
-        if not request.user.is_assistant_or_coordinator(inbox) and not request.user.is_superuser:
-            tickets = tickets.filter(author=request.user) | tickets.filter(shared_with__id__contains=request.user.id)
+        if not self.request.user.is_assistant_or_coordinator(inbox) and not self.request.user.is_superuser:
+            tickets = tickets.filter(author=self.request.user) | tickets.filter(
+                shared_with__id__contains=self.request.user.id)
         elif show_personal:
-            tickets = tickets.filter(assignee=request.user) | \
-                      tickets.filter(author=request.user) | \
+            tickets = tickets.filter(assignee=self.request.user) | \
+                      tickets.filter(author=self.request.user) | \
                       tickets.filter(assignee=None)
 
         if labels:
@@ -230,12 +220,22 @@ class InboxTicketsApiView(UserIsInInboxMixin, APIView):
 
             tickets = label_tickets.distinct()
 
-        if columns:
-            return self.get_column_tickets(inbox, tickets)
+        return tickets
 
-        serializer = TicketSerializer(tickets[:size], many=True, fields=(
-            "id", "title", "name", "assignee", "ticket_inbox_id", "date_created", "labels"))
-        return JsonResponse(serializer.data, safe=False)
+    def get(self, request, *args, **kwargs):
+        """
+        Loads the tickets connected to the given inbox.
+
+        :param HttpRequest request: The request.
+        :param int id: The id.
+
+        :return:  A list of tickets that are associated with the inbox.
+        :rtype: JsonResponse
+        """
+        inbox = get_object_or_404(Inbox, pk=kwargs["inbox_id"])
+        tickets = self.get_queryset()
+
+        return self.get_column_tickets(inbox, tickets)
 
     def get_column_tickets(self, inbox, query_set):
         """

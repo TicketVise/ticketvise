@@ -125,7 +125,6 @@ export default {
 
       axios.get(`/api${window.location.pathname}`, {
         params: {
-          columns: true,
           q: this.search,
           show_personal: this.showPersonal,
           labels: labels_ids
