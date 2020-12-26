@@ -64,4 +64,4 @@ class InboxTestCase(TransactionTestCase):
         data = json.loads(response.content)
 
         self.assertFalse(data["has_next"])
-        self.assertEqual(len(data["results"]["tickets"]), 1)
+        self.assertEqual(len(data["results"]), 1)
