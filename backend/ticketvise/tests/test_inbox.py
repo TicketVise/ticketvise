@@ -58,7 +58,7 @@ class InboxTestCase(TransactionTestCase):
         self.assertEqual(len(data), 3)
         self.assertEqual(len(data[0]["tickets"]), 25)
 
-        response = self.client.get(f"/api/inboxes/1/tickets?show_personal=false&status=Assigned&page=2")
+        response = self.client.get(f"/api/inboxes/{self.inbox.id}/tickets?show_personal=false&status=Assigned&page=2")
         self.assertEqual(response.status_code, 200)
 
         data = json.loads(response.content)
