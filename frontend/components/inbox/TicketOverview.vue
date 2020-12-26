@@ -182,8 +182,11 @@ export default {
           page: this.tickets[index].page_num + 1
         }
       }).then(response => {
-        this.tickets[index].tickets.push(response.data.results)
-        this.tickets[index].num_page += 1
+        response.data.results.forEach(ticket => this.tickets[index].tickets.push(ticket))
+        console.log(response.data)
+
+        // this.tickets[index].tickets.push(response.data.results)
+        this.tickets[index].page_num += 1
         this.tickets[index].has_next = response.data.has_next
       })
     }

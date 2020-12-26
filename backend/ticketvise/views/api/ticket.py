@@ -239,13 +239,17 @@ class InboxTicketsApiView(UserIsInInboxMixin, ListAPIView):
         tickets = self.get_queryset()
         page_num = self.request.GET.get("page", 1)
 
+        # If no status is given, return the first page of all status
         if not status:
             return self.get_column_tickets(inbox, tickets)
+
+        # Get label from display name
+        status = [tag for tag, name in Status.choices if name == status][0]
 
         tickets = tickets.filter(status=status)
         paginator = Paginator(tickets, self.page_size)
 
-        page = paginator.get_page(page_num)
+        page = paginator.page(page_num)
 
         return Response({
             "results": TicketSerializer(page.object_list, many=True, fields=(
