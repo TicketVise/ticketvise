@@ -63,6 +63,7 @@ import { library } from '@fortawesome/fontawesome-svg-core'
 import { faClipboardList } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 import TicketsChart from "../inbox_statistics/TicketsChart";
+import axios from 'axios'
 
 library.add(faClipboardList)
 
@@ -82,7 +83,7 @@ export default {
     date: calendarDate
   },
   mounted() {
-    window.axios.get(`/api/inboxes/${this.inbox.id}/statistics`).then(response => {
+    axios.get(`/api/inboxes/${this.inbox.id}/statistics`).then(response => {
       this.stats = response.data
     })
   }
