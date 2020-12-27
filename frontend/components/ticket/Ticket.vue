@@ -114,7 +114,8 @@
                           :replies="replies" :events="events" v-on:post="onReplyPost" :user="user"/>
             <internal-tab v-show="ticket && user && comments && is_staff && activeTab === 'internal'" :ticket="ticket"
                           :comments="comments" v-on:post="onCommentPost" :user="user" :staff="staff_excluding_self"/>
-            <attachments-tab v-if="ticket && activeTab === 'attachments'" :ticket="ticket" @uploaded="updateTicket"/>
+            <attachments-tab v-if="ticket && activeTab === 'attachments'" :ticket="ticket" @uploaded="updateTicket"
+                             :is_staff="is_staff" :user="user"/>
           </div>
         </div>
       </div>
