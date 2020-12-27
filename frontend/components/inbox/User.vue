@@ -59,7 +59,8 @@
               Is assignable by automatic scheduling
             </dt>
             <dd class="text-sm leading-5 text-gray-900 sm:mt-0 sm:col-span-2">
-              <input type="checkbox" v-model="inbox_user.is_assignable" class="block" name="is_assignable" id="is_assignable">
+              <input type="checkbox" v-model="inbox_user.is_assignable" class="block" name="is_assignable"
+                     id="is_assignable">
             </dd>
           </div>
         </dl>
@@ -102,58 +103,52 @@
 </template>
 
 <script>
-  import axios from "axios";
+import axios from "axios";
 
-  export default {
-    name: "User",
-    data() {
-      return {
-        inbox_user: null,
-        roles: [
-          {
-            "key": "GUEST",
-            "label": "Student"
-          },
-          {
-            "key": "AGENT",
-            "label": "Teaching Assistant"
-          },
-          {
-            "key": "MANAGER",
-            "label": "Coordinator"
-          }
-        ]
-      }
-    },
-    mounted() {
-      axios.get(`/api${window.location.pathname}`).then(response => {
-        this.inbox_user = response.data
-      })
-    },
-    methods: {
-      onSave: function () {
-        axios.defaults.xsrfCookieName = 'csrftoken';
-        axios.defaults.xsrfHeaderName = "X-CSRFTOKEN";
-
-        axios.put(`/api${window.location.pathname}`, this.inbox_user).then(_ => {
-          history.back()
-        })
-      },
-      onCancel: function () {
-        window.history.back();
-      },
-      onDelete: function () {
-        if (confirm('Are you sure?')) {
-          axios.defaults.xsrfCookieName = 'csrftoken';
-          axios.defaults.xsrfHeaderName = "X-CSRFTOKEN";
-
-          axios.delete(`/api${window.location.pathname}`).then(_ => {
-            history.back()
-          })
+export default {
+  name: "User",
+  data() {
+    return {
+      inbox_user: null,
+      roles: [
+        {
+          "key": "GUEST",
+          "label": "Student"
+        },
+        {
+          "key": "AGENT",
+          "label": "Teaching Assistant"
+        },
+        {
+          "key": "MANAGER",
+          "label": "Coordinator"
         }
+      ]
+    }
+  },
+  mounted() {
+    const inboxId = this.$route.params.inboxId
+    const userId = this.$route.params.userId
+    axios.get(`/api/inboxes/${inboxId}/users/${userId}`).then(response => {
+      this.inbox_user = response.data
+    })
+  },
+  methods: {
+    onSave: function () {
+      const inboxId = this.$route.params.inboxId
+      axios.put(`/api/inboxes/${inboxId}/users/${this.inbox_user.id}`, this.inbox_user).then(_ => history.back())
+    },
+    onCancel: function () {
+      window.history.back();
+    },
+    onDelete: function () {
+      if (confirm('Are you sure?')) {
+        const inboxId = this.$route.params.inboxId
+        axios.delete(`/api/inboxes/${inboxId}/users/${this.inbox_user.id}`).then(_ => history.back())
       }
     }
   }
+}
 </script>
 
 <style scoped>

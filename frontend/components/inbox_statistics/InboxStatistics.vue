@@ -132,7 +132,8 @@ export default {
     statistics: null,
   }),
   async mounted() {
-    const response = await axios.get("/api" + window.location.pathname);
+    const inboxId = this.$route.params.inboxId
+    const response = await axios.get(`/api/inboxes/${inboxId}/statistics`);
     this.statistics = response.data
   }
 }

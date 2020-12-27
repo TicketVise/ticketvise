@@ -159,7 +159,6 @@
     components: {FileUpload, Error},
     data() {
       return {
-        inbox_id: window.location.pathname.split('/')[2],
         inbox: {},
         im_url: "",
         staff: [],
@@ -169,7 +168,7 @@
       }
     },
     created() {
-      axios.get("/api/inboxes/" + this.inbox_id + "/settings").then(response => {
+      axios.get(`/api/inboxes/${this.$route.params.inboxId}/settings`).then(response => {
         this.inbox = response.data.inbox;
         this.staff = response.data.staff;
         this.scheduling_options = response.data.scheduling_options
@@ -194,7 +193,7 @@
           headers: {'content-type': 'multipart/form-data'}
         }
 
-        axios.put("/api/inboxes/" + this.inbox_id + "/settings", formData, config).then(response => {
+        axios.put(`/api/inboxes/${this.$route.params.inboxId}/settings`, formData, config).then(response => {
           this.errors = [];
           this.saved = true;
           this.inbox = response.data

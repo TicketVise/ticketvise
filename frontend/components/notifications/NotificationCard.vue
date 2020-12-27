@@ -4,11 +4,11 @@
     <div class="flex justify-between">
       <span class="flex flex-1 space-x-1 items-center">
         <span class="relative h-2 w-2 rounded-full" :style="`background-color: ${notification.inbox.color};`"></span>
-        <a class="text-xs hover:underline" :href="`/inboxes/${notification.inbox.id}/tickets`">{{ notification.inbox.name }}</a>
+        <router-link class="text-xs hover:underline" :to="`/inboxes/${notification.inbox.id}/tickets`">{{ notification.inbox.name }}</router-link>
       </span>
       <button @click="flipRead()" class="text-xs fa focus:outline-none" :class="{ 'fa-envelope': !read, 'fa-envelope-open-o': read }"></button>
     </div>
-    <a :href="`/inboxes/${notification.inbox.id}/tickets/${notification.ticket.ticket_inbox_id}`" class="leading-4 font-bold hover:underline">{{ notification.content }}</a>
+    <router-link :to="`/inboxes/${notification.inbox.id}/tickets/${notification.ticket.ticket_inbox_id}`" class="leading-4 font-bold hover:underline">{{ notification.content }}</router-link>
     <div class="text-sm">#{{ notification.ticket.ticket_inbox_id }} - {{ notification.ticket.title }}</div>
     <div class="text-sm">
       <i class="fa fa-calendar text-xs"></i>
@@ -47,9 +47,6 @@
       flipRead() {
         let formData = new FormData;
         formData.append("is_read", this.notification.is_read ? "False" : "True");
-
-        axios.defaults.xsrfCookieName = "csrftoken";
-        axios.defaults.xsrfHeaderName = "X-CSRFTOKEN";
 
         axios.put("/api/notifications/" + this.notification.id + "/read", formData).then(response => {
           Vue.set(this.notification, 'is_read', response.data.is_read)

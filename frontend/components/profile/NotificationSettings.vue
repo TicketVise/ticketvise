@@ -1,7 +1,6 @@
 <template>
   <div class="flex flex-col mb-8">
     <h2 class="text-xl font-bold mb-2 text-gray-700">Notification settings</h2>
-
     <div class="-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
       <div class="py-2 align-middle inline-block min-w-full sm:px-6 lg:px-8">
         <div class="overflow-hidden border border-gray-200 sm:rounded">
@@ -127,9 +126,6 @@ export default {
   },
   methods: {
     updateNotifications() {
-      axios.defaults.xsrfCookieName = "csrftoken";
-      axios.defaults.xsrfHeaderName = "X-CSRFTOKEN";
-
       axios.put('/api/me/settings', this.settings).then(response => {
         this.settings = response.data
       })

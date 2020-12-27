@@ -57,7 +57,7 @@
     async mounted() {
       const url = this.inboxId
           ? `/api/inboxes/${this.inboxId}/statistics/tickets/count`
-          : `/api${window.location.pathname}/tickets/count`
+          : `/api/admin/statistics/tickets/count`
 
       const response = await axios.get(url, {
         params: {

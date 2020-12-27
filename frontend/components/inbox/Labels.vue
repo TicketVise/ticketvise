@@ -62,8 +62,8 @@
                   </span>
                 </td>
                 <td class="px-6 py-4 whitespace-no-wrap text-right border-b border-gray-200 text-sm leading-5 font-medium">
-                  <a :href="getLabelUrl(label)"
-                    class="text-indigo-600 hover:text-indigo-900">Edit</a>
+                  <router-link :to="getLabelUrl(label)"
+                    class="text-indigo-600 hover:text-indigo-900">Edit</router-link>
                 </td>
               </tr>
             </tbody>
@@ -98,12 +98,14 @@ export default {
   },
   computed: {
     add_url: function () {
-      return window.location.pathname + '/new'
+      return `/api/inboxes/${this.$route.params.inboxId}/labels/new`
     }
   },
   methods: {
     performSearch: function (page) {
-      axios.get(`/api${window.location.pathname}`, {
+      const inboxId = this.$route.params.inboxId
+
+      axios.get(`/api/inboxes/${inboxId}/labels`, {
         params: {
           q: this.query,
           page: page
@@ -116,7 +118,7 @@ export default {
       this.performSearch()
     }, 250),
     getLabelUrl: function (label) {
-      return window.location.pathname + '/' + label.id
+      return `/api/inboxes/${this.$route.params.inboxId}/labels/${label.id}`
     },
   }
 }

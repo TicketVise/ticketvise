@@ -8,8 +8,7 @@
         <button
           class="md:hidden border rounded h-10 px-3 focus:outline-none hover:bg-gray-100"
           :title="list ? 'Show Columns View' : 'Show List View'"
-          @click="toggleView"
-        >
+          @click="toggleView">
           <font-awesome-icon :icon="list ? 'columns' : 'list'"></font-awesome-icon>
         </button>
       </div>
@@ -24,8 +23,7 @@
           :class="showPersonal ? `bg-orange-500 text-white` : `bg-gray-100 text-black` "
           @click="togglePersonal"
           class="px-2 md:m-0 h-10"
-          v-if="is_staff"
-        >
+          v-if="is_staff">
           <font-awesome-icon :icon="showPersonal ? 'check' : 'minus'" class="mr-2"></font-awesome-icon>
           My Tickets
         </submit-button>
@@ -34,8 +32,7 @@
         <button
           class="hidden md:block border rounded h-10 px-3 focus:outline-none hover:bg-gray-100"
           :title="list ? 'Show Columns View' : 'Show List View'"
-          @click="toggleView"
-        >
+          @click="toggleView">
           <font-awesome-icon :icon="list ? 'columns' : 'list'"></font-awesome-icon>
         </button>
       </div>
@@ -113,7 +110,6 @@ export default {
     labels: [],
     label: null,
     inbox_labels: [],
-    inbox_id: window.location.pathname.split('/')[2],
     is_staff: false,
     user: null,
     list: false

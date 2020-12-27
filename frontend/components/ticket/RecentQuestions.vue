@@ -29,7 +29,7 @@
       }
     },
     mounted() {
-      axios.get("/api/inboxes/" + this.inbox_id + "/users/" + this.author.id + "/tickets/recent").then(response => {
+      axios.get(`/api/inboxes/${this.inbox_id}/users/${this.author.id}/tickets/recent`).then(response => {
         this.tickets = response.data;
       });
     }

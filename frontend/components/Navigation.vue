@@ -15,10 +15,12 @@
           <div class="hidden md:block">
             <div class="ml-10 flex items-baseline space-x-4">
               <router-link to="/inboxes"
-                 class="px-3 py-2 rounded-md text-sm font-medium text-gray-300 hover:text-white hover:bg-gray-700 focus:outline-none focus:text-white focus:bg-gray-700"
+                 class="px-3 py-2 rounded-md text-sm font-medium text-gray-300 hover:text-white hover:bg-gray-700
+                 focus:outline-none focus:text-white focus:bg-gray-700"
                  active-class="text-white bg-gray-900">Inboxes</router-link>
               <router-link v-if="user.is_superuser" to="/admin"
-                 class="px-3 py-2 rounded-md text-sm font-medium text-gray-300 hover:text-white hover:bg-gray-700 focus:outline-none focus:text-white focus:bg-gray-700"
+                 class="px-3 py-2 rounded-md text-sm font-medium text-gray-300 hover:text-white hover:bg-gray-700
+                 focus:outline-none focus:text-white focus:bg-gray-700"
                  active-class="ext-white bg-gray-900">Admin</router-link>
             </div>
           </div>
@@ -27,7 +29,8 @@
           <div class="ml-4 flex items-center md:ml-6">
             <div class="relative flex">
               <button type="button"
-                      class="relative cursor-pointer px-2 py-1 border-2 border-transparent text-gray-400 rounded-full hover:text-white focus:outline-none focus:text-white focus:bg-gray-700"
+                      class="relative cursor-pointer px-2 py-1 border-2 border-transparent text-gray-400 rounded-full
+                      hover:text-white focus:outline-none focus:text-white focus:bg-gray-700"
                       aria-label="Fullscreen" onclick="window.open(window.location.href, '_blank')"
                       x-show="window.self !== window.top" style="display: none">
                 <i class="fa fa-arrows-alt text-lg" aria-hidden="true"></i>
@@ -35,7 +38,8 @@
 
               <div>
                 <button
-                    class="relative cursor-pointer px-2 py-1 border-2 border-transparent text-gray-400 rounded-full hover:text-white focus:outline-none focus:text-white focus:bg-gray-700"
+                    class="relative cursor-pointer px-2 py-1 border-2 border-transparent text-gray-400 rounded-full
+                    hover:text-white focus:outline-none focus:text-white focus:bg-gray-700"
                     aria-label="Support" aria-haspopup="true" @click="openSupport = !openSupport">
                   <i class="fa fa-question-circle text-xl" aria-hidden="true"></i>
                 </button>
@@ -63,11 +67,13 @@
             </div>
 
             <router-link to="/notifications"
-               class="relative cursor-pointer p-1 border-2 border-transparent text-gray-400 rounded-full hover:text-white focus:outline-none focus:text-white focus:bg-gray-700"
+               class="relative cursor-pointer p-1 border-2 border-transparent text-gray-400 rounded-full
+               hover:text-white focus:outline-none focus:text-white focus:bg-gray-700"
                aria-label="Notifications">
               <svg class="h-6 w-6" stroke="currentColor" fill="none" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                      d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/>
+                      d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4
+                      0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/>
               </svg>
 <!--              {% number_of_unread_notifications user as count %}-->
 <!--              {% if count > 0 %}-->
@@ -113,7 +119,9 @@
         <div class="flex items-center md:hidden">
           <!-- Mobile menu button-->
           <button
-              class="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-white hover:bg-gray-700 focus:outline-none focus:bg-gray-700 focus:text-white transition duration-150 ease-in-out"
+              class="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-white
+              hover:bg-gray-700 focus:outline-none focus:bg-gray-700 focus:text-white transition duration-150
+              ease-in-out"
               aria-label="Main menu" aria-expanded="false" @click="mobile = !mobile">
             <!-- Icon when menu is closed. -->
             <!-- Menu open: "hidden", Menu closed: "block" -->
@@ -135,10 +143,12 @@
     <div x-show="mobile" style="display: none" @click.away="mobile = false">
       <div class="px-2 pt-2 pb-3 sm:px-3 space-y-1">
         <router-link to="/inboxes"
-           class="block px-3 py-2 rounded-md text-base font-medium text-gray-300 hover:text-white hover:bg-gray-700 focus:outline-none focus:text-white focus:bg-gray-700"
+           class="block px-3 py-2 rounded-md text-base font-medium text-gray-300 hover:text-white hover:bg-gray-700
+           focus:outline-none focus:text-white focus:bg-gray-700"
            active-class="text-white bg-gray-900">Inboxes</router-link>
         <router-link to="/notifications"
-           class="flex flex-row items-center px-3 py-2 rounded-md text-base font-medium text-gray-300 hover:text-white hover:bg-gray-700 focus:outline-none focus:text-white focus:bg-gray-700"
+           class="flex flex-row items-center px-3 py-2 rounded-md text-base font-medium text-gray-300 hover:text-white
+           hover:bg-gray-700 focus:outline-none focus:text-white focus:bg-gray-700"
            active-class="text-white bg-gray-900">
           Notifications
 
@@ -151,7 +161,8 @@
 
         </router-link>
         <router-link v-if="user.is_superuser" href="/admin"
-           class="block px-3 py-2 rounded-md text-base font-medium text-gray-300 hover:text-white hover:bg-gray-700 focus:outline-none focus:text-white focus:bg-gray-700"
+           class="block px-3 py-2 rounded-md text-base font-medium text-gray-300 hover:text-white hover:bg-gray-700
+           focus:outline-none focus:text-white focus:bg-gray-700"
            :class="{ 'text-white bg-gray-900 ': url === '/admin'}">Admin</router-link>
       </div>
       <div class="pt-4 pb-3 border-t border-gray-700">
@@ -166,10 +177,12 @@
         </div>
         <div class="mt-3 px-2 space=y-1">
           <router-link to="/profile"
-             class="block px-3 py-2 rounded-md text-base font-medium text-gray-400 hover:text-white hover:bg-gray-700 focus:outline-none focus:text-white focus:bg-gray-700">Your
+             class="block px-3 py-2 rounded-md text-base font-medium text-gray-400 hover:text-white hover:bg-gray-700
+             focus:outline-none focus:text-white focus:bg-gray-700">Your
             Profile</router-link>
           <router-link to="/logout/"
-             class="block px-3 py-2 rounded-md text-base font-medium text-gray-400 hover:text-white hover:bg-gray-700 focus:outline-none focus:text-white focus:bg-gray-700">Sign
+             class="block px-3 py-2 rounded-md text-base font-medium text-gray-400 hover:text-white hover:bg-gray-700
+             focus:outline-none focus:text-white focus:bg-gray-700">Sign
             out</router-link>
         </div>
       </div>

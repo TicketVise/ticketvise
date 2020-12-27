@@ -1,8 +1,7 @@
 <template>
   <div
     class="flex flex-col flex-1 border rounded border-gray-700 border-opacity-50 border-t-0 bg-gray-100 ticket-column"
-    :id="title"
-  >
+    :id="title">
     <div class="py-1 text-center border-t-2 bg-white rounded-tl rounded-tr" :style="`border-color: ${color};`">
       <p v-if="title === 'Closed'">{{ title }}</p>
       <p v-else>{{ title }} (<strong>{{ ticketList.length }}</strong>)</p>

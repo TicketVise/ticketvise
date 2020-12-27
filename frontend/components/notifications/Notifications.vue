@@ -4,10 +4,10 @@
     <header class="bg-white shadow">
       <div class="max-w-7xl mx-auto p-4 py-2 sm:flex sm:items-center sm:justify-between">
         <div class="flex-1 min-w-0">
-          <a href="/inboxes" class="text-xs text-gray-700 hover:underline cursor-pointer">
+          <router-link to="/inboxes" class="text-xs text-gray-700 hover:underline cursor-pointer">
             <i class="fa fa-arrow-left mr-2"></i>
             Dashboard
-          </a>
+          </router-link>
           <h2 class="text-2xl font-bold leading-7 text-gray-900 sm:text-3xl sm:leading-9 sm:truncate">
             Notifications
           </h2>
@@ -119,9 +119,6 @@
         })
       },
       markAllAsRead() {
-        axios.defaults.xsrfCookieName = 'csrftoken';
-        axios.defaults.xsrfHeaderName = "X-CSRFTOKEN";
-
         axios.put("/api/notifications/read/all").then(_ => {
           this.getNotifications()
         })

@@ -66,13 +66,13 @@ export default {
   },
   methods: {
     submitReply() {
-      let content = this.$refs.replyEditor.getContent()
+      const inboxId = this.$route.params.inboxId
+      const ticketInboxId = this.$route.params.ticketInboxId
+      const content = this.$refs.replyEditor.getContent()
+
       this.$refs.replyEditor.clear()
 
-      axios.defaults.xsrfCookieName = 'csrftoken';
-      axios.defaults.xsrfHeaderName = "X-CSRFTOKEN";
-
-      axios.post("/api" + window.location.pathname + "/replies/post", {"content": content})
+      axios.post(`/api/inboxes/${inboxId}/tickets/${ticketInboxId}/replies/post`, {"content": content})
           .then(() => {
             this.$emit("post", true)
           })

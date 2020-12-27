@@ -79,19 +79,22 @@
         title: "",
         labels: [],
         inbox_labels: null,
-        inbox_id: window.location.pathname.split('/')[2],
         errors: [],
         shared_with: [],
       }
     },
     mounted() {
-      axios.get("/api/inboxes/" + this.inbox_id + "/labels/all").then(response => {
+      const inboxId = this.$route.params.inboxId
+
+      axios.get(`/api/inboxes/${inboxId}/labels/all`).then(response => {
         this.inbox_labels = response.data;
       })
     },
     methods: {
       submit() {
         let content = this.$refs.editor.invoke('getMarkdown');
+        const inboxId = this.$route.params.inboxId
+
         let formData = new FormData();
 
         formData.append("content", content);
@@ -102,15 +105,12 @@
         this.files.forEach(file => formData.append("files", file))
         this.shared_with.forEach(shared_with => formData.append("shared_with", shared_with.id))
 
-        axios.defaults.xsrfCookieName = 'csrftoken';
-        axios.defaults.xsrfHeaderName = "X-CSRFTOKEN";
-
-        axios.post("/api" + window.location.pathname, formData, {
+        axios.post(`/api/inboxes/${inboxId}/tickets/new`, formData, {
           headers: {
             'Content-Type': 'multipart/form-data'
           }
         }).then(() => {
-          window.location.href = "/inboxes/" + this.inbox_id + "/tickets";
+          window.location.href = `/inboxes/${this.inbox_id}/tickets`;
         }).catch(error => {
           this.errors = error.response.data
         })
