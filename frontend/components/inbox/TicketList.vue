@@ -19,6 +19,11 @@
               class="text-left"
               v-for="ticket in ticketList"/>
 
+      <div class="flex justify-center">
+        <submit-button v-if="has_next" @click="$emit('input')" class="bg-white">
+          Load More
+        </submit-button>
+      </div>
       <span v-if="ticketList.length === 0">No tickets in this status</span>
     </div>
   </div>
@@ -26,11 +31,12 @@
 
 <script>
   import TicketCard from "./TicketCard";
+  import SubmitButton from "../elements/buttons/SubmitButton";
 
   export default {
-    components: {TicketCard},
+    components: {SubmitButton, TicketCard},
     name: "TicketList",
-    props: ['title', 'color', 'ticketList'],
+    props: ['title', 'color', 'ticketList', "has_next", "length"],
     data: () => ({
       top: false
     }),

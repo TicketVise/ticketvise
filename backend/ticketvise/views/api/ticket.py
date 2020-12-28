@@ -169,7 +169,7 @@ class InboxTicketsApiView(UserIsInInboxMixin, ListAPIView):
     """
     Load the tickets connected to the given :class:`Inbox`.
     """
-    page_size = 25
+    page_size = 2
 
     def get_queryset(self):
         inbox = get_object_or_404(Inbox, pk=self.kwargs["inbox_id"])
@@ -244,7 +244,11 @@ class InboxTicketsApiView(UserIsInInboxMixin, ListAPIView):
             return self.get_column_tickets(inbox, tickets)
 
         # Get label from display name
-        status = [tag for tag, name in Status.choices if name == status][0]
+        status = [tag for tag, name in Status.choices if name == status]
+        if not status:
+            return self.handle_exception(LookupError)
+
+        status = status[0]
 
         tickets = tickets.filter(status=status)
         paginator = Paginator(tickets, self.page_size)
