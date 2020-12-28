@@ -169,7 +169,7 @@ class InboxTicketsApiView(UserIsInInboxMixin, ListAPIView):
     """
     Load the tickets connected to the given :class:`Inbox`.
     """
-    page_size = 2
+    page_size = 25
 
     def get_queryset(self):
         inbox = get_object_or_404(Inbox, pk=self.kwargs["inbox_id"])
