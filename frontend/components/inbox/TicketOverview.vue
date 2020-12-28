@@ -183,7 +183,6 @@ export default {
         }
       }).then(response => {
         response.data.results.forEach(ticket => this.tickets[index].tickets.push(ticket))
-        console.log(response.data)
 
         // this.tickets[index].tickets.push(response.data.results)
         this.tickets[index].page_num += 1
