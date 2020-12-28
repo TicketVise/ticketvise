@@ -2,7 +2,7 @@
   <div class="w-full p-4 pt-2 mb-3">
     <div v-if="ticket.attachments.length > 0" class="w-full grid sm:grid-cols-2 xl:grid-cols-3 gap-4">
       <attachment v-for="(attachment, index) in ticket.attachments" :key="index" :attachment="attachment"
-                  @remove="ticket.attachments.splice(index, 1)" :show-delete="show_delete(attachment.uploader.id)"/>
+                  @remove="ticket.attachments.splice(index, 1)" :show-delete="showDeleteButton(attachment.uploader.id)"/>
     </div>
     <div v-if="ticket.attachments.length === 0" class="text-center mb-4">
       <img src="/static/img/svg/undraw_upload_87y9.svg" alt="Nothing here" class="w-1/2 md:w-1/4 mx-auto mb-8">
@@ -80,8 +80,7 @@
 
         this.submit()
       },
-      show_delete(uploader_id) {
-        console.log(uploader_id)
+      showDeleteButton(uploader_id) {
         return (this.is_staff || uploader_id === this.user.id)
       }
     }
