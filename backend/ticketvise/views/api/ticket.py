@@ -36,7 +36,7 @@ from ticketvise.views.api.comment import CommentSerializer
 from ticketvise.views.api.inbox import InboxSerializer
 from ticketvise.views.api.labels import LabelSerializer
 from ticketvise.views.api.security import UserHasAccessToTicketMixin, UserIsInboxStaffMixin, UserIsInInboxMixin, \
-    UserIsTicketAuthorOrInboxStaffMixin
+    UserIsTicketAuthorOrInboxStaffMixin, UserIsAttachmentUploaderOrInboxStaffMixin
 from ticketvise.views.api.user import UserSerializer, RoleSerializer
 from ticketvise.views.notifications import unread_related_ticket_notifications
 
@@ -382,7 +382,7 @@ class TicketAttachmentsApiView(UserIsTicketAuthorOrInboxStaffMixin, CreateAPIVie
         return Response()
 
 
-class AttachmentViewApiView(UserIsTicketAuthorOrInboxStaffMixin, DestroyAPIView):
+class AttachmentViewApiView(UserIsAttachmentUploaderOrInboxStaffMixin, DestroyAPIView):
     serializer_class = TicketAttachment
     queryset = TicketAttachment
 
