@@ -114,9 +114,9 @@
                     <router-link to="/profile" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                                  role="menuitem">Your Profile
                     </router-link>
-                    <router-link to="/logout/" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                    <a href="#" @click="logout()" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                                  role="menuitem">Sign out
-                    </router-link>
+                    </a>
                   </div>
                 </div>
               </div>
@@ -189,11 +189,11 @@
              focus:outline-none focus:text-white focus:bg-gray-700">Your
               Profile
             </router-link>
-            <router-link to="/logout/"
+                    <a href="#" @click="logout()"
                          class="block px-3 py-2 rounded-md text-base font-medium text-gray-400 hover:text-white hover:bg-gray-700
              focus:outline-none focus:text-white focus:bg-gray-700">Sign
               out
-            </router-link>
+            </a>
           </div>
         </div>
       </div>
@@ -235,6 +235,9 @@ export default {
     },
     isFramed() {
       return window.self !== window.top
+    },
+    logout() {
+      this.$store.dispatch("logout")
     }
   }
 }
