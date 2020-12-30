@@ -30,21 +30,16 @@ class InboxTestCase(TransactionTestCase):
 
     def test_inbox_page_200(self):
         self.client.force_login(self.student)
-        response = self.client.get(reverse("inbox", args=[self.inbox.id]))
+        response = self.client.get(reverse("api_inbox_tickets", args=[self.inbox.id]))
         self.assertEqual(response.status_code, 200)
 
     def test_ticket_page_401(self):
-        response = self.client.get(reverse("inbox", args=[self.inbox.id]))
-        self.assertRedirects(response, '/login/?next=' + reverse("inbox", args=[self.inbox.id]))
-
-    def test_correct_template_used(self):
-        self.client.force_login(self.student)
-        response = self.client.get(reverse("inbox", args=[self.inbox.id]))
-        self.assertTemplateUsed(response, 'inbox.html')
+        response = self.client.get(reverse("api_inbox_tickets", args=[self.inbox.id]))
+        self.assertEqual(response.status_code, 401)
 
     def test_error_dispatch(self):
         self.client.force_login(self.student2)
-        response = self.client.get(reverse("inbox", args=[self.inbox.id]))
+        response = self.client.get(reverse("api_inbox_tickets", args=[self.inbox.id]))
         self.assertEqual(response.status_code, 403)
 
     def test_load_partial(self):

@@ -61,7 +61,7 @@ class AllInboxLabelsApiView(ListAPIView):
 
     def get_queryset(self):
         inbox = get_object_or_404(Inbox, pk=self.kwargs["inbox_id"])
-        user = CurrentUserMiddleware.get_current_user()
+        user = self.request.user
 
         labels = Label.objects.filter(inbox=inbox, is_active=True)
         if user and not user.is_assistant_or_coordinator(inbox):
@@ -87,7 +87,7 @@ class InboxLabelsApiView(ListCreateAPIView):
             .order_by("name")
 
     def perform_create(self, serializer):
-        inbox = get_object_or_404(Inbox, pk=self.kwargs[self.inbox_key])
+        inbox = get_object_or_404(Inbox, pk=self.kwargs["inbox_id"])
         serializer.save(inbox=inbox)
 
 
@@ -165,7 +165,6 @@ class UserInboxApiView(RetrieveUpdateDestroyAPIView):
 class InboxLabelApiView(RetrieveUpdateDestroyAPIView):
     serializer_class = LabelSerializer
     permission_classes = [UserIsInboxManagerPermission]
-
 
     def get_object(self):
         inbox = get_object_or_404(Inbox, pk=self.kwargs["inbox_id"])

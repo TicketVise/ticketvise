@@ -10,38 +10,6 @@ from rest_framework.test import APITestCase
 from ticketvise.tests.test_ticket import TicketTestCase
 
 
-class TicketFormTestCase(TicketTestCase):
-    def test_new_ticket_page_200(self):
-        """
-        Authorized users should see their own ticket.
-
-        :return: None.
-        """
-        self.client.force_authenticate(self.student)
-        response = self.client.get(reverse("new_ticket", args=[self.inbox.id]))
-        self.assertEqual(response.status_code, 200)
-
-    def test_ticket_page_401(self):
-        """
-        Unauthorized users should be redirected to the login page. When logged in
-        it should redirect to the ticket.
-
-        :return: None.
-        """
-        response = self.client.get(reverse("new_ticket", args=[self.inbox.id]))
-        self.assertRedirects(response, '/login/?next=' + reverse("new_ticket", args=[self.inbox.id]))
-
-    def test_correct_template_used(self):
-        """
-        The ticket form page should use the ticket_form.html template.
-
-        :return: None.
-        """
-        self.client.force_authenticate(self.student)
-        response = self.client.get(reverse("new_ticket", args=(self.inbox.id,)))
-        self.assertTemplateUsed(response, "new_ticket.html")
-
-
 class TicketFormTestAPI(APITestCase, TicketTestCase):
     def test_create_ticket(self):
         self.client.force_authenticate(self.student)

@@ -352,16 +352,15 @@ class NotificationsTestCase(TestCase):
     def test_get_notifications_unauthorized(self):
         response = self.client.get("/api/notifications")
         self.assertEqual(response.status_code, 401)
-        self.assertEqual(response.url, "/login/?next=/api/notifications")
 
     def test_get_notifications_count(self):
         self.client.force_authenticate(self.ta)
         Notification.objects.all().delete()
 
-        MentionNotification.objects.create(receiver=self.ta, is_read=True, comment=self.comment),
-        CommentNotification.objects.create(receiver=self.ta, is_read=False, comment=self.comment),
-        TicketAssignedNotification.objects.create(receiver=self.ta, is_read=True, ticket=self.ticket),
-        NewTicketNotification.objects.create(receiver=self.ta, is_read=False, ticket=self.ticket),
+        MentionNotification.objects.create(receiver=self.ta, is_read=True, comment=self.comment)
+        CommentNotification.objects.create(receiver=self.ta, is_read=False, comment=self.comment)
+        TicketAssignedNotification.objects.create(receiver=self.ta, is_read=True, ticket=self.ticket)
+        NewTicketNotification.objects.create(receiver=self.ta, is_read=False, ticket=self.ticket)
         TicketReminderNotification.objects.create(receiver=self.ta, is_read=False, ticket=self.ticket)
 
         response = self.client.get("/api/notifications/unread")

@@ -4,6 +4,7 @@ from ticketvise.tests.inbox.utils import InboxTestCase
 
 
 class BaseTestCase(InboxTestCase):
+
     def test_inbox_assistant_403(self):
         """
         Test to verify that a assistant is unable to access inbox related pages. Pages should return a HTTP 403

@@ -78,7 +78,7 @@ class TicketTestBackendCase(TicketTestCase):
         :return: None.
         """
         self.client.force_authenticate(self.student)
-        response = self.client.get(reverse("ticket", args=[self.ticket.inbox.id, self.ticket.ticket_inbox_id]))
+        response = self.client.get(reverse("api_inbox_ticket", args=[self.ticket.inbox.id, self.ticket.ticket_inbox_id]))
         self.assertEqual(response.status_code, 200)
 
     def test_ticket_page_401(self):
@@ -88,19 +88,8 @@ class TicketTestBackendCase(TicketTestCase):
 
         :return: None.
         """
-        response = self.client.get(reverse("ticket", args=[self.ticket.inbox.id, self.ticket.ticket_inbox_id]))
-        self.assertRedirects(response, '/login/?next=' + reverse("ticket", args=(
-            self.ticket.inbox.id, self.ticket.ticket_inbox_id,)))
-
-    def test_correct_template_used(self):
-        """
-        The ticket page should use the ticket.html template.
-
-        :return: None.
-        """
-        self.client.force_authenticate(self.student)
         response = self.client.get(reverse("api_inbox_ticket", args=[self.ticket.inbox.id, self.ticket.ticket_inbox_id]))
-        self.assertTemplateUsed(response, 'ticket.html')
+        self.assertEqual(response.status_code, 401)
 
     def test_error_dispatch(self):
         """

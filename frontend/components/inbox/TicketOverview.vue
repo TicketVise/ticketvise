@@ -117,7 +117,6 @@
       labels: [],
       label: null,
       inbox_labels: [],
-      inbox_id: window.location.pathname.split('/')[2],
       is_staff: false,
       user: null,
       list: false,
@@ -127,8 +126,9 @@
         // Call this function by using callDebounceSearch
         let labels_ids = [];
         this.labels.forEach(label => labels_ids.push(label.id));
+        const inboxId = this.$route.params.inboxId
 
-        axios.get(`/api${window.location.pathname}`, {
+        axios.get(`/api/inboxes/${inboxId}/tickets`, {
           params: {
             q: this.search,
             show_personal: this.showPersonal,
@@ -175,7 +175,7 @@
           index = 3
         }
 
-        axios.get(`/api${window.location.pathname}`, {
+        axios.get(`/api/inboxes/${this.$route.params.inboxId}/tickets`, {
           params: {
             q: this.search,
             show_personal: this.showPersonal,
@@ -195,7 +195,7 @@
       let inbox_view = localStorage.getItem('inbox_view')
       if (inbox_view) this.list = inbox_view === 'list'
 
-      axios.get("/api/inboxes/" + this.inbox_id + "/labels/all").then(response => {
+      axios.get(`/api/inboxes/${this.$route.params.inboxId}/labels/all`).then(response => {
         this.inbox_labels = response.data.concat([UNLABELLED_LABEL])
       })
 
@@ -203,7 +203,7 @@
         this.user = response.data
       })
 
-      axios.get("/api/inboxes/" + this.inbox_id + "/role").then(response => {
+      axios.get(`/api/inboxes/${this.$route.params.inboxId}/role`).then(response => {
         this.is_staff = response.data && (response.data.key === 'AGENT' || response.data.key === 'MANAGER')
 
         let inbox_view = localStorage.getItem('inbox_view')

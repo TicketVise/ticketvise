@@ -60,8 +60,8 @@ class LabelsTest(InboxTestCase):
         data = {
             "name": "test_name",
             "color": "#ff3333",
-            "is_visible_to_guest": "on",
-            "is_active": "on"
+            "is_visible_to_guest": True,
+            "is_active": True
         }
 
         response = self.client.post(reverse("api_new_inbox_label", args=(self.inbox.id,)), data, follow=True)
@@ -77,8 +77,8 @@ class LabelsTest(InboxTestCase):
         data = {
             "name": "test_name",
             "color": "#ff3333",
-            "student-available": "yes",
-            "active": "yes"
+            "is_visible_to_guest": True,
+            "is_active": True
         }
 
         response = self.client.post(reverse("api_new_inbox_label", args=(self.inbox.id,)), data, follow=True)
@@ -94,8 +94,8 @@ class LabelsTest(InboxTestCase):
         data = {
             "name": "test_name",
             "color": "#ff3333",
-            "student-available": "yes",
-            "active": "yes"
+            "is_visible_to_guest": True,
+            "is_active": True
         }
 
         response = self.client.post(reverse("api_new_inbox_label", args=(self.inbox.id,)), data, follow=True)
@@ -111,8 +111,8 @@ class LabelsTest(InboxTestCase):
         data = {
             "name": "",
             "color": "#ff3333",
-            "student-available": "yes",
-            "active": "yes"
+            "is_visible_to_guest": True,
+            "is_active": True
         }
 
         response = self.client.post(reverse("api_new_inbox_label", args=(self.inbox.id,)), data, follow=True)
@@ -128,8 +128,8 @@ class LabelsTest(InboxTestCase):
         data = {
             "name": "345345",
             "color": "#ff3333",
-            "student-available": "yes",
-            "active": "yes"
+            "is_visible_to_guest": True,
+            "is_active": True
         }
 
         response = self.client.put(reverse("api_inbox_label", args=(self.inbox.id, self.label.id)), data, follow=True,
@@ -146,8 +146,8 @@ class LabelsTest(InboxTestCase):
         data = {
             "name": "345345",
             "color": "#ff3333",
-            "student-available": "yes",
-            "active": "yes"
+            "is_visible_to_guest": True,
+            "is_active": True
         }
 
         response = self.client.put(reverse("api_inbox_label", args=(self.inbox.id, self.label.id)), data,
@@ -164,8 +164,8 @@ class LabelsTest(InboxTestCase):
         data = {
             "name": "345345",
             "color": "#ff3333",
-            "student-available": "yes",
-            "active": "yes"
+            "is_visible_to_guest": True,
+            "is_active": True
         }
 
         response = self.client.put(reverse("api_inbox_label", args=(self.inbox.id, self.label.id)), data,
@@ -182,8 +182,8 @@ class LabelsTest(InboxTestCase):
         data = {
             "name": "345345",
             "color": "#ff3333",
-            "student-available": "yes",
-            "active": "yes"
+            "is_visible_to_guest": True,
+            "is_active": True
         }
 
         response = self.client.put(reverse("api_inbox_label", args=(self.inbox.id, self.label.id)), data,
