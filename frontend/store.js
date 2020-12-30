@@ -27,11 +27,9 @@ export default new Vuex.Store({
 
                 axios.post('/api/login', data)
                     .then(resp => {
-                        const token = resp.data.token
-                        const user = resp.data.user
-                        localStorage.setItem('token', token)
-                        commit('auth_success', user)
-                        router.push({path: 'inboxes'})
+                        localStorage.setItem('token', resp.data.token)
+                        commit('auth_success', resp.data.user)
+                        router.push({name: 'Inboxes'})
                         resolve(resp)
                     })
                     .catch(err => {
@@ -40,12 +38,16 @@ export default new Vuex.Store({
                     })
             })
         },
-        relogin({commit}) {
+        relogin({commit}, inboxIdValue) {
             return new Promise((resolve, reject) => {
                 axios.get('/api/me')
                     .then(resp => {
                         commit('auth_success', resp.data)
-                        router.push({path: 'inboxes'})
+                        if (inboxIdValue) {
+                            router.push({name: 'Inbox', params: {inboxId: inboxIdValue}})
+                        } else {
+                            router.push({name: 'Inboxes'})
+                        }
                         resolve(resp)
                     })
                     .catch(err => {
@@ -57,7 +59,7 @@ export default new Vuex.Store({
         logout({commit}) {
             localStorage.removeItem('token')
             commit('unauth_success')
-            router.push({path: 'login'})
+            router.push({name: 'Login'})
         }
     },
     getters: {

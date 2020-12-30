@@ -18,10 +18,14 @@ export default {
   mounted() {
     const params = new URLSearchParams(window.location.search);
     const token = params.get("token") || localStorage.getItem("token")
+    const inboxId = params.get("inbox_id")
     if (token) {
       localStorage.setItem("token", token)
-      this.$store.dispatch("relogin")
+      this.$store.dispatch("relogin", inboxId)
     }
+
+    // remove parameters from URL
+    window.history.replaceState({}, document.title, "/");
   },
   computed: {
     show_navigation() {
