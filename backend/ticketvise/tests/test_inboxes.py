@@ -79,16 +79,14 @@ class InboxConfigureTestCase(TestCase):
         }
 
         # Check if bookmarked can be flipped to true
-        response = self.client.post("/api/me/inboxes", urlencode(data), follow=True,
-                                    content_type="application/x-www-form-urlencoded")
+        response = self.client.post("/api/me/inboxes", urlencode(data))
         self.assertTrue(response.status_code, 200)
 
         relation = self.coordinator.get_entry_by_inbox(inbox)
         self.assertTrue(relation.is_bookmarked)
 
         # Check if bookrmarked can be flipped to false
-        response = self.client.post("/api/me/inboxes", urlencode(data), follow=True,
-                                    content_type="application/x-www-form-urlencoded")
+        response = self.client.post("/api/me/inboxes", urlencode(data))
         self.assertTrue(response.status_code, 200)
 
         relation = self.coordinator.get_entry_by_inbox(inbox)
@@ -107,8 +105,7 @@ class InboxConfigureTestCase(TestCase):
         }
 
         with self.assertRaises(ValueError):
-            self.client.post("/api/me/inboxes", urlencode(data), follow=True,
-                                        content_type="application/x-www-form-urlencoded")
+            self.client.post("/api/me/inboxes", urlencode(data))
 
     def test_inbox_sorting(self):
         """

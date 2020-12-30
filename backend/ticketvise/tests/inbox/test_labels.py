@@ -60,8 +60,8 @@ class LabelsTest(InboxTestCase):
         data = {
             "name": "test_name",
             "color": "#ff3333",
-            "is_visible_to_guest": True,
-            "is_active": True
+            "is_visible_to_guest": "true",
+            "is_active": "true"
         }
 
         response = self.client.post(reverse("api_new_inbox_label", args=(self.inbox.id,)), data, follow=True)
@@ -77,8 +77,8 @@ class LabelsTest(InboxTestCase):
         data = {
             "name": "test_name",
             "color": "#ff3333",
-            "is_visible_to_guest": True,
-            "is_active": True
+            "is_visible_to_guest": "true",
+            "is_active": "true"
         }
 
         response = self.client.post(reverse("api_new_inbox_label", args=(self.inbox.id,)), data, follow=True)
@@ -94,8 +94,8 @@ class LabelsTest(InboxTestCase):
         data = {
             "name": "test_name",
             "color": "#ff3333",
-            "is_visible_to_guest": True,
-            "is_active": True
+            "is_visible_to_guest": "true",
+            "is_active": "true"
         }
 
         response = self.client.post(reverse("api_new_inbox_label", args=(self.inbox.id,)), data, follow=True)
@@ -111,8 +111,8 @@ class LabelsTest(InboxTestCase):
         data = {
             "name": "",
             "color": "#ff3333",
-            "is_visible_to_guest": True,
-            "is_active": True
+            "is_visible_to_guest": "true",
+            "is_active": "true"
         }
 
         response = self.client.post(reverse("api_new_inbox_label", args=(self.inbox.id,)), data, follow=True)
@@ -128,12 +128,11 @@ class LabelsTest(InboxTestCase):
         data = {
             "name": "345345",
             "color": "#ff3333",
-            "is_visible_to_guest": True,
-            "is_active": True
+            "is_visible_to_guest": "true",
+            "is_active": "true"
         }
 
-        response = self.client.put(reverse("api_inbox_label", args=(self.inbox.id, self.label.id)), data, follow=True,
-                                   content_type="application/json")
+        response = self.client.put(reverse("api_inbox_label", args=(self.inbox.id, self.label.id)), data)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(Label.objects.get(pk=self.label.id).name, data["name"])
 
@@ -146,12 +145,11 @@ class LabelsTest(InboxTestCase):
         data = {
             "name": "345345",
             "color": "#ff3333",
-            "is_visible_to_guest": True,
-            "is_active": True
+            "is_visible_to_guest": "true",
+            "is_active": "true"
         }
 
-        response = self.client.put(reverse("api_inbox_label", args=(self.inbox.id, self.label.id)), data,
-                                   follow=True)
+        response = self.client.put(reverse("api_inbox_label", args=(self.inbox.id, self.label.id)), data)
         self.assertEqual(response.status_code, 403)
         self.assertNotEqual(Label.objects.get(pk=self.label.id).name, data["name"])
 
@@ -164,12 +162,11 @@ class LabelsTest(InboxTestCase):
         data = {
             "name": "345345",
             "color": "#ff3333",
-            "is_visible_to_guest": True,
-            "is_active": True
+            "is_visible_to_guest": "true",
+            "is_active": "true"
         }
 
-        response = self.client.put(reverse("api_inbox_label", args=(self.inbox.id, self.label.id)), data,
-                                   follow=True)
+        response = self.client.put(reverse("api_inbox_label", args=(self.inbox.id, self.label.id)), data)
         self.assertEqual(response.status_code, 403)
         self.assertNotEqual(Label.objects.get(pk=self.label.id).name, data["name"])
 
@@ -182,12 +179,11 @@ class LabelsTest(InboxTestCase):
         data = {
             "name": "345345",
             "color": "#ff3333",
-            "is_visible_to_guest": True,
-            "is_active": True
+            "is_visible_to_guest": "true",
+            "is_active": "true"
         }
 
-        response = self.client.put(reverse("api_inbox_label", args=(self.inbox.id, self.label.id)), data,
-                                   follow=True)
+        response = self.client.put(reverse("api_inbox_label", args=(self.inbox.id, self.label.id)), data)
         self.assertEqual(response.status_code, 403)
         self.assertNotEqual(Label.objects.get(pk=self.label.id).name, data["name"])
 

@@ -13,7 +13,7 @@ class BaseTestCase(InboxTestCase):
         self.client.force_authenticate(self.assistant)
 
         for template_name, args in self.template_names:
-            response = self.client.get(reverse(template_name, args=args), follow=True)
+            response = self.client.get(reverse(template_name, args=args))
             self.assertEqual(response.status_code, 403)
 
     def test_inbox_coordinator_200(self):
@@ -24,7 +24,7 @@ class BaseTestCase(InboxTestCase):
         self.client.force_authenticate(self.coordinator)
 
         for template_name, args in self.template_names:
-            response = self.client.get(reverse(template_name, args=args), follow=True)
+            response = self.client.get(reverse(template_name, args=args))
             self.assertEqual(response.status_code, 200)
 
     def test_inbox_student_403(self):
@@ -35,7 +35,7 @@ class BaseTestCase(InboxTestCase):
         self.client.force_authenticate(self.student)
 
         for template_name, args in self.template_names:
-            response = self.client.get(reverse(template_name, args=args), follow=True)
+            response = self.client.get(reverse(template_name, args=args))
             self.assertEqual(response.status_code, 403)
 
     def test_inbox_anonymous_redirect_login(self):
@@ -55,7 +55,7 @@ class BaseTestCase(InboxTestCase):
         self.client.force_authenticate(self.coordinator_2)
 
         for template_name, args in self.template_names:
-            response = self.client.get(reverse(template_name, args=args), follow=True)
+            response = self.client.get(reverse(template_name, args=args))
             self.assertEqual(response.status_code, 403)
 
     def test_pagination_not_numeric(self):

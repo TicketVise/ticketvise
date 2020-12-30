@@ -18,8 +18,7 @@ class SettingsTestCase(InboxTestCase):
             "scheduling_algorithm": "fixed"
         }
 
-        response = self.client.put(f"/api/inboxes/{self.inbox.id}/settings", data, follow=True,
-                                   content_type="application/json")
+        response = self.client.put(f"/api/inboxes/{self.inbox.id}/settings", data)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(Inbox.objects.get(pk=self.inbox.id).name, data["name"])
 
@@ -38,8 +37,7 @@ class SettingsTestCase(InboxTestCase):
             "scheduling_algorithm": "fixed"
         }
 
-        response = self.client.put(f"/api/inboxes/{self.inbox.id}/settings", data, follow=True,
-                                   content_type="application/json")
+        response = self.client.put(f"/api/inboxes/{self.inbox.id}/settings", data)
         self.assertEqual(response.status_code, 403)
         self.assertNotEqual(Inbox.objects.get(pk=self.inbox.id).name, data["name"])
 
@@ -58,8 +56,7 @@ class SettingsTestCase(InboxTestCase):
             "scheduling_algorithm": "fixed"
         }
 
-        response = self.client.put(f"/api/inboxes/{self.inbox.id}/settings", data, follow=True,
-                                   content_type="application/json")
+        response = self.client.put(f"/api/inboxes/{self.inbox.id}/settings", data)
         self.assertEqual(response.status_code, 403)
         self.assertNotEqual(Inbox.objects.get(pk=self.inbox.id).name, data["name"])
 
@@ -78,8 +75,7 @@ class SettingsTestCase(InboxTestCase):
             "scheduling_algorithm": "fixed"
         }
 
-        response = self.client.put(f"/api/inboxes/{self.inbox.id}/settings", data, follow=True,
-                                   content_type="application/json")
+        response = self.client.put(f"/api/inboxes/{self.inbox.id}/settings", data)
         self.assertEqual(response.status_code, 403)
         self.assertNotEqual(Inbox.objects.get(pk=self.inbox.id).name, data["name"])
 
