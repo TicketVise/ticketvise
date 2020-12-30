@@ -7,7 +7,7 @@ from django.test import TestCase, Client
 from rest_framework.test import APIClient
 
 from ticketvise.models.inbox import InboxSection, InboxUserSection, SchedulingAlgorithm, Inbox
-from ticketvise.models.ticket import Ticket
+from ticketvise.models.ticket import Ticket, Status
 from ticketvise.models.user import User, UserInbox, Role
 
 
@@ -79,16 +79,26 @@ class TicketTestCase(TestCase):
 
     def test_inbox_least_assigned_first_scheduling(self):
         """
-        Assign to least assigned assistant using inbox.
+        Assign to least assigned assistant using inbox assigned tickets.
 
         :return: None.
         """
         self.inbox.scheduling_algorithm = SchedulingAlgorithm.LEAST_ASSIGNED_FIRST
         self.inbox.save()
 
+        Ticket.objects.create(author=self.student, title="Ticket5", content="", inbox=self.inbox,
+                              status=Status.ANSWERED, assignee=self.assistant1)
+        Ticket.objects.create(author=self.student, title="Ticket6", content="", inbox=self.inbox,
+                              status=Status.ANSWERED, assignee=self.assistant1)
+        Ticket.objects.create(author=self.student, title="Ticket7", content="", inbox=self.inbox,
+                              status=Status.ANSWERED, assignee=self.assistant1)
+        Ticket.objects.create(author=self.student, title="Ticket8", content="", inbox=self.inbox,
+                              status=Status.ASSIGNED, assignee=self.assistant3)
+        Ticket.objects.create(author=self.student, title="Ticket9", content="", inbox=self.inbox,
+                              status=Status.ASSIGNED, assignee=self.assistant4)
         ticket = Ticket.objects.create(author=self.student, title="Ticket4", content="", inbox=self.inbox)
 
-        self.assertEqual(ticket.assignee, self.assistant1)
+        self.assertIn(ticket.assignee, [self.assistant1, self.assistant2])
 
     def test_inbox_fixed_scheduling(self):
         """

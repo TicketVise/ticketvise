@@ -60,7 +60,7 @@ def schedule_round_robin(ticket):
 
 def schedule_least_assigned_first(ticket):
     """
-    Assign a ticket to the assistant that is assigned the least number of tickets.
+    Assign a ticket to a random assistant that is assigned the least number of tickets.
 
     :param Ticket ticket: :class:`Ticket` that needs to be assigned.
 
@@ -68,18 +68,26 @@ def schedule_least_assigned_first(ticket):
     """
     inbox = ticket.inbox
     inbox_assistants = inbox.get_assignable_assistants_and_coordinators()
-    min_assignee = None
-    min_count = None
 
-    # Find the assistant that is assigned to the least number of tickets.
+    if not inbox_assistants:
+        ticket.assign_to(None)
+        return
+
+    min_assigned = []
+    min_count = float("inf")
+
+    # Find the assistants that are assigned to the least number of tickets.
     for assistant in inbox_assistants:
-        assigned_count = inbox.tickets.filter(assignee=assistant).count()
+        assigned_count = inbox.tickets.filter(assignee=assistant, status="ASGD").count()
 
-        if min_assignee is None or assigned_count < min_count:
-            min_assignee = assistant
-            min_count = assigned_count
+        if not min_assigned or assigned_count <= min_count:
+            if assigned_count == min_count or not min_assigned:
+                min_assigned.append(assistant)
+            else:
+                min_assigned = [assistant]
+                min_count = assigned_count
 
-    ticket.assign_to(min_assignee)
+    ticket.assign_to(random.choice(min_assigned))
 
 
 def schedule_sections(ticket):

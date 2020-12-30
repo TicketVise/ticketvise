@@ -820,31 +820,31 @@ class TicketTestBackendCase(TicketTestCase):
         }
 
         response = self.client.get(f"/api/inboxes/{self.inbox.id}/tickets", data=data)
-        queryset = Ticket.objects.filter(inbox=self.inbox).order_by("date_created")
+        response_data = json.loads(response.content)
 
-        json_data = JsonResponse(TicketSerializer(queryset, many=True, fields=(
-            "id", "title", "name", "assignee", "ticket_inbox_id", "date_created", "labels")).data, safe=False)
-        self.assertEqual(response.content, json_data.content)
+        self.assertEqual(len(response_data[0]["tickets"]), 3)
 
         data = {
             "q": "student2",
         }
 
         response = self.client.get(f"/api/inboxes/{self.inbox.id}/tickets", data=data)
-        queryset = Ticket.objects.filter(inbox=self.inbox, author=self.student2).order_by("date_created")
-        json_data = JsonResponse(TicketSerializer(queryset, many=True, fields=(
-            "id", "title", "name", "assignee", "ticket_inbox_id", "date_created", "labels")).data, safe=False)
-        self.assertEqual(response.content, json_data.content)
+        response_data = json.loads(response.content)
+
+        self.assertEqual(len(response_data[0]["tickets"]), 1)
+        self.assertContains(response, "Ticket3")
+        self.assertNotContains(response, "Ticket2")
 
         data = {
             "q": "Ticket3",
         }
 
         response = self.client.get(f"/api/inboxes/{self.inbox.id}/tickets", data=data)
-        queryset = Ticket.objects.filter(inbox=self.inbox, title="Ticket3").order_by("date_created")
-        json_data = JsonResponse(TicketSerializer(queryset, many=True, fields=(
-            "id", "title", "name", "assignee", "ticket_inbox_id", "date_created", "labels")).data, safe=False)
-        self.assertEqual(response.content, json_data.content)
+        response_data = json.loads(response.content)
+
+        self.assertEqual(len(response_data[0]["tickets"]), 1)
+        self.assertContains(response, "Ticket3")
+        self.assertNotContains(response, "Ticket2")
 
     def test_get_ticket_search_reply(self):
         self.client.force_login(self.student)
@@ -855,9 +855,10 @@ class TicketTestBackendCase(TicketTestCase):
         }
 
         response = self.client.get(f"/api/inboxes/{self.inbox.id}/tickets", data=data)
-        json_data = JsonResponse(TicketSerializer(self.ticket, fields=(
-            "id", "title", "name", "assignee", "ticket_inbox_id", "date_created", "labels")).data, safe=False)
-        self.assertEqual(response.content, b"[" + json_data.content + b"]")
+        response_data = json.loads(response.content)
+
+        self.assertEqual(len(response_data[1]["tickets"]), 1)
+        self.assertContains(response, "Ticket1")
 
     def test_get_ticket_search_comment_student(self):
         self.client.force_login(self.student)

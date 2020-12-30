@@ -14,6 +14,7 @@ import json
 
 from django.contrib.postgres.search import SearchVector, SearchQuery
 from django.core.exceptions import ValidationError
+from django.core.paginator import Paginator
 from django.db.models import Exists, OuterRef, Q
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
@@ -30,14 +31,15 @@ from ticketvise.models.label import Label
 from ticketvise.models.ticket import Ticket, TicketAttachment, TicketEvent, Status, TicketStatusEvent, \
     TicketAssigneeEvent, TicketLabelEvent, TicketLabel, TicketSharedUser
 from ticketvise.models.user import User, UserInbox, Role
-from ticketvise.views.api import AUTOCOMPLETE_MAX_ENTRIES, DynamicFieldsModelSerializer
+from ticketvise.views.admin import SuperUserRequiredMixin
+from ticketvise.views.api import DynamicFieldsModelSerializer
 from ticketvise.views.api.comment import CommentSerializer
 from ticketvise.views.api.inbox import InboxSerializer
 from ticketvise.views.api.labels import LabelSerializer
-from ticketvise.views.api.security import UserHasAccessToTicketMixin, \
-    UserIsInInboxPermission, UserIsInboxStaffPermission, UserIsTicketAuthorOrInboxStaffPermission, \
-    UserIsSuperUserPermission
+from ticketvise.views.api.security import UserHasAccessToTicketMixin, UserIsInboxStaffMixin, UserIsInInboxMixin, \
+    UserIsTicketAuthorOrInboxStaffMixin, UserIsAttachmentUploaderOrInboxStaffMixin
 from ticketvise.views.api.user import UserSerializer, RoleSerializer
+from ticketvise.views.notifications import unread_related_ticket_notifications
 
 
 class CreateTicketSerializer(ModelSerializer):
@@ -163,37 +165,24 @@ class TicketSerializer(DynamicFieldsModelSerializer):
                   "attachments"]
 
 
-class InboxTicketsApiView(APIView):
-    permission_classes = [UserIsInInboxPermission]
-
+class InboxTicketsApiView(UserIsInInboxMixin, ListAPIView):
     """
     Load the tickets connected to the given :class:`Inbox`.
     """
+    page_size = 25
 
-    def get(self, request, inbox_id):
-        """
-        Loads the tickets connected to the given inbox.
+    def get_queryset(self):
+        inbox = get_object_or_404(Inbox, pk=self.kwargs["inbox_id"])
+        show_personal = str(self.request.GET.get("show_personal", False)) == "true"
+        labels = list(map(int, self.request.GET.getlist("labels[]", [])))
+        q = self.request.GET.get("q", "")
 
-        :param HttpRequest request: The request.
-        :param int id: The id.
-
-        :return:  A list of tickets that are associated with the inbox.
-        :rtype: JsonResponse
-        """
-        q = request.GET.get("q", "")
-        size = int(request.GET.get("size", AUTOCOMPLETE_MAX_ENTRIES))
-        columns = str(request.GET.get("columns", False)) == "true"
-        show_personal = str(request.GET.get("show_personal", False)) == "true"
-        labels = list(map(int, request.GET.getlist("labels[]", [])))
-
-        inbox = get_object_or_404(Inbox, pk=inbox_id)
-        # Only search if q for improved speed.
         if q:
             query = SearchQuery(q)
 
             # Load comments and replies if permissions are right, else load only replies.
             is_reply = [True]
-            if request.user.is_assistant_or_coordinator(inbox) or request.user.is_superuser:
+            if self.request.user.is_assistant_or_coordinator(inbox) or self.request.user.is_superuser:
                 is_reply = [True, False]
 
             users = User.objects.annotate(search=SearchVector("first_name", "username", "last_name", "email")).filter(
@@ -201,7 +190,8 @@ class InboxTicketsApiView(APIView):
 
             replies = Comment.objects.annotate(search=SearchVector("content")).filter(search=query,
                                                                                       ticket__inbox=inbox,
-                                                                                      is_reply__in=is_reply).values("ticket")
+                                                                                      is_reply__in=is_reply).values(
+                "ticket")
 
             tickets = Ticket.objects.annotate(
                 search=SearchVector("title", "content", "ticket_inbox_id")).filter(search=query, inbox=inbox)
@@ -212,13 +202,14 @@ class InboxTicketsApiView(APIView):
         else:
             tickets = Ticket.objects.filter(inbox=inbox)
 
-        tickets.order_by("-date_created")
+        tickets = tickets.order_by("-date_created")
 
-        if not request.user.is_assistant_or_coordinator(inbox) and not request.user.is_superuser:
-            tickets = tickets.filter(author=request.user) | tickets.filter(shared_with__id__contains=request.user.id)
+        if not self.request.user.is_assistant_or_coordinator(inbox) and not self.request.user.is_superuser:
+            tickets = tickets.filter(author=self.request.user) | tickets.filter(
+                shared_with__id__contains=self.request.user.id)
         elif show_personal:
-            tickets = tickets.filter(assignee=request.user) | \
-                      tickets.filter(author=request.user) | \
+            tickets = tickets.filter(assignee=self.request.user) | \
+                      tickets.filter(author=self.request.user) | \
                       tickets.filter(assignee=None)
 
         if labels:
@@ -231,12 +222,44 @@ class InboxTicketsApiView(APIView):
 
             tickets = label_tickets.distinct()
 
-        if columns:
+        return tickets
+
+    def get(self, request, *args, **kwargs):
+        """
+        Loads the tickets connected to the given inbox.
+
+        :param HttpRequest request: The request.
+        :param int id: The id.
+
+        :return:  A list of tickets that are associated with the inbox.
+        :rtype: JsonResponse
+        """
+        inbox = get_object_or_404(Inbox, pk=kwargs["inbox_id"])
+        status = self.request.GET.get("status", "")
+        tickets = self.get_queryset()
+        page_num = self.request.GET.get("page", 1)
+
+        # If no status is given, return the first page of all status
+        if not status:
             return self.get_column_tickets(inbox, tickets)
 
-        serializer = TicketSerializer(tickets[:size], many=True, fields=(
-            "id", "title", "name", "assignee", "ticket_inbox_id", "date_created", "labels"))
-        return JsonResponse(serializer.data, safe=False)
+        # Get label from display name
+        status = [tag for tag, name in Status.choices if name == status]
+        if not status:
+            return self.handle_exception(LookupError)
+
+        status = status[0]
+
+        tickets = tickets.filter(status=status)
+        paginator = Paginator(tickets, self.page_size)
+
+        page = paginator.page(page_num)
+
+        return Response({
+            "results": TicketSerializer(page.object_list, many=True, fields=(
+                "id", "title", "name", "assignee", "ticket_inbox_id", "date_created", "labels")).data,
+            "has_next": page.has_next(),
+        })
 
     def get_column_tickets(self, inbox, query_set):
         """
@@ -248,10 +271,12 @@ class InboxTicketsApiView(APIView):
         """
         columns = [
             {
+                "has_next": len(query_set.filter(status=status)) > self.page_size,
+                "total": len(query_set.filter(status=status)),
+                "page_num": 1,
                 "label": status.label,
                 "tickets": TicketSerializer(
-                    query_set.filter(status=status)[:25] if status == Status.CLOSED else query_set.filter(
-                        status=status), many=True, fields=(
+                    query_set.filter(status=status)[:self.page_size], many=True, fields=(
                         "id", "title", "name", "assignee", "ticket_inbox_id", "date_created", "labels")).data
             } for status in Status if status != Status.PENDING
                                       or (inbox.scheduling_algorithm == SchedulingAlgorithm.FIXED
@@ -262,9 +287,7 @@ class InboxTicketsApiView(APIView):
         return JsonResponse(data=columns, safe=False)
 
 
-class TicketsApiView(APIView):
-    permission_classes = [UserIsSuperUserPermission]
-
+class TicketsApiView(SuperUserRequiredMixin, APIView):
     def get(self, request):
         data = {
             'tickets': Ticket.objects.count()
@@ -273,9 +296,7 @@ class TicketsApiView(APIView):
         return JsonResponse(data, safe=False)
 
 
-class TicketApiView(RetrieveAPIView):
-    permission_classes = [UserIsTicketAuthorOrInboxStaffPermission]
-
+class TicketApiView(UserHasAccessToTicketMixin, RetrieveAPIView):
     def get(self, request, *args, **kwargs):
         inbox = get_object_or_404(Inbox, pk=self.kwargs["inbox_id"])
         ticket = get_object_or_404(Ticket, inbox=inbox, ticket_inbox_id=self.kwargs["ticket_inbox_id"])
@@ -283,8 +304,7 @@ class TicketApiView(RetrieveAPIView):
 
         response = {}
 
-        # TODO:
-        # unread_related_ticket_notifications(ticket, request.user)
+        unread_related_ticket_notifications(ticket, request.user)
 
         if json.loads(request.GET.get("role", "false")):
             response["role"] = current_role
@@ -324,7 +344,7 @@ class TicketApiView(RetrieveAPIView):
         if request.user.is_assistant_or_coordinator(inbox):
             if json.loads(request.GET.get("staff", "false")):
                 staff = User.objects.filter(inbox_relationship__role__in=[Role.AGENT, Role.MANAGER],
-                                            inbox_relationship__inbox_id=self.kwargs["inbox_id"]) \
+                                            inbox_relationship__inbox_id=self.kwargs[self.inbox_key]) \
                     .values("first_name", "last_name", "username", "avatar_url", "id")
 
                 response["staff"] = staff
@@ -338,8 +358,7 @@ class TicketApiView(RetrieveAPIView):
         return Response(response)
 
 
-class RecentTicketApiView(ListAPIView):
-    permission_classes = [UserIsInboxStaffPermission]
+class RecentTicketApiView(UserIsInboxStaffMixin, ListAPIView):
     serializer_class = TicketSerializer
 
     def get_queryset(self):
@@ -349,8 +368,7 @@ class RecentTicketApiView(ListAPIView):
         return Ticket.objects.filter(author=author, inbox=inbox).order_by("-date_created")[:5]
 
 
-class TicketUpdateAssignee(UpdateAPIView):
-    permission_classes = [UserIsInboxStaffPermission]
+class TicketUpdateAssignee(UserIsInboxStaffMixin, UpdateAPIView):
     serializer_class = AssigneeUpdateSerializer
 
     def get_object(self):
@@ -367,8 +385,7 @@ class TicketLabelSerializer(ModelSerializer):
         fields = ["labels"]
 
 
-class TicketLabelApiView(UpdateAPIView):
-    permission_classes = [UserIsInboxStaffPermission]
+class TicketLabelApiView(UserIsInboxStaffMixin, UpdateAPIView):
     serializer_class = TicketLabelSerializer
 
     def get_object(self):
@@ -377,9 +394,7 @@ class TicketLabelApiView(UpdateAPIView):
         return Ticket.objects.get(inbox=inbox, ticket_inbox_id=self.kwargs["ticket_inbox_id"])
 
 
-class TicketAttachmentsApiView(CreateAPIView):
-    permission_classes = [UserIsTicketAuthorOrInboxStaffPermission]
-
+class TicketAttachmentsApiView(UserIsTicketAuthorOrInboxStaffMixin, CreateAPIView):
     def get_serializer(self, *args, **kwargs):
         return TicketSerializer(fields="attachments")
 
@@ -393,14 +408,12 @@ class TicketAttachmentsApiView(CreateAPIView):
         return Response()
 
 
-class AttachmentViewApiView(DestroyAPIView):
-    permission_classes = [UserIsTicketAuthorOrInboxStaffPermission]
+class AttachmentViewApiView(UserIsAttachmentUploaderOrInboxStaffMixin, DestroyAPIView):
     serializer_class = TicketAttachment
     queryset = TicketAttachment
 
 
-class CloseTicketApiView(APIView):
-    permission_classes = [UserIsInboxStaffPermission]
+class CloseTicketApiView(UserIsInboxStaffMixin, APIView):
 
     def patch(self, request, inbox_id, ticket_inbox_id):
         inbox = get_object_or_404(Inbox, pk=inbox_id)
@@ -412,8 +425,7 @@ class CloseTicketApiView(APIView):
         return Response()
 
 
-class OpenTicketApiView(APIView):
-    permission_classes = [UserIsInboxStaffPermission]
+class OpenTicketApiView(UserIsInboxStaffMixin, APIView):
 
     def patch(self, request, inbox_id, ticket_inbox_id):
         inbox = get_object_or_404(Inbox, pk=inbox_id)
@@ -425,8 +437,7 @@ class OpenTicketApiView(APIView):
         return Response()
 
 
-class TicketCreateApiView(CreateAPIView):
-    permission_classes = [UserIsInInboxPermission]
+class TicketCreateApiView(UserIsInInboxMixin, CreateAPIView):
     serializer_class = CreateTicketSerializer
 
     def perform_create(self, serializer):
@@ -504,9 +515,8 @@ class TicketEventSerializer(ModelSerializer):
         fields = "__all__"
 
 
-class TicketSharedAPIView(UpdateAPIView):
+class TicketSharedAPIView(UserIsTicketAuthorOrInboxStaffMixin, UpdateAPIView):
     serializer_class = TicketSharedWithUpdateSerializer
-    permission_classes = [UserIsTicketAuthorOrInboxStaffPermission]
 
     def get_object(self):
         inbox = get_object_or_404(Inbox, pk=self.kwargs["inbox_id"])

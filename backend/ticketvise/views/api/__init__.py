@@ -1,8 +1,5 @@
 from rest_framework import serializers
 
-AUTOCOMPLETE_MAX_ENTRIES = 10
-
-
 class DynamicFieldsModelSerializer(serializers.ModelSerializer):
     """
     A ModelSerializer that takes an additional `fields` argument that
