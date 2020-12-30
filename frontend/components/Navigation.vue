@@ -1,5 +1,5 @@
 <template>
-  <div v-on-clickaway="away">
+  <div>
     <nav class="bg-gray-800 sticky top-0 z-20"
          x-data="{ openProfile: false, openSupport: false, mobile: false, url: location.pathname }">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -27,7 +27,7 @@
               </div>
             </div>
           </div>
-          <div class="hidden md:block">
+          <div class="hidden md:block" v-on-clickaway="away">
             <div class="ml-4 flex items-center md:ml-6">
               <div class="relative flex">
                 <button type="button"
@@ -42,12 +42,12 @@
                   <button
                       class="relative cursor-pointer px-2 py-1 border-2 border-transparent text-gray-400 rounded-full
                     hover:text-white focus:outline-none focus:text-white focus:bg-gray-700"
-                      aria-label="Support" aria-haspopup="true" @click="openSupport = !openSupport">
+                      aria-label="Support" aria-haspopup="true" @click="toggleSupport()">
                     <i class="fa fa-question-circle text-xl" aria-hidden="true"></i>
                   </button>
                   <div class="origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg"
                        v-show="openSupport"
-                       @click="openSupport = false" x-transition:enter="transition ease-out duration-100"
+                       @click="toggleSupport()" x-transition:enter="transition ease-out duration-100"
                        x-transition:enter-start="transform opacity-0 scale-95"
                        x-transition:enter-end="transform opacity-100 scale-100"
                        x-transition:leave="transition ease-in duration-75"
@@ -94,7 +94,7 @@
                   <button
                       class="max-w-xs flex items-center text-sm rounded-full text-white focus:outline-none focus:shadow-solid"
                       id="user-menu" aria-label="User menu" aria-haspopup="true"
-                      @click="openProfile = !openProfile">
+                      @click="toggleProfile()">
                     <img class="h-8 w-8 rounded-full"
                          :src="user.avatar_url"
                          alt="User profile">
@@ -103,7 +103,7 @@
                 </div>
                 <div class="origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg"
                      v-show="openProfile"
-                     @click="openProfile = false" x-transition:enter="transition ease-out duration-100"
+                     @click="toggleProfile()" x-transition:enter="transition ease-out duration-100"
                      x-transition:enter-start="transform opacity-0 scale-95"
                      x-transition:enter-end="transform opacity-100 scale-100"
                      x-transition:leave="transition ease-in duration-75"
@@ -167,10 +167,10 @@
             <!--          {% endif %}-->
 
           </router-link>
-          <router-link v-if="user.is_superuser" href="/admin"
+          <router-link v-if="user.is_superuser" to="/admin"
                        class="block px-3 py-2 rounded-md text-base font-medium text-gray-300 hover:text-white hover:bg-gray-700
            focus:outline-none focus:text-white focus:bg-gray-700"
-                       :class="{ 'text-white bg-gray-900 ': url === '/admin'}">Admin
+                       active-class="text-white bg-gray-900">Admin
           </router-link>
         </div>
         <div class="pt-4 pb-3 border-t border-gray-700">
@@ -219,10 +219,19 @@ export default {
   }),
   methods: {
     away() {
-      console.log("xd")
       this.openProfile = false
       this.openSupport = false
       this.mobile = false
+    },
+    toggleProfile() {
+      this.openSupport = false
+      this.mobile = false
+      this.openProfile = !this.openProfile
+    },
+    toggleSupport() {
+      this.openSupport = !this.openSupport
+      this.mobile = false
+      this.openProfile = false
     },
     isFramed() {
       return window.self !== window.top

@@ -52,7 +52,7 @@
     },
     computed: {
       link: function () {
-        return `/api/inboxes/${this.$route.params.inboxId}/tickets/${this.ticket.ticket_inbox_id}`
+        return `/inboxes/${this.$route.params.inboxId}/tickets/${this.ticket.ticket_inbox_id}`
       }
     }
   }
