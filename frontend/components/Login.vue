@@ -3,7 +3,7 @@
     <div class="max-w-md w-full">
       <div>
         <div class="mx-auto flex items-center justify-center">
-          <img class="h-8 w-8" src="img/logo/logo.svg" alt="Logo">
+          <img class="h-8 w-8" src="/static/img/logo/logo.svg" alt="Logo">
           <span class="text-2xl ml-2 text-gray-800">Ticket</span><span
             class="text-2xl text-primary font-bold">Vise</span>
         </div>
@@ -47,7 +47,7 @@
         </div>
       </form>
       <p class="text-center text-gray-500 text-xs mt-2">
-        &copy;2020 TicketVise. All rights reserved.
+        &copy;<span v-text="new Date().getFullYear()"/> TicketVise. All rights reserved.
       </p>
     </div>
   </div>
