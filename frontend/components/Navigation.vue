@@ -59,12 +59,12 @@
                                    class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                                    role="menuitem">Getting started
                       </router-link>
-                      <router-link to="mailto:info@ticketvise.com?subject=Feedback&body=Hi%20TicketVise,"
+                      <a href="mailto:info@ticketvise.com?subject=Feedback&body=Hi%20TicketVise,"
                                    target="_blank"
                                    rel="noopener noreferrer"
                                    class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                                    role="menuitem">Send feedback
-                      </router-link>
+                      </a>
                     </div>
                   </div>
                 </div>
