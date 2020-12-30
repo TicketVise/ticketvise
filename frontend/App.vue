@@ -1,6 +1,6 @@
 <template>
   <div>
-    <navigation v-if="user && isAuthenticated" :user="user">
+    <navigation v-if="show_navigation">
       <router-view></router-view>
     </navigation>
     <router-view v-else></router-view>
@@ -15,23 +15,17 @@ import axios from "axios";
 export default {
   name: "App",
   components: {Navigation},
-  data: () => ({
-    user: null,
-  }),
   mounted() {
     const params = new URLSearchParams(window.location.search);
-    const token = params.get("token")
+    const token = params.get("token") || localStorage.getItem("token")
     if (token) {
       localStorage.setItem("token", token)
+      this.$store.dispatch("relogin")
     }
-
-    axios.get('/api/me').then(response => {
-      this.user = response.data
-    })
   },
   computed: {
-    isAuthenticated: function () {
-      return localStorage.getItem("token") !== null
+    show_navigation() {
+      return this.$store.getters.isAuthenticated
     }
   }
 }

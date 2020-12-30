@@ -37,7 +37,7 @@ axios.interceptors.request.use((config) => {
 });
 
 axios.interceptors.response.use(response => response, error => {
-    if (401 === error.response.status) {
+    if (error.response && error.response.status === 401) {
         store.dispatch("logout")
     } else {
         return Promise.reject(error);

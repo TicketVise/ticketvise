@@ -210,7 +210,6 @@ import {mixin as clickaway} from 'vue-clickaway'
 
 export default {
   name: "Navigation",
-  props: ["user"],
   mixins: [clickaway],
   data: () => ({
     openProfile: false,
@@ -238,6 +237,11 @@ export default {
     },
     logout() {
       this.$store.dispatch("logout")
+    }
+  },
+  computed: {
+    user() {
+      return this.$store.state.user
     }
   }
 }

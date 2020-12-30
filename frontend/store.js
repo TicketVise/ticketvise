@@ -7,17 +7,14 @@ Vue.use(Vuex)
 
 export default new Vuex.Store({
     state: {
-        token: localStorage.getItem('token') || '',
-        user: {},
+        user: null,
     },
     mutations: {
-        auth_success(state, token, user) {
-            state.token = token
+        auth_success(state, user) {
             state.user = user
         },
         unauth_success(state) {
-            state.token = ''
-            state.user = {}
+            state.user = null
         },
     },
     actions: {
@@ -33,8 +30,22 @@ export default new Vuex.Store({
                         const token = resp.data.token
                         const user = resp.data.user
                         localStorage.setItem('token', token)
-                        commit('auth_success', token, user)
-                        router.push({ path: 'inboxes', query: { plan: 'private' } })
+                        commit('auth_success', user)
+                        router.push({path: 'inboxes'})
+                        resolve(resp)
+                    })
+                    .catch(err => {
+                        localStorage.removeItem('token')
+                        reject(err)
+                    })
+            })
+        },
+        relogin({commit}) {
+            return new Promise((resolve, reject) => {
+                axios.get('/api/me')
+                    .then(resp => {
+                        commit('auth_success', resp.data)
+                        router.push({path: 'inboxes'})
                         resolve(resp)
                     })
                     .catch(err => {
@@ -46,10 +57,10 @@ export default new Vuex.Store({
         logout({commit}) {
             localStorage.removeItem('token')
             commit('unauth_success')
-            router.push({ path: 'login' })
+            router.push({path: 'login'})
         }
     },
     getters: {
-        isAuthenticated: state => !!state.token,
+        isAuthenticated: state => !!state.user,
     }
 })
