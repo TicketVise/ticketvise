@@ -11,7 +11,7 @@ import Users from "./components/inbox/Users";
 import User from "./components/inbox/User";
 import Labels from "./components/inbox/Labels";
 import Label from "./components/inbox/Label";
-import Profile from "./components/profile/Profile";
+import Account from "./components/account/Account";
 import Admin from "./components/admin/Admin";
 import store from "./store";
 
@@ -30,7 +30,7 @@ const router = new VueRouter({
         {path: "/inboxes/:inboxId/users/:userId", component: User},
         {path: "/inboxes/:inboxId/labels", component: Labels},
         {path: "/inboxes/:inboxId/labels/:labelId", component: Label},
-        {path: "/profile", component: Profile},
+        {path: "/account", component: Account},
         {path: "/admin", component: Admin}
     ]
 })
