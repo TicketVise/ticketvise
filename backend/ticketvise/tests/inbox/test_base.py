@@ -12,9 +12,11 @@ class BaseTestCase(InboxTestCase):
         """
         self.client.force_authenticate(self.assistant)
 
-        for template_name, args in self.template_names:
+        template_names = set(self.template_names) - {"api_inbox_settings"}
+
+        for template_name, args in template_names:
             response = self.client.get(reverse(template_name, args=args))
-            self.assertEqual(response.status_code, 403)
+            self.assertEqual(response.status_code, 200)
 
     def test_inbox_coordinator_200(self):
         """
