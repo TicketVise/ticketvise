@@ -74,8 +74,7 @@ class CommentTestCase(TicketTestCase):
         }
 
         response = self.client.post(
-            f"/api/inboxes/{self.inbox.id}/tickets/{self.ticket.ticket_inbox_id}/comments/post", data,
-            follow=True)
+            f"/api/inboxes/{self.inbox.id}/tickets/{self.ticket.ticket_inbox_id}/comments/post", )
         self.assertEqual(response.status_code, 403)
 
     def test_post_comment_as_shared_with(self):
@@ -89,8 +88,7 @@ class CommentTestCase(TicketTestCase):
         }
 
         response = self.client.post(
-            f"/api/inboxes/{self.inbox.id}/tickets/{self.ticket2.ticket_inbox_id}/comments/post", data,
-            follow=True)
+            f"/api/inboxes/{self.inbox.id}/tickets/{self.ticket2.ticket_inbox_id}/comments/post", )
         self.assertEqual(response.status_code, 403)
 
     def test_post_comment_as_author(self):
@@ -104,7 +102,7 @@ class CommentTestCase(TicketTestCase):
         }
 
         response = self.client.post(
-            f"/api/inboxes/{self.inbox.id}/tickets/{self.ticket.ticket_inbox_id}/comments/post", data, follow=True)
+            f"/api/inboxes/{self.inbox.id}/tickets/{self.ticket.ticket_inbox_id}/comments/post", data)
         self.assertEqual(response.status_code, 403)
 
     def test_post_comment_as_ta_in_inbox(self):
@@ -119,7 +117,7 @@ class CommentTestCase(TicketTestCase):
         }
 
         response = self.client.post(
-            f"/api/inboxes/{self.inbox.id}/tickets/{self.ticket.ticket_inbox_id}/comments/post", data, follow=True)
+            f"/api/inboxes/{self.inbox.id}/tickets/{self.ticket.ticket_inbox_id}/comments/post", data)
         self.assertEqual(response.status_code, 201)
         self.assertNotEqual(Comment.objects.count(), count)
 
@@ -134,7 +132,7 @@ class CommentTestCase(TicketTestCase):
         }
 
         response = self.client.post(
-            f"/api/inboxes/{self.inbox.id}/tickets/{self.ticket.ticket_inbox_id}/comments/post", data, follow=True)
+            f"/api/inboxes/{self.inbox.id}/tickets/{self.ticket.ticket_inbox_id}/comments/post", data)
         self.assertEqual(response.status_code, 403)
 
     def test_get_replies_as_student(self):
@@ -144,7 +142,7 @@ class CommentTestCase(TicketTestCase):
         self.client.force_authenticate(self.student3)
 
         response = self.client.get(f"/api/inboxes/{self.inbox.id}/tickets/{self.ticket.ticket_inbox_id}",
-                                   {"replies": "true"}, follow=True)
+                                   {"replies": "true"})
         self.assertEqual(response.status_code, 403)
 
     def test_get_replies_as_shared_with(self):
@@ -154,7 +152,7 @@ class CommentTestCase(TicketTestCase):
         self.client.force_authenticate(self.student2)
 
         response = self.client.get(f"/api/inboxes/{self.inbox.id}/tickets/{self.ticket2.ticket_inbox_id}",
-                                   {"replies": "true"}, follow=True)
+                                   {"replies": "true"})
         self.assertEqual(response.status_code, 200)
 
     def test_get_replies_as_author(self):
@@ -164,7 +162,7 @@ class CommentTestCase(TicketTestCase):
         self.client.force_authenticate(self.student)
 
         response = self.client.get(f"/api/inboxes/{self.inbox.id}/tickets/{self.ticket.ticket_inbox_id}",
-                                   {"replies": "true"}, follow=True)
+                                   {"replies": "true"})
         self.assertEqual(response.status_code, 200)
 
     def test_get_replies_as_ta_in_inbox(self):
@@ -174,7 +172,7 @@ class CommentTestCase(TicketTestCase):
         self.client.force_authenticate(self.assistant)
 
         response = self.client.get(f"/api/inboxes/{self.inbox.id}/tickets/{self.ticket.ticket_inbox_id}",
-                                   {"replies": "true"}, follow=True)
+                                   {"replies": "true"})
         self.assertEqual(response.status_code, 200)
 
     def test_get_replies_as_ta_not_in_inbox(self):
@@ -184,7 +182,7 @@ class CommentTestCase(TicketTestCase):
         self.client.force_authenticate(self.assistant2)
 
         response = self.client.get(f"/api/inboxes/{self.inbox.id}/tickets/{self.ticket.ticket_inbox_id}",
-                                   {"replies": "true"}, follow=True)
+                                   {"replies": "true"})
         self.assertEqual(response.status_code, 403)
 
     def test_post_replies_as_student(self):
@@ -198,8 +196,7 @@ class CommentTestCase(TicketTestCase):
         }
 
         response = self.client.post(
-            f"/api/inboxes/{self.inbox.id}/tickets/{self.ticket.ticket_inbox_id}/replies/post", data,
-            follow=True)
+            f"/api/inboxes/{self.inbox.id}/tickets/{self.ticket.ticket_inbox_id}/replies/post", data)
         self.assertEqual(response.status_code, 403)
 
     def test_post_replies_as_shared_with(self):
@@ -216,8 +213,7 @@ class CommentTestCase(TicketTestCase):
         }
 
         response = self.client.post(
-            f"/api/inboxes/{self.inbox.id}/tickets/{self.ticket2.ticket_inbox_id}/replies/post", data,
-            follow=True)
+            f"/api/inboxes/{self.inbox.id}/tickets/{self.ticket2.ticket_inbox_id}/replies/post", data)
         self.assertEqual(response.status_code, 201)
         self.assertNotEqual(Comment.objects.count(), count)
         self.assertEqual(Ticket.objects.get(pk=self.ticket2.id).status, Status.ASSIGNED)
@@ -236,7 +232,7 @@ class CommentTestCase(TicketTestCase):
         }
 
         response = self.client.post(
-            f"/api/inboxes/{self.inbox.id}/tickets/{self.ticket.ticket_inbox_id}/replies/post", data, follow=True)
+            f"/api/inboxes/{self.inbox.id}/tickets/{self.ticket.ticket_inbox_id}/replies/post", data)
         self.assertEqual(response.status_code, 201)
         self.assertNotEqual(Comment.objects.count(), count)
         self.assertEqual(Ticket.objects.get(pk=self.ticket.id).status, Status.ASSIGNED)
@@ -256,7 +252,7 @@ class CommentTestCase(TicketTestCase):
         }
 
         response = self.client.post(
-            f"/api/inboxes/{self.inbox.id}/tickets/{self.ticket.ticket_inbox_id}/replies/post", data, follow=True)
+            f"/api/inboxes/{self.inbox.id}/tickets/{self.ticket.ticket_inbox_id}/replies/post", data)
         self.assertEqual(response.status_code, 201)
         self.assertNotEqual(Comment.objects.count(), count)
         self.assertEqual(Ticket.objects.get(pk=self.ticket.id).status, Status.ANSWERED)
@@ -277,7 +273,7 @@ class CommentTestCase(TicketTestCase):
         }
 
         response = self.client.post(
-            f"/api/inboxes/{self.inbox.id}/tickets/{self.ticket.ticket_inbox_id}/replies/post", data, follow=True)
+            f"/api/inboxes/{self.inbox.id}/tickets/{self.ticket.ticket_inbox_id}/replies/post", data)
         self.assertEqual(response.status_code, 201)
         self.assertNotEqual(Comment.objects.count(), count)
         self.assertTrue(Ticket.objects.get(pk=self.ticket.id).assignee, self.assistant)
@@ -294,7 +290,7 @@ class CommentTestCase(TicketTestCase):
         }
 
         response = self.client.post(
-            f"/api/inboxes/{self.inbox.id}/tickets/{self.ticket.ticket_inbox_id}/replies/post", data, follow=True)
+            f"/api/inboxes/{self.inbox.id}/tickets/{self.ticket.ticket_inbox_id}/replies/post", data)
         self.assertEqual(response.status_code, 403)
 
     def test_reopen_ticket_pending_student(self):
@@ -313,7 +309,7 @@ class CommentTestCase(TicketTestCase):
         }
 
         response = self.client.post(
-            f"/api/inboxes/{self.inbox.id}/tickets/{self.ticket.ticket_inbox_id}/replies/post", data, follow=True)
+            f"/api/inboxes/{self.inbox.id}/tickets/{self.ticket.ticket_inbox_id}/replies/post", data)
         self.assertEqual(response.status_code, 201)
         self.assertNotEqual(Comment.objects.count(), count)
 
@@ -337,7 +333,7 @@ class CommentTestCase(TicketTestCase):
         }
 
         response = self.client.post(
-            f"/api/inboxes/{self.inbox.id}/tickets/{self.ticket.ticket_inbox_id}/replies/post", data, follow=True)
+            f"/api/inboxes/{self.inbox.id}/tickets/{self.ticket.ticket_inbox_id}/replies/post", data)
         self.assertEqual(response.status_code, 201)
         self.assertNotEqual(Comment.objects.count(), count)
 

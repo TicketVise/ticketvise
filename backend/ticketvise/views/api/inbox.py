@@ -211,15 +211,16 @@ class CurrentUserInboxSerializer(ModelSerializer):
         fields = ["id", "role", "role_label", "inbox", "is_bookmarked"]
 
 
-class CurrentUserInboxesApiView(ListAPIView):
+class CurrentUserInboxesApiView(ListCreateAPIView):
     serializer_class = CurrentUserInboxSerializer
 
     def get_queryset(self):
         return UserInbox.objects.filter(user=self.request.user).order_by("-date_created")
 
-    def post(self, request):
-        if request.POST.get("inbox_id"):
-            inbox = Inbox.objects.get(pk=request.POST["inbox_id"])
+    def post(self, request, **kwargs):
+        inbox_id = request.POST.get("inbox_id")
+        if inbox_id:
+            inbox = Inbox.objects.get(pk=inbox_id)
             if not request.user.has_inbox(inbox):
                 raise ValueError(f"User is not assigned to or enrolled in inbox {inbox}")
 

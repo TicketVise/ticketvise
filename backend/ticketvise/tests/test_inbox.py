@@ -2,6 +2,7 @@ import json
 
 from django.test import TransactionTestCase, Client
 from django.urls import reverse
+from rest_framework.test import APIClient
 
 from ticketvise.models.inbox import Inbox
 from ticketvise.models.ticket import Ticket, Status
@@ -10,7 +11,7 @@ from ticketvise.models.user import User, Role
 
 class InboxTestCase(TransactionTestCase):
     def setUp(self):
-        self.client = Client()
+        self.client = APIClient()
         self.inbox = Inbox.objects.create(name="TestInbox", code="TestCode", color="#FF6600")
 
         self.student = User.objects.create(username="student", password="test12345", email="student@ticketvise.com")
@@ -29,7 +30,7 @@ class InboxTestCase(TransactionTestCase):
                                                 inbox=self.inbox, status=Status.ASSIGNED)
 
     def test_inbox_page_200(self):
-        self.client.force_login(self.student)
+        self.client.force_authenticate(self.student)
         response = self.client.get(reverse("api_inbox_tickets", args=[self.inbox.id]))
         self.assertEqual(response.status_code, 200)
 
@@ -38,12 +39,12 @@ class InboxTestCase(TransactionTestCase):
         self.assertEqual(response.status_code, 401)
 
     def test_error_dispatch(self):
-        self.client.force_login(self.student2)
+        self.client.force_authenticate(self.student2)
         response = self.client.get(reverse("api_inbox_tickets", args=[self.inbox.id]))
         self.assertEqual(response.status_code, 403)
 
     def test_load_partial(self):
-        self.client.force_login(self.assistant)
+        self.client.force_authenticate(self.assistant)
 
         response = self.client.get(f"/api/inboxes/{self.inbox.id}/tickets?show_personal=false")
         self.assertEqual(response.status_code, 200)

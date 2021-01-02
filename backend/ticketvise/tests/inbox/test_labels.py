@@ -64,7 +64,7 @@ class LabelsTest(InboxTestCase):
             "is_active": "true"
         }
 
-        response = self.client.post(reverse("api_new_inbox_label", args=(self.inbox.id,)), data, follow=True)
+        response = self.client.post(reverse("api_new_inbox_label", args=(self.inbox.id,)), data)
         self.assertEqual(response.status_code, 201)
         self.assertTrue(Label.objects.filter(name=data["name"]).exists())
 
@@ -81,7 +81,7 @@ class LabelsTest(InboxTestCase):
             "is_active": "true"
         }
 
-        response = self.client.post(reverse("api_new_inbox_label", args=(self.inbox.id,)), data, follow=True)
+        response = self.client.post(reverse("api_new_inbox_label", args=(self.inbox.id,)), )
         self.assertEqual(response.status_code, 403)
         self.assertFalse(Label.objects.filter(name=data["name"]).exists())
 
@@ -98,7 +98,7 @@ class LabelsTest(InboxTestCase):
             "is_active": "true"
         }
 
-        response = self.client.post(reverse("api_new_inbox_label", args=(self.inbox.id,)), data, follow=True)
+        response = self.client.post(reverse("api_new_inbox_label", args=(self.inbox.id,)), )
         self.assertEqual(response.status_code, 403)
         self.assertFalse(Label.objects.filter(name=data["name"]).exists())
 
@@ -115,7 +115,7 @@ class LabelsTest(InboxTestCase):
             "is_active": "true"
         }
 
-        response = self.client.post(reverse("api_new_inbox_label", args=(self.inbox.id,)), data, follow=True)
+        response = self.client.post(reverse("api_new_inbox_label", args=(self.inbox.id,)), )
         self.assertEqual(response.status_code, 400)
         self.assertFalse(Label.objects.filter(name=data["name"]).exists())
 

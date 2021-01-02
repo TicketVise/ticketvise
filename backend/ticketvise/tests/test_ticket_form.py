@@ -23,7 +23,7 @@ class TicketFormTestAPI(APITestCase, TicketTestCase):
             "shared_with": []
         }
 
-        response = self.client.post(url, data, format='json', follow=True)
+        response = self.client.post(url, data)
         self.assertEqual(response.status_code, 201)
         self.assertEqual(response.data, data)
 
@@ -40,7 +40,7 @@ class TicketFormTestAPI(APITestCase, TicketTestCase):
             "attachments": file
         }
 
-        response = self.client.post(url, data, format='json', follow=True)
+        response = self.client.post(url, data)
         self.assertEqual(response.status_code, 201)
 
     def test_create_ticket_shared(self):
@@ -55,7 +55,7 @@ class TicketFormTestAPI(APITestCase, TicketTestCase):
             "shared_with": [self.student2.id]
         }
 
-        response = self.client.post(url, data, format='json', follow=True)
+        response = self.client.post(url, data)
         self.assertEqual(response.status_code, 201)
         self.assertEqual(response.data, data)
 
@@ -71,6 +71,6 @@ class TicketFormTestAPI(APITestCase, TicketTestCase):
             "shared_with": [self.assistant.id]
         }
 
-        response = self.client.post(url, data, format='json', follow=True)
+        response = self.client.post(url, data)
         self.assertEqual(response.status_code, 400)
         self.assertEqual(response.data, {"shared_with": ["This ticket cannot be shared with one of these users"]})

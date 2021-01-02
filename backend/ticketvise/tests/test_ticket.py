@@ -270,7 +270,7 @@ class TicketTestBackendCase(TicketTestCase):
         self.client.force_authenticate(self.assistant)
 
         response = self.client.put(f"/api/inboxes/{self.inbox.id}/tickets/{self.ticket.ticket_inbox_id}/assignee",
-                                   data={"assignee": self.assistant3.id}, content_type="application/json")
+                                   data={"assignee": self.assistant3.id})
         self.assertEqual(response.status_code, 200)
 
         ticket = Ticket.objects.get(pk=self.ticket.id)
@@ -283,7 +283,7 @@ class TicketTestBackendCase(TicketTestCase):
         self.client.force_authenticate(self.assistant2)
 
         response = self.client.put(f"/api/inboxes/{self.inbox.id}/tickets/{self.ticket.ticket_inbox_id}/assignee",
-                                   data={"assignee": self.assistant.id}, content_type="application/json")
+                                   data={"assignee": self.assistant.id})
         self.assertEqual(response.status_code, 403)
 
         ticket = Ticket.objects.get(pk=self.ticket.id)
@@ -299,7 +299,7 @@ class TicketTestBackendCase(TicketTestCase):
         self.ticket.save()
 
         response = self.client.put(f"/api/inboxes/{self.inbox.id}/tickets/{self.ticket.ticket_inbox_id}/assignee",
-                                   data={"assignee": self.assistant3.id}, content_type="application/json")
+                                   data={"assignee": self.assistant3.id})
         self.assertEqual(response.status_code, 200)
 
         ticket = Ticket.objects.get(pk=self.ticket.id)
@@ -315,7 +315,7 @@ class TicketTestBackendCase(TicketTestCase):
         self.ticket.save()
 
         response = self.client.put(f"/api/inboxes/{self.inbox.id}/tickets/{self.ticket.ticket_inbox_id}/assignee",
-                                   data={"assignee": None}, content_type="application/json")
+                                   {"assignee": ""})
         self.assertEqual(response.status_code, 200)
 
         ticket = Ticket.objects.get(pk=self.ticket.id)
@@ -329,7 +329,7 @@ class TicketTestBackendCase(TicketTestCase):
         self.client.force_authenticate(self.assistant)
 
         response = self.client.put(f"/api/inboxes/{self.inbox.id}/tickets/{self.ticket.ticket_inbox_id}/assignee",
-                                   data={"assignee": self.student.id}, content_type="application/json")
+                                   data={"assignee": self.student.id})
         self.assertEqual(response.status_code, 400)
 
     def test_put_shared_with_as_author(self):
@@ -339,7 +339,7 @@ class TicketTestBackendCase(TicketTestCase):
         self.client.force_authenticate(self.student)
 
         response = self.client.put(f"/api/inboxes/{self.inbox.id}/tickets/{self.ticket.ticket_inbox_id}/shared",
-                                   data={"shared_with": [self.student3.id]}, content_type="application/json")
+                                   data={"shared_with": [self.student3.id]})
         self.assertEqual(response.status_code, 200)
 
         ticket = Ticket.objects.get(pk=self.ticket.id)
@@ -352,7 +352,7 @@ class TicketTestBackendCase(TicketTestCase):
         self.client.force_authenticate(self.student2)
 
         response = self.client.put(f"/api/inboxes/{self.inbox.id}/tickets/{self.ticket2.ticket_inbox_id}/shared",
-                                   data={"shared_with": [self.student3.id]}, content_type="application/json")
+                                   data={"shared_with": [self.student3.id]})
         self.assertEqual(response.status_code, 403)
 
         ticket = Ticket.objects.get(pk=self.ticket.id)
@@ -365,7 +365,7 @@ class TicketTestBackendCase(TicketTestCase):
         self.client.force_authenticate(self.assistant)
 
         response = self.client.put(f"/api/inboxes/{self.inbox.id}/tickets/{self.ticket.ticket_inbox_id}/shared",
-                                   data={"shared_with": [self.student3.id]}, content_type="application/json")
+                                   data={"shared_with": [self.student3.id]})
         self.assertEqual(response.status_code, 200)
 
         ticket = Ticket.objects.get(pk=self.ticket.id)
@@ -378,7 +378,7 @@ class TicketTestBackendCase(TicketTestCase):
         self.client.force_authenticate(self.assistant2)
 
         response = self.client.put(f"/api/inboxes/{self.inbox.id}/tickets/{self.ticket.ticket_inbox_id}/shared",
-                                   data={"shared_with": [self.student3.id]}, content_type="application/json")
+                                   data={"shared_with": [self.student3.id]})
         self.assertEqual(response.status_code, 403)
 
         ticket = Ticket.objects.get(pk=self.ticket.id)
@@ -391,7 +391,7 @@ class TicketTestBackendCase(TicketTestCase):
         self.client.force_authenticate(self.student)
 
         response = self.client.get(f"/api/inboxes/{self.inbox.id}/tickets/{self.ticket2.ticket_inbox_id}",
-                                   {"ticket": "true"}, )
+                                   {"ticket": "true"})
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "student2")
         self.assertContains(response, "student3")
@@ -402,7 +402,7 @@ class TicketTestBackendCase(TicketTestCase):
         """
         self.client.force_authenticate(self.student2)
         response = self.client.get(f"/api/inboxes/{self.inbox.id}/tickets/{self.ticket2.ticket_inbox_id}",
-                                   {"ticket": "true"}, )
+                                   {"ticket": "true"})
 
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, self.student2.username)
@@ -414,7 +414,7 @@ class TicketTestBackendCase(TicketTestCase):
         self.client.force_authenticate(self.assistant)
 
         response = self.client.get(f"/api/inboxes/{self.inbox.id}/tickets/{self.ticket2.ticket_inbox_id}",
-                                   {"ticket": "true"}, )
+                                   {"ticket": "true"})
         self.assertEqual(response.status_code, 200)
         self.assertTrue(UserSerializer(self.student2, fields=(
             ["first_name", "last_name", "username", "avatar_url", "id"])).data in response.data["ticket"]["shared_with"])
@@ -425,7 +425,7 @@ class TicketTestBackendCase(TicketTestCase):
         """
         self.client.force_authenticate(self.assistant2)
         response = self.client.get(f"/api/inboxes/{self.inbox.id}/tickets/{self.ticket2.ticket_inbox_id}",
-                                   {"ticket": "true"}, )
+                                   {"ticket": "true"})
 
         self.assertEqual(response.status_code, 403)
 
@@ -470,7 +470,7 @@ class TicketTestBackendCase(TicketTestCase):
         self.ticket.save()
 
         response = self.client.get(f"/api/inboxes/{self.inbox.id}/tickets/{self.ticket.ticket_inbox_id}",
-                                   {"ticket": "true"}, follow=True)
+                                   {"ticket": "true"})
         self.assertEqual(response.status_code, 200)
         self.assertNotContains(response, "username: " + self.ticket.assignee.username)
 
@@ -478,7 +478,7 @@ class TicketTestBackendCase(TicketTestCase):
         self.inbox.save()
 
         response = self.client.get(f"/api/inboxes/{self.inbox.id}/tickets/{self.ticket.ticket_inbox_id}",
-                                   {"ticket": "true"}, follow=True)
+                                   {"ticket": "true"})
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, self.ticket.assignee.username)
 
@@ -496,7 +496,7 @@ class TicketTestBackendCase(TicketTestCase):
             self.ticket.save()
 
             response = self.client.get(f"/api/inboxes/{self.inbox.id}/tickets/{self.ticket.ticket_inbox_id}",
-                                       {"ticket": "true"}, follow=True)
+                                       {"ticket": "true"})
             self.assertEqual(response.status_code, 200)
             self.assertContains(response, self.ticket.assignee.username)
 
@@ -504,7 +504,7 @@ class TicketTestBackendCase(TicketTestCase):
             self.inbox.save()
 
             response = self.client.get(f"/api/inboxes/{self.inbox.id}/tickets/{self.ticket.ticket_inbox_id}",
-                                       {"ticket": "true"}, follow=True)
+                                       {"ticket": "true"})
             self.assertEqual(response.status_code, 200)
             self.assertContains(response, self.ticket.assignee.username)
 
@@ -817,7 +817,7 @@ class TicketTestBackendCase(TicketTestCase):
             "q": "student2",
         }
 
-        response = self.client.get(f"/api/inboxes/{self.inbox.id}/tickets", data=data)
+        response = self.client.get(f"/api/inboxes/{self.inbox.id}/tickets", data)
         response_data = json.loads(response.content)
 
         self.assertEqual(len(response_data[0]["tickets"]), 1)
@@ -828,7 +828,7 @@ class TicketTestBackendCase(TicketTestCase):
             "q": "Ticket3",
         }
 
-        response = self.client.get(f"/api/inboxes/{self.inbox.id}/tickets", data=data)
+        response = self.client.get(f"/api/inboxes/{self.inbox.id}/tickets", data)
         response_data = json.loads(response.content)
 
         self.assertEqual(len(response_data[0]["tickets"]), 1)
@@ -836,21 +836,21 @@ class TicketTestBackendCase(TicketTestCase):
         self.assertNotContains(response, "Ticket2")
 
     def test_get_ticket_search_reply(self):
-        self.client.force_login(self.student)
+        self.client.force_authenticate(self.student)
         Comment.objects.create(ticket=self.ticket, author=self.assistant, content="Elephant", is_reply=True)
 
         data = {
             "q": "elephant",
         }
 
-        response = self.client.get(f"/api/inboxes/{self.inbox.id}/tickets", data=data)
+        response = self.client.get(f"/api/inboxes/{self.inbox.id}/tickets", data)
         response_data = json.loads(response.content)
 
         self.assertEqual(len(response_data[1]["tickets"]), 1)
         self.assertContains(response, "Ticket1")
 
     def test_get_ticket_search_comment_student(self):
-        self.client.force_login(self.student)
+        self.client.force_authenticate(self.student)
         Comment.objects.create(ticket=self.ticket, author=self.assistant, content="Fairy tale", is_reply=False)
 
         data = {

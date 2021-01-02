@@ -176,8 +176,7 @@ class NotificationsTestCase(TestCase):
                 for suffix in ["mail", "app"]:
                     data[key + "_" + suffix] = b
 
-            response = self.client.put("/api/me/settings", data, follow=True,
-                                       content_type="application/json")
+            response = self.client.put("/api/me/settings", data)
             self.assertEqual(response.status_code, 200)
             updated_user = User.objects.get(pk=self.ta.id)
             self.ticket.author = self.ta2
@@ -515,7 +514,7 @@ class NotificationsTestCase(TestCase):
         Notification.objects.all().delete()
 
         response = self.client.put(f"/api/inboxes/{self.inbox.id}/tickets/{self.ticket.ticket_inbox_id}/assignee",
-                                   data={"assignee": self.ta.id}, content_type="application/json")
+                                   data={"assignee": self.ta.id})
         self.assertEqual(response.status_code, 200)
 
         ticket = Ticket.objects.get(pk=self.ticket.id)
@@ -533,7 +532,7 @@ class NotificationsTestCase(TestCase):
         Notification.objects.all().delete()
 
         response = self.client.put(f"/api/inboxes/{self.inbox.id}/tickets/{self.ticket.ticket_inbox_id}/assignee",
-                                   data={"assignee": self.ta.id}, content_type="application/json")
+                                   data={"assignee": self.ta.id})
         self.assertEqual(response.status_code, 200)
 
         ticket = Ticket.objects.get(pk=self.ticket.id)

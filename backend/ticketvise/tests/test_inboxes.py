@@ -56,7 +56,7 @@ class InboxConfigureTestCase(TestCase):
 
         :return: None.
         """
-        self.client.login(username=self.coordinator.username, password="test12345")
+        self.client.force_authenticate(self.coordinator)
         inbox = create_inbox("TestInbox", "TestInbox")
         self.coordinator.add_inbox(inbox, Role.MANAGER)
         response = self.client.get(reverse("api_me_inboxes"))
@@ -68,7 +68,7 @@ class InboxConfigureTestCase(TestCase):
 
         :return: None
         """
-        self.client.login(username=self.coordinator.username, password="test12345")
+        self.client.force_authenticate(self.coordinator)
         inbox = create_inbox("TestInbox", "TestInbox")
         self.coordinator.add_inbox(inbox, Role.MANAGER)
         relation = self.coordinator.get_entry_by_inbox(inbox)
@@ -79,14 +79,14 @@ class InboxConfigureTestCase(TestCase):
         }
 
         # Check if bookmarked can be flipped to true
-        response = self.client.post("/api/me/inboxes", urlencode(data))
+        response = self.client.post(reverse("api_me_inboxes"), data)
         self.assertTrue(response.status_code, 200)
 
         relation = self.coordinator.get_entry_by_inbox(inbox)
         self.assertTrue(relation.is_bookmarked)
 
         # Check if bookrmarked can be flipped to false
-        response = self.client.post("/api/me/inboxes", urlencode(data))
+        response = self.client.post(reverse("api_me_inboxes"), data)
         self.assertTrue(response.status_code, 200)
 
         relation = self.coordinator.get_entry_by_inbox(inbox)
@@ -105,14 +105,13 @@ class InboxConfigureTestCase(TestCase):
         }
 
         with self.assertRaises(ValueError):
-            self.client.post("/api/me/inboxes", urlencode(data))
+            self.client.post("/api/me/inboxes", data)
 
     def test_inbox_sorting(self):
         """
         Test if Inboxes are sorted by user joined date
         """
-
-        self.client.force_login(self.student)
+        self.client.force_authenticate(self.student)
 
         inbox1 = create_inbox("TestInbox1", "TestInbox1")
         inbox2 = create_inbox("TestInbox2", "TestInbox2")
@@ -121,7 +120,8 @@ class InboxConfigureTestCase(TestCase):
         self.student.add_inbox(inbox3, Role.GUEST)
         self.student.add_inbox(inbox2, Role.GUEST)
 
-        response = self.client.get("/api/me/inboxes")
+        response = self.client.get(reverse("api_me_inboxes"))
+        self.assertTrue(response.status_code, 200)
 
         self.assertEqual(response.data[0]["inbox"]["name"], "TestInbox2")
         self.assertEqual(response.data[1]["inbox"]["name"], "TestInbox3")
