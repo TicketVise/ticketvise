@@ -24,6 +24,7 @@ from ticketvise.views.api.user import UserSerializer, UserInboxSerializer
 
 class InboxSerializer(DynamicFieldsModelSerializer):
     labels = serializers.SerializerMethodField()
+    coordinator = serializers.SerializerMethodField()
 
     def get_labels(self, obj):
         user = CurrentUserMiddleware.get_current_user()
@@ -35,12 +36,15 @@ class InboxSerializer(DynamicFieldsModelSerializer):
 
         return LabelSerializer(labels, many=True, read_only=False).data
 
+    def get_coordinator(self, obj):
+        return UserSerializer(obj.get_coordinator()).data
+
     class Meta:
         model = Inbox
         fields = [
             "name", "id", "color", "labels", "image", "scheduling_algorithm", "code", "show_assignee_to_guest",
             "fixed_scheduling_assignee", "is_active", "date_created", "close_answered_weeks",
-            "alert_coordinator_unanswered_days"
+            "alert_coordinator_unanswered_days", "coordinator"
         ]
 
 
@@ -200,7 +204,7 @@ class InboxSettingsApiView(RetrieveUpdateAPIView):
 
 
 class CurrentUserInboxSerializer(ModelSerializer):
-    inbox = InboxSerializer(fields=["name", "id", "color", "labels", "image", "code"])
+    inbox = InboxSerializer(fields=["name", "id", "color", "labels", "image", "code", "coordinator"])
     role_label = serializers.SerializerMethodField()
 
     def get_role_label(self, user_inbox):
