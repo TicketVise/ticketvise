@@ -27,6 +27,8 @@
   import Error from "../elements/message/Error";
   import Attachment from "./Attachment";
 
+  import axios from 'axios'
+
   export default {
     components: {
       Attachment,
