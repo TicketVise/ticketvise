@@ -1,5 +1,5 @@
 <template>
-  <div class="h-screen items-stretch overflow-y-hidden">
+  <div class="items-stretch overflow-y-hidden">
     <div class="flex flex-row flex-grow h-full max-w-full pt-16 -mt-16">
       <!-- Side Menu -->
       <div class="min-w-side max-w-side border-r hidden lg:flex flex-col flex-grow">

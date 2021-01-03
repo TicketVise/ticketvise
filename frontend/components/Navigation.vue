@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="flex flex-col h-screen">
     <nav class="bg-gray-800 sticky top-0 z-20"
          x-data="{ openProfile: false, openSupport: false, mobile: false, url: location.pathname }">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
