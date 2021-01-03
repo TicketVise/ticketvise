@@ -118,7 +118,7 @@ export default {
       this.performSearch()
     }, 250),
     getLabelUrl: function (label) {
-      return `/api/inboxes/${this.$route.params.inboxId}/labels/${label.id}`
+      return `/inboxes/${this.$route.params.inboxId}/labels/${label.id}`
     },
   }
 }
