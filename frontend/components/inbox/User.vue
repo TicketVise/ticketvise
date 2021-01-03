@@ -129,6 +129,7 @@ export default {
   mounted() {
     const inboxId = this.$route.params.inboxId
     const userId = this.$route.params.userId
+
     axios.get(`/api/inboxes/${inboxId}/users/${userId}`).then(response => {
       this.inbox_user = response.data
     })
@@ -136,7 +137,9 @@ export default {
   methods: {
     onSave: function () {
       const inboxId = this.$route.params.inboxId
-      axios.put(`/api/inboxes/${inboxId}/users/${this.inbox_user.id}`, this.inbox_user).then(_ => history.back())
+      const userId = this.$route.params.userId
+
+      axios.put(`/api/inboxes/${inboxId}/users/${userId}`, this.inbox_user).then(_ => history.back())
     },
     onCancel: function () {
       window.history.back();
@@ -144,7 +147,9 @@ export default {
     onDelete: function () {
       if (confirm('Are you sure?')) {
         const inboxId = this.$route.params.inboxId
-        axios.delete(`/api/inboxes/${inboxId}/users/${this.inbox_user.id}`).then(_ => history.back())
+        const userId = this.$route.params.userId
+
+        axios.delete(`/api/inboxes/${inboxId}/users/${userId}`).then(_ => history.back())
       }
     }
   }
