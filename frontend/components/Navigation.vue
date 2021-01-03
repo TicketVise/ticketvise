@@ -111,8 +111,8 @@
                      x-transition:leave-end="transform opacity-0 scale-95" style="display: none">
                   <div class="py-1 rounded-md bg-white shadow-xs" role="menu" aria-orientation="vertical"
                        aria-labelledby="user-menu">
-                    <router-link to="/profile" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                                 role="menuitem">Your Profile
+                    <router-link to="/account" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                                 role="menuitem">Account
                     </router-link>
                     <a href="#" @click="logout()" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                                  role="menuitem">Sign out
@@ -184,10 +184,10 @@
             </div>
           </div>
           <div class="mt-3 px-2 space=y-1">
-            <router-link to="/profile"
+            <router-link to="/account"
                          class="block px-3 py-2 rounded-md text-base font-medium text-gray-400 hover:text-white hover:bg-gray-700
              focus:outline-none focus:text-white focus:bg-gray-700">Your
-              Profile
+              Account
             </router-link>
                     <a href="#" @click="logout()"
                          class="block px-3 py-2 rounded-md text-base font-medium text-gray-400 hover:text-white hover:bg-gray-700

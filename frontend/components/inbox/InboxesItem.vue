@@ -21,6 +21,8 @@
 </template>
 
 <script>
+import axios from "axios";
+
 export default {
   props: {
     inbox: {
@@ -32,12 +34,7 @@ export default {
     onBookmarkClick: function (inbox) {
       inbox.is_bookmarked = !inbox.is_bookmarked
 
-      axios.defaults.xsrfCookieName = 'csrftoken'
-      axios.defaults.xsrfHeaderName = "X-CSRFTOKEN"
-
-      const formdata = new FormData()
-      formdata.append('inbox_id', inbox.inbox.id)
-      axios.post('/api/me/inboxes', formdata)
+      axios.post('/api/me/inboxes', {"inbox_id": inbox.inbox.id})
     }
   }
 }
