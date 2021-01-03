@@ -14,6 +14,7 @@ import Label from "./components/inbox/Label";
 import Account from "./components/account/Account";
 import Admin from "./components/admin/Admin";
 import store from "./store";
+import Inbox from "./components/inbox/Inbox";
 
 const router = new VueRouter({
     routes: [
@@ -21,15 +22,21 @@ const router = new VueRouter({
         {path: "/", component: Inboxes},
         {path: "/login", component: Login, name: "Login"},
         {path: "/inboxes", component: Inboxes, name: "Inboxes"},
-        {path: "/inboxes/:inboxId/tickets", component: TicketOverview, name: "Inbox"},
-        {path: "/inboxes/:inboxId/tickets/new", component: TicketForm},
+        {
+            path: "/inboxes/:inboxId",
+            component: Inbox,
+            children: [
+                {path: "tickets", component: TicketOverview, name: "Inbox"},
+                {path: "tickets/new", component: TicketForm},
+                {path: "statistics", component: InboxStatistics},
+                {path: "settings", component: InboxSettings},
+                {path: "users", component: Users},
+                {path: "users/:userId", component: User},
+                {path: "labels", component: Labels},
+                {path: "labels/:labelId", component: Label},
+            ]
+        },
         {path: "/inboxes/:inboxId/tickets/:ticketInboxId", component: Ticket},
-        {path: "/inboxes/:inboxId/statistics", component: InboxStatistics},
-        {path: "/inboxes/:inboxId/settings", component: InboxSettings},
-        {path: "/inboxes/:inboxId/users", component: Users},
-        {path: "/inboxes/:inboxId/users/:userId", component: User},
-        {path: "/inboxes/:inboxId/labels", component: Labels},
-        {path: "/inboxes/:inboxId/labels/:labelId", component: Label},
         {path: "/account", component: Account},
         {path: "/admin", component: Admin}
     ]

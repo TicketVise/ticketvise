@@ -5,7 +5,7 @@ from django.db.models import Case, BooleanField, When, Q
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
 from rest_framework import serializers
-from rest_framework.generics import ListAPIView, RetrieveUpdateDestroyAPIView, ListCreateAPIView
+from rest_framework.generics import ListAPIView, RetrieveUpdateDestroyAPIView, ListCreateAPIView, RetrieveAPIView
 from rest_framework.generics import RetrieveUpdateAPIView
 from rest_framework.response import Response
 from rest_framework.serializers import ModelSerializer
@@ -229,3 +229,12 @@ class CurrentUserInboxesApiView(ListCreateAPIView):
             relation.save()
 
         return Response()
+
+
+class CurrentUserInboxApiView(RetrieveAPIView):
+    serializer_class = CurrentUserInboxSerializer
+    permission_classes = [UserIsInInboxPermission]
+
+    def get_object(self):
+        inbox = get_object_or_404(Inbox, pk=self.kwargs["inbox_id"])
+        return get_object_or_404(UserInbox, inbox=inbox, user=self.request.user)

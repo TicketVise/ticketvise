@@ -56,10 +56,10 @@
       <div class="relative h-full flex-grow">
         <div class="m-4 mt-2 xl:flex xl:items-center xl:justify-between">
           <div class="flex-1 min-w-0">
-            <a :href="`/inboxes/${ticket.inbox}/tickets`" class="text-xs text-gray-700 hover:underline cursor-pointer">
+            <router-link :to="`/inboxes/${ticket.inbox}/tickets`" class="text-xs text-gray-700 hover:underline cursor-pointer">
               <i class="fa fa-arrow-left mr-2"></i>
               {{ inbox ? inbox.name : '' }}
-            </a>
+            </router-link>
             <h2 class="text-2xl font-bold leading-7 text-gray-900 xl:text-3xl xl:leading-9">
               #{{ ticket.ticket_inbox_id }} - {{ ticket.title }}
             </h2>
