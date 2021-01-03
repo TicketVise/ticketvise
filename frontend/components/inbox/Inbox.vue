@@ -9,7 +9,7 @@
             <img class="h-10 w-10 rounded-full" :src="user.avatar_url" alt="Account image">
           </div>
           <div class="ml-3">
-            <div class="text-base font-bold leading-none text-gray-900">{{ user.full_name }}</div>
+            <div class="text-base font-bold leading-none text-gray-900">{{ user.first_name + " " + user.last_name }}</div>
             <div class="mt-1 text-sm leading-none text-gray-600">{{ user.email }}</div>
           </div>
         </div>
