@@ -31,7 +31,7 @@
     "@toast-ui/editor-plugin-code-syntax-highlight": "^1.0.0",
     "@toast-ui/vue-editor": "^2.4.0",
     "alpinejs": "^2.7.0",
-    "axios": "^0.19.2",
+    "axios": "^0.21.1",
     "chart.js": "^2.9.3",
     "font-awesome": "^4.7.0",
     "highlight.js": "^10.2.1",
