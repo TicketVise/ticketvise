@@ -1,7 +1,6 @@
 <template>
   <div class="flex flex-col h-screen">
-    <nav class="bg-gray-800 sticky top-0 z-20"
-         x-data="{ openProfile: false, openSupport: false, mobile: false, url: location.pathname }">
+    <nav class="bg-gray-800 sticky top-0 z-20">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex items-center justify-between h-16">
           <div class="flex items-center">
@@ -46,19 +45,13 @@
                     <i class="fa fa-question-circle text-xl" aria-hidden="true"></i>
                   </button>
                   <div class="origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg"
-                       v-show="openSupport"
-                       @click="toggleSupport()" x-transition:enter="transition ease-out duration-100"
-                       x-transition:enter-start="transform opacity-0 scale-95"
-                       x-transition:enter-end="transform opacity-100 scale-100"
-                       x-transition:leave="transition ease-in duration-75"
-                       x-transition:leave-start="transform opacity-100 scale-100"
-                       x-transition:leave-end="transform opacity-0 scale-95" style="display: none">
+                       v-show="openSupport" @click="toggleSupport()">
                     <div class="py-1 rounded-md bg-white shadow-xs" role="menu" aria-orientation="vertical"
                          aria-labelledby="user-menu">
-                      <router-link to="https://ticketvise.com/getting-started/" target="_blank"
+                      <a href="https://ticketvise.com/getting-started/" target="_blank"
                                    class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                                    role="menuitem">Getting started
-                      </router-link>
+                      </a>
                       <a href="mailto:info@ticketvise.com?subject=Feedback&body=Hi%20TicketVise,"
                          target="_blank"
                          rel="noopener noreferrer"
@@ -102,13 +95,7 @@
 
                 </div>
                 <div class="origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg"
-                     v-show="openProfile"
-                     @click="toggleProfile()" x-transition:enter="transition ease-out duration-100"
-                     x-transition:enter-start="transform opacity-0 scale-95"
-                     x-transition:enter-end="transform opacity-100 scale-100"
-                     x-transition:leave="transition ease-in duration-75"
-                     x-transition:leave-start="transform opacity-100 scale-100"
-                     x-transition:leave-end="transform opacity-0 scale-95" style="display: none">
+                     v-show="openProfile" @click="toggleProfile()">
                   <div class="py-1 rounded-md bg-white shadow-xs" role="menu" aria-orientation="vertical"
                        aria-labelledby="user-menu">
                     <router-link to="/account" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
