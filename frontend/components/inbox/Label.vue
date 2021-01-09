@@ -87,6 +87,7 @@
 
 <script>
 import axios from "axios";
+import router from "../../router";
 
 export default {
   name: "Label",
@@ -110,7 +111,7 @@ export default {
         "#9061F9"
     ]
 
-    if (window.location.pathname.includes("new")) {
+    if (window.location.hash.includes("new")) {
       this.label = {
         id: null,
         name: "",
@@ -134,17 +135,17 @@ export default {
 
       if (this.label.id) {
         axios.put(`/api/inboxes/${inboxId}/labels/${labelId}`, this.label).then(_ => {
-          history.back()
+          router.push({name: "InboxLabels", params: {inboxId: inboxId}})
         })
       } else {
-        axios.post(`/api/inboxes/${inboxId}/labels/${labelId}`.replace("/new", ""), this.label).then(_ => {
-          history.back()
+        axios.post(`/api/inboxes/${inboxId}/labels/${labelId}`, this.label).then(_ => {
+          router.push({name: "InboxLabels", params: {inboxId: inboxId}})
         })
       }
 
     },
     onCancel: function () {
-      window.history.back();
+      router.push({name: "InboxLabels", params: {inboxId: this.$route.params.labelId}})
     },
     onDelete: function () {
       const inboxId = this.$route.params.inboxId
@@ -152,7 +153,7 @@ export default {
 
       if (confirm('Are you sure?')) {
         axios.delete(`/api/inboxes/${inboxId}/labels/${labelId}`).then(_ => {
-          history.back()
+          router.push({name: "InboxLabels", params: {inboxId: inboxId}})
         })
       }
     }
