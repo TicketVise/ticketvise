@@ -111,17 +111,16 @@
 </template>
 
 <script>
+import axios from "axios";
+import store from "../../store";
+
 export default {
   data: () => ({
-    user: null,
     settings: []
   }),
   mounted() {
-    axios.get('/api/me').then(response => {
-      this.user = response.data;
-      axios.get('/api/me/settings').then(response => {
-        this.settings = response.data
-      })
+    axios.get('/api/me/settings').then(response => {
+      this.settings = response.data
     })
   },
   methods: {
@@ -129,6 +128,11 @@ export default {
       axios.put('/api/me/settings', this.settings).then(response => {
         this.settings = response.data
       })
+    }
+  },
+  computed: {
+    user() {
+      return store.state.user
     }
   }
 }
