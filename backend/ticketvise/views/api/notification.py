@@ -48,7 +48,10 @@ class NotificationFlipRead(UpdateAPIView):
     queryset = Notification
 
     def put(self, request, *args, **kwargs):
-        Notification.objects.filter(pk=self.kwargs["pk"]).update(is_read=Q(is_read=False))
+        notification = get_object_or_404(Notification, pk=self.kwargs["pk"], receiver=request.user)
+        notification.is_read = not notification.is_read
+        notification.save()
+
         return Response()
 
 

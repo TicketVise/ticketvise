@@ -21,6 +21,7 @@
   import Avatar from "../elements/Avatar";
   import axios from "axios"
   import {calendarDate} from "../../utils";
+  import Vue from "vue";
 
   export default {
     name: "NotificationCard",
@@ -45,14 +46,11 @@
     methods: {
       date: calendarDate,
       flipRead() {
-        let formData = new FormData;
-        formData.append("is_read", this.notification.is_read ? "False" : "True");
+        axios.put("/api/notifications/" + this.notification.id + "/read")
 
-        axios.put("/api/notifications/" + this.notification.id + "/read", formData).then(response => {
-          Vue.set(this.notification, 'is_read', response.data.is_read)
-          this.read = !this.read
-          this.$emit("input")
-        })
+        Vue.set(this.notification, 'is_read', this.notification.is_read)
+        this.read = !this.read
+        this.$emit("input")
       }
     }
   }
