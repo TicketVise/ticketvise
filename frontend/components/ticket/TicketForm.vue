@@ -109,7 +109,6 @@
             'Content-Type': 'multipart/form-data'
           }
         }).then(resp => {
-          console.log(resp.data)
           router.push({name: "Ticket", params: {inboxId: inboxId, ticketInboxId: resp.data.ticket_inbox_id}})
         }).catch(error => {
           this.errors = error.response.data

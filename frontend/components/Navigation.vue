@@ -26,7 +26,8 @@
               </div>
             </div>
           </div>
-          <div class="hidden md:block" v-on-clickaway="away">
+          <div v-on-clickaway="away">
+            <div class="hidden md:block">
             <div class="ml-4 flex items-center md:ml-6">
               <div class="relative flex">
                 <button type="button"
@@ -114,8 +115,7 @@
             <button
                 class="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-white
               hover:bg-gray-700 focus:outline-none focus:bg-gray-700 focus:text-white transition duration-150
-              ease-in-out"
-                aria-label="Main menu" aria-expanded="false" @click="mobile = !mobile">
+              ease-in-out" @click="toggleMobile()">
               <!-- Icon when menu is closed. -->
               <!-- Menu open: "hidden", Menu closed: "block" -->
               <svg class="block h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -130,10 +130,11 @@
               </svg>
             </button>
           </div>
+          </div>
         </div>
       </div>
 
-      <div v-show="mobile" style="display: none" @click="mobile = false">
+      <div v-show="openMobile" @click="toggleMobile()">
         <div class="px-2 pt-2 pb-3 sm:px-3 space-y-1">
           <router-link to="/inboxes"
                        class="block px-3 py-2 rounded-md text-base font-medium text-gray-300 hover:text-white hover:bg-gray-700
@@ -201,22 +202,27 @@ export default {
   data: () => ({
     openProfile: false,
     openSupport: false,
-    mobile: false
+    openMobile: false
   }),
   methods: {
     away() {
       this.openProfile = false
       this.openSupport = false
-      this.mobile = false
+      this.openMobile = false
     },
     toggleProfile() {
       this.openSupport = false
-      this.mobile = false
+      this.openMobile = false
       this.openProfile = !this.openProfile
     },
     toggleSupport() {
       this.openSupport = !this.openSupport
-      this.mobile = false
+      this.openMobile = false
+      this.openProfile = false
+    },
+    toggleMobile() {
+      this.openSupport = false
+      this.openMobile = !this.openMobile
       this.openProfile = false
     },
     isFramed() {
