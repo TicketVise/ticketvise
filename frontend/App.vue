@@ -20,12 +20,13 @@ export default {
     const token = params.get("token") || localStorage.getItem("token")
     const inboxId = params.get("inbox_id")
     if (token) {
-      localStorage.setItem("token", token)
-      this.$store.dispatch("relogin", inboxId)
-    }
+      // Remove parameters from URL if LTI launch (in this case token is a query param)
+      if (params.get("token")) {
+        window.history.replaceState({}, document.title, "/");
+      }
 
-    // remove parameters from URL
-    window.history.replaceState({}, document.title, "/");
+      this.$store.dispatch("relogin", {token, inboxId})
+    }
   },
   computed: {
     show_navigation() {

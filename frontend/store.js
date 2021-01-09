@@ -7,14 +7,21 @@ Vue.use(Vuex)
 
 export default new Vuex.Store({
     state: {
-        user: null,
+        token: localStorage.getItem('token'),
+        user: {},
     },
     mutations: {
         auth_success(state, user) {
             state.user = user
         },
+        update_token(state, token) {
+            localStorage.setItem("token", token)
+            state.token = token
+        },
         unauth_success(state) {
-            state.user = null
+            localStorage.removeItem('token')
+            state.user = {}
+            state.token = null
         },
     },
     actions: {
@@ -27,42 +34,44 @@ export default new Vuex.Store({
 
                 axios.post('/api/login', data)
                     .then(resp => {
-                        localStorage.setItem('token', resp.data.token)
+                        commit("update_token", resp.data.token)
                         commit('auth_success', resp.data.user)
                         router.push({name: 'Inboxes'})
                         resolve(resp)
                     })
                     .catch(err => {
-                        localStorage.removeItem('token')
+                        commit('unauth_success')
                         reject(err)
                     })
             })
         },
-        relogin({commit}, inboxIdValue) {
+        relogin({commit}, {token, inboxId}) {
+            commit("update_token", token)
+
             return new Promise((resolve, reject) => {
                 axios.get('/api/me')
                     .then(resp => {
                         commit('auth_success', resp.data)
-                        if (inboxIdValue) {
-                            router.push({name: 'Inbox', params: {inboxId: inboxIdValue}})
-                        } else {
+                        if (inboxId) {
+                            router.push({name: 'Inbox', params: {inboxId: inboxId}})
+                        } else if (!window.location.hash) {
                             router.push({name: 'Inboxes'})
                         }
+
                         resolve(resp)
                     })
                     .catch(err => {
-                        localStorage.removeItem('token')
+                        commit('unauth_success')
                         reject(err)
                     })
             })
         },
         logout({commit}) {
-            localStorage.removeItem('token')
             commit('unauth_success')
             router.push({name: 'Login'})
         }
     },
     getters: {
-        isAuthenticated: state => !!state.user,
+        isAuthenticated: state => !!state.token
     }
 })

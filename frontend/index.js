@@ -28,9 +28,8 @@ if (typeof SENTRY_DSN !== 'undefined') {
 }
 
 axios.interceptors.request.use((config) => {
-    const token = localStorage.getItem("token")
-    if (token) {
-        config.headers["Authorization"] = "Token " + token
+    if (store.getters.isAuthenticated) {
+        config.headers["Authorization"] = "Token " + store.state.token
     }
 
     return config;
