@@ -18,8 +18,8 @@ import Inbox from "./components/inbox/Inbox";
 
 const router = new VueRouter({
     routes: [
-        {path: "/notifications", component: Notifications},
-        {path: "/", component: Inboxes},
+        {path: "/notifications", component: Notifications, name: "Notifications"},
+        {path: "/", component: Inboxes, name: "Home"},
         {path: "/login", component: Login, name: "Login"},
         {path: "/inboxes", component: Inboxes, name: "Inboxes"},
         {
@@ -27,18 +27,18 @@ const router = new VueRouter({
             component: Inbox,
             children: [
                 {path: "tickets", component: TicketOverview, name: "Inbox"},
-                {path: "tickets/new", component: TicketForm},
-                {path: "statistics", component: InboxStatistics},
-                {path: "settings", component: InboxSettings},
-                {path: "users", component: Users},
-                {path: "users/:userId", component: User},
-                {path: "labels", component: Labels},
-                {path: "labels/:labelId", component: Label},
+                {path: "tickets/new", component: TicketForm, name: "NewTicket"},
+                {path: "statistics", component: InboxStatistics, name: "InboxStatistics"},
+                {path: "settings", component: InboxSettings, name: "InboxSettings"},
+                {path: "users", component: Users, name: "InboxUsers"},
+                {path: "users/:userId", component: User, name: "InboxUser"},
+                {path: "labels", component: Labels, name: "InboxLabels"},
+                {path: "labels/:labelId", component: Label, name: "InboxLabel"},
             ]
         },
-        {path: "/inboxes/:inboxId/tickets/:ticketInboxId", component: Ticket},
-        {path: "/account", component: Account},
-        {path: "/admin", component: Admin}
+        {path: "/inboxes/:inboxId/tickets/:ticketInboxId", component: Ticket, name: "Ticket"},
+        {path: "/account", component: Account, name: "Account"},
+        {path: "/admin", component: Admin, name: "Admin"}
     ]
 })
 

@@ -48,6 +48,7 @@ class CreateTicketSerializer(ModelSerializer):
     """
     labels = serializers.PrimaryKeyRelatedField(many=True, queryset=Label.objects.all())
     shared_with = serializers.PrimaryKeyRelatedField(many=True, queryset=User.objects.all())
+    ticket_inbox_id = serializers.IntegerField(read_only=True)
 
     class Meta:
         """
@@ -60,10 +61,10 @@ class CreateTicketSerializer(ModelSerializer):
         #: Tells the serializer to use the :class:`Ticket` model.
         model = Ticket
         #: Tells the serializer to use these fields from the :class:`Ticket` model.
-        fields = ["inbox", "title", "content", "labels", "shared_with"]
+        fields = ["ticket_inbox_id", "title", "content", "labels", "shared_with"]
 
     def validate_shared_with(self, shared_with):
-        inbox = get_object_or_404(Inbox, pk=int(self.get_initial()["inbox"]))
+        inbox = self.context["inbox"]
         for user in shared_with:
             if not user.has_inbox(inbox) or user.is_assistant_or_coordinator(inbox):
                 raise ValidationError("This ticket cannot be shared with one of these users")
@@ -454,8 +455,15 @@ class TicketCreateApiView(CreateAPIView):
     permission_classes = [UserIsInInboxPermission]
     serializer_class = CreateTicketSerializer
 
+    def get_serializer_context(self):
+        context = super().get_serializer_context()
+        context["inbox"] = get_object_or_404(Inbox, pk=self.kwargs["inbox_id"])
+
+        return context
+
     def perform_create(self, serializer):
-        ticket = serializer.save(author=self.request.user)
+        inbox = get_object_or_404(Inbox, pk=self.kwargs["inbox_id"])
+        ticket = serializer.save(author=self.request.user, inbox=inbox)
 
         for file in self.request.FILES.getlist('files'):
             TicketAttachment(ticket=ticket, file=file).save()
