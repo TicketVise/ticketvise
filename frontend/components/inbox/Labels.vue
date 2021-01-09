@@ -3,11 +3,11 @@
 
     <div class="flex w-full p-2 sm:px-0 sm:pb-4 space-x-2">
       <search-bar v-model="query" v-on:input="search" class="flex-grow px-2 my-2"/>
-      <a type="button" :href="add_url"
+      <router-link type="button" :to="add_url"
          class="inline-flex items-center px-4 my-2 border border-transparent text-sm leading-5 font-medium rounded-md text-white bg-primary hover:bg-orange-500 focus:outline-none focus:shadow-outline-orange focus:border-orange-700 active:bg-orange-700 transition duration-150 ease-in-out">
         <i class="fa fa-plus mr-2"></i>
         Add
-      </a>
+      </router-link>
     </div>
 
     <div class="flex flex-col">
@@ -98,7 +98,7 @@ export default {
   },
   computed: {
     add_url: function () {
-      return `/api/inboxes/${this.$route.params.inboxId}/labels/new`
+      return `/inboxes/${this.$route.params.inboxId}/labels/new`
     }
   },
   methods: {
