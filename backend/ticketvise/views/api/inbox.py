@@ -77,7 +77,7 @@ class AllInboxLabelsApiView(ListAPIView):
 class InboxLabelsApiView(ListCreateAPIView):
     serializer_class = LabelSerializer
     pagination_class = StandardResultsSetPagination
-    permission_classes = [UserIsInboxManagerPermission]
+    permission_classes = [UserIsInboxStaffPermission]
 
     def get_queryset(self):
         inbox = get_object_or_404(Inbox, pk=self.kwargs["inbox_id"])
@@ -153,7 +153,7 @@ class UpdateUserInboxSerializer(ModelSerializer):
 
 
 class UserInboxApiView(RetrieveUpdateDestroyAPIView):
-    permission_classes = [UserIsInboxManagerPermission]
+    permission_classes = [UserIsInboxStaffPermission]
 
     def get_serializer_class(self):
         if self.request.method == "PUT":
@@ -168,7 +168,7 @@ class UserInboxApiView(RetrieveUpdateDestroyAPIView):
 
 class InboxLabelApiView(RetrieveUpdateDestroyAPIView):
     serializer_class = LabelSerializer
-    permission_classes = [UserIsInboxManagerPermission]
+    permission_classes = [UserIsInboxStaffPermission]
 
     def get_object(self):
         inbox = get_object_or_404(Inbox, pk=self.kwargs["inbox_id"])
@@ -177,7 +177,7 @@ class InboxLabelApiView(RetrieveUpdateDestroyAPIView):
 
 class InboxSettingsApiView(RetrieveUpdateAPIView):
     queryset = Inbox
-    permission_classes = [UserIsInboxManagerPermission]
+    permission_classes = [UserIsInboxStaffPermission]
     lookup_url_kwarg = "inbox_id"
 
     def get_serializer(self, *args, **kwargs):

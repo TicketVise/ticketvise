@@ -15,13 +15,13 @@ from ticketvise.models.label import Label
 from ticketvise.models.ticket import Ticket, TicketStatusEvent, Status
 from ticketvise.models.user import User, Role, UserInbox
 from ticketvise.statistics import get_average_response_time
-from ticketvise.views.api.security import UserIsInboxManagerPermission
+from ticketvise.views.api.security import UserIsInboxManagerPermission, UserIsInboxStaffPermission
 from ticketvise.views.api.ticket import LabelSerializer
 from ticketvise.views.api.user import UserSerializer
 
 
 class InboxTicketsPerDateTypeStatisticsApiView(APIView):
-    permission_classes = [UserIsInboxManagerPermission]
+    permission_classes = [UserIsInboxStaffPermission]
     truncaters = [TruncYear, TruncMonth, TruncWeek, TruncDate]
     extracters = [ExtractHour]
 
@@ -76,7 +76,7 @@ class InboxAverageAgentResponseTimeSerializer(ModelSerializer):
 
 
 class InboxAverageAgentResponseTimeStatisticsApiView(APIView):
-    permission_classes = [UserIsInboxManagerPermission]
+    permission_classes = [UserIsInboxStaffPermission]
 
     def get(self, request, inbox_id):
         inbox = get_object_or_404(Inbox, pk=inbox_id)
@@ -100,7 +100,7 @@ class InboxAverageAgentResponseTimeStatisticsApiView(APIView):
 
 
 class InboxStatisticsApiView(APIView):
-    permission_classes = [UserIsInboxManagerPermission]
+    permission_classes = [UserIsInboxStaffPermission]
 
     def get(self, request, inbox_id):
         inbox = get_object_or_404(Inbox, pk=inbox_id)
@@ -149,7 +149,7 @@ class InboxStatisticsApiView(APIView):
 
 
 class InboxAverageTimeToCloseStatisticsApiView(APIView):
-    permission_classes = [UserIsInboxManagerPermission]
+    permission_classes = [UserIsInboxStaffPermission]
 
     def get(self, request, inbox_id):
         inbox = get_object_or_404(Inbox, pk=inbox_id)
@@ -175,7 +175,7 @@ class LabelWithCountSerializer(ModelSerializer):
 
 
 class LabelsCountStatisticsApiView(APIView):
-    permission_classes = [UserIsInboxManagerPermission]
+    permission_classes = [UserIsInboxStaffPermission]
 
     def get(self, request, inbox_id):
         inbox = get_object_or_404(Inbox, pk=inbox_id)
