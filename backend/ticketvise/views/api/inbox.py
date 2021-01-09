@@ -222,7 +222,7 @@ class CurrentUserInboxesApiView(ListCreateAPIView):
         return UserInbox.objects.filter(user=self.request.user).order_by("-date_created")
 
     def post(self, request, **kwargs):
-        inbox_id = request.POST.get("inbox_id")
+        inbox_id = request.data.get("inbox_id")
         if inbox_id:
             inbox = Inbox.objects.get(pk=inbox_id)
             if not request.user.has_inbox(inbox):
