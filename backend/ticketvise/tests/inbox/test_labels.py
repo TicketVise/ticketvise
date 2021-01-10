@@ -26,8 +26,8 @@ class LabelsTest(InboxTestCase):
 
         response = self.client.delete(reverse("api_inbox_label", args=(self.label.inbox.id, self.label.id)),
                                       follow=True)
-        self.assertEqual(response.status_code, 403)
-        self.assertTrue(Label.objects.filter(pk=self.label.id).exists())
+        self.assertEqual(response.status_code, 204)
+        self.assertFalse(Label.objects.filter(pk=self.label.id).exists())
 
     def test_delete_label_as_student(self):
         """
@@ -81,24 +81,24 @@ class LabelsTest(InboxTestCase):
             "is_active": "true"
         }
 
-        response = self.client.post(reverse("api_new_inbox_label", args=(self.inbox.id,)), )
-        self.assertEqual(response.status_code, 403)
-        self.assertFalse(Label.objects.filter(name=data["name"]).exists())
+        response = self.client.post(reverse("api_new_inbox_label", args=(self.inbox.id,)), data)
+        self.assertEqual(response.status_code, 201)
+        self.assertTrue(Label.objects.filter(name=data["name"]).exists())
 
     def test_add_label_as_student(self):
         """
         Test to verify a student is unable to create a label.
         """
-        self.client.force_authenticate(self.assistant)
+        self.client.force_authenticate(self.student)
 
         data = {
             "name": "test_name",
             "color": "#ff3333",
-            "is_visible_to_guest": "true",
-            "is_active": "true"
+            "is_visible_to_guest": True,
+            "is_active": True
         }
 
-        response = self.client.post(reverse("api_new_inbox_label", args=(self.inbox.id,)), )
+        response = self.client.post(reverse("api_new_inbox_label", args=(self.inbox.id,)))
         self.assertEqual(response.status_code, 403)
         self.assertFalse(Label.objects.filter(name=data["name"]).exists())
 
@@ -111,11 +111,11 @@ class LabelsTest(InboxTestCase):
         data = {
             "name": "",
             "color": "#ff3333",
-            "is_visible_to_guest": "true",
-            "is_active": "true"
+            "is_visible_to_guest": True,
+            "is_active": True
         }
 
-        response = self.client.post(reverse("api_new_inbox_label", args=(self.inbox.id,)), )
+        response = self.client.post(reverse("api_new_inbox_label", args=(self.inbox.id,)))
         self.assertEqual(response.status_code, 400)
         self.assertFalse(Label.objects.filter(name=data["name"]).exists())
 
@@ -128,8 +128,8 @@ class LabelsTest(InboxTestCase):
         data = {
             "name": "345345",
             "color": "#ff3333",
-            "is_visible_to_guest": "true",
-            "is_active": "true"
+            "is_visible_to_guest": True,
+            "is_active": True
         }
 
         response = self.client.put(reverse("api_inbox_label", args=(self.inbox.id, self.label.id)), data)
@@ -145,8 +145,8 @@ class LabelsTest(InboxTestCase):
         data = {
             "name": "345345",
             "color": "#ff3333",
-            "is_visible_to_guest": "true",
-            "is_active": "true"
+            "is_visible_to_guest": True,
+            "is_active": True
         }
 
         response = self.client.put(reverse("api_inbox_label", args=(self.inbox.id, self.label.id)), data)
@@ -162,13 +162,13 @@ class LabelsTest(InboxTestCase):
         data = {
             "name": "345345",
             "color": "#ff3333",
-            "is_visible_to_guest": "true",
-            "is_active": "true"
+            "is_visible_to_guest": True,
+            "is_active": True
         }
 
         response = self.client.put(reverse("api_inbox_label", args=(self.inbox.id, self.label.id)), data)
-        self.assertEqual(response.status_code, 403)
-        self.assertNotEqual(Label.objects.get(pk=self.label.id).name, data["name"])
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(Label.objects.get(pk=self.label.id).name, data["name"])
 
     def test_edit_label_as_student(self):
         """
@@ -179,8 +179,8 @@ class LabelsTest(InboxTestCase):
         data = {
             "name": "345345",
             "color": "#ff3333",
-            "is_visible_to_guest": "true",
-            "is_active": "true"
+            "is_visible_to_guest": True,
+            "is_active": True
         }
 
         response = self.client.put(reverse("api_inbox_label", args=(self.inbox.id, self.label.id)), data)
@@ -247,7 +247,7 @@ class LabelsTest(InboxTestCase):
 
         response = self.client.get(reverse("api_inbox_labels", args=(self.inbox.id,)))
 
-        self.assertEqual(response.status_code, 403)
+        self.assertEqual(response.status_code, 200)
 
     def test_inbox_labels_manager(self):
         self.client.force_authenticate(self.coordinator)
