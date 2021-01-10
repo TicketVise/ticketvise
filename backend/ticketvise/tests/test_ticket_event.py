@@ -1,5 +1,3 @@
-from django.test import TestCase
-
 from ticketvise.models.ticket import TicketLabelEvent, TicketAssigneeEvent, Status, TicketStatusEvent
 from ticketvise.tests.test_ticket import TicketTestCase
 

@@ -8,7 +8,7 @@ import time
 from urllib.parse import urlencode
 
 import oauthlib.oauth1.rfc5849.signature as oauth1
-from django.test import TestCase, Client
+from django.test import TestCase
 from rest_framework.test import APIClient
 
 from ticketvise import settings

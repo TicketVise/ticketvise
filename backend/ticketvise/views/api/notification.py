@@ -1,4 +1,3 @@
-from django.db.models import Q
 from django.http import JsonResponse
 from rest_framework.generics import ListAPIView, UpdateAPIView, get_object_or_404, RetrieveAPIView
 from rest_framework.pagination import PageNumberPagination

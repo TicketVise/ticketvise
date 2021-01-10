@@ -3,7 +3,7 @@ Test Scheduling
 -------------------------------
 This file tests the scheduling algorithms to divide the workload amond TAs.
 """
-from django.test import TestCase, Client
+from django.test import TestCase
 from rest_framework.test import APIClient
 
 from ticketvise.models.inbox import InboxSection, InboxUserSection, SchedulingAlgorithm, Inbox

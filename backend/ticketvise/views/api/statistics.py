@@ -15,7 +15,7 @@ from ticketvise.models.label import Label
 from ticketvise.models.ticket import Ticket, TicketStatusEvent, Status
 from ticketvise.models.user import User, Role, UserInbox
 from ticketvise.statistics import get_average_response_time
-from ticketvise.views.api.security import UserIsInboxManagerPermission, UserIsInboxStaffPermission
+from ticketvise.views.api.security import UserIsInboxStaffPermission
 from ticketvise.views.api.ticket import LabelSerializer
 from ticketvise.views.api.user import UserSerializer
 

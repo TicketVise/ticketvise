@@ -1,11 +1,11 @@
 from django.urls import path
 
 from ticketvise.views.api.auth import LoginApiView
-from ticketvise.views.api.inbox import InboxStaffApiView, InboxLabelApiView, AllInboxLabelsApiView, \
-    CurrentUserInboxApiView
 from ticketvise.views.api.comment import CreateCommentApiView, CreateReplyApiView
 from ticketvise.views.api.inbox import InboxLabelsApiView, InboxesApiView, InboxGuestsAPIView, InboxUsersApiView, \
     UserInboxApiView, InboxSettingsApiView, CurrentUserInboxesApiView
+from ticketvise.views.api.inbox import InboxStaffApiView, InboxLabelApiView, AllInboxLabelsApiView, \
+    CurrentUserInboxApiView
 from ticketvise.views.api.notification import NotificationsAPIView, NotificationFlipRead, NotificationsReadAll, \
     NotificationUnreadCountAPI
 from ticketvise.views.api.statistics import InboxTicketsPerDateTypeStatisticsApiView, \

@@ -1,4 +1,4 @@
-from ticketvise.models.inbox import Inbox, SchedulingAlgorithm
+from ticketvise.models.inbox import Inbox
 from ticketvise.tests.inbox.utils import InboxTestCase
 
 

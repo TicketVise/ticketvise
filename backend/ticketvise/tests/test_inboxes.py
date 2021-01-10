@@ -3,9 +3,8 @@ Test Inboxs
 -------------------------------
 This file tests the functionality of the inboxes/home page.
 """
-from urllib.parse import urlencode
 
-from django.test import TestCase, Client
+from django.test import TestCase
 from django.urls import reverse
 from rest_framework.test import APIClient
 

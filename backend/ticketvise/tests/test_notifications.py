@@ -4,7 +4,7 @@ Test Notifications
 This file tests the notification functionality on the website.
 """
 
-from django.test import TestCase, Client
+from django.test import TestCase
 from rest_framework.test import APIClient
 
 from ticketvise.models.comment import Comment

@@ -1,6 +1,6 @@
 import json
 
-from django.test import TransactionTestCase, Client
+from django.test import TransactionTestCase
 from django.urls import reverse
 from rest_framework.test import APIClient
 

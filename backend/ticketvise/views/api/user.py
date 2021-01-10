@@ -1,8 +1,7 @@
 from django.http import JsonResponse, Http404
 from django.shortcuts import get_object_or_404
-from django.views import View
 from rest_framework import serializers
-from rest_framework.generics import RetrieveUpdateAPIView, RetrieveAPIView, ListAPIView
+from rest_framework.generics import RetrieveUpdateAPIView, RetrieveAPIView
 from rest_framework.serializers import ModelSerializer
 from rest_framework.views import APIView
 

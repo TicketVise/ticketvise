@@ -4,11 +4,9 @@ Test Login
 This file tests the login page of the website.
 """
 
-from django.test import TestCase, Client
-from django.urls import reverse
+from django.test import TestCase
 from rest_framework.test import APIClient
 
-from ticketvise.models.inbox import Inbox
 from ticketvise.models.user import User
 
 

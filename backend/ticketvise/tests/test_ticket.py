@@ -7,7 +7,7 @@ import json
 
 from django.db import transaction
 from django.http import JsonResponse
-from django.test import Client, TransactionTestCase
+from django.test import TransactionTestCase
 from django.urls import reverse
 from rest_framework.test import APIClient
 

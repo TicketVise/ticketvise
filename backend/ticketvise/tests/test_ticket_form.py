@@ -4,7 +4,6 @@ Test Ticket Form
 This file tests the ticket form page which creates a ticket.
 """
 from django.core.files.uploadedfile import SimpleUploadedFile
-from django.urls import reverse
 from rest_framework.test import APITestCase
 
 from ticketvise.tests.test_ticket import TicketTestCase

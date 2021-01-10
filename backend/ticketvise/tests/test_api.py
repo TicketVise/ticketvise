@@ -4,7 +4,7 @@ Test API
 This file tests the API endpoints of the website.
 """
 
-from django.test import TestCase, Client
+from django.test import TestCase
 from rest_framework.test import APIClient
 
 from ticketvise.models.user import User, Role

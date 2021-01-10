@@ -1,8 +1,4 @@
-from datetime import datetime, timedelta
-
-from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db.models import Case, BooleanField, When, Q
-from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
 from rest_framework import serializers
 from rest_framework.generics import ListAPIView, RetrieveUpdateDestroyAPIView, ListCreateAPIView, RetrieveAPIView
@@ -18,7 +14,7 @@ from ticketvise.utils import StandardResultsSetPagination
 from ticketvise.views.api import DynamicFieldsModelSerializer
 from ticketvise.views.api.labels import LabelSerializer
 from ticketvise.views.api.security import UserIsInInboxPermission, UserIsInboxStaffPermission, \
-    UserIsSuperUserPermission, UserIsInboxManagerPermission
+    UserIsSuperUserPermission
 from ticketvise.views.api.user import UserSerializer, UserInboxSerializer
 
 

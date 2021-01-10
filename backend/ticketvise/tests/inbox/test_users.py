@@ -1,5 +1,3 @@
-from django.urls import reverse
-
 from ticketvise.models.user import UserInbox, Role
 from ticketvise.tests.inbox.utils import InboxTestCase
 
