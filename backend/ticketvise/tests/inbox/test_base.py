@@ -5,14 +5,14 @@ from ticketvise.tests.inbox.utils import InboxTestCase
 
 class BaseTestCase(InboxTestCase):
 
-    def test_inbox_assistant_403(self):
+    def test_inbox_assistant_200(self):
         """
         Test to verify that a assistant is unable to access inbox related pages. Pages should return a HTTP 403
         status code when a assistant tries to access a page.
         """
         self.client.force_authenticate(self.assistant)
 
-        template_names = set(self.template_names) - {"api_inbox_settings"}
+        template_names = set(self.template_names)
 
         for template_name, args in template_names:
             response = self.client.get(reverse(template_name, args=args))
