@@ -18,14 +18,14 @@ class TicketFormTestAPI(APITestCase, TicketTestCase):
         data = {
             "title": "TestTicket",
             "content": "TestTicket",
-            "inbox": self.inbox.id,
             "labels": [self.label.id],
             "shared_with": []
         }
 
         response = self.client.post(url, data)
         self.assertEqual(response.status_code, 201)
-        self.assertEqual(response.data, data)
+        data["ticket_inbox_id"] = response.data["ticket_inbox_id"]
+        self.assertDictEqual(response.data, data)
 
     def test_create_ticket_attachment(self):
         self.client.force_authenticate(self.student)
@@ -50,14 +50,14 @@ class TicketFormTestAPI(APITestCase, TicketTestCase):
         data = {
             "title": "TestTicket",
             "content": "TestTicket",
-            "inbox": self.inbox.id,
             "labels": [self.label.id],
             "shared_with": [self.student2.id]
         }
 
         response = self.client.post(url, data)
         self.assertEqual(response.status_code, 201)
-        self.assertEqual(response.data, data)
+        data["ticket_inbox_id"] = response.data["ticket_inbox_id"]
+        self.assertDictEqual(response.data, data)
 
     def test_create_ticket_shared_assistant(self):
         self.client.force_authenticate(self.student)
