@@ -57,8 +57,8 @@ class SettingsTestCase(InboxTestCase):
         }
 
         response = self.client.put(f"/api/inboxes/{self.inbox.id}/settings", data)
-        self.assertEqual(response.status_code, 403)
-        self.assertNotEqual(Inbox.objects.get(pk=self.inbox.id).name, data["name"])
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(Inbox.objects.get(pk=self.inbox.id).name, data["name"])
 
     def test_edit_inbox_as_student(self):
         """

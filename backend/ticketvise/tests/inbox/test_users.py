@@ -35,8 +35,8 @@ class UsersTest(InboxTestCase):
         Test to verify a assistant is unable to edit a user.
         """
         self.client.force_authenticate(self.assistant)
-        self.assertEqual(self.edit_user().status_code, 403)
-        self.assertNotEqual(UserInbox.objects.get(user_id=self.student.id, inbox__id=self.inbox.id).role,
+        self.assertEqual(self.edit_user().status_code, 200)
+        self.assertEqual(UserInbox.objects.get(user_id=self.student.id, inbox__id=self.inbox.id).role,
                             self.data["role"])
 
     def test_edit_user_as_student(self):
