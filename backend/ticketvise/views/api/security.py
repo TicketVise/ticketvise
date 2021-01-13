@@ -19,10 +19,7 @@ class UserIsInInboxPermission(IsAuthenticated):
             return False
 
         inbox = get_object_or_404(Inbox, pk=inbox_id)
-        if not request.user.has_inbox(inbox) and not request.user.is_assistant_or_coordinator(inbox):
-            return False
-
-        return True
+        return request.user.has_inbox(inbox)
 
 
 class UserIsInboxStaffPermission(IsAuthenticated):
@@ -39,10 +36,7 @@ class UserIsInboxStaffPermission(IsAuthenticated):
             return False
 
         inbox = get_object_or_404(Inbox, pk=inbox_id)
-        if not request.user.is_assistant_or_coordinator(inbox):
-            return False
-
-        return True
+        return request.user.is_assistant_or_coordinator(inbox)
 
 
 class UserIsInboxManagerPermission(IsAuthenticated):
@@ -56,10 +50,7 @@ class UserIsInboxManagerPermission(IsAuthenticated):
             return False
 
         inbox = get_object_or_404(Inbox, pk=inbox_id)
-        if not request.user.is_coordinator_for_inbox(inbox):
-            return False
-
-        return True
+        return request.user.is_coordinator_for_inbox(inbox)
 
 
 class UserIsTicketAuthorOrInboxStaffPermission(IsAuthenticated):
@@ -77,10 +68,7 @@ class UserIsTicketAuthorOrInboxStaffPermission(IsAuthenticated):
             return False
 
         ticket = get_object_or_404(Ticket, inbox_id=inbox_id, ticket_inbox_id=ticket_inbox_id)
-        if not (request.user.id == ticket.author.id or request.user.is_assistant_or_coordinator(ticket.inbox)):
-            return False
-
-        return True
+        return request.user.id == ticket.author.id or request.user.is_assistant_or_coordinator(ticket.inbox)
 
 
 class UserHasAccessToTicketPermission(IsAuthenticated):
@@ -100,33 +88,25 @@ class UserHasAccessToTicketPermission(IsAuthenticated):
             return False
 
         ticket = get_object_or_404(Ticket, inbox_id=inbox_id, ticket_inbox_id=ticket_inbox_id)
-        if not (request.user.id == ticket.author.id or request.user.is_assistant_or_coordinator(
-                ticket.inbox) or ticket.shared_with.filter(pk=request.user.id).exists()):
-            return False
-
-        return True
+        return request.user.id == ticket.author.id \
+               or request.user.is_assistant_or_coordinator(ticket.inbox) \
+               or ticket.shared_with.filter(pk=request.user.id).exists()
 
 
 class UserIsSuperUserPermission(IsAuthenticated):
 
     def has_permission(self, request, view):
-        if not request.user or not request.user.is_authenticated:
-            return False
-
-        if not request.user.is_superuser:
-            return False
-
-        return True
+        return request.user and request.user.is_authenticated and request.user.is_superuser
 
 
-class UserIsAttachmentUploaderOrInboxStaffPermission(IsAuthenticated):
+class UserIsAttachmentUploaderOrInboxStaffPermission(UserHasAccessToTicketPermission):
     inbox_key = "inbox_id"
     ticket_key = "ticket_inbox_id"
     attachment_key = "pk"
 
-    def dispatch(self, request, view):
-        if not request.user.is_authenticated:
-            return False
+    def has_permission(self, request, view):
+        attachment_id = view.kwargs.get(self.attachment_key)
+        attachment = get_object_or_404(TicketAttachment, pk=attachment_id)
 
         inbox_id = view.kwargs.get(self.inbox_key)
         if not inbox_id:
@@ -137,13 +117,5 @@ class UserIsAttachmentUploaderOrInboxStaffPermission(IsAuthenticated):
             return False
 
         ticket = get_object_or_404(Ticket, inbox_id=inbox_id, ticket_inbox_id=ticket_inbox_id)
-        if not (request.user.id == ticket.author.id or request.user.is_assistant_or_coordinator(
-                ticket.inbox) or ticket.shared_with.filter(pk=request.user.id).exists()):
-            return False
-
-        attachment_id = view.kwargs.get(self.attachment_key)
-        attachment = get_object_or_404(TicketAttachment, pk=attachment_id)
-        if not (request.user.id == attachment.uploader.id or request.user.is_assistant_or_coordinator(ticket.inbox)):
-            return False
-
-        return True
+        return super(UserHasAccessToTicketPermission, self).has_permission(request, view) \
+               and (request.user.id == attachment.uploader.id or request.user.is_assistant_or_coordinator(ticket.inbox))
