@@ -41,7 +41,7 @@ export default {
   }),
   async mounted() {
     const inboxId = this.$route.params.inboxId
-    const response = await axios.get(`/api/inboxes/${inboxId}/agent/response/avg`);
+    const response = await axios.get(`/api/inboxes/${inboxId}/statistics/agent/response/avg`);
     this.data = {
       labels: response.data.map(item => item.first_name + " " + item.last_name),
       datasets: [

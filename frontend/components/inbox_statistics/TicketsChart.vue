@@ -18,7 +18,6 @@
         default: "date"
       },
       inboxId: {
-        type: Number,
         required: false,
         default: null
       },

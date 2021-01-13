@@ -321,7 +321,6 @@ class CommentTestCase(TicketTestCase):
         Test to verify an closed ticket will be reopened with status assigned if assigned.
         """
         self.client.force_authenticate(self.student)
-        print(self.student.id)
         self.ticket.status = self.ticket.status.CLOSED
         self.ticket.assignee = self.assistant
         self.ticket.save()

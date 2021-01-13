@@ -5,7 +5,9 @@
         <div class="flex space-x-4">
           <img class="h-12 w-12 rounded-full object-cover border-4" :style="`border-color: ${inbox.color}`" :src="inbox.image">
           <div class="flex flex-col">
-            <a class="text-orange-500 break-words hover:underline" :href="`/inboxes/${inbox.id}/tickets`">{{ inbox.name }}</a>
+            <router-link class="text-orange-500 break-words hover:underline" :to="`/inboxes/${inbox.id}/tickets`">
+              {{ inbox.name }}
+            </router-link>
             <div class="flex items-center text-sm leading-5 text-gray-500">
               <i class="fa fa-user mr-1"></i>
               {{ stats ? stats.coordinator.first_name + ' ' + stats.coordinator.last_name : '' }}

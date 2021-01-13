@@ -135,16 +135,6 @@ INBOX_IMAGE_DIRECTORY = "media/img/inboxes"
 #: Set max upload size for files
 FILE_UPLOAD_MAX_MEMORY_SIZE = 314572800
 
-#: URLs for login and logout
-#: ~~~~~~~~~~~~~~~~~~~
-
-# #: URL that users get redirected to on logout.
-# LOGOUT_REDIRECT_URL = "/"
-# #: Default URL that users get redirected to on login.
-# LOGIN_REDIRECT_URL = "/inboxes"
-# #: Default URL for the login page.
-# LOGIN_URL = "/login/"
-
 #: Password validation
 #: ~~~~~~~~~~~~~~~~~~~
 

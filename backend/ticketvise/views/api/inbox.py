@@ -237,4 +237,8 @@ class CurrentUserInboxApiView(RetrieveAPIView):
 
     def get_object(self):
         inbox = get_object_or_404(Inbox, pk=self.kwargs["inbox_id"])
+
+        if self.request.user.is_superuser:
+            return UserInbox(user=self.request.user, inbox=inbox, role=Role.MANAGER)
+
         return get_object_or_404(UserInbox, inbox=inbox, user=self.request.user)
