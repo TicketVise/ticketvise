@@ -56,7 +56,8 @@
       <div class="relative h-full flex-grow">
         <div class="m-4 mt-2 xl:flex xl:items-center xl:justify-between">
           <div class="flex-1 min-w-0">
-            <router-link :to="`/inboxes/${ticket.inbox}/tickets`" class="text-xs text-gray-700 hover:underline cursor-pointer">
+            <router-link :to="`/inboxes/${ticket.inbox}/tickets`"
+                         class="text-xs text-gray-700 hover:underline cursor-pointer">
               <i class="fa fa-arrow-left mr-2"></i>
               {{ inbox ? inbox.name : '' }}
             </router-link>
@@ -181,33 +182,14 @@ export default {
       }
     }
   },
-  created() {
-    let formData = {
-      "ticket": true,
-      "role": true,
-      "me": true,
-      "inbox": true,
-      "staff": true,
-      "comments": true,
-      "replies": true,
-      "events": true
-    };
-
-
-    axios.get(this.getTicketUrl(), {params: formData}).then(response => {
-      this.ticket = response.data.ticket;
-      this.labels = response.data.ticket.labels;
-      this.user = response.data.me;
-      this.role = response.data.role;
-      this.inbox = response.data.inbox;
-      this.events = response.data.events;
-      this.replies = response.data.replies;
-
-      if (this.isStaff()) {
-        this.staff = response.data.staff;
-        this.comments = response.data.comments;
-      }
-    });
+  mounted() {
+      this.loadTicket()
+  },
+  beforeRouteUpdate(to, from, next) {
+    if (from.params.ticketInboxId !== to.params.ticketInboxId) {
+      next()
+      this.loadTicket()
+    }
   },
   computed: {
     is_staff: function () {
@@ -223,6 +205,34 @@ export default {
     }
   },
   methods: {
+    loadTicket: function () {
+      let formData = {
+        "ticket": true,
+        "role": true,
+        "me": true,
+        "inbox": true,
+        "staff": true,
+        "comments": true,
+        "replies": true,
+        "events": true
+      };
+
+
+      axios.get(this.getTicketUrl(), {params: formData}).then(response => {
+        this.ticket = response.data.ticket;
+        this.labels = response.data.ticket.labels;
+        this.user = response.data.me;
+        this.role = response.data.role;
+        this.inbox = response.data.inbox;
+        this.events = response.data.events;
+        this.replies = response.data.replies;
+
+        if (this.isStaff()) {
+          this.staff = response.data.staff;
+          this.comments = response.data.comments;
+        }
+      });
+    },
     date: calendarDate,
     isStaff: function () {
       return (this.role && (this.role === 'AGENT' || this.role === 'MANAGER')) || (this.user && this.user.is_superuser)
