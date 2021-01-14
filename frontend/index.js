@@ -7,27 +7,27 @@ import App from "./App";
 import store from "./store";
 import router from "./router";
 import axios from 'axios';
-import * as Sentry from "@sentry/browser";
-import { Integrations } from "@sentry/tracing";
+// import * as Sentry from "@sentry/browser";
+// import { Integrations, VueIntegration } from "@sentry/tracing";
 
 Vue.use(Vuex)
 Vue.use(VueRouter)
 
-// global is declared using DefinePlugin in the webpack.config.js
-if (typeof SENTRY_DSN !== 'undefined') {
-    Sentry.init({
-        dsn: SENTRY_DSN,
-        integrations: [
-            new VueIntegration({
-                Vue,
-                tracing: true,
-                logErrors: true
-            }),
-            new Integrations.BrowserTracing()
-        ],
-        tracesSampleRate: 1 / 100
-    });
-}
+// // global is declared using DefinePlugin in the webpack.config.js
+// if (typeof SENTRY_DSN !== 'undefined') {
+//     Sentry.init({
+//         dsn: SENTRY_DSN,
+//         integrations: [
+//             new VueIntegration({
+//                 Vue,
+//                 tracing: true,
+//                 logErrors: true
+//             }),
+//             new Integrations.BrowserTracing()
+//         ],
+//         tracesSampleRate: 1 / 100
+//     });
+// }
 
 axios.interceptors.request.use((config) => {
     if (store.getters.isAuthenticated) {
