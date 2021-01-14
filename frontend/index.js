@@ -6,7 +6,9 @@ import VueRouter from 'vue-router'
 import App from "./App";
 import store from "./store";
 import router from "./router";
-import axios from 'axios'
+import axios from 'axios';
+import * as Sentry from "@sentry/browser";
+import { Integrations } from "@sentry/tracing";
 
 Vue.use(Vuex)
 Vue.use(VueRouter)
