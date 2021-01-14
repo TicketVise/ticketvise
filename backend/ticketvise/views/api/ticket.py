@@ -31,15 +31,15 @@ from ticketvise.models.label import Label
 from ticketvise.models.ticket import Ticket, TicketAttachment, TicketEvent, Status, TicketStatusEvent, \
     TicketAssigneeEvent, TicketLabelEvent, TicketLabel, TicketSharedUser
 from ticketvise.models.user import User, UserInbox, Role
-from ticketvise.views.admin import SuperUserRequiredMixin
+from ticketvise.notifications import unread_related_ticket_notifications
 from ticketvise.views.api import DynamicFieldsModelSerializer
 from ticketvise.views.api.comment import CommentSerializer
 from ticketvise.views.api.inbox import InboxSerializer
 from ticketvise.views.api.labels import LabelSerializer
-from ticketvise.views.api.security import UserHasAccessToTicketMixin, UserIsInboxStaffMixin, UserIsInInboxMixin, \
-    UserIsTicketAuthorOrInboxStaffMixin, UserIsAttachmentUploaderOrInboxStaffMixin
+from ticketvise.views.api.security import UserIsInInboxPermission, UserIsSuperUserPermission, \
+    UserHasAccessToTicketPermission, UserIsInboxStaffPermission, UserIsTicketAuthorOrInboxStaffPermission, \
+    UserIsAttachmentUploaderOrInboxStaffPermission
 from ticketvise.views.api.user import UserSerializer, RoleSerializer
-from ticketvise.views.notifications import unread_related_ticket_notifications
 
 
 class CreateTicketSerializer(ModelSerializer):
@@ -48,6 +48,7 @@ class CreateTicketSerializer(ModelSerializer):
     """
     labels = serializers.PrimaryKeyRelatedField(many=True, queryset=Label.objects.all())
     shared_with = serializers.PrimaryKeyRelatedField(many=True, queryset=User.objects.all())
+    ticket_inbox_id = serializers.IntegerField(read_only=True)
 
     class Meta:
         """
@@ -60,10 +61,10 @@ class CreateTicketSerializer(ModelSerializer):
         #: Tells the serializer to use the :class:`Ticket` model.
         model = Ticket
         #: Tells the serializer to use these fields from the :class:`Ticket` model.
-        fields = ["inbox", "title", "content", "labels", "shared_with"]
+        fields = ["ticket_inbox_id", "title", "content", "labels", "shared_with"]
 
     def validate_shared_with(self, shared_with):
-        inbox = get_object_or_404(Inbox, pk=int(self.get_initial()["inbox"]))
+        inbox = self.context["inbox"]
         for user in shared_with:
             if not user.has_inbox(inbox) or user.is_assistant_or_coordinator(inbox):
                 raise ValidationError("This ticket cannot be shared with one of these users")
@@ -165,10 +166,11 @@ class TicketSerializer(DynamicFieldsModelSerializer):
                   "attachments"]
 
 
-class InboxTicketsApiView(UserIsInInboxMixin, ListAPIView):
+class InboxTicketsApiView(ListAPIView):
     """
     Load the tickets connected to the given :class:`Inbox`.
     """
+    permission_classes = [UserIsInInboxPermission]
     page_size = 25
 
     def get_queryset(self):
@@ -287,7 +289,9 @@ class InboxTicketsApiView(UserIsInInboxMixin, ListAPIView):
         return JsonResponse(data=columns, safe=False)
 
 
-class TicketsApiView(SuperUserRequiredMixin, APIView):
+class TicketsApiView(APIView):
+    permission_classes = [UserIsSuperUserPermission]
+
     def get(self, request):
         data = {
             'tickets': Ticket.objects.count()
@@ -296,7 +300,9 @@ class TicketsApiView(SuperUserRequiredMixin, APIView):
         return JsonResponse(data, safe=False)
 
 
-class TicketApiView(UserHasAccessToTicketMixin, RetrieveAPIView):
+class TicketApiView(RetrieveAPIView):
+    permission_classes = [UserHasAccessToTicketPermission]
+
     def get(self, request, *args, **kwargs):
         inbox = get_object_or_404(Inbox, pk=self.kwargs["inbox_id"])
         ticket = get_object_or_404(Ticket, inbox=inbox, ticket_inbox_id=self.kwargs["ticket_inbox_id"])
@@ -344,7 +350,7 @@ class TicketApiView(UserHasAccessToTicketMixin, RetrieveAPIView):
         if request.user.is_assistant_or_coordinator(inbox):
             if json.loads(request.GET.get("staff", "false")):
                 staff = User.objects.filter(inbox_relationship__role__in=[Role.AGENT, Role.MANAGER],
-                                            inbox_relationship__inbox_id=self.kwargs[self.inbox_key]) \
+                                            inbox_relationship__inbox_id=self.kwargs["inbox_id"]) \
                     .values("first_name", "last_name", "username", "avatar_url", "id")
 
                 response["staff"] = staff
@@ -358,8 +364,9 @@ class TicketApiView(UserHasAccessToTicketMixin, RetrieveAPIView):
         return Response(response)
 
 
-class RecentTicketApiView(UserIsInboxStaffMixin, ListAPIView):
+class RecentTicketApiView(ListAPIView):
     serializer_class = TicketSerializer
+    permission_classes = [UserIsInboxStaffPermission]
 
     def get_queryset(self):
         author = get_object_or_404(User, pk=self.kwargs["user_id"])
@@ -368,8 +375,9 @@ class RecentTicketApiView(UserIsInboxStaffMixin, ListAPIView):
         return Ticket.objects.filter(author=author, inbox=inbox).order_by("-date_created")[:5]
 
 
-class TicketUpdateAssignee(UserIsInboxStaffMixin, UpdateAPIView):
+class TicketUpdateAssignee(UpdateAPIView):
     serializer_class = AssigneeUpdateSerializer
+    permission_classes = [UserIsInboxStaffPermission]
 
     def get_object(self):
         inbox = get_object_or_404(Inbox, pk=self.kwargs["inbox_id"])
@@ -385,8 +393,9 @@ class TicketLabelSerializer(ModelSerializer):
         fields = ["labels"]
 
 
-class TicketLabelApiView(UserIsInboxStaffMixin, UpdateAPIView):
+class TicketLabelApiView(UpdateAPIView):
     serializer_class = TicketLabelSerializer
+    permission_classes = [UserIsInboxStaffPermission]
 
     def get_object(self):
         inbox = get_object_or_404(Inbox, pk=self.kwargs["inbox_id"])
@@ -394,7 +403,9 @@ class TicketLabelApiView(UserIsInboxStaffMixin, UpdateAPIView):
         return Ticket.objects.get(inbox=inbox, ticket_inbox_id=self.kwargs["ticket_inbox_id"])
 
 
-class TicketAttachmentsApiView(UserIsTicketAuthorOrInboxStaffMixin, CreateAPIView):
+class TicketAttachmentsApiView(CreateAPIView):
+    permission_classes = [UserHasAccessToTicketPermission]
+
     def get_serializer(self, *args, **kwargs):
         return TicketSerializer(fields="attachments")
 
@@ -408,12 +419,14 @@ class TicketAttachmentsApiView(UserIsTicketAuthorOrInboxStaffMixin, CreateAPIVie
         return Response()
 
 
-class AttachmentViewApiView(UserIsAttachmentUploaderOrInboxStaffMixin, DestroyAPIView):
+class AttachmentViewApiView(DestroyAPIView):
+    permission_classes = [UserIsAttachmentUploaderOrInboxStaffPermission]
     serializer_class = TicketAttachment
     queryset = TicketAttachment
 
 
-class CloseTicketApiView(UserIsInboxStaffMixin, APIView):
+class CloseTicketApiView(APIView):
+    permission_classes = [UserIsInboxStaffPermission]
 
     def patch(self, request, inbox_id, ticket_inbox_id):
         inbox = get_object_or_404(Inbox, pk=inbox_id)
@@ -425,7 +438,8 @@ class CloseTicketApiView(UserIsInboxStaffMixin, APIView):
         return Response()
 
 
-class OpenTicketApiView(UserIsInboxStaffMixin, APIView):
+class OpenTicketApiView(APIView):
+    permission_classes = [UserIsInboxStaffPermission]
 
     def patch(self, request, inbox_id, ticket_inbox_id):
         inbox = get_object_or_404(Inbox, pk=inbox_id)
@@ -437,11 +451,19 @@ class OpenTicketApiView(UserIsInboxStaffMixin, APIView):
         return Response()
 
 
-class TicketCreateApiView(UserIsInInboxMixin, CreateAPIView):
+class TicketCreateApiView(CreateAPIView):
+    permission_classes = [UserIsInInboxPermission]
     serializer_class = CreateTicketSerializer
 
+    def get_serializer_context(self):
+        context = super().get_serializer_context()
+        context["inbox"] = get_object_or_404(Inbox, pk=self.kwargs["inbox_id"])
+
+        return context
+
     def perform_create(self, serializer):
-        ticket = serializer.save(author=self.request.user)
+        inbox = get_object_or_404(Inbox, pk=self.kwargs["inbox_id"])
+        ticket = serializer.save(author=self.request.user, inbox=inbox)
 
         for file in self.request.FILES.getlist('files'):
             TicketAttachment(ticket=ticket, file=file).save()
@@ -515,7 +537,8 @@ class TicketEventSerializer(ModelSerializer):
         fields = "__all__"
 
 
-class TicketSharedAPIView(UserIsTicketAuthorOrInboxStaffMixin, UpdateAPIView):
+class TicketSharedAPIView(UpdateAPIView):
+    permission_classes = [UserIsTicketAuthorOrInboxStaffPermission]
     serializer_class = TicketSharedWithUpdateSerializer
 
     def get_object(self):

@@ -15,12 +15,13 @@ from ticketvise.models.label import Label
 from ticketvise.models.ticket import Ticket, TicketStatusEvent, Status
 from ticketvise.models.user import User, Role, UserInbox
 from ticketvise.statistics import get_average_response_time
-from ticketvise.views.api.security import UserIsInboxManagerMixin
+from ticketvise.views.api.security import UserIsInboxStaffPermission
 from ticketvise.views.api.ticket import LabelSerializer
 from ticketvise.views.api.user import UserSerializer
 
 
-class InboxTicketsPerDateTypeStatisticsApiView(UserIsInboxManagerMixin, APIView):
+class InboxTicketsPerDateTypeStatisticsApiView(APIView):
+    permission_classes = [UserIsInboxStaffPermission]
     truncaters = [TruncYear, TruncMonth, TruncWeek, TruncDate]
     extracters = [ExtractHour]
 
@@ -74,7 +75,8 @@ class InboxAverageAgentResponseTimeSerializer(ModelSerializer):
         fields = UserSerializer.Meta.fields + ["avg_response_time"]
 
 
-class InboxAverageAgentResponseTimeStatisticsApiView(UserIsInboxManagerMixin, APIView):
+class InboxAverageAgentResponseTimeStatisticsApiView(APIView):
+    permission_classes = [UserIsInboxStaffPermission]
 
     def get(self, request, inbox_id):
         inbox = get_object_or_404(Inbox, pk=inbox_id)
@@ -97,7 +99,8 @@ class InboxAverageAgentResponseTimeStatisticsApiView(UserIsInboxManagerMixin, AP
         return JsonResponse(InboxAverageAgentResponseTimeSerializer(users, many=True).data, safe=False)
 
 
-class InboxStatisticsApiView(UserIsInboxManagerMixin, APIView):
+class InboxStatisticsApiView(APIView):
+    permission_classes = [UserIsInboxStaffPermission]
 
     def get(self, request, inbox_id):
         inbox = get_object_or_404(Inbox, pk=inbox_id)
@@ -145,7 +148,8 @@ class InboxStatisticsApiView(UserIsInboxManagerMixin, APIView):
         }, safe=False)
 
 
-class InboxAverageTimeToCloseStatisticsApiView(UserIsInboxManagerMixin, APIView):
+class InboxAverageTimeToCloseStatisticsApiView(APIView):
+    permission_classes = [UserIsInboxStaffPermission]
 
     def get(self, request, inbox_id):
         inbox = get_object_or_404(Inbox, pk=inbox_id)
@@ -170,7 +174,8 @@ class LabelWithCountSerializer(ModelSerializer):
         fields = LabelSerializer.Meta.fields + ["count"]
 
 
-class LabelsCountStatisticsApiView(UserIsInboxManagerMixin, APIView):
+class LabelsCountStatisticsApiView(APIView):
+    permission_classes = [UserIsInboxStaffPermission]
 
     def get(self, request, inbox_id):
         inbox = get_object_or_404(Inbox, pk=inbox_id)

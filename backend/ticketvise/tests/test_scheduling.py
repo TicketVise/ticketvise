@@ -3,7 +3,8 @@ Test Scheduling
 -------------------------------
 This file tests the scheduling algorithms to divide the workload amond TAs.
 """
-from django.test import TestCase, Client
+from django.test import TestCase
+from rest_framework.test import APIClient
 
 from ticketvise.models.inbox import InboxSection, InboxUserSection, SchedulingAlgorithm, Inbox
 from ticketvise.models.ticket import Ticket, Status
@@ -17,7 +18,7 @@ class TicketTestCase(TestCase):
 
         :return: None.
         """
-        self.client = Client()
+        self.client = APIClient()
 
         self.inbox = Inbox.objects.create(name="TestInbox", code="TestCode", color="#FF6600")
 

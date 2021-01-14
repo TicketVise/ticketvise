@@ -74,13 +74,13 @@
     },
     methods: {
       submitComment() {
-        let content = this.$refs.commentEditor.getContent()
+        const content = this.$refs.commentEditor.getContent()
+        const inboxId = this.$route.params.inboxId
+        const ticketInboxId = this.$route.params.ticketInboxId
+
         this.$refs.commentEditor.clear()
 
-        axios.defaults.xsrfCookieName = 'csrftoken';
-        axios.defaults.xsrfHeaderName = "X-CSRFTOKEN";
-
-        axios.post("/api" + window.location.pathname + "/comments/post", {"content": content})
+        axios.post(`/api/inboxes/${inboxId}/tickets/${ticketInboxId}/comments/post`, {"content": content})
             .then(() => {
               this.$emit("post", true)
             })

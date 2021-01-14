@@ -1,9 +1,11 @@
 from django.urls import path
 
-from ticketvise.views.api.inbox import InboxStaffApiView, InboxLabelApiView, AllInboxLabelsApiView
+from ticketvise.views.api.auth import LoginApiView
 from ticketvise.views.api.comment import CreateCommentApiView, CreateReplyApiView
 from ticketvise.views.api.inbox import InboxLabelsApiView, InboxesApiView, InboxGuestsAPIView, InboxUsersApiView, \
     UserInboxApiView, InboxSettingsApiView, CurrentUserInboxesApiView
+from ticketvise.views.api.inbox import InboxStaffApiView, InboxLabelApiView, AllInboxLabelsApiView, \
+    CurrentUserInboxApiView
 from ticketvise.views.api.notification import NotificationsAPIView, NotificationFlipRead, NotificationsReadAll, \
     NotificationUnreadCountAPI
 from ticketvise.views.api.statistics import InboxTicketsPerDateTypeStatisticsApiView, \
@@ -17,11 +19,12 @@ from ticketvise.views.api.user import UserRoleApiView, CurrentUserApiView, Notif
     UserGetFromUsernameApiView, UsersApiView
 
 urlpatterns = [
+    path("login", LoginApiView.as_view()),
     path("inboxes", InboxesApiView.as_view()),
-    path("inboxes/<int:inbox_id>/settings", InboxSettingsApiView.as_view()),
-    path("inboxes/<int:inbox_id>/tickets", InboxTicketsApiView.as_view()),
-    path("inboxes/<int:inbox_id>/tickets/new", TicketCreateApiView.as_view()),
-    path("inboxes/<int:inbox_id>/tickets/<int:ticket_inbox_id>", TicketApiView.as_view()),
+    path("inboxes/<int:inbox_id>/settings", InboxSettingsApiView.as_view(), name="api_inbox_settings"),
+    path("inboxes/<int:inbox_id>/tickets", InboxTicketsApiView.as_view(), name="api_inbox_tickets"),
+    path("inboxes/<int:inbox_id>/tickets/new", TicketCreateApiView.as_view(), name="api_new_ticket"),
+    path("inboxes/<int:inbox_id>/tickets/<int:ticket_inbox_id>", TicketApiView.as_view(), name="api_inbox_ticket"),
     path("inboxes/<int:inbox_id>/tickets/<int:ticket_inbox_id>/attachments", TicketAttachmentsApiView.as_view()),
     path("inboxes/<int:inbox_id>/tickets/<int:ticket_inbox_id>/attachments/<int:pk>", AttachmentViewApiView.as_view()),
     path("inboxes/<int:inbox_id>/tickets/<int:ticket_inbox_id>/comments/post", CreateCommentApiView.as_view()),
@@ -34,16 +37,15 @@ urlpatterns = [
     path("inboxes/<int:inbox_id>/users/<int:user_id>/tickets/recent", RecentTicketApiView.as_view()),
     path("inboxes/<int:inbox_id>/role", UserRoleApiView.as_view()),
     path("inboxes/<int:inbox_id>/guests", InboxGuestsAPIView.as_view()),
-    path("inboxes/<int:inbox_id>/users", InboxUsersApiView.as_view()),
-    path("inboxes/<int:inbox_id>/users/<int:user_id>", UserInboxApiView.as_view()),
+    path("inboxes/<int:inbox_id>/users", InboxUsersApiView.as_view(), name="api_inbox_users"),
+    path("inboxes/<int:inbox_id>/users/<int:user_id>", UserInboxApiView.as_view(), name="api_inbox_user"),
     path("inboxes/<int:inbox_id>/users/<str:username>", UserGetFromUsernameApiView.as_view()),
-    path("inboxes/<int:inbox_id>/labels", InboxLabelsApiView.as_view()),
-    path("inboxes/<int:inbox_id>/staff", InboxStaffApiView.as_view()),
+    path("inboxes/<int:inbox_id>/staff", InboxStaffApiView.as_view(), name="api_inbox_staff"),
     path("inboxes/<int:inbox_id>/labels", InboxLabelsApiView.as_view(), name="api_inbox_labels"),
     path("inboxes/<int:inbox_id>/labels/all", AllInboxLabelsApiView.as_view(), name="api_all_inbox_labels"),
     path("inboxes/<int:inbox_id>/labels/new", InboxLabelsApiView.as_view(), name="api_new_inbox_label"),
     path("inboxes/<int:inbox_id>/labels/<int:label_id>", InboxLabelApiView.as_view(), name="api_inbox_label"),
-    path("inboxes/<int:inbox_id>/statistics", InboxStatisticsApiView.as_view()),
+    path("inboxes/<int:inbox_id>/statistics", InboxStatisticsApiView.as_view(), name="api_inbox_statistics"),
     path("inboxes/<int:inbox_id>/statistics/tickets/count", InboxTicketsPerDateTypeStatisticsApiView.as_view()),
     path("inboxes/<int:inbox_id>/statistics/agent/response/avg",
          InboxAverageAgentResponseTimeStatisticsApiView.as_view()),
@@ -55,7 +57,9 @@ urlpatterns = [
     path("notifications/unread", NotificationUnreadCountAPI.as_view()),
     path("notifications/read/all", NotificationsReadAll.as_view()),
     path("notifications/<int:pk>/read", NotificationFlipRead.as_view()),
-    path("me", CurrentUserApiView.as_view()),
-    path("me/settings", NotificationsSettingsAPIView.as_view()),
-    path("me/inboxes", CurrentUserInboxesApiView.as_view()),
+    path("me", CurrentUserApiView.as_view(), name="api_me"),
+    path("me/settings", NotificationsSettingsAPIView.as_view(), name="api_me_settings"),
+    path("me/inboxes", CurrentUserInboxesApiView.as_view(), name="api_me_inboxes"),
+    path("me/inboxes/<int:inbox_id>", CurrentUserInboxApiView.as_view(), name="api_me_inbox"),
+
 ]

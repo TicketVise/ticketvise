@@ -1,9 +1,15 @@
 import Vue from 'vue'
+import Vuex from 'vuex'
 import 'alpinejs'
 import './email/index.js'
-import * as Sentry from "@sentry/browser";
-import {Vue as VueIntegration} from "@sentry/integrations";
-import {Integrations} from '@sentry/tracing';
+import VueRouter from 'vue-router'
+import App from "./App";
+import store from "./store";
+import router from "./router";
+import axios from 'axios'
+
+Vue.use(Vuex)
+Vue.use(VueRouter)
 
 // global is declared using DefinePlugin in the webpack.config.js
 if (typeof SENTRY_DSN !== 'undefined') {
@@ -21,9 +27,21 @@ if (typeof SENTRY_DSN !== 'undefined') {
     });
 }
 
-window.Vue = Vue
-window.axios = require('axios')
-Vue.config.productionTip = false
+axios.interceptors.request.use((config) => {
+    if (store.getters.isAuthenticated) {
+        config.headers["Authorization"] = "Token " + store.state.token
+    }
+
+    return config;
+});
+
+axios.interceptors.response.use(response => response, error => {
+    if (error.response && error.response.status === 401) {
+        store.dispatch("logout")
+    } else {
+        return Promise.reject(error);
+    }
+});
 
 /**
  * Load every vue single file components.
@@ -31,58 +49,17 @@ Vue.config.productionTip = false
 const files = require.context('./components/', true, /\.vue$/i)
 files.keys().map(key =>
     Vue.component(
-        key
-            .split('/')
+        key.split('/')
             .pop()
             .split('.')[0],
         files(key).default
     )
 )
 
-/**
- * Create a vue component if the url path suffice.
- * @param {String} el = the name of the vue component.
- */
-let create_vue = (components) => {
-    for (let key in components) {
-        if (window.location.pathname.match('^' + key.replace(/\*/g, '[^.]*') + '$')) {
-            for (let el of components[key]) {
-                new Vue({
-                    el: '#' + el,
-                    template: `
-          <${el}></${el}>
-          `
-                })
-            }
-
-            return
-        }
-    }
-}
-
-/**
- * Next let's enable the application containers.
- * As a key you can define on which page the vue component show render.
- * The value is than a list of the vue components for that page.
- * The name of the vue component if the lowercase name with dashes in between.
- */
-let components = {
-  '/notifications': ['notifications'],
-  '/': ['inboxes'],
-  '/inboxes': ['inboxes'],
-  '/inboxes/*/tickets': ['ticket-overview'],
-  '/inboxes/*/tickets/new': ['ticket-form'],
-  '/inboxes/*/tickets/*': ['ticket'],
-  '/inboxes/*/statistics': ['inbox-statistics'],
-  '/inboxes/*/settings': ['inbox-settings'],
-  '/inboxes/*/automation': ['automation'],
-  '/inboxes/*/users': ['users'],
-  '/inboxes/*/users/*': ['user'],
-  '/inboxes/*/labels': ['labels'],
-  '/inboxes/*/labels/*': ['Label'],
-  '/account': ['account'],
-  '/admin': ['admin']
-}
-
-/* Now lets set them all up. */
-create_vue(components)
+new Vue({
+    store: store,
+    router: router,
+    el: "#app",
+    components: {App},
+    template: "<App/>",
+});

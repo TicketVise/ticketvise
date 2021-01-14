@@ -44,8 +44,8 @@
 
       <!-- Share with -->
       <div class="mb-4">
-        <edit-share-with :shared_with="shared_with" :errors="errors" class="mb-2 w-1/5" :inbox_id="inbox_id"
-                         v-on:input="updateSharedWith"></edit-share-with>
+        <edit-share-with :shared_with="shared_with" :errors="errors" class="mb-2 w-1/5"
+                         :inbox_id="$route.params.inboxId" v-on:input="updateSharedWith"></edit-share-with>
       </div>
 
       <!-- Attachments -->
@@ -69,6 +69,7 @@
   import SubmitButton from "../elements/buttons/SubmitButton";
   import Error from "../elements/message/Error";
   import EditShareWith from "./EditShareWith";
+  import router from "../../router";
 
   export default {
     name: "Form",
@@ -79,38 +80,36 @@
         title: "",
         labels: [],
         inbox_labels: null,
-        inbox_id: window.location.pathname.split('/')[2],
         errors: [],
         shared_with: [],
       }
     },
     mounted() {
-      axios.get("/api/inboxes/" + this.inbox_id + "/labels/all").then(response => {
+      const inboxId = this.$route.params.inboxId
+
+      axios.get(`/api/inboxes/${inboxId}/labels/all`).then(response => {
         this.inbox_labels = response.data;
       })
     },
     methods: {
       submit() {
-        let content = this.$refs.editor.invoke('getMarkdown');
-        let formData = new FormData();
+        const content = this.$refs.editor.invoke('getMarkdown');
+        const inboxId = this.$route.params.inboxId
 
+        const formData = new FormData();
         formData.append("content", content);
         formData.append("title", this.title);
-        formData.append("inbox", this.inbox_id);
 
         this.labels.forEach(label => formData.append("labels", label.id))
         this.files.forEach(file => formData.append("files", file))
         this.shared_with.forEach(shared_with => formData.append("shared_with", shared_with.id))
 
-        axios.defaults.xsrfCookieName = 'csrftoken';
-        axios.defaults.xsrfHeaderName = "X-CSRFTOKEN";
-
-        axios.post("/api" + window.location.pathname, formData, {
+        axios.post(`/api/inboxes/${inboxId}/tickets/new`, formData, {
           headers: {
             'Content-Type': 'multipart/form-data'
           }
-        }).then(() => {
-          window.location.href = "/inboxes/" + this.inbox_id + "/tickets";
+        }).then(resp => {
+          router.push({name: "Ticket", params: {inboxId: inboxId, ticketInboxId: resp.data.ticket_inbox_id}})
         }).catch(error => {
           this.errors = error.response.data
         })

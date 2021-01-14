@@ -94,25 +94,25 @@
         <h3 class="text-lg leading-6 font-medium text-gray-900">
           Number of tickets per day
         </h3>
-        <tickets-chart/>
+        <tickets-chart :inbox-id="$route.params.inboxId"/>
       </div>
       <div class="shadow p-3">
         <h3 class="text-lg leading-6 font-medium text-gray-900">
           Number of tickets per hour
         </h3>
-        <tickets-chart type="hour"/>
+        <tickets-chart type="hour" :inbox-id="$route.params.inboxId"/>
       </div>
       <div class="shadow p-3">
         <h3 class="text-lg leading-6 font-medium text-gray-900">
           Average response time
         </h3>
-        <agent-response-time-chart/>
+        <agent-response-time-chart />
       </div>
       <div class="shadow p-3">
         <h3 class="text-lg leading-6 font-medium text-gray-900">
           Label usage
         </h3>
-        <labels-chart/>
+        <labels-chart />
       </div>
     </div>
   </div>
@@ -132,9 +132,10 @@ export default {
     statistics: null,
   }),
   async mounted() {
-    const response = await axios.get("/api" + window.location.pathname);
+    const inboxId = this.$route.params.inboxId
+    const response = await axios.get(`/api/inboxes/${inboxId}/statistics`);
     this.statistics = response.data
-  }
+  },
 }
 </script>
 

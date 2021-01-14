@@ -2,7 +2,6 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>TicketVise</title>
     <meta name="description" content="TicketVise, making assisting great again.">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     {% load static %}
@@ -45,17 +44,7 @@
     </a>
 </noscript>
 
-<main class="flex flex-col h-screen js-only">
-    {% block body %}
-    if you see this, something is wrong!
-    {% endblock body %}
-</main>
-
-{% block navbar-javascript %}
-{% endblock navbar-javascript %}
-
-{% block javascript %}
-{% endblock javascript %}
+<div id="app"></div>
 
 </body>
 </html>

@@ -3,11 +3,11 @@
 
     <div class="flex w-full p-2 sm:px-0 sm:pb-4 space-x-2">
       <search-bar v-model="query" v-on:input="search" class="flex-grow px-2 my-2"/>
-      <a type="button" :href="add_url"
+      <router-link type="button" :to="add_url"
          class="inline-flex items-center px-4 my-2 border border-transparent text-sm leading-5 font-medium rounded-md text-white bg-primary hover:bg-orange-500 focus:outline-none focus:shadow-outline-orange focus:border-orange-700 active:bg-orange-700 transition duration-150 ease-in-out">
         <i class="fa fa-plus mr-2"></i>
         Add
-      </a>
+      </router-link>
     </div>
 
     <div class="flex flex-col">
@@ -62,8 +62,8 @@
                   </span>
                 </td>
                 <td class="px-6 py-4 whitespace-no-wrap text-right border-b border-gray-200 text-sm leading-5 font-medium">
-                  <a :href="getLabelUrl(label)"
-                    class="text-indigo-600 hover:text-indigo-900">Edit</a>
+                  <router-link :to="getLabelUrl(label)"
+                    class="text-indigo-600 hover:text-indigo-900">Edit</router-link>
                 </td>
               </tr>
             </tbody>
@@ -98,12 +98,14 @@ export default {
   },
   computed: {
     add_url: function () {
-      return window.location.pathname + '/new'
+      return `/inboxes/${this.$route.params.inboxId}/labels/new`
     }
   },
   methods: {
     performSearch: function (page) {
-      axios.get(`/api${window.location.pathname}`, {
+      const inboxId = this.$route.params.inboxId
+
+      axios.get(`/api/inboxes/${inboxId}/labels`, {
         params: {
           q: this.query,
           page: page
@@ -116,7 +118,7 @@ export default {
       this.performSearch()
     }, 250),
     getLabelUrl: function (label) {
-      return window.location.pathname + '/' + label.id
+      return `/inboxes/${this.$route.params.inboxId}/labels/${label.id}`
     },
   }
 }

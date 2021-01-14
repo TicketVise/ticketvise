@@ -1,17 +1,15 @@
-from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import JsonResponse, Http404
 from django.shortcuts import get_object_or_404
-from django.views import View
 from rest_framework import serializers
-from rest_framework.generics import RetrieveUpdateAPIView, RetrieveAPIView, ListAPIView
+from rest_framework.generics import RetrieveUpdateAPIView, RetrieveAPIView
 from rest_framework.serializers import ModelSerializer
+from rest_framework.views import APIView
 
 from ticketvise.models.inbox import Inbox
 from ticketvise.models.notification import Notification
 from ticketvise.models.user import User, Role, UserInbox
-from ticketvise.views.admin import SuperUserRequiredMixin
 from ticketvise.views.api import DynamicFieldsModelSerializer
-from ticketvise.views.api.security import UserIsInInboxMixin
+from ticketvise.views.api.security import UserIsInInboxPermission, UserIsSuperUserPermission
 
 
 class UserSerializer(DynamicFieldsModelSerializer):
@@ -61,7 +59,9 @@ class UserUsernameSerializer(ModelSerializer):
         model = User
         fields = ["first_name", "last_name", "username", "avatar_url", "id"]
 
-class UserRoleApiView(UserIsInInboxMixin, View):
+
+class UserRoleApiView(APIView):
+    permission_classes = [UserIsInInboxPermission]
 
     def get(self, request, inbox_id):
         inbox = get_object_or_404(Inbox, pk=inbox_id)
@@ -76,7 +76,8 @@ class UserRoleApiView(UserIsInInboxMixin, View):
         return JsonResponse(data, safe=False)
 
 
-class UserGetFromUsernameApiView(UserIsInInboxMixin, RetrieveUpdateAPIView):
+class UserGetFromUsernameApiView(RetrieveUpdateAPIView):
+    permission_classes = [UserIsInInboxPermission]
     serializer_class = UserUsernameSerializer
 
     def get_object(self):
@@ -94,7 +95,7 @@ class UserGetFromUsernameApiView(UserIsInInboxMixin, RetrieveUpdateAPIView):
         return super().handle_exception(exc)
 
 
-class CurrentUserApiView(LoginRequiredMixin, RetrieveAPIView):
+class CurrentUserApiView(RetrieveAPIView):
     serializer_class = UserSerializer
 
     def get_object(self):
@@ -109,14 +110,16 @@ class RoleSerializer(serializers.BaseSerializer):
         }
 
 
-class NotificationsSettingsAPIView(LoginRequiredMixin, RetrieveUpdateAPIView):
+class NotificationsSettingsAPIView(RetrieveUpdateAPIView):
     serializer_class = UserNotificationSettingsSerializer
 
     def get_object(self):
         return self.request.user
 
 
-class UsersApiView(SuperUserRequiredMixin, View):
+class UsersApiView(APIView):
+    permission_classes = [UserIsSuperUserPermission]
+
     def get(self, request):
         data = {
             'users': User.objects.count()

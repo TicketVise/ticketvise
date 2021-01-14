@@ -4,10 +4,10 @@
     <div class="border-b shadow flex justify-center">
       <div class="container px-4 my-4 mt-2 xl:flex xl:items-center xl:justify-between">
         <div class="flex-1 min-w-0">
-          <a class="text-xs text-gray-700 hover:underline cursor-pointer" href="/inboxes">
+          <router-link class="text-xs text-gray-700 hover:underline cursor-pointer" to="/inboxes">
             <i class="fa fa-arrow-left mr-2"></i>
             Dashboard
-          </a>
+          </router-link>
           <h2 class="text-2xl font-bold leading-7 text-gray-900 sm:text-3xl sm:leading-9 sm:truncate">
             Your account
           </h2>

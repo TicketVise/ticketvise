@@ -87,6 +87,7 @@
 
 <script>
 import axios from "axios";
+import router from "../../router";
 
 export default {
   name: "Label",
@@ -110,7 +111,7 @@ export default {
         "#9061F9"
     ]
 
-    if (window.location.pathname.includes("new")) {
+    if (window.location.hash.includes("new")) {
       this.label = {
         id: null,
         name: "",
@@ -119,37 +120,40 @@ export default {
         is_active: true
       }
     } else {
-      axios.get(`/api${window.location.pathname}`).then(response => {
+      const inboxId = this.$route.params.inboxId
+      const labelId = this.$route.params.labelId
+
+      axios.get(`/api/inboxes/${inboxId}/labels/${labelId}`).then(response => {
         this.label = response.data
       })
     }
   },
   methods: {
     onSave: function () {
-      axios.defaults.xsrfCookieName = 'csrftoken';
-      axios.defaults.xsrfHeaderName = "X-CSRFTOKEN";
+      const inboxId = this.$route.params.inboxId
+      const labelId = this.$route.params.labelId
 
       if (this.label.id) {
-        axios.put(`/api${window.location.pathname}`, this.label).then(_ => {
-          history.back()
+        axios.put(`/api/inboxes/${inboxId}/labels/${labelId}`, this.label).then(_ => {
+          router.push({name: "InboxLabels", params: {inboxId: inboxId}})
         })
       } else {
-        axios.post(`/api${window.location.pathname}`.replace("/new", ""), this.label).then(_ => {
-          history.back()
+        axios.post(`/api/inboxes/${inboxId}/labels/${labelId}`, this.label).then(_ => {
+          router.push({name: "InboxLabels", params: {inboxId: inboxId}})
         })
       }
 
     },
     onCancel: function () {
-      window.history.back();
+      router.push({name: "InboxLabels", params: {inboxId: this.$route.params.labelId}})
     },
     onDelete: function () {
-      if (confirm('Are you sure?')) {
-        axios.defaults.xsrfCookieName = 'csrftoken';
-        axios.defaults.xsrfHeaderName = "X-CSRFTOKEN";
+      const inboxId = this.$route.params.inboxId
+      const labelId = this.$route.params.labelId
 
-        axios.delete(`/api${window.location.pathname}`).then(_ => {
-          history.back()
+      if (confirm('Are you sure?')) {
+        axios.delete(`/api/inboxes/${inboxId}/labels/${labelId}`).then(_ => {
+          router.push({name: "InboxLabels", params: {inboxId: inboxId}})
         })
       }
     }

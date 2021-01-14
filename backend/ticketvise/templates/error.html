@@ -3,15 +3,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  {% if user.is_authenticated %}
-    {% number_of_unread_notifications user as count %}
-  {% endif %}
-  {% if count %}
-    <title>({{ count }}) TicketVise</title>
-  {% else %}
-    <title>TicketVise</title>
-  {% endif %}
-
+  <title>TicketVise</title>
   <meta name="description" content="TicketVise, making assisting great again.">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   {% load static %}

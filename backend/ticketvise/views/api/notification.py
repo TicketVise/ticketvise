@@ -1,19 +1,13 @@
-from django.contrib.auth.mixins import LoginRequiredMixin
-from django.db.models import Q
 from django.http import JsonResponse
 from rest_framework.generics import ListAPIView, UpdateAPIView, get_object_or_404, RetrieveAPIView
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.response import Response
 from rest_framework.serializers import ModelSerializer
 
-from ticketvise.models.inbox import Inbox
 from ticketvise.models.notification import Notification
-from ticketvise.models.ticket import Ticket
 from ticketvise.views.api.inbox import InboxSerializer
-from ticketvise.views.api.security import UserHasAccessToTicketMixin
 from ticketvise.views.api.ticket import TicketSerializer
 from ticketvise.views.api.user import UserSerializer
-from ticketvise.views.notifications import unread_related_ticket_notifications
 
 
 class NotificationSerializer(ModelSerializer):
@@ -30,7 +24,7 @@ class NotificationPagination(PageNumberPagination):
     page_size = 20
 
 
-class NotificationsAPIView(LoginRequiredMixin, ListAPIView):
+class NotificationsAPIView(ListAPIView):
     serializer_class = NotificationSerializer
     pagination_class = NotificationPagination
 
@@ -48,16 +42,19 @@ class NotificationsAPIView(LoginRequiredMixin, ListAPIView):
         return notifications
 
 
-class NotificationFlipRead(LoginRequiredMixin, UpdateAPIView):
+class NotificationFlipRead(UpdateAPIView):
     serializer_class = NotificationSerializer
     queryset = Notification
 
     def put(self, request, *args, **kwargs):
-        Notification.objects.filter(pk=self.kwargs["pk"]).update(is_read=Q(is_read=False))
+        notification = get_object_or_404(Notification, pk=self.kwargs["pk"], receiver=request.user)
+        notification.is_read = not notification.is_read
+        notification.save()
+
         return Response()
 
 
-class NotificationsReadAll(LoginRequiredMixin, UpdateAPIView):
+class NotificationsReadAll(UpdateAPIView):
     serializer_class = NotificationSerializer
 
     def put(self, request, *args, **kwargs):
@@ -65,6 +62,6 @@ class NotificationsReadAll(LoginRequiredMixin, UpdateAPIView):
         return Response()
 
 
-class NotificationUnreadCountAPI(LoginRequiredMixin, RetrieveAPIView):
+class NotificationUnreadCountAPI(RetrieveAPIView):
     def get(self, request, *args, **kwargs):
         return JsonResponse(Notification.objects.filter(receiver=request.user, is_read=False).count(), safe=False)

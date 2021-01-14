@@ -1,5 +1,3 @@
-from django.test import TestCase
-
 from ticketvise.models.ticket import TicketLabelEvent, TicketAssigneeEvent, Status, TicketStatusEvent
 from ticketvise.tests.test_ticket import TicketTestCase
 
@@ -7,14 +5,14 @@ from ticketvise.tests.test_ticket import TicketTestCase
 class TestTicketEvent(TicketTestCase):
 
     def test_create_label_ticket_event(self):
-        self.client.force_login(self.student)
+        self.client.force_authenticate(self.student)
         TicketLabelEvent.objects.all().delete()
         self.ticket.add_label(self.label)
 
         self.assertEqual(TicketLabelEvent.objects.filter(label=self.label, is_added=True).count(), 1)
 
     def test_delete_label_ticket_event(self):
-        self.client.force_login(self.student)
+        self.client.force_authenticate(self.student)
         self.ticket.add_label(self.label)
 
         TicketLabelEvent.objects.all().delete()
@@ -24,7 +22,7 @@ class TestTicketEvent(TicketTestCase):
                                                          is_added=False).count(), 1)
 
     def test_assignee_ticket_event(self):
-        self.client.force_login(self.student)
+        self.client.force_authenticate(self.student)
 
         TicketAssigneeEvent.objects.all().delete()
         self.ticket.assignee = self.manager
@@ -33,7 +31,7 @@ class TestTicketEvent(TicketTestCase):
         self.assertEqual(TicketAssigneeEvent.objects.filter(ticket=self.ticket, assignee=self.manager).count(), 1)
 
     def test_status_ticket_event(self):
-        self.client.force_login(self.student)
+        self.client.force_authenticate(self.student)
 
         old_status = self.ticket.status
 
@@ -45,7 +43,7 @@ class TestTicketEvent(TicketTestCase):
                                                           new_status=Status.CLOSED).count(), 1)
 
     def test_events_api(self):
-        self.client.force_login(self.student)
+        self.client.force_authenticate(self.student)
         self.ticket.add_label(self.label)
         self.ticket.delete_label(self.label)
         self.ticket.assignee = self.manager
@@ -66,7 +64,7 @@ class TestTicketEvent(TicketTestCase):
         self.assertContains(response, "\"is_added\":false")
 
     def test_hide_certain_labels_for_student(self):
-        self.client.force_login(self.student)
+        self.client.force_authenticate(self.student)
 
         self.label.is_visible_to_guest = False
         self.label.save()
@@ -86,7 +84,7 @@ class TestTicketEvent(TicketTestCase):
         self.assertContains(response, self.label2.name)
 
     def test_hide_certain_labels_not_for_staff(self):
-        self.client.force_login(self.assistant)
+        self.client.force_authenticate(self.assistant)
 
         self.label.is_visible_to_guest = False
         self.label.save()

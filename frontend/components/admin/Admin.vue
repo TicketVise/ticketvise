@@ -5,10 +5,10 @@
         <div class="sm:flex sm:items-center sm:justify-between">
           <div class="flex-1 min-w-0">
             <div class="flex justify-between items-center">
-              <a href="/inboxes" class="text-xs text-gray-700 hover:underline cursor-pointer">
+              <router-link to="/inboxes" class="text-xs text-gray-700 hover:underline cursor-pointer">
                 <i class="fa fa-arrow-left mr-2"></i>
                 Dashboard
-              </a>
+              </router-link>
               <span class="sm:hidden">
                 <a
                   href="/admin/django"
@@ -75,6 +75,8 @@
 
 <script>
 import InboxStats from "./InboxStats";
+import axios from 'axios'
+
 export default {
   components: {InboxStats},
   data: () => ({

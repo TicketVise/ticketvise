@@ -1,6 +1,6 @@
 <template>
   <div class="container mx-auto lg:px-4 pb-4">
-    <search-bar v-model="query" v-on:input="search" class="flex-grow px-2 my-2" />
+    <search-bar v-model="query" v-on:input="search" class="flex-grow px-2 my-2"/>
 
     <div class="flex flex-col">
       <div class="-my-2 py-2 overflow-x-auto px-2 sm:-mx-6 sm:px-6 lg:-mx-8 lg:px-8">
@@ -26,7 +26,7 @@
             </thead>
             <tbody class="bg-white" v-if="page">
 
-            <tr v-for="inboxUser in page.results" :key="inboxUser.id" >
+            <tr v-for="inboxUser in page.results" :key="inboxUser.id">
               <td class="px-6 py-4 whitespace-no-wrap border-b border-gray-200">
 
                 <div class="flex items-center">
@@ -58,13 +58,15 @@
                 {{ inboxUser.role_label }}
               </td>
               <td class="px-6 py-4 whitespace-no-wrap text-right border-b border-gray-200 text-sm leading-5 font-medium">
-                <a :href="getInboxUserUrl(inboxUser)" class="text-indigo-600 hover:text-indigo-900">Edit</a>
+                <router-link :to="getInboxUserUrl(inboxUser)" class="text-indigo-600 hover:text-indigo-900">
+                  Edit
+                </router-link>
               </td>
             </tr>
             </tbody>
           </table>
           <div class="bg-white px-4 py-3 flex items-center justify-between border-t border-gray-200 sm:px-6">
-            <pagination v-if="page" :page="page" @go="performSearch" />
+            <pagination v-if="page" :page="page" @go="performSearch"/>
           </div>
         </div>
       </div>
@@ -75,24 +77,25 @@
 <script>
 import SearchBar from "../elements/SearchBar";
 import axios from "axios";
-import _, {debounce} from "lodash";
+import {debounce} from "lodash";
 import Pagination from "./Pagination";
 
 export default {
   name: "Users",
   components: {Pagination, SearchBar},
-    data() {
-      return {
-        query: "",
-        page: null
-      }
-    },
+  data() {
+    return {
+      query: "",
+      page: null
+    }
+  },
   mounted() {
     this.performSearch()
   },
   methods: {
     performSearch: function (page) {
-      axios.get(`/api${window.location.pathname}`, {
+      const inboxId = this.$route.params.inboxId
+      axios.get(`/api/inboxes/${inboxId}/users`, {
         params: {
           q: this.query,
           page: page
@@ -105,7 +108,8 @@ export default {
       this.performSearch()
     }, 250),
     getInboxUserUrl: function (inboxUser) {
-      return window.location.pathname + '/' + inboxUser.user.id
+      const inboxId = this.$route.params.inboxId
+      return `/inboxes/${inboxId}/users/${inboxUser.user.id}`
     }
   }
 }

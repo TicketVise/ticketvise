@@ -8,7 +8,8 @@ import time
 from urllib.parse import urlencode
 
 import oauthlib.oauth1.rfc5849.signature as oauth1
-from django.test import TestCase, Client
+from django.test import TestCase
+from rest_framework.test import APIClient
 
 from ticketvise import settings
 from ticketvise.models.inbox import Inbox, InboxSection, InboxUserSection
@@ -23,7 +24,7 @@ class LtiTestCase(TestCase):
 
         :return: None.
         """
-        self.client = Client()
+        self.client = APIClient()
         self.data = {
             "context_id": "2734dde21bed2288f65c7513a78f1653415da235",
             "context_label": "Test_code",

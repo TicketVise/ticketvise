@@ -4,7 +4,8 @@ Test Notifications
 This file tests the notification functionality on the website.
 """
 
-from django.test import TestCase, Client
+from django.test import TestCase
+from rest_framework.test import APIClient
 
 from ticketvise.models.comment import Comment
 from ticketvise.models.inbox import Inbox, SchedulingAlgorithm
@@ -26,7 +27,7 @@ class NotificationsTestCase(TestCase):
 
         :return: None.
         """
-        self.client = Client()
+        self.client = APIClient()
         self.inbox = Inbox.objects.create(code="ABC", name="how to code",
                                           scheduling_algorithm=SchedulingAlgorithm.FIXED)
 
@@ -63,8 +64,8 @@ class NotificationsTestCase(TestCase):
 
         :return: None.
         """
-        self.client.force_login(self.student)
-        response = self.client.get("/notifications")
+        self.client.force_authenticate(self.student)
+        response = self.client.get("/api/notifications")
         self.assertEqual(response.status_code, 200)
 
     def test_notification_page_401(self):
@@ -74,8 +75,8 @@ class NotificationsTestCase(TestCase):
 
         :return: None.
         """
-        response = self.client.get("/notifications")
-        self.assertRedirects(response, "/login/?next=/notifications")
+        response = self.client.get("/api/notifications")
+        self.assertEqual(response.status_code, 401)
 
     def test_assigned_ticket(self):
         """
@@ -83,7 +84,7 @@ class NotificationsTestCase(TestCase):
 
         :return: None.
         """
-        self.client.force_login(self.ta)
+        self.client.force_authenticate(self.ta)
 
         self.ticket.assignee = None
         self.ticket.save()
@@ -100,7 +101,7 @@ class NotificationsTestCase(TestCase):
 
         :return: None.
         """
-        self.client.force_login(self.ta)
+        self.client.force_authenticate(self.ta)
 
         self.ticket.inbox.scheduling_algorithm = SchedulingAlgorithm.FIXED
         self.ticket.inbox.fixed_scheduling_assignee = None
@@ -119,7 +120,7 @@ class NotificationsTestCase(TestCase):
 
         :return: None.
         """
-        self.client.force_login(self.ta2)
+        self.client.force_authenticate(self.ta2)
         Comment.objects.create(ticket=self.ticket, author=self.ta2, content="@admin")
 
         self.assertTrue(MentionNotification.objects.filter(receiver=self.ta,
@@ -141,7 +142,7 @@ class NotificationsTestCase(TestCase):
 
         :return: None.
         """
-        self.client.force_login(self.student)
+        self.client.force_authenticate(self.student)
 
         Comment.objects.create(ticket=self.ticket, author=self.ta2, content="test", is_reply=False)
 
@@ -158,7 +159,7 @@ class NotificationsTestCase(TestCase):
 
         :return: None.
         """
-        self.client.force_login(self.ta)
+        self.client.force_authenticate(self.ta)
 
         notifications = [
             (TicketAssignedNotification, "notification_assigned"),
@@ -175,8 +176,7 @@ class NotificationsTestCase(TestCase):
                 for suffix in ["mail", "app"]:
                     data[key + "_" + suffix] = b
 
-            response = self.client.put("/api/me/settings", data, follow=True,
-                                       content_type="application/json")
+            response = self.client.put("/api/me/settings", data)
             self.assertEqual(response.status_code, 200)
             updated_user = User.objects.get(pk=self.ta.id)
             self.ticket.author = self.ta2
@@ -344,23 +344,22 @@ class NotificationsTestCase(TestCase):
         self.assertEqual(list(comment_notification.get_email_comments()), replies)
 
     def test_get_notifications_200(self):
-        self.client.force_login(self.student)
+        self.client.force_authenticate(self.student)
         response = self.client.get("/api/notifications")
         self.assertEqual(response.status_code, 200)
 
     def test_get_notifications_unauthorized(self):
         response = self.client.get("/api/notifications")
-        self.assertEqual(response.status_code, 302)
-        self.assertEqual(response.url, "/login/?next=/api/notifications")
+        self.assertEqual(response.status_code, 401)
 
     def test_get_notifications_count(self):
-        self.client.force_login(self.ta)
+        self.client.force_authenticate(self.ta)
         Notification.objects.all().delete()
 
-        MentionNotification.objects.create(receiver=self.ta, is_read=True, comment=self.comment),
-        CommentNotification.objects.create(receiver=self.ta, is_read=False, comment=self.comment),
-        TicketAssignedNotification.objects.create(receiver=self.ta, is_read=True, ticket=self.ticket),
-        NewTicketNotification.objects.create(receiver=self.ta, is_read=False, ticket=self.ticket),
+        MentionNotification.objects.create(receiver=self.ta, is_read=True, comment=self.comment)
+        CommentNotification.objects.create(receiver=self.ta, is_read=False, comment=self.comment)
+        TicketAssignedNotification.objects.create(receiver=self.ta, is_read=True, ticket=self.ticket)
+        NewTicketNotification.objects.create(receiver=self.ta, is_read=False, ticket=self.ticket)
         TicketReminderNotification.objects.create(receiver=self.ta, is_read=False, ticket=self.ticket)
 
         response = self.client.get("/api/notifications/unread")
@@ -368,7 +367,7 @@ class NotificationsTestCase(TestCase):
         self.assertContains(response, '3')
 
     def test_get_notifications_all(self):
-        self.client.force_login(self.ta)
+        self.client.force_authenticate(self.ta)
 
         data = {
             "is_read": ""
@@ -387,7 +386,7 @@ class NotificationsTestCase(TestCase):
         self.assertContains(response, '"count":5')
 
     def test_get_notifications_read(self):
-        self.client.force_login(self.ta)
+        self.client.force_authenticate(self.ta)
 
         data = {
             "is_read": "True"
@@ -406,7 +405,7 @@ class NotificationsTestCase(TestCase):
         self.assertContains(response, '"count":2')
 
     def test_get_notifications_unread(self):
-        self.client.force_login(self.ta)
+        self.client.force_authenticate(self.ta)
 
         data = {
             "is_read": "False"
@@ -425,7 +424,7 @@ class NotificationsTestCase(TestCase):
         self.assertContains(response, '"count":3')
 
     def test_notifications_read_all(self):
-        self.client.force_login(self.ta)
+        self.client.force_authenticate(self.ta)
 
         comment = Comment.objects.create(ticket=self.ticket, author=self.student, content="@admin", is_reply=True)
 
@@ -447,7 +446,7 @@ class NotificationsTestCase(TestCase):
             self.assertTrue(Notification.objects.get(pk=notification.id).is_read)
 
     def test_notifications_read_on_ticket_view(self):
-        self.client.force_login(self.ta)
+        self.client.force_authenticate(self.ta)
 
         comment1 = Comment.objects.create(ticket=self.ticket, author=self.student, content="@admin", is_reply=True)
 
@@ -484,7 +483,7 @@ class NotificationsTestCase(TestCase):
             self.assertFalse(Notification.objects.get(pk=notification.id).is_read)
 
     def test_notifications_flip_read(self):
-        self.client.force_login(self.ta)
+        self.client.force_authenticate(self.ta)
 
         comment = Comment.objects.create(ticket=self.ticket, author=self.student, content="@admin", is_reply=True)
 
@@ -507,7 +506,7 @@ class NotificationsTestCase(TestCase):
             self.assertFalse(Notification.objects.get(pk=notification.id).is_read)
 
     def test_set_assignee(self):
-        self.client.force_login(self.ta2)
+        self.client.force_authenticate(self.ta2)
 
         self.ticket.assignee = None
         self.ticket.save()
@@ -515,7 +514,7 @@ class NotificationsTestCase(TestCase):
         Notification.objects.all().delete()
 
         response = self.client.put(f"/api/inboxes/{self.inbox.id}/tickets/{self.ticket.ticket_inbox_id}/assignee",
-                                   data={"assignee": self.ta.id}, content_type="application/json")
+                                   data={"assignee": self.ta.id})
         self.assertEqual(response.status_code, 200)
 
         ticket = Ticket.objects.get(pk=self.ticket.id)
@@ -525,7 +524,7 @@ class NotificationsTestCase(TestCase):
         self.assertTrue(exists)
 
     def test_set_assignee_self(self):
-        self.client.force_login(self.ta)
+        self.client.force_authenticate(self.ta)
 
         self.ticket.assignee = None
         self.ticket.save()
@@ -533,7 +532,7 @@ class NotificationsTestCase(TestCase):
         Notification.objects.all().delete()
 
         response = self.client.put(f"/api/inboxes/{self.inbox.id}/tickets/{self.ticket.ticket_inbox_id}/assignee",
-                                   data={"assignee": self.ta.id}, content_type="application/json")
+                                   data={"assignee": self.ta.id})
         self.assertEqual(response.status_code, 200)
 
         ticket = Ticket.objects.get(pk=self.ticket.id)

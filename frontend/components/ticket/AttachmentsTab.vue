@@ -27,6 +27,8 @@
   import Error from "../elements/message/Error";
   import Attachment from "./Attachment";
 
+  import axios from 'axios'
+
   export default {
     components: {
       Attachment,
@@ -57,11 +59,10 @@
         let formData = new FormData()
 
         this.files.forEach(file => formData.append("files", file))
+        const inboxId = this.$route.params.inboxId
+        const ticketInboxId = this.$route.params.ticketInboxId
 
-        axios.defaults.xsrfCookieName = 'csrftoken'
-        axios.defaults.xsrfHeaderName = "X-CSRFTOKEN"
-
-        axios.post("/api" + window.location.pathname + '/attachments', formData, {
+        axios.post(`/api/inboxes/${inboxId}/tickets/${ticketInboxId}/attachments`, formData, {
           headers: {
             'Content-Type': 'multipart/form-data'
           }
