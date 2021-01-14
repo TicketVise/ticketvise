@@ -7,7 +7,7 @@ RUN apt update && apt upgrade -y
 
 # Copy project
 RUN mkdir /backend
-COPY ./backend /backend
+COPY ../backend /backend
 COPY ./requirements.txt /backend/requirements.txt
 WORKDIR /backend
 
