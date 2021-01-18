@@ -426,7 +426,7 @@ class AttachmentViewApiView(DestroyAPIView):
 
 
 class CloseTicketApiView(APIView):
-    permission_classes = [UserIsInboxStaffPermission]
+    permission_classes = [UserIsTicketAuthorOrInboxStaffPermission]
 
     def patch(self, request, inbox_id, ticket_inbox_id):
         inbox = get_object_or_404(Inbox, pk=inbox_id)
