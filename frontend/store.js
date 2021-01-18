@@ -8,7 +8,7 @@ const TOKEN_KEY = "token"
 const urlQueryParams = new URLSearchParams(window.location.search);
 const urlToken = urlQueryParams.get(TOKEN_KEY)
 
-if (hasLocalStorage) {
+if (urlToken && hasLocalStorage) {
     localStorage.setItem(TOKEN_KEY, urlToken)
 }
 
