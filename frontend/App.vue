@@ -10,8 +10,8 @@
 <script>
 
 import Navigation from "./components/Navigation";
-import {hasLocalStorage} from "./index";
 import {TOKEN_KEY} from "./store";
+import {hasLocalStorage} from "./utils";
 
 export default {
   name: "App",

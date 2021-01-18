@@ -29,3 +29,5 @@ export function isLocalStorageAvailable() {
 
     return false
 }
+
+export const hasLocalStorage = isLocalStorageAvailable()
