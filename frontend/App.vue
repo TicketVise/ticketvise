@@ -10,18 +10,19 @@
 <script>
 
 import Navigation from "./components/Navigation";
-import axios from "axios";
+import {hasLocalStorage} from "./index";
+import {TOKEN_KEY} from "./store";
 
 export default {
   name: "App",
   components: {Navigation},
   mounted() {
     const params = new URLSearchParams(window.location.search);
-    const token = params.get("token") || localStorage.getItem("token")
+    const token = params.get(TOKEN_KEY) || (hasLocalStorage ? localStorage.getItem(TOKEN_KEY) : null)
     const inboxId = params.get("inbox_id")
     if (token) {
       // Remove parameters from URL if LTI launch (in this case token is a query param)
-      if (params.get("token")) {
+      if (params.get(TOKEN_KEY)) {
         window.history.replaceState({}, document.title, "/");
       }
 

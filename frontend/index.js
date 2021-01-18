@@ -7,11 +7,14 @@ import App from "./App";
 import store from "./store";
 import router from "./router";
 import axios from 'axios';
+import {isLocalStorageAvailable} from "./utils";
 // import * as Sentry from "@sentry/browser";
 // import { Integrations, VueIntegration } from "@sentry/tracing";
 
 Vue.use(Vuex)
 Vue.use(VueRouter)
+
+export const hasLocalStorage = isLocalStorageAvailable()
 
 // // global is declared using DefinePlugin in the webpack.config.js
 // if (typeof SENTRY_DSN !== 'undefined') {

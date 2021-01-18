@@ -153,11 +153,9 @@
       },
       toggleView() {
         this.list = !this.list
-        localStorage.setItem('inbox_view', (this.list ? 'list' : 'column'))
       },
       togglePersonal() {
         this.showPersonal = !this.showPersonal
-        localStorage.setItem('inbox_show_personal_tickets', this.showPersonal)
         this.get_tickets()
       },
       loadStatus(status) {
@@ -192,9 +190,6 @@
       }
     },
     created() {
-      let inbox_view = localStorage.getItem('inbox_view')
-      if (inbox_view) this.list = inbox_view === 'list'
-
       axios.get(`/api/inboxes/${this.$route.params.inboxId}/labels/all`).then(response => {
         this.inbox_labels = response.data.concat([UNLABELLED_LABEL])
       })
@@ -205,21 +200,9 @@
 
       axios.get(`/api/inboxes/${this.$route.params.inboxId}/role`).then(response => {
         this.is_staff = response.data && (response.data.key === 'AGENT' || response.data.key === 'MANAGER')
-
-        let inbox_view = localStorage.getItem('inbox_view')
-        if (!inbox_view) {
-          localStorage.setItem('inbox_view', this.is_staff ? 'column' : 'list')
-          inbox_view = localStorage.getItem('inbox_view')
-        }
-        this.list = inbox_view === 'list'
+        this.list = !this.is_staff
       })
 
-      let inbox_show_personal_tickets = localStorage.getItem('inbox_show_personal_tickets')
-      if (!inbox_show_personal_tickets) {
-        localStorage.setItem('inbox_show_personal_tickets', this.showPersonal)
-        inbox_show_personal_tickets = localStorage.getItem('inbox_view')
-      }
-      this.showPersonal = inbox_show_personal_tickets === 'true'
       this.get_tickets()
     }
   }

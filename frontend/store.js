@@ -2,12 +2,15 @@ import Vue from 'vue'
 import Vuex from 'vuex'
 import axios from 'axios'
 import router from "./router";
+import {hasLocalStorage} from "./index";
 
 Vue.use(Vuex)
 
+export const TOKEN_KEY = "token"
+
 export default new Vuex.Store({
     state: {
-        token: localStorage.getItem('token'),
+        token: hasLocalStorage ? localStorage.getItem(TOKEN_KEY) : null,
         user: {},
     },
     mutations: {
@@ -15,11 +18,17 @@ export default new Vuex.Store({
             state.user = user
         },
         update_token(state, token) {
-            localStorage.setItem("token", token)
+            if (hasLocalStorage) {
+                localStorage.setItem(TOKEN_KEY, token)
+            }
+
             state.token = token
         },
         unauth_success(state) {
-            localStorage.removeItem('token')
+            if (hasLocalStorage) {
+                localStorage.removeItem(TOKEN_KEY)
+            }
+
             state.user = {}
             state.token = null
         },
