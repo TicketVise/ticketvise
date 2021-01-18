@@ -118,7 +118,6 @@
       label: null,
       inbox_labels: [],
       is_staff: false,
-      user: null,
       list: false,
     }),
     methods: {
@@ -194,16 +193,17 @@
         this.inbox_labels = response.data.concat([UNLABELLED_LABEL])
       })
 
-      axios.get("/api/me").then(response => {
-        this.user = response.data
-      })
-
       axios.get(`/api/inboxes/${this.$route.params.inboxId}/role`).then(response => {
         this.is_staff = response.data && (response.data.key === 'AGENT' || response.data.key === 'MANAGER')
         this.list = !this.is_staff
       })
 
       this.get_tickets()
+    },
+    computed: {
+      user() {
+        return this.$store.state.user;
+      }
     }
   }
 </script>

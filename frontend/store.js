@@ -4,13 +4,19 @@ import axios from 'axios'
 import router from "./router";
 import {hasLocalStorage} from "./utils";
 
-Vue.use(Vuex)
+const TOKEN_KEY = "token"
+const urlQueryParams = new URLSearchParams(window.location.search);
+const urlToken = urlQueryParams.get(TOKEN_KEY)
 
-export const TOKEN_KEY = "token"
+if (hasLocalStorage) {
+    localStorage.setItem(TOKEN_KEY, urlToken)
+}
 
-export default new Vuex.Store({
+Vue.use(Vuex);
+
+const store = new Vuex.Store({
     state: {
-        token: hasLocalStorage ? localStorage.getItem(TOKEN_KEY) : null,
+        token: urlToken || (hasLocalStorage ? localStorage.getItem(TOKEN_KEY) : null),
         user: {},
     },
     mutations: {
@@ -21,6 +27,7 @@ export default new Vuex.Store({
             if (hasLocalStorage) {
                 localStorage.setItem(TOKEN_KEY, token)
             }
+            console.log(localStorage.getItem(TOKEN_KEY))
 
             state.token = token
         },
@@ -54,18 +61,11 @@ export default new Vuex.Store({
                     })
             })
         },
-        relogin({commit}, {token, inboxId}) {
-            commit("update_token", token)
-
+        sync({commit}) {
             return new Promise((resolve, reject) => {
                 axios.get('/api/me')
                     .then(resp => {
                         commit('auth_success', resp.data)
-                        if (inboxId) {
-                            router.push({name: 'Inbox', params: {inboxId: inboxId}})
-                        } else if (!window.location.hash) {
-                            router.push({name: 'Inboxes'})
-                        }
 
                         resolve(resp)
                     })
@@ -84,3 +84,35 @@ export default new Vuex.Store({
         isAuthenticated: state => !!state.token
     }
 })
+
+axios.interceptors.request.use((config) => {
+    if (store.getters.isAuthenticated) {
+        config.headers["Authorization"] = "Token " + store.state.token
+    }
+
+    return config;
+});
+
+axios.interceptors.response.use(response => response, error => {
+    if (error.response && error.response.status === 401) {
+        store.dispatch("logout")
+    } else {
+        return Promise.reject(error);
+    }
+});
+
+// Check if launched from LTI (when 'token' query param is in URL)
+if (urlToken) {
+    // Remove token parameter from URL.
+    const url = new URL(window.location.href)
+    url.searchParams.delete(TOKEN_KEY)
+
+    window.history.replaceState({}, document.title, url.href);
+}
+
+if (store.getters.isAuthenticated) {
+    // Sync user data.
+    store.dispatch("sync")
+}
+
+export default store

@@ -33,8 +33,7 @@
                 <button type="button"
                         class="relative cursor-pointer px-2 py-1 border-2 border-transparent text-gray-400 rounded-full
                       hover:text-white focus:outline-none focus:text-white focus:bg-gray-700"
-                        aria-label="Fullscreen" onclick="window.open(window.location.href, '_blank')"
-                        v-show="isFramed()" style="display: none">
+                        aria-label="Fullscreen" @click="openInTab()" v-show="isFramed()" style="display: none">
                   <i class="fa fa-arrows-alt text-lg" aria-hidden="true"></i>
                 </button>
 
@@ -195,6 +194,8 @@
 
 <script>
 import {mixin as clickaway} from 'vue-clickaway'
+import {hasLocalStorage} from "../utils";
+import store from "../store";
 
 export default {
   name: "Navigation",
@@ -230,6 +231,16 @@ export default {
     },
     logout() {
       this.$store.dispatch("logout")
+    },
+    openInTab() {
+      if (hasLocalStorage) {
+        window.open(window.location.href, '_blank')
+      } else {
+        const url = new URL(window.location.href)
+        url.searchParams.append("token", store.state.token);
+
+        window.open(url.href, '_blank')
+      }
     }
   },
   computed: {

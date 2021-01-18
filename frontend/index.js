@@ -1,49 +1,9 @@
 import Vue from 'vue'
-import Vuex from 'vuex'
 import 'alpinejs'
 import './email/index.js'
-import VueRouter from 'vue-router'
 import App from "./App";
 import store from "./store";
 import router from "./router";
-import axios from 'axios';
-// import * as Sentry from "@sentry/browser";
-// import { Integrations, VueIntegration } from "@sentry/tracing";
-
-Vue.use(Vuex)
-Vue.use(VueRouter)
-
-// // global is declared using DefinePlugin in the webpack.config.js
-// if (typeof SENTRY_DSN !== 'undefined') {
-//     Sentry.init({
-//         dsn: SENTRY_DSN,
-//         integrations: [
-//             new VueIntegration({
-//                 Vue,
-//                 tracing: true,
-//                 logErrors: true
-//             }),
-//             new Integrations.BrowserTracing()
-//         ],
-//         tracesSampleRate: 1 / 100
-//     });
-// }
-
-axios.interceptors.request.use((config) => {
-    if (store.getters.isAuthenticated) {
-        config.headers["Authorization"] = "Token " + store.state.token
-    }
-
-    return config;
-});
-
-axios.interceptors.response.use(response => response, error => {
-    if (error.response && error.response.status === 401) {
-        store.dispatch("logout")
-    } else {
-        return Promise.reject(error);
-    }
-});
 
 /**
  * Load every vue single file components.

@@ -100,4 +100,4 @@ class LtiView(View):
         token, _ = Token.objects.get_or_create(user=user)
         _, token = token_expire_handler(token)
 
-        return redirect(reverse('home') + f'?token={token.key}&inbox_id={inbox.id}')
+        return redirect(reverse('home') + f'?token={token.key}#/inboxes/{inbox.id}/tickets')

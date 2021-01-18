@@ -15,6 +15,9 @@ import Account from "./components/account/Account";
 import Admin from "./components/admin/Admin";
 import store from "./store";
 import Inbox from "./components/inbox/Inbox";
+import Vue from "vue";
+
+Vue.use(VueRouter)
 
 const router = new VueRouter({
     routes: [
