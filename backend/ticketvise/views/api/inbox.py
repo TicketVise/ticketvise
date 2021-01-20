@@ -1,27 +1,30 @@
-from django.http import JsonResponse
-from django.db.models import Value
-from django.db.models.functions import Concat
+from django.db.models import Case, BooleanField, When, Q
 from django.shortcuts import get_object_or_404
 from rest_framework import serializers
-from rest_framework.generics import ListAPIView, RetrieveAPIView
+from rest_framework.generics import ListAPIView, RetrieveUpdateDestroyAPIView, ListCreateAPIView, RetrieveAPIView
+from rest_framework.generics import RetrieveUpdateAPIView
+from rest_framework.response import Response
 from rest_framework.serializers import ModelSerializer
-from rest_framework.views import APIView
 
 from ticketvise.middleware import CurrentUserMiddleware
-from ticketvise.models.inbox import Inbox
+from ticketvise.models.inbox import Inbox, SchedulingAlgorithm
 from ticketvise.models.label import Label
-from ticketvise.models.ticket import Ticket
-from ticketvise.models.user import User, Role
-from ticketvise.views.api.security import UserIsInboxStaffMixin, UserIsInInboxMixin, UserIsSuperUserMixin
-from ticketvise.views.api.ticket import LabelSerializer
-from ticketvise.views.api.user import UserSerializer
+from ticketvise.models.user import User, Role, UserInbox
+from ticketvise.utils import StandardResultsSetPagination
+from ticketvise.views.api import DynamicFieldsModelSerializer
+from ticketvise.views.api.labels import LabelSerializer
+from ticketvise.views.api.security import UserIsInInboxPermission, UserIsInboxStaffPermission, \
+    UserIsSuperUserPermission
+from ticketvise.views.api.user import UserSerializer, UserInboxSerializer
 
 
-class InboxSerializer(ModelSerializer):
+class InboxSerializer(DynamicFieldsModelSerializer):
     labels = serializers.SerializerMethodField()
+    coordinator = serializers.SerializerMethodField()
 
     def get_labels(self, obj):
         user = CurrentUserMiddleware.get_current_user()
+
         labels = obj.labels.filter(is_active=True)
 
         if user and not user.is_assistant_or_coordinator(obj):
@@ -29,84 +32,213 @@ class InboxSerializer(ModelSerializer):
 
         return LabelSerializer(labels, many=True, read_only=False).data
 
+    def get_coordinator(self, obj):
+        return UserSerializer(obj.get_coordinator()).data
+
     class Meta:
         model = Inbox
         fields = [
-            "name", "id", "color", "labels", "image", "scheduling_algorithm", 
-            "is_active", "date_created"
+            "name", "id", "color", "labels", "image", "scheduling_algorithm", "code", "show_assignee_to_guest",
+            "fixed_scheduling_assignee", "is_active", "date_created", "close_answered_weeks",
+            "alert_coordinator_unanswered_days", "coordinator"
         ]
 
 
-class InboxStaffApiView(UserIsInboxStaffMixin, ListAPIView):
+class InboxStaffApiView(ListAPIView):
     serializer_class = UserSerializer
+    permission_classes = [UserIsInboxStaffPermission]
     staff_roles = [Role.AGENT, Role.MANAGER]
+
 
     def get_queryset(self):
         return User.objects.filter(inbox_relationship__role__in=self.staff_roles,
-                                   inbox_relationship__inbox_id=self.kwargs[self.inbox_key])
+                                   inbox_relationship__inbox_id=self.kwargs["inbox_id"])
 
 
-class InboxLabelsApiView(UserIsInInboxMixin, ListAPIView):
+class AllInboxLabelsApiView(ListAPIView):
+    permission_classes = [UserIsInInboxPermission]
     serializer_class = LabelSerializer
 
     def get_queryset(self):
-        inbox = get_object_or_404(Inbox, pk=self.kwargs[self.inbox_key])
-        user = CurrentUserMiddleware.get_current_user()
+        inbox = get_object_or_404(Inbox, pk=self.kwargs["inbox_id"])
+        user = self.request.user
 
-        labels = Label.objects.filter(inbox=inbox, is_active=True).order_by("name")
+        labels = Label.objects.filter(inbox=inbox, is_active=True)
         if user and not user.is_assistant_or_coordinator(inbox):
             labels = labels.filter(is_visible_to_guest=True)
 
-        return labels
+        return labels.order_by("name")
 
 
-class InboxApiView(UserIsInInboxMixin, RetrieveAPIView):
-    serializer_class = InboxSerializer
-    queryset = Inbox
-    lookup_url_kwarg = "inbox_id"
+class InboxLabelsApiView(ListCreateAPIView):
+    serializer_class = LabelSerializer
+    pagination_class = StandardResultsSetPagination
+    permission_classes = [UserIsInboxStaffPermission]
 
+    def get_queryset(self):
+        inbox = get_object_or_404(Inbox, pk=self.kwargs["inbox_id"])
 
-class CoordinatorSerializer(ModelSerializer):
-    class Meta:
-        model = User
-        fields = ["first_name", "last_name"]
+        search_query = Q()
+        for term in self.request.GET.get("q", "").split():
+            search_query |= (Q(name__icontains=term) | Q(color__icontains=term))
 
+        return Label.objects.filter(inbox=inbox) \
+            .filter(search_query) \
+            .order_by("name")
 
-class InboxStatsApiView(UserIsSuperUserMixin, APIView):
-    def get(self, request, inbox_id):
-        inbox = get_object_or_404(Inbox, pk=inbox_id)
-
-        return JsonResponse({
-            'labels': Label.objects.filter(inbox=inbox).count(),
-            'tickets': Ticket.objects.filter(inbox=inbox).count(),
-            'users': User.objects.filter(inbox_relationship__inbox_id=inbox).count(),
-            'coordinator': CoordinatorSerializer(inbox.get_coordinator()).data
-        }, safe=False)
+    def perform_create(self, serializer):
+        inbox = get_object_or_404(Inbox, pk=self.kwargs["inbox_id"])
+        serializer.save(inbox=inbox)
 
 
 class InboxesApiView(ListAPIView):
-    serializer_class = InboxSerializer
-    
+    permission_classes = [UserIsSuperUserPermission]
+
+    def get_serializer(self, *args, **kwargs):
+        return InboxSerializer(*args, **kwargs, fields=(
+            "name", "id", "color", "image", "scheduling_algorithm", "fixed_scheduling_assignee", "date_created"))
+
     def get_queryset(self):
-        return Inbox.objects.all()
+        return Inbox.objects.all().order_by("-date_created")
 
 
-class InboxGuestsAPIView(UserIsInInboxMixin, ListAPIView):
-    serializer_class = UserSerializer
+class InboxUsersApiView(ListAPIView):
+    serializer_class = UserInboxSerializer
+    pagination_class = StandardResultsSetPagination
+    permission_classes = [UserIsInboxStaffPermission]
+
+    def get_queryset(self):
+        q = self.request.GET.get("q", "")
+
+        inbox = get_object_or_404(Inbox, pk=self.kwargs["inbox_id"])
+        users = User.objects.filter(inbox_relationship__inbox=inbox).search(q)
+
+        inbox_users = UserInbox.objects.filter(user__in=users, inbox=inbox) \
+            .annotate(sort_staff=Case(
+            When(role=Role.GUEST, then=True),
+            default=False,
+            output_field=BooleanField())) \
+            .select_related("user") \
+            .order_by("sort_staff", "role", "user__first_name")
+
+        return inbox_users
+
+
+class InboxGuestsAPIView(ListAPIView):
+    permission_classes = [UserIsInInboxPermission]
+
+    def get_serializer(self, *args, **kwargs):
+        return UserSerializer(*args, **kwargs, fields=(
+            "first_name", "last_name", "email", "username", "avatar_url", "id", "is_active"))
 
     def get_queryset(self):
         q = self.request.GET.get("q", "")
         size = self.request.GET.get("size", "")
         size = int(size) if size.isdigit() else None
 
-        users = User.objects.annotate(fullname=Concat('first_name', Value(' '), 'last_name'))
+        users = User.objects.filter(inbox_relationship__role=Role.GUEST,
+                                    inbox_relationship__inbox_id=self.kwargs["inbox_id"]).search(q)
 
-        users = users.filter(inbox_relationship__role=Role.GUEST,
-                             inbox_relationship__inbox_id=self.kwargs[self.inbox_key])
-        users = users.filter(username__icontains=q) | \
-                users.filter(fullname__icontains=q) | \
-                users.filter(email__icontains=q)
+        return users[:size] if size and size > 0 else users
 
-        if size and size > 0:
-            return users[:size]
-        return users
+
+class UpdateUserInboxSerializer(ModelSerializer):
+    class Meta:
+        model = UserInbox
+        fields = ["role", "is_assignable"]
+
+
+class UserInboxApiView(RetrieveUpdateDestroyAPIView):
+    permission_classes = [UserIsInboxStaffPermission]
+
+    def get_serializer_class(self):
+        if self.request.method == "PUT":
+            return UpdateUserInboxSerializer
+
+        return UserInboxSerializer
+
+    def get_object(self):
+        inbox = get_object_or_404(Inbox, pk=self.kwargs["inbox_id"])
+        return get_object_or_404(UserInbox, inbox=inbox, user__id=self.kwargs["user_id"])
+
+
+class InboxLabelApiView(RetrieveUpdateDestroyAPIView):
+    serializer_class = LabelSerializer
+    permission_classes = [UserIsInboxStaffPermission]
+
+    def get_object(self):
+        inbox = get_object_or_404(Inbox, pk=self.kwargs["inbox_id"])
+        return get_object_or_404(Label, inbox=inbox, pk=self.kwargs["label_id"])
+
+
+class InboxSettingsApiView(RetrieveUpdateAPIView):
+    queryset = Inbox
+    permission_classes = [UserIsInboxStaffPermission]
+    lookup_url_kwarg = "inbox_id"
+
+    def get_serializer(self, *args, **kwargs):
+        return InboxSerializer(*args, **kwargs, fields=(
+            "name", "id", "color", "image", "scheduling_algorithm", "code", "show_assignee_to_guest",
+            "fixed_scheduling_assignee", "close_answered_weeks", "alert_coordinator_unanswered_days"))
+
+    def retrieve(self, request, *args, **kwargs):
+        inbox = self.get_object()
+
+        response = {
+            "inbox": self.get_serializer(inbox).data,
+            "scheduling_options": SchedulingAlgorithm.choices,
+            "staff": UserSerializer(inbox.get_assistants_and_coordinators(), many=True).data
+        }
+
+        return Response(response)
+
+    def update(self, request, *args, **kwargs):
+        if "fixed_scheduling_assignee" in request.POST.keys() and not request.POST["fixed_scheduling_assignee"].isdigit():
+            request.POST._mutable = True
+            request.POST["fixed_scheduling_assignee"] = None
+        return super().update(request, *args, **kwargs)
+
+
+class CurrentUserInboxSerializer(ModelSerializer):
+    inbox = InboxSerializer(fields=["name", "id", "color", "labels", "image", "code", "coordinator"])
+    role_label = serializers.SerializerMethodField()
+
+    def get_role_label(self, user_inbox):
+        return Role[user_inbox.role].label
+
+    class Meta:
+        model = UserInbox
+        fields = ["id", "role", "role_label", "inbox", "is_bookmarked"]
+
+
+class CurrentUserInboxesApiView(ListCreateAPIView):
+    serializer_class = CurrentUserInboxSerializer
+
+    def get_queryset(self):
+        return UserInbox.objects.filter(user=self.request.user).order_by("-date_created")
+
+    def post(self, request, **kwargs):
+        inbox_id = request.data.get("inbox_id")
+        if inbox_id:
+            inbox = Inbox.objects.get(pk=inbox_id)
+            if not request.user.has_inbox(inbox):
+                raise ValueError(f"User is not assigned to or enrolled in inbox {inbox}")
+
+            relation = request.user.get_entry_by_inbox(inbox)
+            relation.is_bookmarked = not relation.is_bookmarked
+            relation.save()
+
+        return Response()
+
+
+class CurrentUserInboxApiView(RetrieveAPIView):
+    serializer_class = CurrentUserInboxSerializer
+    permission_classes = [UserIsInInboxPermission]
+
+    def get_object(self):
+        inbox = get_object_or_404(Inbox, pk=self.kwargs["inbox_id"])
+
+        if self.request.user.is_superuser:
+            return UserInbox(user=self.request.user, inbox=inbox, role=Role.MANAGER)
+
+        return get_object_or_404(UserInbox, inbox=inbox, user=self.request.user)

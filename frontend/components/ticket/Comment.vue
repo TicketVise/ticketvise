@@ -11,8 +11,8 @@
             @{{ comment.author.username }}
           </span>
           <span class="text-xs flex-grow ml-1">· {{ date(comment.date_created) }}</span>
-          <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-gray-200 text-gray-800">
-            {{ comment.role.label }}
+          <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-gray-200 text-gray-800" v-if="comment && comment.author_role">
+            {{ comment.author_role.label }}
           </span>
         </div>
         <viewer :initialValue="content" class="px-2"></viewer>
@@ -23,18 +23,16 @@
 </template>
 
 <script>
-import '@toast-ui/editor/dist/toastui-editor-viewer.css';
 import Card from '../../components/elements/card/Card';
-
-import {Viewer} from '@toast-ui/vue-editor';
+import Viewer from "../elements/markdown/Viewer";
 import {calendarDate} from "../../utils";
 
 export default {
   name: "comment",
   props: ["comment", "reply", "ticket", "connected"],
   components: {
-    viewer: Viewer,
-    Card
+    Card,
+    Viewer
   },
   methods: {
     date: calendarDate

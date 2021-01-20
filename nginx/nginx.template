@@ -62,23 +62,6 @@ server {
     location /media/ {
         alias /home/media/;
     }
-}
 
-#mail {
-#    server_name ${NGINX_DOMAIN};
-#    proxy_pass_error_message on;
-#
-#    starttls            on;
-#    ssl_certificate     /etc/ssl/certs/server.crt;
-#    ssl_certificate_key /etc/ssl/certs/server.key;
-#    ssl_protocols       TLSv1 TLSv1.1 TLSv1.2;
-#    ssl_ciphers         HIGH:!aNULL:!MD5;
-#    ssl_session_cache   shared:SSL:10m;
-#    ssl_session_timeout 10m;
-#
-#    server {
-#        listen    25;
-#        protocol  smtp;
-#        smtp_auth login plain cram-md5;
-#    }
-#}
+    client_max_body_size 25M;
+}

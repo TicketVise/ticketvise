@@ -15,6 +15,21 @@ services:
       SQL_DATABASE: ticketvise
       SQL_HOST: database
 
+  mail:
+    ports:
+      - target: 25
+        published: 25
+        protocol: tcp
+        mode: host
+      - target: 465
+        published: 465
+        protocol: tcp
+        mode: host
+      - target: 587
+        published: 587
+        protocol: tcp
+        mode: host
+
 volumes:
   static:
   media:

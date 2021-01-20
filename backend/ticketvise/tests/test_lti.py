@@ -8,9 +8,12 @@ import time
 from urllib.parse import urlencode
 
 import oauthlib.oauth1.rfc5849.signature as oauth1
-from django.test import TestCase, Client
+from django.test import TestCase
+from rest_framework.test import APIClient
 
 from ticketvise import settings
+from ticketvise.models.inbox import Inbox, InboxSection, InboxUserSection
+from ticketvise.models.user import User
 
 
 class LtiTestCase(TestCase):
@@ -21,7 +24,7 @@ class LtiTestCase(TestCase):
 
         :return: None.
         """
-        self.client = Client()
+        self.client = APIClient()
         self.data = {
             "context_id": "2734dde21bed2288f65c7513a78f1653415da235",
             "context_label": "Test_code",
@@ -31,6 +34,7 @@ class LtiTestCase(TestCase):
             "custom_image_url": "https://uvadlo-tes.instructure.com/images/messages/avatar-50.png",
             "custom_user_full_name": "Test persoon",
             "custom_username": "test",
+            "custom_section_ids": "1234",
             "roles": "Instructor,urn:lti:instrole:ims/lis/Administrator",
             "user_id": "1234567890"
         }
@@ -174,3 +178,49 @@ class LtiTestCase(TestCase):
         response3 = self.client.post("/lti", signed_data, follow=True,
                                      content_type="application/x-www-form-urlencoded")
         self.assertEqual(response3.status_code, 200)
+
+    def test_lti_sections(self):
+        """
+        Launch LTI and check if section ids exist.
+
+        :return: None
+        """
+        # Create inbox.
+        self.data["custom_section_ids"] = "1234"
+        self.data["roles"] = "instructor"
+        signed_data = self.sign_data("POST", "/lti", self.data)
+
+        response1 = self.client.post("/lti", signed_data, follow=True,
+                                     content_type="application/x-www-form-urlencoded")
+        self.assertEqual(response1.status_code, 200)
+
+        inbox = Inbox.objects.get(code=self.data["context_label"])
+        user = User.objects.get(lti_id=self.data["user_id"])
+
+        section = InboxSection.objects.get(code="1234", inbox=inbox)
+        self.assertIsNotNone(section)
+        inbox_user_section = InboxUserSection.objects.get(section=section, user=user)
+        self.assertIsNotNone(inbox_user_section)
+
+        # Update sections
+        self.data["custom_section_ids"] = "1234,4567,9876"
+        signed_data = self.sign_data("POST", "/lti", self.data)
+
+        response2 = self.client.post("/lti", signed_data, follow=True,
+                                     content_type="application/x-www-form-urlencoded")
+        self.assertEqual(response2.status_code, 200)
+
+        section = InboxSection.objects.get(code="1234", inbox=inbox)
+        self.assertIsNotNone(section)
+        inbox_user_section = InboxUserSection.objects.get(section=section, user=user)
+        self.assertIsNotNone(inbox_user_section)
+
+        section = InboxSection.objects.get(code="4567", inbox=inbox)
+        self.assertIsNotNone(section)
+        inbox_user_section = InboxUserSection.objects.get(section=section, user=user)
+        self.assertIsNotNone(inbox_user_section)
+
+        section = InboxSection.objects.get(code="9876", inbox=inbox)
+        self.assertIsNotNone(section)
+        inbox_user_section = InboxUserSection.objects.get(section=section, user=user)
+        self.assertIsNotNone(inbox_user_section)

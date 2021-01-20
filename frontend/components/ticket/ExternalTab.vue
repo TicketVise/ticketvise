@@ -2,17 +2,20 @@
   <div class="flex flex-column flex-wrap w-full pr-4">
     <div class="mt-3 w-full">
       <comment :comment="ticket"/>
-      <comment :comment="comment" :key="comment.id" :ticket="ticket" v-for="comment in replies"/>
+      <div v-for="entry in content" :key="entry.id">
+        <comment v-if="entry.content" :comment="entry" :key="`comment-${entry.id}`" :ticket="ticket"/>
+        <ticket-event v-else :ticket_event="entry" :key="`event-${entry.id}`"/>
+      </div>
     </div>
 
     <div class="flex w-full">
       <avatar :source="user.avatar_url" class="w-12 h-12 m-3"/>
       <div class="flex flex-col items-end flex-grow w-full mb-4">
         <card class="mb-2 w-full" outlined>
-          <editor initialEditType="wysiwyg" previewStyle="tab" ref="replyEditor"/>
+          <editor ref="replyEditor"/>
         </card>
         <button @click="submitReply"
-          class="group relative w-full sm:w-auto flex justify-center sm:justify-start items-center py-2 px-4 border border-transparent text-sm leading-5 font-medium rounded-md text-white bg-primary hover:bg-orange-500 focus:outline-none focus:border-orange-700 focus:shadow-outline-orange active:bg-orange-700 transition duration-150 ease-in-out">
+                class="group relative w-full sm:w-auto flex justify-center sm:justify-start items-center py-2 px-4 border border-transparent text-sm leading-5 font-medium rounded-md text-white bg-primary hover:bg-orange-500 focus:outline-none focus:border-orange-700 focus:shadow-outline-orange active:bg-orange-700 transition duration-150 ease-in-out">
           <i class="fa fa-reply text-orange-200 absolute sm:relative left-4 sm:left-auto mr-2"></i>
           {{ button_text }}
         </button>
@@ -22,73 +25,129 @@
 </template>
 
 <script>
-  import Comment from "./Comment";
-  import Avatar from "../elements/Avatar";
-  import Card from "../elements/card/Card";
-  import axios from "axios";
-  import '@toast-ui/editor/dist/toastui-editor-viewer.css';
-  import 'codemirror/lib/codemirror.css';
-  import VueTribute from 'vue-tribute';
+import Comment from "./Comment";
+import Avatar from "../elements/Avatar";
+import Card from "../elements/card/Card";
+import Editor from "../elements/markdown/Editor";
+import axios from "axios";
+import TicketEvent from "./TicketEvent";
+import moment from "moment";
 
-  import '@toast-ui/editor/dist/toastui-editor.css';
-  import {Editor, Viewer} from '@toast-ui/vue-editor';
-
-  export default {
-    components: {
-      Avatar,
-      Comment,
-      Viewer,
-      editor: Editor,
-      VueTribute,
-      Card
+export default {
+  components: {
+    TicketEvent,
+    Avatar,
+    Comment,
+    Editor,
+    Card
+  },
+  props: {
+    ticket: {
+      type: Object,
+      required: true
     },
-    props: {
-      ticket: {
-        type: Object,
-        required: true
-      },
-      replies: {
-        required: true,
-        default: []
-      },
-      user: {
-        type: Object,
-        required: true
+    replies: {
+      required: true,
+      default: []
+    },
+    events: {
+      required: true,
+      default: []
+    },
+    user: {
+      type: Object,
+      required: true
+    }
+  },
+  data() {
+    return {
+      staff: [],
+    }
+  },
+  methods: {
+    submitReply() {
+      const inboxId = this.$route.params.inboxId
+      const ticketInboxId = this.$route.params.ticketInboxId
+      const content = this.$refs.replyEditor.getContent()
+
+      this.$refs.replyEditor.clear()
+
+      axios.post(`/api/inboxes/${inboxId}/tickets/${ticketInboxId}/replies/post`, {"content": content})
+          .then(() => {
+            this.$emit("post", true)
+          })
+    }
+  },
+  computed: {
+    button_text: function () {
+      if (this.ticket.status === "CLSD") {
+        return "Reply and reopen ticket"
+      } else {
+        return "Reply"
       }
     },
-    data() {
-      return {
-        replyEditor: "",
-        staff: [],
-      }
-    },
-    methods: {
-      submitReply() {
-        let content = this.$refs.replyEditor.invoke('getMarkdown');
-        this.$refs.replyEditor.invoke('setMarkdown', '');
-        let formData = new FormData();
-        formData.append("content", content);
+    content: function () {
+      const mergeMinutes = 5
+      const entries = []
+      const sharedWith = this.ticket.shared_with_by.map(shared_user => {
+        shared_user.shared_with = shared_user.user
 
-        axios.defaults.xsrfCookieName = 'csrftoken';
-        axios.defaults.xsrfHeaderName = "X-CSRFTOKEN";
+        return shared_user
+      })
 
-        axios.post("/api" + window.location.pathname + "/replies/post", formData)
-            .then(() => {
-              this.$emit("post", true)
-            })
-      }
-    },
-    computed: {
-      button_text: function () {
-        if (this.ticket.status === "CLSD") {
-          return "Reply and reopen ticket"
+      const tempEntries = this.replies.concat(this.events).concat(this.ticket.attachments).concat(sharedWith);
+
+      tempEntries.sort((a, b) => moment(a.date_created).diff(moment(b.date_created)))
+
+
+      for (let entry of tempEntries) {
+        if (entries.length > 0) {
+          const top = entries[entries.length - 1]
+
+          const timeDiffMinutes = moment(entry.date_created).diff(moment(top.date_created), "m")
+
+          // merge label events
+          if (entry.hasOwnProperty("label")) {
+            if (top.hasOwnProperty("labels")
+                && timeDiffMinutes <= mergeMinutes
+                && top.is_added === entry.is_added
+                && JSON.stringify(entry.initiator) === JSON.stringify(top.initiator)) {
+              top.labels.push(entry.label)
+            } else {
+              entry.labels = [entry.label]
+              entries.push(entry)
+            }
+          } else if (entry.hasOwnProperty("file")) {
+            if (top.hasOwnProperty("attachments")
+                && timeDiffMinutes <= mergeMinutes
+                && JSON.stringify(entry.uploader) === JSON.stringify(top.uploader)) {
+              top.attachments.push(entry)
+            } else {
+              entry.attachments = [{...entry}]
+              entries.push(entry)
+            }
+          } else if (entry.hasOwnProperty("shared_with")) {
+            if (top.hasOwnProperty("shared_with_users")
+                && timeDiffMinutes <= mergeMinutes
+                && JSON.stringify(entry.sharer) === JSON.stringify(top.sharer)) {
+              top.shared_with_users.push(entry.shared_with)
+            } else {
+              entry.shared_with_users = [entry.shared_with]
+              entries.push(entry)
+            }
+          } else {
+            entries.push(entry)
+          }
+
         } else {
-          return "Reply"
+          entries.push(entry)
         }
       }
-    }
 
+      return entries
+    }
   }
+}
 </script>
 
 <style scoped>

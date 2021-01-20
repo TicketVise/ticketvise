@@ -1,14 +1,15 @@
 from django.apps import AppConfig
 
-from ticketvise.email import SmtpServer
-
 
 class TicketViseConfig(AppConfig):
     name = "ticketvise"
-    smtp_server = SmtpServer()
+    smtp_server = None
 
     def ready(self):
-        # self.smtp_server.start()
-        pass
+        from ticketvise.email.smtp import SmtpServer
+
+        if not self.smtp_server:
+            self.smtp_server = SmtpServer()
+        self.smtp_server.start()
 
 

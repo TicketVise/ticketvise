@@ -19,7 +19,8 @@ export default {
     }
   }),
   async mounted() {
-    const response = await axios.get("/api" + window.location.pathname + "/labels/count");
+    const inboxId = this.$route.params.inboxId
+    const response = await axios.get(`/api/inboxes/${inboxId}/statistics/labels/count`);
     this.data = {
       labels: response.data.map(label => label.name),
       datasets: [

@@ -22,7 +22,7 @@ class Label(models.Model):
 
     inbox = models.ForeignKey("Inbox", on_delete=models.CASCADE, related_name="labels")
     color = models.CharField(max_length=7, validators=[validate_hex_color], default=random_preselected_color)
-    name = models.CharField(max_length=50, default="")
+    name = models.CharField(max_length=50)
     is_visible_to_guest = models.BooleanField(default=True)
     is_active = models.BooleanField(default=True)
     date_edited = models.DateTimeField(auto_now=True)

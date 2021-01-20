@@ -2,15 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    {% if user.is_authenticated %}
-    {% number_of_unread_notifications user as count %}
-    {% endif %}
-    {% if count %}
-    <title>({{ count }}) TicketVise</title>
-    {% else %}
     <title>TicketVise</title>
-    {% endif %}
-
     <meta name="description" content="TicketVise, making assisting great again.">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     {% load static %}
@@ -25,8 +17,7 @@
         </style>
     </noscript>
 </head>
-<body>
-
+<body class="overflow-y-hidden">
 
 <noscript>
     <div class="bg-gray-100">
@@ -54,7 +45,7 @@
     </a>
 </noscript>
 
-<main class="flex flex-col min-h-screen js-only">
+<main class="flex flex-col h-screen js-only">
     {% block body %}
     if you see this, something is wrong!
     {% endblock body %}

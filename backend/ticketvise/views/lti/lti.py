@@ -2,16 +2,17 @@ from django.contrib.auth import login
 from django.contrib.auth.hashers import make_password
 from django.core.exceptions import PermissionDenied
 from django.http import Http404
-from django.shortcuts import render, redirect
+from django.shortcuts import redirect
 from django.urls import reverse
 from django.utils.decorators import method_decorator
 from django.views import View
 from django.views.decorators.csrf import csrf_exempt
+from rest_framework.authtoken.models import Token
 
-from ticketvise import settings
-from ticketvise.models.inbox import Inbox
+from ticketvise.models.inbox import Inbox, InboxSection, InboxUserSection
 from ticketvise.models.label import Label
 from ticketvise.models.user import User, UserInbox, Role
+from ticketvise.security.token import token_expire_handler
 from ticketvise.views.lti.validation import LtiLaunchForm
 
 
@@ -34,6 +35,7 @@ class LtiView(View):
         username = form.cleaned_data["custom_username"]
         email = form.cleaned_data["custom_email"]
         avatar = form.cleaned_data["custom_image_url"]
+        section_ids = form.cleaned_data["custom_section_ids"]
 
         user = User.objects.filter(lti_id=user_id).first()
 
@@ -87,23 +89,15 @@ class LtiView(View):
             relation.role = user_role
             relation.save()
 
+        for section_id in section_ids.split(','):
+            section_id = section_id.strip().lower()
+            section, _ = InboxSection.objects.get_or_create(code=section_id, inbox=inbox)
+            InboxUserSection.objects.get_or_create(user=user, section=section)
+
         login(request, user)
 
-        redirect_url = self.request.GET.get("platform_redirect_url")
-        if redirect_url:
-            return render(request, "lti-relaunch.html", context={"url": redirect_url})
+        # Retrieving token of user, checking if not expired otherwise a create new one.
+        token, _ = Token.objects.get_or_create(user=user)
+        _, token = token_expire_handler(token)
 
-        next_url = reverse("inbox", args=[inbox.id])
-
-        user_agent = request.META.get("HTTP_USER_AGENT", "").lower()
-        if "chrome" in user_agent or "firefox" in user_agent:
-            return redirect(next_url)
-
-        context = {
-            "next_url": next_url,
-            "full_window_launch_url": settings.LTI_HOST + "/lti",
-            "session_cookie_name": "sessionid",
-            "session_cookie_value": request.session.session_key
-        }
-
-        return render(request, "lti.html", context)
+        return redirect(reverse('home') + f'?token={token.key}#/inboxes/{inbox.id}/tickets')

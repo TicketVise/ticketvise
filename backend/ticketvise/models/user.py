@@ -7,8 +7,9 @@ Contains all entity sets for the user database.
 * :class:`User`
 * :class:`UserInbox`
 """
-from django.contrib.auth.models import AbstractUser
+from django.contrib.auth.models import AbstractUser, UserManager
 from django.db import models
+from django.db.models import Q
 from django.utils.translation import gettext_lazy as _
 
 from ticketvise import settings
@@ -25,6 +26,28 @@ class Role(models.TextChoices):
     MANAGER = "MANAGER", _(settings.ROLE_MANAGER_DISPLAY_NAME)
 
 
+class UserQuerySet(models.QuerySet):
+
+    def search(self, query):
+        query_set = Q()
+        for term in query.split():
+            query_set |= (Q(username__icontains=term) |
+                          Q(email__icontains=term) |
+                          Q(first_name__icontains=term) |
+                          Q(last_name__icontains=term))
+
+        return self.filter(query_set)
+
+
+class CustomUserManager(UserManager):
+
+    def get_queryset(self):
+        return UserQuerySet(self.model, using=self._db)
+
+    def search(self, query):
+        return self.get_queryset().search(query)
+
+
 class User(AbstractUser):
     """
     This model represents a user. A user can have different inboxes and has one
@@ -35,19 +58,19 @@ class User(AbstractUser):
                         * **inbox_relationship** -- Set of :class:`UserInbox` s belonging to the user.
                         * **notifications** -- Set of :class:`Notification` s belonging to the user.
     """
-
+    objects = CustomUserManager()
     lti_id = models.CharField(max_length=150, null=True)
     inboxes = models.ManyToManyField("Inbox", through="UserInbox", related_name="users")
     avatar_url = models.URLField(default=DEFAULT_AVATAR_PATH)
-    notification_mention_mail = models.BooleanField(default=False)
+    notification_mention_mail = models.BooleanField(default=True)
     notification_mention_app = models.BooleanField(default=True)
-    notification_new_ticket_mail = models.BooleanField(default=False)
+    notification_new_ticket_mail = models.BooleanField(default=True)
     notification_new_ticket_app = models.BooleanField(default=True)
-    notification_comment_mail = models.BooleanField(default=False)
+    notification_comment_mail = models.BooleanField(default=True)
     notification_comment_app = models.BooleanField(default=True)
-    notification_assigned_mail = models.BooleanField(default=False)
+    notification_assigned_mail = models.BooleanField(default=True)
     notification_assigned_app = models.BooleanField(default=True)
-    notification_ticket_reminder_mail = models.BooleanField(default=False)
+    notification_ticket_reminder_mail = models.BooleanField(default=True)
     notification_ticket_reminder_app = models.BooleanField(default=True)
 
     date_edited = models.DateTimeField(auto_now=True)
@@ -213,6 +236,7 @@ class UserInbox(models.Model):
     inbox = models.ForeignKey("Inbox", related_name="user_relationship", on_delete=models.CASCADE)
     role = models.CharField(max_length=40, choices=Role.choices, default=Role.GUEST)
     is_bookmarked = models.BooleanField(default=False)
+    is_assignable = models.BooleanField(default=True)
     date_edited = models.DateTimeField(auto_now=True)
     date_created = models.DateTimeField(auto_now_add=True)
 

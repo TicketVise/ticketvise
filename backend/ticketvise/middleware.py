@@ -10,18 +10,18 @@ class CurrentUserMiddleware:
         self.get_response = get_response
 
     def __call__(self, request):
-        CurrentUserMiddleware.thread_local.current_user = request.user
+        CurrentUserMiddleware.thread_local.request = request
 
         response = self.get_response(request)
 
-        CurrentUserMiddleware.thread_local.current_user = None
+        CurrentUserMiddleware.thread_local.request = None
 
         return response
 
     @staticmethod
     def get_current_user():
-        user = getattr(CurrentUserMiddleware.thread_local, 'current_user', None)
-        if isinstance(user, AnonymousUser):
+        request = getattr(CurrentUserMiddleware.thread_local, 'request', None)
+        if not request or (request and isinstance(request.user, AnonymousUser)):
             return None
 
-        return user
+        return request.user

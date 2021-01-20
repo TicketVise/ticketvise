@@ -14,12 +14,12 @@
       <div class="flex flex-col items-end flex-grow w-full mb-4">
         <card class="mb-2 w-full" outlined>
           <mention :ticket="ticket" :users="staff">
-            <editor initialEditType="wysiwyg" previewStyle="tab" ref="commentEditor"/>
+            <editor ref="commentEditor" />
           </mention>
         </card>
         <button
-                @click="submitComment"
-                class="group relative w-full sm:w-auto flex justify-center sm:justify-start items-center py-2 px-4 border border-transparent text-sm leading-5 font-medium rounded-md text-white bg-primary hover:bg-orange-500 focus:outline-none focus:border-orange-700 focus:shadow-outline-orange active:bg-orange-700 transition duration-150 ease-in-out">
+            @click="submitComment"
+            class="group relative w-full sm:w-auto flex justify-center sm:justify-start items-center py-2 px-4 border border-transparent text-sm leading-5 font-medium rounded-md text-white bg-primary hover:bg-orange-500 focus:outline-none focus:border-orange-700 focus:shadow-outline-orange active:bg-orange-700 transition duration-150 ease-in-out">
           <i class="fa fa-reply text-orange-200 absolute sm:relative left-4 sm:left-auto mr-2"></i>
           Comment
         </button>
@@ -32,23 +32,18 @@
   import Comment from "./Comment";
   import Avatar from "../elements/Avatar";
   import axios from "axios";
-  import '@toast-ui/editor/dist/toastui-editor-viewer.css';
-  import 'codemirror/lib/codemirror.css';
   import VueTribute from 'vue-tribute';
-
-  import '@toast-ui/editor/dist/toastui-editor.css';
-  import {Editor, Viewer} from '@toast-ui/vue-editor';
   import Card from "../elements/card/Card";
   import Mention from "../elements/mention/Mention";
+  import Editor from "../elements/markdown/Editor";
 
   export default {
     components: {
       Mention,
       Avatar,
       Comment,
-      Viewer,
-      editor: Editor,
       VueTribute,
+      Editor,
       Card
     },
     props: {
@@ -72,20 +67,20 @@
     data() {
       return {
         commentEditor: "",
+        options: {
+          usageStatistics: false,
+        }
       }
     },
     methods: {
       submitComment() {
-        let content = this.$refs.commentEditor.invoke('getMarkdown');
-        this.$refs.commentEditor.invoke('setMarkdown', '');
+        const content = this.$refs.commentEditor.getContent()
+        const inboxId = this.$route.params.inboxId
+        const ticketInboxId = this.$route.params.ticketInboxId
 
-        let formData = new FormData();
-        formData.append("content", content);
+        this.$refs.commentEditor.clear()
 
-        axios.defaults.xsrfCookieName = 'csrftoken';
-        axios.defaults.xsrfHeaderName = "X-CSRFTOKEN";
-
-        axios.post("/api" + window.location.pathname + "/comments/post", formData)
+        axios.post(`/api/inboxes/${inboxId}/tickets/${ticketInboxId}/comments/post`, {"content": content})
             .then(() => {
               this.$emit("post", true)
             })
