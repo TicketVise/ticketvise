@@ -1,5 +1,6 @@
 <template>
   <div class="items-stretch overflow-y-hidden">
+    <setup></setup>
     <div class="flex flex-row flex-grow h-full max-w-full pt-16 -mt-16">
       <!-- Side Menu -->
       <div class="min-w-side max-w-side border-r hidden lg:flex flex-col flex-grow">
@@ -192,9 +193,11 @@
 
 <script>
 import axios from "axios";
+import Setup from "../setup/Setup";
 
 export default {
   name: "Inbox",
+  components: {Setup},
   data: () => ({
     userInbox: null,
     side: false,
