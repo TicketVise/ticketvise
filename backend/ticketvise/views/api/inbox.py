@@ -1,7 +1,8 @@
 from django.db.models import Case, BooleanField, When, Q
 from django.shortcuts import get_object_or_404
 from rest_framework import serializers
-from rest_framework.generics import ListAPIView, RetrieveUpdateDestroyAPIView, ListCreateAPIView, RetrieveAPIView
+from rest_framework.generics import ListAPIView, RetrieveUpdateDestroyAPIView, ListCreateAPIView, RetrieveAPIView, \
+    UpdateAPIView
 from rest_framework.generics import RetrieveUpdateAPIView
 from rest_framework.response import Response
 from rest_framework.serializers import ModelSerializer
@@ -48,7 +49,6 @@ class InboxStaffApiView(ListAPIView):
     serializer_class = UserSerializer
     permission_classes = [UserIsInboxStaffPermission]
     staff_roles = [Role.AGENT, Role.MANAGER]
-
 
     def get_queryset(self):
         return User.objects.filter(inbox_relationship__role__in=self.staff_roles,
@@ -193,7 +193,8 @@ class InboxSettingsApiView(RetrieveUpdateAPIView):
         return Response(response)
 
     def update(self, request, *args, **kwargs):
-        if "fixed_scheduling_assignee" in request.POST.keys() and not request.POST["fixed_scheduling_assignee"].isdigit():
+        if "fixed_scheduling_assignee" in request.POST.keys() and not request.POST[
+            "fixed_scheduling_assignee"].isdigit():
             request.POST._mutable = True
             request.POST["fixed_scheduling_assignee"] = None
         return super().update(request, *args, **kwargs)
@@ -208,7 +209,7 @@ class CurrentUserInboxSerializer(ModelSerializer):
 
     class Meta:
         model = UserInbox
-        fields = ["id", "role", "role_label", "inbox", "is_bookmarked"]
+        fields = ["id", "role", "role_label", "inbox", "is_bookmarked", "give_introduction"]
 
 
 class CurrentUserInboxesApiView(ListCreateAPIView):
@@ -242,3 +243,17 @@ class CurrentUserInboxApiView(RetrieveAPIView):
             return UserInbox(user=self.request.user, inbox=inbox, role=Role.MANAGER)
 
         return get_object_or_404(UserInbox, inbox=inbox, user=self.request.user)
+
+
+class InboxInformationAPIView(UpdateAPIView):
+    serializer_class = CurrentUserInboxSerializer
+    permission_classes = [UserIsInboxStaffPermission]
+
+    def put(self, request, *args, **kwargs):
+        inbox = get_object_or_404(Inbox, pk=self.kwargs["inbox_id"])
+
+        user_inbox = get_object_or_404(UserInbox, user=self.request.user, inbox=inbox)
+        user_inbox.give_introduction = False
+        user_inbox.save()
+
+        return Response()

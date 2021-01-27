@@ -11,14 +11,14 @@
       <div class="inline-block align-bottom bg-white rounded-lg px-4 pt-5 pb-4 text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full sm:p-6"
            role="dialog" aria-modal="true" aria-labelledby="modal-headline">
 
-        <welcome-modal @click="modalNumber += 1" @cancel="modalNumber -= 1" v-if="modalNumber === 1"></welcome-modal>
+        <welcome-modal @click="modalNumber += 1" @cancel="finishIntroduction" v-if="modalNumber === 1"></welcome-modal>
         <overview-modal @click="modalNumber += 1" @cancel="modalNumber -= 1" v-if="modalNumber === 2"></overview-modal>
         <scheduling-modal @click="modalNumber += 1" @cancel="modalNumber -= 1"
                           v-if="modalNumber === 3"></scheduling-modal>
         <labels-modal @click="modalNumber += 1" @cancel="modalNumber -= 1" v-if="modalNumber === 4"></labels-modal>
         <statistics-modal @click="modalNumber += 1" @cancel="modalNumber -= 1"
                           v-if="modalNumber === 5"></statistics-modal>
-        <finished-modal @click="modalNumber = 0" @cancel="modalNumber -= 1"
+        <finished-modal @click="finishIntroduction" @cancel="modalNumber -= 1"
                         v-if="modalNumber === maxModal"></finished-modal>
         <div class="flex items-center justify-center py-4" aria-label="Progress">
           <p class="text-sm font-medium">Step {{modalNumber}} of {{maxModal}}</p>
@@ -73,12 +73,12 @@
         maxModal: 6,
       }
     },
-    created() {
-      axios.get(`/api/inboxes/${this.$route.params.inboxId}/settings`).then(response => {
-        this.scheduling_options = response.data.scheduling_options
-      })
-    },
-    methods: {}
+    methods: {
+      finishIntroduction() {
+        axios.put(`/api/me/inboxes/${this.$route.params.inboxId}/introduction`)
+        this.modalNumber = 0
+      }
+    }
   }
 </script>
 
