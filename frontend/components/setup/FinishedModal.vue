@@ -1,6 +1,5 @@
 <template>
-  <div class="inline-block align-bottom bg-white rounded-lg px-4 pt-5 pb-4 text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full sm:p-6"
-       role="dialog" aria-modal="true" aria-labelledby="modal-headline">
+  <div>
     <div>
       <div class="mt-3 text-center sm:mt-5">
         <h3 class="text-lg leading-6 font-medium text-gray-900" id="modal-headline">
@@ -10,7 +9,9 @@
           <p class="text-sm text-gray-500">
             <img src="/static/img/svg/undraw_celebration_0jvk.svg" alt="Options" class="w-2/3 md:w-1/2 mx-auto py-8">
 
-            The inbox is now ready for use. Students will be able to create tickets to ask their questions.
+            The inbox is now ready for use. Students will be able to create tickets to ask their questions. Assistants
+            will be able to help these students once they have connected to the course by visiting TicketVise from
+            canvas.
 
           </p>
         </div>
@@ -31,7 +32,7 @@
 
 <script>
   export default {
-    name: "WelcomeModal"
+    name: "FinishedModal"
   }
 </script>
 
