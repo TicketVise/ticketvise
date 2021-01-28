@@ -61,22 +61,3 @@ class InboxTestCase(TransactionTestCase):
 
         self.assertFalse(data["has_next"])
         self.assertEqual(len(data["results"]), 1)
-
-    def test_introduction(self):
-        self.client.force_authenticate(self.assistant)
-
-        response = self.client.get(f"/api/me/inboxes/{self.inbox.id}")
-        self.assertEqual(response.status_code, 200)
-
-        data = json.loads(response.content)
-
-        self.assertTrue(data["give_introduction"])
-
-        self.client.put(f"/api/me/inboxes/{self.inbox.id}/introduction")
-
-        response = self.client.get(f"/api/me/inboxes/{self.inbox.id}")
-        self.assertEqual(response.status_code, 200)
-
-        data = json.loads(response.content)
-
-        self.assertFalse(data["give_introduction"])

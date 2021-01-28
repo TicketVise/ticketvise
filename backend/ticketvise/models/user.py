@@ -62,6 +62,8 @@ class User(AbstractUser):
     lti_id = models.CharField(max_length=150, null=True)
     inboxes = models.ManyToManyField("Inbox", through="UserInbox", related_name="users")
     avatar_url = models.URLField(default=DEFAULT_AVATAR_PATH)
+    give_introduction = models.BooleanField(default=True)
+
     notification_mention_mail = models.BooleanField(default=True)
     notification_mention_app = models.BooleanField(default=True)
     notification_new_ticket_mail = models.BooleanField(default=True)
@@ -237,7 +239,6 @@ class UserInbox(models.Model):
     role = models.CharField(max_length=40, choices=Role.choices, default=Role.GUEST)
     is_bookmarked = models.BooleanField(default=False)
     is_assignable = models.BooleanField(default=True)
-    give_introduction = models.BooleanField(default=True)
     date_edited = models.DateTimeField(auto_now=True)
     date_created = models.DateTimeField(auto_now_add=True)
 

@@ -75,7 +75,7 @@
     },
     methods: {
       finishIntroduction() {
-        axios.put(`/api/me/inboxes/${this.$route.params.inboxId}/introduction`)
+        axios.put(`/api/me/introduction`)
         this.modalNumber = 0
       }
     }

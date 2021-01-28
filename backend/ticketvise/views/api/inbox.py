@@ -1,8 +1,7 @@
 from django.db.models import Case, BooleanField, When, Q
 from django.shortcuts import get_object_or_404
 from rest_framework import serializers
-from rest_framework.generics import ListAPIView, RetrieveUpdateDestroyAPIView, ListCreateAPIView, RetrieveAPIView, \
-    UpdateAPIView
+from rest_framework.generics import ListAPIView, RetrieveUpdateDestroyAPIView, ListCreateAPIView, RetrieveAPIView
 from rest_framework.generics import RetrieveUpdateAPIView
 from rest_framework.response import Response
 from rest_framework.serializers import ModelSerializer
@@ -209,7 +208,7 @@ class CurrentUserInboxSerializer(ModelSerializer):
 
     class Meta:
         model = UserInbox
-        fields = ["id", "role", "role_label", "inbox", "is_bookmarked", "give_introduction"]
+        fields = ["id", "role", "role_label", "inbox", "is_bookmarked"]
 
 
 class CurrentUserInboxesApiView(ListCreateAPIView):
@@ -244,16 +243,3 @@ class CurrentUserInboxApiView(RetrieveAPIView):
 
         return get_object_or_404(UserInbox, inbox=inbox, user=self.request.user)
 
-
-class InboxInformationAPIView(UpdateAPIView):
-    serializer_class = CurrentUserInboxSerializer
-    permission_classes = [UserIsInboxStaffPermission]
-
-    def put(self, request, *args, **kwargs):
-        inbox = get_object_or_404(Inbox, pk=self.kwargs["inbox_id"])
-
-        user_inbox = get_object_or_404(UserInbox, user=self.request.user, inbox=inbox)
-        user_inbox.give_introduction = False
-        user_inbox.save()
-
-        return Response()
