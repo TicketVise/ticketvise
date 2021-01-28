@@ -1,5 +1,6 @@
 <template>
   <div class="items-stretch overflow-y-hidden">
+    <getting-started v-if="is_staff && user && user.give_introduction"></getting-started>
     <div class="flex flex-row flex-grow h-full max-w-full pt-16 -mt-16">
       <!-- Side Menu -->
       <div class="min-w-side max-w-side border-r hidden lg:flex flex-col flex-grow">
@@ -193,11 +194,11 @@
 
 <script>
   import axios from "axios";
-  import Setup from "../setup/Setup";
+  import GettingStarted from "../setup/GettingStarted";
 
   export default {
     name: "Inbox",
-    components: {Setup},
+    components: {GettingStarted},
     data: () => ({
       userInbox: null,
       side: false,
@@ -217,7 +218,7 @@
 
         const role = this.userInbox.role
         return (this.user && this.user.is_superuser) || (role && (role === 'AGENT' || role === 'MANAGER'))
-      }
+      },
     }
   }
 </script>
