@@ -3,6 +3,7 @@ Test API
 -------------------------------
 This file tests the API endpoints of the website.
 """
+import json
 
 from django.test import TestCase
 from rest_framework.test import APIClient
@@ -198,4 +199,23 @@ class ApiTestCase(TestCase):
         self.assertEqual(str(response.content).count(self.ta1.username), 1)
         self.assertEqual(str(response.content).count(self.ta2.username), 1)
         self.assertEqual(str(response.content).count(self.ta3.username), 1)
+
+    def test_introduction(self):
+        self.client.force_authenticate(self.ta1)
+
+        response = self.client.get(f"/api/me")
+        self.assertEqual(response.status_code, 200)
+
+        data = json.loads(response.content)
+
+        self.assertTrue(data["give_introduction"])
+
+        self.client.put(f"/api/me/introduction")
+
+        response = self.client.get(f"/api/me")
+        self.assertEqual(response.status_code, 200)
+
+        data = json.loads(response.content)
+
+        self.assertFalse(data["give_introduction"])
 

@@ -1,5 +1,6 @@
 <template>
   <div class="items-stretch overflow-y-hidden">
+    <getting-started v-if="is_staff && user && user.give_introduction"></getting-started>
     <div class="flex flex-row flex-grow h-full max-w-full pt-16 -mt-16">
       <!-- Side Menu -->
       <div class="min-w-side max-w-side border-r hidden lg:flex flex-col flex-grow">
@@ -9,7 +10,8 @@
             <img class="h-10 w-10 rounded-full" :src="user.avatar_url" alt="Account image">
           </div>
           <div class="ml-3">
-            <div class="text-base font-bold leading-none text-gray-900">{{ user.first_name + " " + user.last_name }}</div>
+            <div class="text-base font-bold leading-none text-gray-900">{{ user.first_name + " " + user.last_name }}
+            </div>
             <div class="mt-1 text-sm leading-none text-gray-600">{{ user.email }}</div>
           </div>
         </div>
@@ -161,8 +163,8 @@
                   </router-link>
                 </div>
                 <button
-                    class="absolute top-0 right-2 inline-flex lg:hidden items-center justify-center p-2 m-1 rounded-md text-gray-600 hover:text-white hover:bg-gray-700 focus:outline-none focus:bg-gray-700 focus:text-white transition duration-150 ease-in-out"
-                    aria-label="Main menu" aria-expanded="false" @click="side = !side">
+                        class="absolute top-0 right-2 inline-flex lg:hidden items-center justify-center p-2 m-1 rounded-md text-gray-600 hover:text-white hover:bg-gray-700 focus:outline-none focus:bg-gray-700 focus:text-white transition duration-150 ease-in-out"
+                        aria-label="Main menu" aria-expanded="false" @click="side = !side">
                   <i class="fa fa-bars"></i>
                 </button>
 
@@ -191,32 +193,34 @@
 </template>
 
 <script>
-import axios from "axios";
+  import axios from "axios";
+  import GettingStarted from "../setup/GettingStarted";
 
-export default {
-  name: "Inbox",
-  data: () => ({
-    userInbox: null,
-    side: false,
-  }),
-  async mounted() {
-    const response = await axios.get(`api/me/inboxes/${this.$route.params.inboxId}`);
-    this.userInbox = response.data
-  },
-  computed: {
-    user() {
-      return this.$store.state.user
+  export default {
+    name: "Inbox",
+    components: {GettingStarted},
+    data: () => ({
+      userInbox: null,
+      side: false,
+    }),
+    async mounted() {
+      const response = await axios.get(`api/me/inboxes/${this.$route.params.inboxId}`);
+      this.userInbox = response.data
     },
-    is_staff() {
-      if (!this.userInbox) {
-        return false
-      }
+    computed: {
+      user() {
+        return this.$store.state.user
+      },
+      is_staff() {
+        if (!this.userInbox) {
+          return false
+        }
 
-      const role = this.userInbox.role
-      return (this.user && this.user.is_superuser) || (role && (role === 'AGENT' || role === 'MANAGER'))
+        const role = this.userInbox.role
+        return (this.user && this.user.is_superuser) || (role && (role === 'AGENT' || role === 'MANAGER'))
+      },
     }
   }
-}
 </script>
 
 <style scoped>

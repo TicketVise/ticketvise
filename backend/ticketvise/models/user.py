@@ -62,6 +62,8 @@ class User(AbstractUser):
     lti_id = models.CharField(max_length=150, null=True)
     inboxes = models.ManyToManyField("Inbox", through="UserInbox", related_name="users")
     avatar_url = models.URLField(default=DEFAULT_AVATAR_PATH)
+    give_introduction = models.BooleanField(default=True)
+
     notification_mention_mail = models.BooleanField(default=True)
     notification_mention_app = models.BooleanField(default=True)
     notification_new_ticket_mail = models.BooleanField(default=True)

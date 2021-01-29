@@ -1,7 +1,8 @@
 from django.http import JsonResponse, Http404
 from django.shortcuts import get_object_or_404
+from rest_framework.response import Response
 from rest_framework import serializers
-from rest_framework.generics import RetrieveUpdateAPIView, RetrieveAPIView
+from rest_framework.generics import RetrieveUpdateAPIView, RetrieveAPIView, UpdateAPIView
 from rest_framework.serializers import ModelSerializer
 from rest_framework.views import APIView
 
@@ -9,13 +10,14 @@ from ticketvise.models.inbox import Inbox
 from ticketvise.models.notification import Notification
 from ticketvise.models.user import User, Role, UserInbox
 from ticketvise.views.api import DynamicFieldsModelSerializer
-from ticketvise.views.api.security import UserIsInInboxPermission, UserIsSuperUserPermission
+from ticketvise.views.api.security import UserIsInInboxPermission, UserIsSuperUserPermission, UserIsInboxStaffPermission
 
 
 class UserSerializer(DynamicFieldsModelSerializer):
     class Meta:
         model = User
-        fields = ["first_name", "last_name", "email", "username", "avatar_url", "id", "is_superuser", "is_active"]
+        fields = ["first_name", "last_name", "email", "username", "avatar_url", "id", "is_superuser", "is_active",
+                  "give_introduction"]
 
 
 class UserInboxSerializer(ModelSerializer):
@@ -126,3 +128,14 @@ class UsersApiView(APIView):
         }
 
         return JsonResponse(data, safe=False)
+
+
+class IntroductionAPIView(UpdateAPIView):
+    serializer_class = UserSerializer
+
+    def put(self, request, *args, **kwargs):
+        user = request.user
+        user.give_introduction = False
+        user.save()
+
+        return Response()

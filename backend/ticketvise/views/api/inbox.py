@@ -49,7 +49,6 @@ class InboxStaffApiView(ListAPIView):
     permission_classes = [UserIsInboxStaffPermission]
     staff_roles = [Role.AGENT, Role.MANAGER]
 
-
     def get_queryset(self):
         return User.objects.filter(inbox_relationship__role__in=self.staff_roles,
                                    inbox_relationship__inbox_id=self.kwargs["inbox_id"])
@@ -193,7 +192,8 @@ class InboxSettingsApiView(RetrieveUpdateAPIView):
         return Response(response)
 
     def update(self, request, *args, **kwargs):
-        if "fixed_scheduling_assignee" in request.POST.keys() and not request.POST["fixed_scheduling_assignee"].isdigit():
+        if "fixed_scheduling_assignee" in request.POST.keys() and not request.POST[
+            "fixed_scheduling_assignee"].isdigit():
             request.POST._mutable = True
             request.POST["fixed_scheduling_assignee"] = None
         return super().update(request, *args, **kwargs)
@@ -242,3 +242,4 @@ class CurrentUserInboxApiView(RetrieveAPIView):
             return UserInbox(user=self.request.user, inbox=inbox, role=Role.MANAGER)
 
         return get_object_or_404(UserInbox, inbox=inbox, user=self.request.user)
+
