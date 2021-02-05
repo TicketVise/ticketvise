@@ -77,6 +77,7 @@
       finishIntroduction() {
         axios.put(`/api/me/introduction`)
         this.modalNumber = 0
+        this.$emit("update")
       }
     }
   }

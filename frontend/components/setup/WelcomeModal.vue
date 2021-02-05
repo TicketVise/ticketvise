@@ -10,7 +10,7 @@
 
           <p class="text-sm text-gray-500">
             Connected users can now access this inbox and create tickets. To get to know TicketVise and to personalize
-            this inbox, we guide you trough the most important things. For more information, visit the getting started
+            this inbox, we guide you through the most important things. For more information, visit the getting started
             page found under the question mark in the navigation.
           </p>
         </div>
