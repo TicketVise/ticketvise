@@ -72,7 +72,7 @@
             attachment<span v-if="ticket_event.attachments.length > 1">s</span>
             <span class="lowercase">{{ date(ticket_event.date_created) }}</span>
           </div>
-          <div class="w-full grid sm:grid-cols-2 xl:grid-cols-3 gap-4">
+          <div class="w-full grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
             <attachment v-for="attachment in ticket_event.attachments" :key="`attachment-${attachment.id}`"
                         class="mr-1" :attachment="attachment" :show-delete="false"/>
           </div>
