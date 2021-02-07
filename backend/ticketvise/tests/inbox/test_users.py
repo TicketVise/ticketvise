@@ -4,7 +4,7 @@ from ticketvise.tests.inbox.utils import InboxTestCase
 
 class UsersTest(InboxTestCase):
     data = {
-        "role": Role.MANAGER,
+        "is_assignable": False,
     }
 
     def edit_user(self):
@@ -16,8 +16,8 @@ class UsersTest(InboxTestCase):
         """
         self.client.force_authenticate(self.coordinator)
         self.assertEqual(self.edit_user().status_code, 200)
-        self.assertEqual(UserInbox.objects.get(user_id=self.student.id, inbox__id=self.inbox.id).role,
-                         self.data["role"])
+        self.assertEqual(UserInbox.objects.get(user_id=self.student.id, inbox__id=self.inbox.id).is_assignable,
+                         self.data["is_assignable"])
 
     def test_edit_user_as_invalid_coordinator(self):
         """
@@ -25,17 +25,17 @@ class UsersTest(InboxTestCase):
         """
         self.client.force_authenticate(self.coordinator_2)
         self.assertEqual(self.edit_user().status_code, 403)
-        self.assertNotEqual(UserInbox.objects.get(user_id=self.student.id, inbox__id=self.inbox.id).role,
-                            self.data["role"])
+        self.assertNotEqual(UserInbox.objects.get(user_id=self.student.id, inbox__id=self.inbox.id).is_assignable,
+                            self.data["is_assignable"])
 
     def test_edit_user_as_assistant(self):
         """
-        Test to verify a assistant is unable to edit a user.
+        Test to verify a assistant is able to edit a user.
         """
         self.client.force_authenticate(self.assistant)
         self.assertEqual(self.edit_user().status_code, 200)
-        self.assertEqual(UserInbox.objects.get(user_id=self.student.id, inbox__id=self.inbox.id).role,
-                            self.data["role"])
+        self.assertEqual(UserInbox.objects.get(user_id=self.student.id, inbox__id=self.inbox.id).is_assignable,
+                            self.data["is_assignable"])
 
     def test_edit_user_as_student(self):
         """
@@ -43,8 +43,8 @@ class UsersTest(InboxTestCase):
         """
         self.client.force_authenticate(self.student)
         self.assertEqual(self.edit_user().status_code, 403)
-        self.assertNotEqual(UserInbox.objects.get(user_id=self.student.id, inbox__id=self.inbox.id).role,
-                            self.data["role"])
+        self.assertNotEqual(UserInbox.objects.get(user_id=self.student.id, inbox__id=self.inbox.id).is_assignable,
+                            self.data["is_assignable"])
 
     def test_users(self):
         self.client.force_authenticate(self.coordinator)

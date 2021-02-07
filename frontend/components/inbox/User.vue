@@ -45,13 +45,8 @@
             <dt class="text-sm leading-5 font-medium text-gray-500">
               Role
             </dt>
-            <dd class="text-sm leading-5 text-gray-900 sm:mt-0 sm:col-span-2">
-              <select name="role" v-model="inbox_user.role"
-                      class="block appearance-none bg-white border border-gray-400 hover:border-gray-500 px-4 py-1 pr-8 rounded shadow-sm leading-tight focus:outline-none focus:shadow-outline">
-                <option v-for="role in roles" :value="role.key">
-                  {{ role.label }}
-                </option>
-              </select>
+            <dd class="mt-1 text-sm leading-5 text-gray-900 sm:mt-0 sm:col-span-2">
+              {{ inbox_user.role_label }}
             </dd>
           </div>
           <div class="bg-white px-4 py-3 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6 ">
@@ -110,20 +105,6 @@ export default {
   data() {
     return {
       inbox_user: null,
-      roles: [
-        {
-          "key": "GUEST",
-          "label": "Student"
-        },
-        {
-          "key": "AGENT",
-          "label": "Teaching Assistant"
-        },
-        {
-          "key": "MANAGER",
-          "label": "Coordinator"
-        }
-      ]
     }
   },
   mounted() {

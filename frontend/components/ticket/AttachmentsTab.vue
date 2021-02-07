@@ -1,6 +1,6 @@
 <template>
   <div class="w-full p-4 pt-2 mb-3">
-    <div v-if="ticket.attachments.length > 0" class="w-full grid sm:grid-cols-2 xl:grid-cols-3 gap-4">
+    <div v-if="ticket.attachments.length > 0" class="w-full grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
       <attachment v-for="(attachment, index) in ticket.attachments" :key="index" :attachment="attachment"
                   @remove="ticket.attachments.splice(index, 1)" :show-delete="showDeleteButton(attachment.uploader.id)"/>
     </div>

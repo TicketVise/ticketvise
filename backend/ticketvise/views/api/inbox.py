@@ -144,7 +144,7 @@ class InboxGuestsAPIView(ListAPIView):
 class UpdateUserInboxSerializer(ModelSerializer):
     class Meta:
         model = UserInbox
-        fields = ["role", "is_assignable"]
+        fields = ["is_assignable"]
 
 
 class UserInboxApiView(RetrieveUpdateDestroyAPIView):

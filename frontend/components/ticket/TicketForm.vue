@@ -44,7 +44,7 @@
 
       <!-- Share with -->
       <div class="mb-4">
-        <edit-share-with :shared_with="shared_with" :errors="errors" class="mb-2 w-1/5"
+        <edit-share-with :shared_with="shared_with" :errors="errors" class="mb-2 w-1/5" :author="user" can_share="true"
                          :inbox_id="$route.params.inboxId" v-on:input="updateSharedWith"></edit-share-with>
       </div>
 
