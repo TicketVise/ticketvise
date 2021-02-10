@@ -502,8 +502,15 @@ class TicketStatusEventSerializer(ModelSerializer):
 
 
 class TicketAssigneeEventSerializer(ModelSerializer):
-    initiator = UserSerializer(read_only=True, fields=(["first_name", "last_name", "username", "avatar_url", "id"]))
+    initiator = serializers.SerializerMethodField()
     assignee = UserSerializer(read_only=True, fields=(["first_name", "last_name", "username", "avatar_url", "id"]))
+
+    def get_initiator(self, event):
+        if event.initiator and event.initiator.is_assistant_or_coordinator(event.ticket.inbox):
+            return UserSerializer(event.initiator, read_only=True,
+                                  fields=(["first_name", "last_name", "username", "avatar_url", "id"])).data
+
+        return None
 
     class Meta:
         model = TicketAssigneeEvent
