@@ -78,7 +78,7 @@ class UserRoleApiView(APIView):
         return JsonResponse(data, safe=False)
 
 
-class UserGetFromUsernameApiView(RetrieveUpdateAPIView):
+class UserGetFromUsernameApiView(RetrieveAPIView):
     permission_classes = [UserIsInInboxPermission]
     serializer_class = UserUsernameSerializer
 
