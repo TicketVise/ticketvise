@@ -10,7 +10,7 @@ from ticketvise.models.inbox import Inbox
 from ticketvise.models.notification import Notification
 from ticketvise.models.user import User, Role, UserInbox
 from ticketvise.views.api import DynamicFieldsModelSerializer
-from ticketvise.views.api.security import UserIsInInboxPermission, UserIsSuperUserPermission, UserIsInboxStaffPermission
+from ticketvise.views.api.security import UserIsInInboxPermission, UserIsSuperUserPermission
 
 
 class UserSerializer(DynamicFieldsModelSerializer):
