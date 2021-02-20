@@ -395,7 +395,7 @@ class TicketLabelSerializer(ModelSerializer):
 
 class TicketLabelApiView(UpdateAPIView):
     serializer_class = TicketLabelSerializer
-    permission_classes = [UserIsInboxStaffPermission]
+    permission_classes = [UserHasAccessToTicketPermission]
 
     def get_object(self):
         inbox = get_object_or_404(Inbox, pk=self.kwargs["inbox_id"])

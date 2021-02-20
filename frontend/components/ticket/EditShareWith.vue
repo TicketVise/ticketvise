@@ -73,7 +73,8 @@
         this.$emit("input", this.shared_with)
       },
       getUsername(username) {
-        axios.get("/api/inboxes/" + this.inbox_id + "/users/" + username).then(response => {
+        // Empty config to possibly fix the error that sharing does not work on the live version.
+        axios.get("/api/inboxes/" + this.inbox_id + "/users/" + username, {}).then(response => {
           this.usernameErrors = []
           // Check if user exists in array
           let index = this.shared_with.findIndex(user => user.id === response.data.id)
