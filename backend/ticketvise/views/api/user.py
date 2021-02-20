@@ -78,25 +78,6 @@ class UserRoleApiView(APIView):
         return JsonResponse(data, safe=False)
 
 
-class UserGetFromUsernameApiView(RetrieveAPIView):
-    permission_classes = [UserIsInInboxPermission]
-    serializer_class = UserUsernameSerializer
-
-    def get_object(self):
-        inbox = get_object_or_404(Inbox, pk=self.kwargs["inbox_id"])
-        user = get_object_or_404(User, username=self.kwargs["username"])
-
-        if not user.has_inbox(inbox) or user.is_assistant_or_coordinator(inbox):
-            self.handle_exception(Http404)
-
-        return user
-
-    def handle_exception(self, exc):
-        if isinstance(exc, Http404):
-            return JsonResponse({"username": ["Username not found within this inbox"]}, status=404)
-        return super().handle_exception(exc)
-
-
 class CurrentUserApiView(RetrieveAPIView):
     serializer_class = UserSerializer
 
