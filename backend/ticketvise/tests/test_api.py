@@ -91,25 +91,6 @@ class ApiTestCase(TestCase):
         self.assertNotContains(response, self.ticket2.title)
         self.assertNotContains(response, self.ticket3.title)
 
-    def test_get_user_username(self):
-        """
-        Test get username by valid user
-        :return: None
-        """
-        self.client.force_authenticate(self.student1)
-        response = self.client.get(f"/api/inboxes/{self.inbox1.id}/users/{self.student2.username}", follow=True)
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.data["id"], self.student2.id)
-
-    def test_get_user_username_unauthorized(self):
-        """
-        Test get username by unauthorized user
-        :return: None
-        """
-        self.client.force_authenticate(self.ta4)
-        response = self.client.get(f"/api/inboxes/{self.inbox1.id}/users/{self.student2.username}", follow=True)
-        self.assertEqual(response.status_code, 403)
-
     def test_get_user_unknown_username(self):
         """
         Test get unknown username by valid user
