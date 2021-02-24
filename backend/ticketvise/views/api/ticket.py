@@ -102,6 +102,12 @@ class AssigneeUpdateSerializer(ModelSerializer):
         return assignee
 
 
+class TicketTitleUpdateSerializer(ModelSerializer):
+    class Meta:
+        model = Ticket
+        fields = ["title"]
+
+
 class TicketSerializer(DynamicFieldsModelSerializer):
     """
     Allows data to be converted into Python datatypes for the ticket.
@@ -547,6 +553,16 @@ class TicketEventSerializer(ModelSerializer):
 class TicketSharedAPIView(UpdateAPIView):
     permission_classes = [UserIsTicketAuthorOrInboxStaffPermission]
     serializer_class = TicketSharedWithUpdateSerializer
+
+    def get_object(self):
+        inbox = get_object_or_404(Inbox, pk=self.kwargs["inbox_id"])
+
+        return Ticket.objects.get(inbox=inbox, ticket_inbox_id=self.kwargs["ticket_inbox_id"])
+
+
+class TicketTitleAPIView(UpdateAPIView):
+    permission_classes = [UserIsTicketAuthorOrInboxStaffPermission]
+    serializer_class = TicketTitleUpdateSerializer
 
     def get_object(self):
         inbox = get_object_or_404(Inbox, pk=self.kwargs["inbox_id"])
