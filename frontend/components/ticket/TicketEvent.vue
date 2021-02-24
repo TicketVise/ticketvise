@@ -98,9 +98,10 @@
           <avatar v-if="ticket_event.initiator" :source="ticket_event.initiator.avatar_url"
                   class="inline-block w-5 h-5 mr-1"/>
           <span class="font-medium">{{ full_name(ticket_event.initiator) }}</span>
-          <span v-if="ticket_event.initiator">has changed the title to</span>
-          <span v-else>The title has been changed to </span>
-          <chip class="ml-1">{{ ticket_event.new_title }}</chip>
+          <span>changed the title from </span>
+          <span class="font-semibold">{{ ticket_event.old_title }}</span>
+          <span>to </span>
+          <span class="font-semibold">{{ ticket_event.new_title }}</span>
           <span class="ml-1 lowercase">{{ date(ticket_event.date_created) }}</span>
         </div>
       </div>
