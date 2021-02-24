@@ -5,7 +5,7 @@
         <div class="mx-auto flex items-center justify-center">
           <img class="h-8 w-8" src="/static/img/logo/logo.svg" alt="Logo">
           <span class="text-2xl ml-2 text-gray-800">Ticket</span><span
-            class="text-2xl text-primary font-bold">Vise</span>
+                class="text-2xl text-primary font-bold">Vise</span>
         </div>
         <h2 class="mt-6 text-center text-3xl leading-9 font-extrabold text-gray-900">
           Sign in to your account
@@ -13,21 +13,22 @@
       </div>
       <form class="mt-8 bg-white shadow rounded p-6" method="POST" @submit.prevent="login">
         <div class="rounded-md shadow-sm">
+          <error :message="error" v-if="error"></error>
           <div class="mb-4">
             <label class="block text-gray-700 text-sm font-bold mb-2" for="username">
               Username
             </label>
             <input v-model="username"
-                class="appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none"
-                id="username" type="text" placeholder="user@example.com" name="username" autofocus>
+                   class="appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none"
+                   id="username" type="text" placeholder="user@example.com" name="username" autofocus>
           </div>
           <div class="mb-6">
             <label class="block text-gray-700 text-sm font-bold mb-2" for="password">
               Password
             </label>
             <input
-                class="appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none"
-                id="password" type="password" placeholder="••••••••••••••••" name="password" v-model="password">
+                    class="appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none"
+                    id="password" type="password" placeholder="••••••••••••••••" name="password" v-model="password">
           </div>
         </div>
 
@@ -55,23 +56,28 @@
 </template>
 
 <script>
-export default {
-  name: "Login",
-  data: () => ({
-    username: "",
-    password: ""
-  }),
-  methods: {
-    login: function () {
-      const payload = {
-        username: this.username,
-        password: this.password
-      }
+  import Error from "./elements/message/Error";
 
-      this.$store.dispatch("login", payload)
+  export default {
+    name: "Login",
+    components: {Error},
+    data: () => ({
+      username: "",
+      password: "",
+      error: ""
+    }),
+    methods: {
+      login: function () {
+        const payload = {
+          username: this.username,
+          password: this.password
+        }
+
+        this.$store.dispatch("login", payload).then(() => this.$router.push('/'))
+            .catch(_ => this.error = "Incorrect username or password.")
+      }
     }
   }
-}
 </script>
 
 <style scoped>
