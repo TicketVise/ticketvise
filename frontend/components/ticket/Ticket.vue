@@ -90,12 +90,12 @@
           </div>
           <div class="mt-5 flex xl:mt-0 xl:ml-4 space-x-4">
             <button type="button" @click="editTitleActive = true" v-if="!editTitleActive"
-                    class="inline-flex items-center px-4 py-2 border border-transparent text-sm leading-5 font-medium rounded-md text-black bg-gray-100 hover:bg-gray-300 focus:outline-none focus:shadow-outline-orange focus:border-orange-700 active:bg-orange-700 transition duration-150 ease-in-out">
+                    class="inline-flex items-center px-4 py-2 border border-transparent text-sm leading-5 font-medium rounded-md text-black bg-gray-100 hover:bg-gray-300 focus:outline-none focus:border-orange-700 active:bg-gray-400 transition duration-150 ease-in-out">
               <i class="fa fa-pencil mr-2"></i>
               Edit title
             </button>
             <button type="button" @click="saveTitle" v-if="editTitleActive"
-                    class="inline-flex items-center px-4 py-2 border border-transparent text-sm leading-5 font-medium rounded-md text-black bg-gray-100 hover:bg-gray-300 focus:outline-none focus:shadow-outline-orange focus:border-orange-700 active:bg-orange-700 transition duration-150 ease-in-out">
+                    class="inline-flex items-center px-4 py-2 border border-transparent text-sm leading-5 font-medium rounded-md text-black bg-gray-100 hover:bg-gray-300 focus:outline-none focus:border-orange-700 active:bg-gray-400  transition duration-150 ease-in-out">
               <i class="fa fa-floppy-o mr-2"></i>
               Save
             </button>

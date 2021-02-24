@@ -12,6 +12,7 @@
                   'fa-share-alt': ticket_event.hasOwnProperty('shared_with_users'),
                   'fa-circle text-xs': ticket_event.hasOwnProperty('new_status'),
                   'fa-file text-xs': ticket_event.hasOwnProperty('file'),
+                  'fa-pencil text-xs': ticket_event.hasOwnProperty('new_title'),
                   'text-white': ticket_event.new_status === 'CLSD' || ticket_event.old_status === 'CLSD'}"/>
         </div>
         <div class="ml-3 h-full border-l border-gray-400 w-1"/>
@@ -90,6 +91,16 @@
             <avatar :source="user.avatar_url" class="w-3 h-3"/>
             <span class="ml-2">{{ full_name(user) }}</span>
           </chip>
+          <span class="ml-1 lowercase">{{ date(ticket_event.date_created) }}</span>
+        </div>
+
+        <div v-else-if="ticket_event.new_title" class="inline-block">
+          <avatar v-if="ticket_event.initiator" :source="ticket_event.initiator.avatar_url"
+                  class="inline-block w-5 h-5 mr-1"/>
+          <span class="font-medium">{{ full_name(ticket_event.initiator) }}</span>
+          <span v-if="ticket_event.initiator">has changed the title to</span>
+          <span v-else>The title has been changed to </span>
+          <chip class="ml-1">{{ ticket_event.new_title }}</chip>
           <span class="ml-1 lowercase">{{ date(ticket_event.date_created) }}</span>
         </div>
       </div>
