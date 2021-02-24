@@ -340,9 +340,6 @@
           "events": true
         };
 
-        const inboxId = this.$route.params.inboxId
-        const ticketInboxId = this.$route.params.ticketInboxId
-
         axios.put(this.getTicketUrl() + "/labels",
             {
               "labels": this.labels.map(label => label.id)
