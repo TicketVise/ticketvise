@@ -27,7 +27,7 @@
         <!-- Labels -->
         <div class="px-4">
           <h4 class="block text-gray-800 font-semibold mb-2">Labels</h4>
-          <error :key="error" :message="error" v-for="error in this.errors.labels"></error>
+          <error :key="error" :message="error" v-for="error in errors.labels"></error>
           <div class="flex flex-wrap mb-2" v-if="labels.length > 0">
             <chip :background="label.color" :key="label.id" class="mr-1 mb-1" v-for="label in labels">
               {{ label.name }}
@@ -61,14 +61,19 @@
               <i class="fa fa-arrow-left mr-2"></i>
               {{ inbox ? inbox.name : '' }}
             </router-link>
-            <h2 class="text-2xl font-bold leading-7 text-gray-900 xl:text-3xl xl:leading-9">
+            <h2 class="text-2xl font-bold leading-7 text-gray-900 xl:text-3xl xl:leading-9" v-if="!editTitleActive">
               #{{ ticket.ticket_inbox_id }} - {{ ticket.title }}
             </h2>
+            <h2 class="text-2xl font-bold leading-7 text-gray-900 xl:text-3xl xl:leading-9" v-if="editTitleActive">
+              #{{ ticket.ticket_inbox_id }} - <input v-model="ticket.title"
+                                                     class="w-5/6 bg-gray-100 px-2 rounded-md border-2 ">
+            </h2>
+            <error :key="error" :message="error" v-for="error in errors.title"></error>
             <div class="flex flex-row flex-wrap space-x-4 sm:space-x-6">
               <div class="mt-2 flex items-center text-sm leading-5 text-gray-500" title="Ticket Status">
                 <i
-                    class="fa mr-1"
-                    :class="{ 'fa-envelope-open': ticket.status === 'PNDG' || ticket.status === 'ASGD', 'fa-envelope': ticket.status === 'ANSD' || ticket.status === 'CLSD' }"
+                        class="fa mr-1"
+                        :class="{ 'fa-envelope-open': ticket.status === 'PNDG' || ticket.status === 'ASGD', 'fa-envelope': ticket.status === 'ANSD' || ticket.status === 'CLSD' }"
                 ></i>
                 {{ status[ticket.status] }}
               </div>
@@ -84,6 +89,16 @@
             </div>
           </div>
           <div class="mt-5 flex xl:mt-0 xl:ml-4 space-x-4">
+            <button type="button" @click="editTitleActive = true" v-if="!editTitleActive"
+                    class="inline-flex items-center px-4 py-2 border border-transparent text-sm leading-5 font-medium rounded-md text-black bg-gray-100 hover:bg-gray-300 focus:outline-none focus:border-orange-700 active:bg-gray-400 transition duration-150 ease-in-out">
+              <i class="fa fa-pencil mr-2"></i>
+              Edit title
+            </button>
+            <button type="button" @click="saveTitle" v-if="editTitleActive"
+                    class="inline-flex items-center px-4 py-2 border border-transparent text-sm leading-5 font-medium rounded-md text-black bg-gray-100 hover:bg-gray-300 focus:outline-none focus:border-orange-700 active:bg-gray-400  transition duration-150 ease-in-out">
+              <i class="fa fa-floppy-o mr-2"></i>
+              Save
+            </button>
             <span v-if="ticket.status !== 'CLSD'" class="shadow-sm rounded-md">
               <button type="button" @click="closeTicket"
                       class="inline-flex items-center px-4 py-2 border border-transparent text-sm leading-5 font-medium rounded-md text-white bg-primary hover:bg-orange-500 focus:outline-none focus:shadow-outline-orange focus:border-orange-700 active:bg-orange-700 transition duration-150 ease-in-out">
@@ -125,229 +140,239 @@
 </template>
 
 <script>
-import Comment from "./Comment";
-import Avatar from "../elements/Avatar";
-import axios from "axios";
-import 'codemirror/lib/codemirror.css';
-import VueTribute from 'vue-tribute';
+  import Comment from "./Comment";
+  import Avatar from "../elements/Avatar";
+  import axios from "axios";
+  import 'codemirror/lib/codemirror.css';
+  import VueTribute from 'vue-tribute';
 
-import Mention from "../elements/mention/Mention";
-import Tab from "../elements/Tab"
-import ExternalTab from "./ExternalTab";
-import InternalTab from "./InternalTab";
-import Card from '../elements/card/Card'
-import AttachmentsTab from "./AttachmentsTab";
-import Avatars from "../elements/Avatars";
-import EditShareWith from "./EditShareWith";
-import UserDropdown from "../elements/dropdown/UserDropdown";
-import LabelDropdown from "../elements/dropdown/LabelDropdown";
-import RecentQuestions from "./RecentQuestions";
-import {calendarDate} from "../../utils";
+  import Mention from "../elements/mention/Mention";
+  import Tab from "../elements/Tab"
+  import ExternalTab from "./ExternalTab";
+  import InternalTab from "./InternalTab";
+  import Card from '../elements/card/Card'
+  import AttachmentsTab from "./AttachmentsTab";
+  import Avatars from "../elements/Avatars";
+  import EditShareWith from "./EditShareWith";
+  import UserDropdown from "../elements/dropdown/UserDropdown";
+  import LabelDropdown from "../elements/dropdown/LabelDropdown";
+  import RecentQuestions from "./RecentQuestions";
+  import {calendarDate} from "../../utils";
+  import Error from "../elements/message/Error";
 
-export default {
-  components: {
-    EditShareWith,
-    Avatars,
-    AttachmentsTab,
-    InternalTab,
-    ExternalTab,
-    Mention,
-    UserDropdown,
-    LabelDropdown,
-    Avatar,
-    Comment,
-    VueTribute,
-    RecentQuestions,
-    Tab,
-    Card
-  },
-  data() {
-    return {
-      inbox: null,
-      ticket: null,
-      replies: [],
-      labels: [],
-      comments: [],
-      staff: [],
-      events: [],
-      activeTab: 'external',
-      user: {},
-      role: "",
-      errors: [],
-      status: {
-        PNDG: 'Pending',
-        ASGD: 'Assigned',
-        ANSD: 'Awaiting response',
-        CLSD: 'Closed'
+  export default {
+    components: {
+      Error,
+      EditShareWith,
+      Avatars,
+      AttachmentsTab,
+      InternalTab,
+      ExternalTab,
+      Mention,
+      UserDropdown,
+      LabelDropdown,
+      Avatar,
+      Comment,
+      VueTribute,
+      RecentQuestions,
+      Tab,
+      Card
+    },
+    data() {
+      return {
+        inbox: null,
+        ticket: null,
+        editTitleActive: false,
+        replies: [],
+        labels: [],
+        comments: [],
+        staff: [],
+        events: [],
+        activeTab: 'external',
+        user: {},
+        role: "",
+        errors: [],
+        status: {
+          PNDG: 'Pending',
+          ASGD: 'Assigned',
+          ANSD: 'Awaiting response',
+          CLSD: 'Closed'
+        }
+      }
+    },
+    mounted() {
+      this.loadTicket()
+    },
+    beforeRouteUpdate(to, from, next) {
+      if (from.params.ticketInboxId !== to.params.ticketInboxId) {
+        next()
+        this.loadTicket()
+      }
+    },
+    computed: {
+      is_staff: function () {
+        return this.isStaff()
+      },
+      staff_excluding_self: function () {
+        if (!this.staff || !this.user) return [];
+
+        return this.staff.filter(user => user.id !== this.user.id)
+      },
+      canShare: function () {
+        return this.is_staff || (this.user && this.ticket.author.id === this.user.id)
+      }
+    },
+    methods: {
+      loadTicket: function () {
+        let formData = {
+          "ticket": true,
+          "role": true,
+          "me": true,
+          "inbox": true,
+          "staff": true,
+          "comments": true,
+          "replies": true,
+          "events": true
+        };
+
+
+        axios.get(this.getTicketUrl(), {params: formData}).then(response => {
+          this.ticket = response.data.ticket;
+          this.labels = response.data.ticket.labels;
+          this.user = response.data.me;
+          this.role = response.data.role;
+          this.inbox = response.data.inbox;
+          this.events = response.data.events;
+          this.replies = response.data.replies;
+
+          if (this.isStaff()) {
+            this.staff = response.data.staff;
+            this.comments = response.data.comments;
+          }
+        });
+      },
+      date: calendarDate,
+      isStaff: function () {
+        return (this.role && (this.role === 'AGENT' || this.role === 'MANAGER')) || (this.user && this.user.is_superuser)
+      },
+      getTicketUrl: function () {
+        const inboxId = this.$route.params.inboxId
+        const ticketInboxId = this.$route.params.ticketInboxId
+
+        return `/api/inboxes/${inboxId}/tickets/${ticketInboxId}`
+      },
+      onReplyPost: function () {
+        let data = {
+          "ticket": true,
+          "replies": true,
+          "events": true,
+        };
+
+        axios.get(this.getTicketUrl(), {params: data}).then(response => {
+          this.replies = response.data.replies;
+          this.events = response.data.events;
+          this.ticket = response.data.ticket;
+        });
+      },
+      onCommentPost: function () {
+        let data = {
+          "ticket": true,
+          "comments": true,
+        };
+
+        axios.get(this.getTicketUrl(), {params: data}).then(response => {
+          this.ticket = response.data.ticket;
+          this.comments = response.data.comments;
+        });
+
+      },
+      closeTicket: function () {
+        let data = {
+          "events": true
+        };
+
+        this.ticket.status = "CLSD";
+        axios.patch(this.getTicketUrl() + "/status/close").then(_ => {
+          return axios.get(this.getTicketUrl(), {params: data})
+        }).then(response => {
+          this.events = response.data.events;
+        });
+
+      },
+      openTicket: function () {
+        let data = {
+          "ticket": true
+        };
+
+        axios.patch(this.getTicketUrl() + "/status/open").then(_ => {
+          return axios.get(this.getTicketUrl(), {params: data})
+        }).then(response => {
+          this.ticket.status = response.data.ticket.status;
+        });
+      },
+      updateSharedWith() {
+        let formData = new FormData();
+        this.ticket.shared_with.forEach(shared_with => formData.append("shared_with", shared_with.id));
+
+        axios.put(this.getTicketUrl() + "/shared", formData).then(_ => {
+          return axios.get(this.getTicketUrl(), {params: {"ticket": true}})
+        }).then(response => {
+          this.ticket = response.data.ticket;
+        }).catch(error => {
+          this.errors = error.response.data
+        })
+      }
+      ,
+      updateAssignee() {
+        let data = {
+          "ticket": true,
+          "events": true
+        };
+
+        axios.get(this.getTicketUrl(), {params: data}).then(response => {
+          this.ticket = response.data.ticket;
+          this.events = response.data.events;
+        });
+      }
+      ,
+      updateLabels() {
+        let data = {
+          "events": true
+        };
+
+        axios.put(this.getTicketUrl() + "/labels",
+            {
+              "labels": this.labels.map(label => label.id)
+            }).then(_ => {
+          return axios.get(this.getTicketUrl(), {params: data})
+        }).then(response => {
+          this.events = response.data.events;
+        }).catch(error => {
+          this.errors = error.response.data
+        });
+      }
+      ,
+      updateTicket() {
+        let data = {
+          "ticket": true
+        };
+
+        axios.get(this.getTicketUrl(), {params: data}).then(response => {
+          this.ticket = response.data.ticket;
+        })
+      },
+      saveTitle() {
+        let data = {
+          "title": this.ticket.title
+        };
+
+        this.editTitleActive = false
+        axios.put(this.getTicketUrl() + "/title", data).then(response => {
+          this.ticket.title = response.data.title
+        }).catch(error => {
+          this.errors = error.response.data
+        })
       }
     }
-  },
-  mounted() {
-      this.loadTicket()
-  },
-  beforeRouteUpdate(to, from, next) {
-    if (from.params.ticketInboxId !== to.params.ticketInboxId) {
-      next()
-      this.loadTicket()
-    }
-  },
-  computed: {
-    is_staff: function () {
-      return this.isStaff()
-    },
-    staff_excluding_self: function () {
-      if (!this.staff || !this.user) return [];
-
-      return this.staff.filter(user => user.id !== this.user.id)
-    },
-    canShare: function () {
-      return this.is_staff || (this.user && this.ticket.author.id === this.user.id)
-    }
-  },
-  methods: {
-    loadTicket: function () {
-      let formData = {
-        "ticket": true,
-        "role": true,
-        "me": true,
-        "inbox": true,
-        "staff": true,
-        "comments": true,
-        "replies": true,
-        "events": true
-      };
-
-
-      axios.get(this.getTicketUrl(), {params: formData}).then(response => {
-        this.ticket = response.data.ticket;
-        this.labels = response.data.ticket.labels;
-        this.user = response.data.me;
-        this.role = response.data.role;
-        this.inbox = response.data.inbox;
-        this.events = response.data.events;
-        this.replies = response.data.replies;
-
-        if (this.isStaff()) {
-          this.staff = response.data.staff;
-          this.comments = response.data.comments;
-        }
-      });
-    },
-    date: calendarDate,
-    isStaff: function () {
-      return (this.role && (this.role === 'AGENT' || this.role === 'MANAGER')) || (this.user && this.user.is_superuser)
-    },
-    getTicketUrl: function () {
-      const inboxId = this.$route.params.inboxId
-      const ticketInboxId = this.$route.params.ticketInboxId
-
-      return `/api/inboxes/${inboxId}/tickets/${ticketInboxId}`
-    },
-    onReplyPost: function () {
-      let data = {
-        "ticket": true,
-        "replies": true,
-        "events": true,
-      };
-
-      axios.get(this.getTicketUrl(), {params: data}).then(response => {
-        this.replies = response.data.replies;
-        this.events = response.data.events;
-        this.ticket = response.data.ticket;
-      });
-    },
-    onCommentPost: function () {
-      let data = {
-        "ticket": true,
-        "comments": true,
-      };
-
-      axios.get(this.getTicketUrl(), {params: data}).then(response => {
-        this.ticket = response.data.ticket;
-        this.comments = response.data.comments;
-      });
-
-    },
-    closeTicket: function () {
-      let data = {
-        "events": true
-      };
-
-
-      this.ticket.status = "CLSD";
-      axios.patch(this.getTicketUrl() + "/status/close").then(_ => {
-        return axios.get(this.getTicketUrl(), {params: data})
-      }).then(response => {
-        this.events = response.data.events;
-      });
-
-    },
-    openTicket: function () {
-      let data = {
-        "ticket": true
-      };
-
-      const inboxId = this.$route.params.inboxId
-      const ticketInboxId = this.$route.params.ticketInboxId
-
-      axios.patch(this.getTicketUrl() + "/status/open").then(_ => {
-        return axios.get(this.getTicketUrl(), {params: data})
-      }).then(response => {
-        this.ticket.status = response.data.ticket.status;
-      });
-    },
-    updateSharedWith() {
-      let formData = new FormData();
-      this.ticket.shared_with.forEach(shared_with => formData.append("shared_with", shared_with.id));
-
-      axios.put(this.getTicketUrl() + "/shared", formData).then(_ => {
-        return axios.get(this.getTicketUrl(), {params: {"ticket": true}})
-      }).then(response => {
-        this.ticket = response.data.ticket;
-      }).catch(error => {
-        this.errors = error.response.data
-      })
-    }
-    ,
-    updateAssignee() {
-      let data = {
-        "ticket": true,
-        "events": true
-      };
-
-      axios.get(this.getTicketUrl(), {params: data}).then(response => {
-        this.ticket = response.data.ticket;
-        this.events = response.data.events;
-      });
-    }
-    ,
-    updateLabels() {
-      let data = {
-        "events": true
-      };
-
-      const inboxId = this.$route.params.inboxId
-      const ticketInboxId = this.$route.params.ticketInboxId
-
-      axios.put(this.getTicketUrl() + "/labels",
-          {
-            "labels": this.labels.map(label => label.id)
-          }).then(_ => {
-        return axios.get(this.getTicketUrl(), {params: data})
-      }).then(response => {
-        this.events = response.data.events;
-      });
-    }
-    ,
-    updateTicket() {
-      let data = {
-        "ticket": true
-      };
-
-      axios.get(this.getTicketUrl(), {params: data}).then(response => {
-        this.ticket = response.data.ticket;
-      })
-    }
   }
-}
 </script>
