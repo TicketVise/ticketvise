@@ -127,6 +127,7 @@ class Ticket(models.Model):
 
         super().save(force_insert, force_update, using, update_fields)
 
+
         if old_ticket and old_ticket.status != self.status:
             TicketStatusEvent.objects.create(ticket=self, initiator=CurrentUserMiddleware.get_current_user(),
                                              old_status=old_ticket.status, new_status=self.status)
@@ -140,6 +141,10 @@ class Ticket(models.Model):
         elif not self.assignee:
             for user in self.inbox.get_assistants_and_coordinators():
                 NewTicketNotification.objects.create(ticket=self, receiver=user)
+
+        if old_ticket and old_ticket.title != self.title:
+            TicketTitleEvent.objects.create(ticket=self, initiator=CurrentUserMiddleware.get_current_user(),
+                                            old_title=old_ticket.title, new_title=self.title)
 
 
 class TicketSharedUser(models.Model):
@@ -224,3 +229,8 @@ class TicketAssigneeEvent(TicketEvent):
 class TicketLabelEvent(TicketEvent):
     label = models.ForeignKey("Label", on_delete=models.CASCADE)
     is_added = models.BooleanField()
+
+
+class TicketTitleEvent(TicketEvent):
+    old_title = models.CharField(max_length=100)
+    new_title = models.CharField(max_length=100)

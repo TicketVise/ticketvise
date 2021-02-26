@@ -28,11 +28,12 @@
                 </div>
               </td>
               <td class="px-4 py-2 whitespace-no-wrap">
-                <input @change="updateNotifications()" type="checkbox"
+                <input @change="updateNotifications()" type="checkbox" class="border-2"
                         v-model="settings.notification_mention_app">
               </td>
               <td class="px-4 py-2 whitespace-no-wrap">
-                <input @change="updateNotifications" type="checkbox" v-model="settings.notification_mention_mail">
+                <input @change="updateNotifications" type="checkbox"  class="border-2"
+                       v-model="settings.notification_mention_mail">
               </td>
             </tr>
             <tr>
@@ -44,11 +45,11 @@
                 </div>
               </td>
               <td class="px-4 py-2 whitespace-no-wrap">
-                <input @change="updateNotifications()" type="checkbox"
+                <input @change="updateNotifications()" type="checkbox" class="border-2"
                         v-model="settings.notification_new_ticket_app">
               </td>
               <td class="px-4 py-2 whitespace-no-wrap">
-                <input @change="updateNotifications" type="checkbox"
+                <input @change="updateNotifications" type="checkbox" class="border-2"
                         v-model="settings.notification_new_ticket_mail">
               </td>
             </tr>
@@ -61,11 +62,12 @@
                 </div>
               </td>
               <td class="px-4 py-2 whitespace-no-wrap">
-                <input @change="updateNotifications()" type="checkbox"
+                <input @change="updateNotifications()" type="checkbox" class="border-2"
                         v-model="settings.notification_comment_app">
               </td>
               <td class="px-4 py-2 whitespace-no-wrap">
-                <input @change="updateNotifications" type="checkbox" v-model="settings.notification_comment_mail">
+                <input @change="updateNotifications" type="checkbox" class="border-2"
+                       v-model="settings.notification_comment_mail">
               </td>
             </tr>
             <tr>
@@ -77,11 +79,11 @@
                 </div>
               </td>
               <td class="px-4 py-2 whitespace-no-wrap">
-                <input @change="updateNotifications()" type="checkbox"
+                <input @change="updateNotifications()" type="checkbox" class="border-2"
                         v-model="settings.notification_assigned_app">
               </td>
               <td class="px-4 py-2 whitespace-no-wrap">
-                <input @change="updateNotifications" type="checkbox"
+                <input @change="updateNotifications" type="checkbox" class="border-2"
                         v-model="settings.notification_assigned_mail">
               </td>
             </tr>
@@ -94,11 +96,11 @@
                 </div>
               </td>
               <td class="px-4 py-2 whitespace-no-wrap">
-                <input @change="updateNotifications()" type="checkbox"
+                <input @change="updateNotifications()" type="checkbox" class="border-2"
                         v-model="settings.notification_ticket_reminder_app">
               </td>
               <td class="px-4 py-2 whitespace-no-wrap">
-                <input @change="updateNotifications" type="checkbox"
+                <input @change="updateNotifications" type="checkbox" class="border-2"
                         v-model="settings.notification_ticket_reminder_mail">
               </td>
             </tr>

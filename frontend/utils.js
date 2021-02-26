@@ -1,5 +1,6 @@
 import moment from "moment";
 
+moment.locale(navigator.language);
 export function calendarDate(date) {
     return moment.parseZone(date).calendar(null, {
         lastDay: '[Yesterday at] HH:mm',
@@ -7,7 +8,7 @@ export function calendarDate(date) {
         nextDay: '[Tomorrow at] HH:mm',
         lastWeek: '[Last] dddd [at] HH:mm',
         nextWeek: 'dddd [at] HH:mm',
-        sameElse: 'L [at] HH:mm'
+        sameElse: 'LL [at] HH:mm'
     });
 }
 
