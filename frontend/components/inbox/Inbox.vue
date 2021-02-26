@@ -1,6 +1,7 @@
 <template>
   <div class="items-stretch overflow-y-hidden">
-    <getting-started @update="user.give_introduction = false" v-if="is_staff && user && user.give_introduction"></getting-started>
+    <getting-started @update="user.give_introduction = false"
+                     v-if="is_staff && user && user.give_introduction"></getting-started>
     <div class="flex flex-row flex-grow h-full max-w-full pt-16 -mt-16">
       <!-- Side Menu -->
       <div class="min-w-side max-w-side border-r hidden lg:flex flex-col flex-grow">
@@ -30,6 +31,11 @@
                        class="grid grid-cols-12 px-3 py-2 rounded items-center space-x-2 text-gray-700 hover:bg-gray-100 hover:text-gray-900">
             <i class="fa fa-home col-span-1 flex justify-center"></i>
             <span class="col-span-11">Overview</span>
+          </router-link>
+          <router-link :to="'/inboxes/' + $route.params.inboxId + '/public'"
+                       class="grid grid-cols-12 px-3 py-2 rounded items-center space-x-2 text-gray-700 hover:bg-gray-100 hover:text-gray-900">
+            <i class="fa fa-home col-span-1 flex justify-center"></i>
+            <span class="col-span-11">Public Tickets</span>
           </router-link>
           <router-link :to="'/inboxes/' + $route.params.inboxId + '/users'" v-if="is_staff"
                        class="grid grid-cols-12 px-3 py-2 rounded items-center space-x-2 text-gray-700 hover:bg-gray-100 hover:text-gray-900">
@@ -117,6 +123,11 @@
                                  class="grid grid-cols-12 px-3 py-2 rounded items-center space-x-2 text-gray-700 hover:bg-gray-100 hover:text-gray-900">
                       <i class="fa fa-home col-span-1 flex justify-center"></i>
                       <span class="col-span-11">Overview</span>
+                    </router-link>
+                    <router-link :to="'/inboxes/' + $route.params.inboxId + '/public'"
+                                 class="grid grid-cols-12 px-3 py-2 rounded items-center space-x-2 text-gray-700 hover:bg-gray-100 hover:text-gray-900">
+                      <i class="fa fa-home col-span-1 flex justify-center"></i>
+                      <span class="col-span-11">Public Tickets</span>
                     </router-link>
                     <router-link :to="'/inboxes/' + $route.params.inboxId + '/users'" v-if="is_staff"
                                  class="grid grid-cols-12 px-3 py-2 rounded items-center space-x-2 text-gray-700 hover:bg-gray-100 hover:text-gray-900">

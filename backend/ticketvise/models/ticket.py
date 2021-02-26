@@ -56,6 +56,7 @@ class Ticket(models.Model):
     status = models.CharField(max_length=8, choices=Status.choices, default=Status.PENDING)
     content = models.TextField()
     labels = models.ManyToManyField("Label", blank=True, related_name="tickets", through="TicketLabel")
+    is_public = models.BooleanField(default=False)
     reply_message_id = models.UUIDField(default=uuid.uuid4, editable=False, unique=True, null=False)
     comment_message_id = models.UUIDField(default=uuid.uuid4, editable=False, unique=True, null=False)
     date_edited = models.DateTimeField(auto_now=True)

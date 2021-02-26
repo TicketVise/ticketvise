@@ -16,6 +16,7 @@ import Admin from "./components/admin/Admin";
 import store from "./store";
 import Inbox from "./components/inbox/Inbox";
 import Vue from "vue";
+import PublicTickets from "./components/inbox/PublicTickets";
 
 Vue.use(VueRouter)
 
@@ -30,6 +31,7 @@ const router = new VueRouter({
             component: Inbox,
             children: [
                 {path: "tickets", component: TicketOverview, name: "Inbox"},
+                {path: "public", component: PublicTickets, name: "Public"},
                 {path: "tickets/new", component: TicketForm, name: "NewTicket"},
                 {path: "statistics", component: InboxStatistics, name: "InboxStatistics"},
                 {path: "settings", component: InboxSettings, name: "InboxSettings"},
