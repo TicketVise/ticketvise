@@ -7,6 +7,7 @@ import TicketForm from "./components/ticket/TicketForm";
 import Ticket from "./components/ticket/Ticket";
 import InboxStatistics from "./components/inbox_statistics/InboxStatistics";
 import InboxSettings from "./components/inbox/InboxSettings";
+import Automation from "./components/automation/automation";
 import Users from "./components/inbox/Users";
 import User from "./components/inbox/User";
 import Labels from "./components/inbox/Labels";
@@ -33,6 +34,7 @@ const router = new VueRouter({
                 {path: "tickets/new", component: TicketForm, name: "NewTicket"},
                 {path: "statistics", component: InboxStatistics, name: "InboxStatistics"},
                 {path: "settings", component: InboxSettings, name: "InboxSettings"},
+                {path: "automation", component: Automation, name: "InboxAutomation"},
                 {path: "users", component: Users, name: "InboxUsers"},
                 {path: "users/:userId", component: User, name: "InboxUser"},
                 {path: "labels", component: Labels, name: "InboxLabels"},

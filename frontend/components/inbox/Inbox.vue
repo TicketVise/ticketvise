@@ -56,6 +56,11 @@
             <i class="fa fa-cog col-span-1 flex justify-center"></i>
             <span class="col-span-11">Settings</span>
           </router-link>
+          <router-link :to="'/inboxes/' + $route.params.inboxId + '/automation'" v-if="is_staff"
+                       class="grid grid-cols-12 px-3 py-2 rounded items-center space-x-2 text-gray-700 hover:bg-gray-100 hover:text-gray-900">
+            <i class="fa fa-cog col-span-1 flex justify-center"></i>
+            <span class="col-span-11">Automation</span>
+          </router-link>
         </div>
       </div>
       <div v-if="side" class="lg:hidden fixed inset-0 overflow-hidden z-50">
@@ -142,6 +147,11 @@
                                  class="grid grid-cols-12 px-3 py-2 rounded items-center space-x-2 text-gray-700 hover:bg-gray-100 hover:text-gray-900">
                       <i class="fa fa-cog col-span-1 flex justify-center"></i>
                       <span class="col-span-11">Settings</span>
+                    </router-link>
+                    <router-link :to="'/inboxes/' + $route.params.inboxId + '/automation'" v-if="is_staff"
+                                 class="grid grid-cols-12 px-3 py-2 rounded items-center space-x-2 text-gray-700 hover:bg-gray-100 hover:text-gray-900">
+                      <i class="fa fa-cog col-span-1 flex justify-center"></i>
+                      <span class="col-span-11">Automation</span>
                     </router-link>
                   </div>
                 </div>

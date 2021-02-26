@@ -34,6 +34,7 @@
 import Draggable from 'vuedraggable'
 
 export default {
+  name: "Automation",
   components: { Draggable },
   data: () => ({
     items: [0]
