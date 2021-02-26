@@ -31,18 +31,20 @@ class Notification(models.Model):
     def get_email_comments(self):
         return self.ticket.comments.filter(is_reply=True)
 
+    def get_message_id(self):
+        return self.ticket.reply_message_id
+
     def send_mail(self):
         send_mail_template(
             self.get_email_subject(),
             self.receiver.email,
             "comments",
             {
-                # "Message-Id": f"<{self.ticket.comment_message_id}@{settings.DOMAIN}>",
+                "Message-Id": f"<{self.get_message_id()}@{settings.DOMAIN}>",
             },
             {
                 "title": self.content,
                 "ticket": self.ticket,
                 "comments": self.get_email_comments(),
-                "url": f"https://{settings.DOMAIN}{reverse('ticket', args=(self.inbox.id, self.ticket.ticket_inbox_id))}"
             }
         )

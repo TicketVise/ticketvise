@@ -106,6 +106,13 @@ services:
       - cert_www:/var/www/certbot
     entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done;'"
 
+  mail:
+    image: "ticketvise/mail:sha-${GIT_DIGEST}"
+    environment:
+      DOMAIN: ${DOMAIN}
+    volumes:
+      - cert_conf:/etc/letsencrypt
+
 volumes:
   cert_conf:
   cert_www:

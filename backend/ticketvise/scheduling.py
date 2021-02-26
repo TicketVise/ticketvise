@@ -4,7 +4,13 @@ Scheduling
 Schedules the ticket according to its labels or the scheduling policy of
 the inbox.
 """
-from ticketvise.models.inbox import SchedulingAlgorithm
+from functools import reduce
+import operator
+import random
+
+from django.db.models import Q
+
+from ticketvise.models.inbox import InboxUserSection, SchedulingAlgorithm
 
 
 def schedule_ticket(ticket):
@@ -22,6 +28,8 @@ def schedule_ticket(ticket):
         schedule_round_robin(ticket)
     elif ticket.inbox.scheduling_algorithm == SchedulingAlgorithm.LEAST_ASSIGNED_FIRST:
         schedule_least_assigned_first(ticket)
+    elif ticket.inbox.scheduling_algorithm == SchedulingAlgorithm.SECTIONS:
+        schedule_sections(ticket)
     elif ticket.inbox.scheduling_algorithm == SchedulingAlgorithm.FIXED:
         return ticket.assign_to(ticket.inbox.fixed_scheduling_assignee)
     else:
@@ -43,7 +51,7 @@ def schedule_round_robin(ticket):
 
     """
     inbox = ticket.inbox
-    inbox_assistants = inbox.get_assistants_and_coordinators()
+    inbox_assistants = inbox.get_assignable_assistants_and_coordinators()
     num_assistants = inbox_assistants.count()
     new_assignee = inbox_assistants[inbox.round_robin_parameter % num_assistants]
     inbox.round_robin_parameter_increase()
@@ -52,23 +60,50 @@ def schedule_round_robin(ticket):
 
 def schedule_least_assigned_first(ticket):
     """
-    Assign a ticket to the assistant that is assigned the least number of tickets.
+    Assign a ticket to a random assistant that is assigned the least number of tickets.
 
     :param Ticket ticket: :class:`Ticket` that needs to be assigned.
 
     :return: None.
     """
     inbox = ticket.inbox
-    inbox_assistants = inbox.get_assistants_and_coordinators()
-    min_assignee = None
-    min_count = None
+    inbox_assistants = inbox.get_assignable_assistants_and_coordinators()
 
-    # Find the assistant that is assigned to the least number of tickets.
+    if not inbox_assistants:
+        ticket.assign_to(None)
+        return
+
+    min_assigned = []
+    min_count = float("inf")
+
+    # Find the assistants that are assigned to the least number of tickets.
     for assistant in inbox_assistants:
-        assigned_count = inbox.tickets.filter(assignee=assistant).count()
+        assigned_count = inbox.tickets.filter(assignee=assistant, status="ASGD").count()
 
-        if min_assignee is None or assigned_count < min_count:
-            min_assignee = assistant
-            min_count = assigned_count
+        if not min_assigned or assigned_count <= min_count:
+            if assigned_count == min_count or not min_assigned:
+                min_assigned.append(assistant)
+            else:
+                min_assigned = [assistant]
+                min_count = assigned_count
 
-    ticket.assign_to(min_assignee)
+    ticket.assign_to(random.choice(min_assigned))
+
+
+def schedule_sections(ticket):
+    """
+    Assign a ticket to the assistant that corresponds to the section.
+
+    :param Ticket ticket: :class:`Ticket` that needs to be assigned.
+
+    :return: None.
+    """
+    inbox_staff = ticket.inbox.get_assignable_assistants_and_coordinators()
+    sections = InboxUserSection.objects.filter(reduce(operator.or_, (Q(section=x.section) for x in ticket.author.inbox_sections.all())))
+    staff = inbox_staff.filter(reduce(operator.or_, (Q(inbox_sections=x) for x in sections)))
+    
+    # If no assistant in linked through sections we just choose one out of every TA.
+    if len(staff) == 0:
+        staff = inbox_staff
+
+    ticket.assign_to(random.choice(staff))

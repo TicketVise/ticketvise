@@ -9,9 +9,9 @@
       Assignee: {{ticket.assignee.first_name }} {{ ticket.assignee.last_name }}
     </h3>
 
-    <a :href="link" class="font-medium text-gray-900 hover:underline">
+    <router-link :to="link" class="font-medium text-gray-900 hover:underline">
       {{ ticket.title }}
-    </a>
+    </router-link>
 
     <div v-if="!small" class="space-x-1 select-none">
       <chip :background="label.color" :key="label.id" v-for="label in ticket.labels">
@@ -24,6 +24,7 @@
 <script>
   import Card from "../elements/card/Card";
   import {calendarDate} from "../../utils";
+  import Chip from "../elements/chip/Chip";
 
   export default {
     props: {
@@ -43,6 +44,7 @@
       }
     },
     components: {
+      Chip,
       Card
     },
     methods: {
@@ -50,7 +52,7 @@
     },
     computed: {
       link: function () {
-        return window.location.href + '/' + this.ticket.ticket_inbox_id
+        return `/inboxes/${this.$route.params.inboxId}/tickets/${this.ticket.ticket_inbox_id}`
       }
     }
   }

@@ -66,14 +66,14 @@ export default {
   }),
   methods: {
     submit(user) {
+      const inboxId = this.$route.params.inboxId
+      const ticketInboxId = this.$route.params.ticketInboxId
+
       let id = this.assignee && this.assignee.id === user.id ? 0 : user.id;
       let formData = new FormData();
       formData.append("assignee", id ? id : []);
 
-      axios.defaults.xsrfCookieName = 'csrftoken';
-      axios.defaults.xsrfHeaderName = "X-CSRFTOKEN";
-
-      axios.put("/api" + window.location.pathname + "/assignee", formData)
+      axios.put(`/api/inboxes/${inboxId}/tickets/${ticketInboxId}/assignee`, formData)
           .then(_ => {
             this.assignee = id ? user : 0;
             this.$emit("input")

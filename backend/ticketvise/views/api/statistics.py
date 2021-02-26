@@ -1,3 +1,5 @@
+from datetime import datetime, timedelta
+
 from django.db.models import F, Count, OuterRef, Subquery, Avg
 from django.db.models.functions import TruncDate, TruncMonth, TruncYear, TruncWeek, \
     ExtractHour
@@ -11,13 +13,15 @@ from ticketvise.models.comment import Comment
 from ticketvise.models.inbox import Inbox
 from ticketvise.models.label import Label
 from ticketvise.models.ticket import Ticket, TicketStatusEvent, Status
-from ticketvise.models.user import User, Role
-from ticketvise.views.api.security import UserIsInboxManagerMixin
+from ticketvise.models.user import User, Role, UserInbox
+from ticketvise.statistics import get_average_response_time
+from ticketvise.views.api.security import UserIsInboxStaffPermission
 from ticketvise.views.api.ticket import LabelSerializer
 from ticketvise.views.api.user import UserSerializer
 
 
-class InboxTicketsPerDateTypeStatisticsApiView(UserIsInboxManagerMixin, APIView):
+class InboxTicketsPerDateTypeStatisticsApiView(APIView):
+    permission_classes = [UserIsInboxStaffPermission]
     truncaters = [TruncYear, TruncMonth, TruncWeek, TruncDate]
     extracters = [ExtractHour]
 
@@ -71,7 +75,8 @@ class InboxAverageAgentResponseTimeSerializer(ModelSerializer):
         fields = UserSerializer.Meta.fields + ["avg_response_time"]
 
 
-class InboxAverageAgentResponseTimeStatisticsApiView(UserIsInboxManagerMixin, APIView):
+class InboxAverageAgentResponseTimeStatisticsApiView(APIView):
+    permission_classes = [UserIsInboxStaffPermission]
 
     def get(self, request, inbox_id):
         inbox = get_object_or_404(Inbox, pk=inbox_id)
@@ -94,7 +99,57 @@ class InboxAverageAgentResponseTimeStatisticsApiView(UserIsInboxManagerMixin, AP
         return JsonResponse(InboxAverageAgentResponseTimeSerializer(users, many=True).data, safe=False)
 
 
-class InboxAverageTimeToCloseStatisticsApiView(UserIsInboxManagerMixin, APIView):
+class InboxStatisticsApiView(APIView):
+    permission_classes = [UserIsInboxStaffPermission]
+
+    def get(self, request, inbox_id):
+        inbox = get_object_or_404(Inbox, pk=inbox_id)
+
+        now = datetime.now()
+        last_7_days = now - timedelta(days=7)
+        last_14_days = now - timedelta(days=14)
+
+        return JsonResponse({
+            "current_week_pending": TicketStatusEvent.objects.filter(ticket__inbox=inbox,
+                                                                     date_created__gte=last_7_days,
+                                                                     old_status=Status.PENDING).count(),
+            "current_week_assigned": TicketStatusEvent.objects.filter(ticket__inbox=inbox,
+                                                                      date_created__gte=last_7_days,
+                                                                      new_status=Status.ASSIGNED).count(),
+            "current_week_answered": TicketStatusEvent.objects.filter(ticket__inbox=inbox,
+                                                                      date_created__gte=last_7_days,
+                                                                      new_status=Status.ANSWERED).count(),
+            "current_week_closed": TicketStatusEvent.objects.filter(ticket__inbox=inbox,
+                                                                    date_created__gte=last_7_days,
+                                                                    new_status=Status.CLOSED).count(),
+            "last_week_pending": TicketStatusEvent.objects.filter(ticket__inbox=inbox,
+                                                                  date_created__lte=last_7_days,
+                                                                  date_created__gte=last_14_days,
+                                                                  old_status=Status.PENDING).count(),
+            "last_week_assigned": TicketStatusEvent.objects.filter(ticket__inbox=inbox,
+                                                                   date_created__lte=last_7_days,
+                                                                   date_created__gte=last_14_days,
+                                                                   new_status=Status.ASSIGNED).count(),
+            "last_week_answered": TicketStatusEvent.objects.filter(ticket__inbox=inbox,
+                                                                   date_created__lte=last_7_days,
+                                                                   date_created__gte=last_14_days,
+                                                                   new_status=Status.ANSWERED).count(),
+            "last_week_closed": TicketStatusEvent.objects.filter(ticket__inbox=inbox,
+                                                                 date_created__lte=last_7_days,
+                                                                 date_created__gte=last_14_days,
+                                                                 new_status=Status.ANSWERED).count(),
+            "avg_response_time": get_average_response_time(inbox),
+            "total_guests": UserInbox.objects.filter(inbox=inbox, role=Role.GUEST).count(),
+            "last_week_total_tickets": Ticket.objects.filter(inbox=inbox, date_created__lte=last_7_days).count(),
+            'total_tickets': Ticket.objects.filter(inbox=inbox).count(),
+            'labels': Label.objects.filter(inbox=inbox).count(),
+            'users': User.objects.filter(inbox_relationship__inbox_id=inbox).count(),
+            'coordinator': UserSerializer(inbox.get_coordinator()).data
+        }, safe=False)
+
+
+class InboxAverageTimeToCloseStatisticsApiView(APIView):
+    permission_classes = [UserIsInboxStaffPermission]
 
     def get(self, request, inbox_id):
         inbox = get_object_or_404(Inbox, pk=inbox_id)
@@ -119,7 +174,8 @@ class LabelWithCountSerializer(ModelSerializer):
         fields = LabelSerializer.Meta.fields + ["count"]
 
 
-class LabelsCountStatisticsApiView(UserIsInboxManagerMixin, APIView):
+class LabelsCountStatisticsApiView(APIView):
+    permission_classes = [UserIsInboxStaffPermission]
 
     def get(self, request, inbox_id):
         inbox = get_object_or_404(Inbox, pk=inbox_id)

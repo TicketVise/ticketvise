@@ -5,10 +5,10 @@
         <div class="sm:flex sm:items-center sm:justify-between">
           <div class="flex-1 min-w-0">
             <div class="flex justify-between items-center">
-              <a href="/inboxes" class="text-xs text-gray-700 hover:underline cursor-pointer">
+              <router-link to="/inboxes" class="text-xs text-gray-700 hover:underline cursor-pointer">
                 <i class="fa fa-arrow-left mr-2"></i>
                 Dashboard
-              </a>
+              </router-link>
               <span class="sm:hidden">
                 <a
                   href="/admin/django"
@@ -74,20 +74,24 @@
 </template>
 
 <script>
+import InboxStats from "./InboxStats";
+import axios from 'axios'
+
 export default {
+  components: {InboxStats},
   data: () => ({
     inboxes: [],
     users: 0,
     tickets: 0
   }),
   async mounted() {
-    const response = await axios.get(`/api/inboxes`)
+    const response = await axios.get("/api/inboxes")
     this.inboxes = response.data
 
-    const users = await axios.get(`/api/admin/statistics/users/count`)
+    const users = await axios.get("/api/admin/statistics/users/count")
     this.users = users.data.users
 
-    const tickets = await axios.get(`/api/admin/statistics/tickets/count`)
+    const tickets = await axios.get("/api/admin/statistics/tickets/count")
     this.tickets = tickets.data.tickets
   }
 }

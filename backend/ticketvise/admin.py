@@ -8,7 +8,7 @@ from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 
 from ticketvise.models.comment import Comment
-from ticketvise.models.inbox import Inbox
+from ticketvise.models.inbox import Inbox, InboxSection, InboxUserSection
 from ticketvise.models.label import Label
 from ticketvise.models.notification import Notification
 from ticketvise.models.notification.assigned import TicketAssignedNotification
@@ -17,7 +17,7 @@ from ticketvise.models.notification.mention import MentionNotification
 from ticketvise.models.notification.new import NewTicketNotification
 from ticketvise.models.notification.reminder import TicketReminderNotification
 from ticketvise.models.ticket import Ticket, TicketEvent, TicketStatusEvent, \
-    TicketAssigneeEvent, TicketLabelEvent, TicketAttachment
+    TicketAssigneeEvent, TicketLabelEvent, TicketAttachment, TicketSharedUser
 from ticketvise.models.user import User, UserInbox
 
 
@@ -44,6 +44,8 @@ class CustomUserAdmin(UserAdmin):
 # Register all models in the admin panel.
 admin.site.register(User, CustomUserAdmin)
 admin.site.register(Inbox)
+admin.site.register(InboxSection)
+admin.site.register(InboxUserSection)
 admin.site.register(UserInbox)
 admin.site.register(Label)
 admin.site.register(Ticket)
@@ -59,3 +61,4 @@ admin.site.register(CommentNotification)
 admin.site.register(MentionNotification)
 admin.site.register(NewTicketNotification)
 admin.site.register(TicketReminderNotification)
+admin.site.register(TicketSharedUser)

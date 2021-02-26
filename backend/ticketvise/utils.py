@@ -6,6 +6,8 @@ Various utility functions for use in python files.
 import random
 
 from PIL import ImageColor
+from rest_framework.pagination import PageNumberPagination
+from rest_framework.response import Response
 
 
 def random_preselected_color():
@@ -38,3 +40,19 @@ def get_text_color(background_color):
     r, g, b = ImageColor.getcolor(background_color, "RGB")
     return "#374151" if (r * 0.299 + g * 0.587 + b * 0.114) > 186 else "#ffffff"
 
+
+class StandardResultsSetPagination(PageNumberPagination):
+    page_size = 25
+    page_size_query_param = "page_size"
+    max_page_size = 100
+
+    def get_paginated_response(self, data):
+        return Response({
+            "next": self.get_next_link(),
+            "previous": self.get_previous_link(),
+            "count": self.page.paginator.count,
+            "results": data,
+            "page_number": self.page.number,
+            "page_size": self.page_size,
+            "total_pages": self.page.paginator.num_pages,
+        })

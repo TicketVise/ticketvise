@@ -1,6 +1,7 @@
 import {shallowMount} from '@vue/test-utils'
 import TicketColumn from "../components/inbox/TicketColumn";
 import TicketCard from "../components/inbox/TicketCard";
+import SubmitButton from "../components/elements/buttons/SubmitButton";
 
 const colorData = "#e9c46a";
 const titleData = "Assigned";
@@ -131,7 +132,9 @@ it("Column content", () => {
     propsData: {
       ticketList: ticketListData,
       title: titleData,
-      color: colorData
+      color: colorData,
+      has_next: false,
+      length: ticketListData.length
     }
   });
   const header = wrapper.findAll("div").at(0);
@@ -140,6 +143,9 @@ it("Column content", () => {
 
   var cards = wrapper.findAllComponents(TicketCard);
   expect(cards.length).toBe(ticketListData.length)
+
+  var load_more = wrapper.findAllComponents(SubmitButton);
+  expect(load_more.length).toBe(0)
 });
 
 it("Column no content", () => {
@@ -147,7 +153,9 @@ it("Column no content", () => {
     propsData: {
       ticketList: [],
       title: titleData,
-      color: colorData
+      color: colorData,
+      has_next: false,
+      length: 0
     }
   });
   const header = wrapper.findAll("div").at(0);
@@ -156,4 +164,18 @@ it("Column no content", () => {
 
   let cards = wrapper.findAllComponents(TicketCard);
   expect(cards.length).toBe(0)
+});
+
+it("Column no content", () => {
+  const wrapper = shallowMount(TicketColumn, {
+    propsData: {
+      ticketList: ticketListData,
+      title: titleData,
+      color: colorData,
+      has_next: true,
+      length: ticketListData.length
+    }
+  });
+  var load_more = wrapper.findAllComponents(SubmitButton);
+  expect(load_more.length).toBe(1)
 });

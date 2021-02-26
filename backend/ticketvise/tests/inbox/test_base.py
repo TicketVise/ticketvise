@@ -4,26 +4,29 @@ from ticketvise.tests.inbox.utils import InboxTestCase
 
 
 class BaseTestCase(InboxTestCase):
-    def test_inbox_assistant_403(self):
+
+    def test_inbox_assistant_200(self):
         """
         Test to verify that a assistant is unable to access inbox related pages. Pages should return a HTTP 403
         status code when a assistant tries to access a page.
         """
-        self.client.force_login(self.assistant)
+        self.client.force_authenticate(self.assistant)
 
-        for template_name, args in self.template_names:
-            response = self.client.get(reverse(template_name, args=args), follow=True)
-            self.assertEqual(response.status_code, 403)
+        template_names = set(self.template_names)
+
+        for template_name, args in template_names:
+            response = self.client.get(reverse(template_name, args=args))
+            self.assertEqual(response.status_code, 200)
 
     def test_inbox_coordinator_200(self):
         """
         Test to verify that a coordinator is able to access inbox related pages. Pages should return a HTTP 200
         status code when a coordinator tries to access a page.
         """
-        self.client.force_login(self.coordinator)
+        self.client.force_authenticate(self.coordinator)
 
         for template_name, args in self.template_names:
-            response = self.client.get(reverse(template_name, args=args), follow=True)
+            response = self.client.get(reverse(template_name, args=args))
             self.assertEqual(response.status_code, 200)
 
     def test_inbox_student_403(self):
@@ -31,10 +34,10 @@ class BaseTestCase(InboxTestCase):
         Test to verify that a student is unable to access inbox related pages. Pages should return a HTTP 403
         status code when a student tries to access a page.
         """
-        self.client.force_login(self.student)
+        self.client.force_authenticate(self.student)
 
         for template_name, args in self.template_names:
-            response = self.client.get(reverse(template_name, args=args), follow=True)
+            response = self.client.get(reverse(template_name, args=args))
             self.assertEqual(response.status_code, 403)
 
     def test_inbox_anonymous_redirect_login(self):
@@ -43,26 +46,25 @@ class BaseTestCase(InboxTestCase):
         """
         for template_name, args in self.template_names:
             url = reverse(template_name, args=args)
-            response = self.client.get(url, follow=True)
-            self.assertRedirects(response, '/login/?next=' + url, status_code=302,
-                                 target_status_code=200, fetch_redirect_response=True)
+            response = self.client.get(url, follow=False)
+            self.assertEqual(response.status_code, 401)
 
     def test_coordinator_not_in_inbox(self):
         """
         Test to verify that a coordinator which is not associated with the inbox is unable to access inbox related
         pages. Pages should return a HTTP 403 status code when a coordinator from a other inbox tries to access a page.
         """
-        self.client.force_login(self.coordinator_2)
+        self.client.force_authenticate(self.coordinator_2)
 
         for template_name, args in self.template_names:
-            response = self.client.get(reverse(template_name, args=args), follow=True)
+            response = self.client.get(reverse(template_name, args=args))
             self.assertEqual(response.status_code, 403)
 
     def test_pagination_not_numeric(self):
         """
         Test to verify that when a path variable is not a numeric value, no unexpected behaviour occurs.
         """
-        self.client.force_login(self.coordinator)
+        self.client.force_authenticate(self.coordinator)
 
         for template_name, args in self.template_names:
             url = reverse(template_name, args=args).replace("1", "1a")

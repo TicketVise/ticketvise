@@ -46,6 +46,16 @@ jobs:
           tag_with_ref: true
           tag_with_sha: true
 
+      - name: Build and push backend Docker image to Docker Hub
+        uses: docker/build-push-action@v1
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+          repository: ticketvise/backend
+          add_git_labels: true
+          tag_with_ref: true
+          tag_with_sha: true
+          
       - name: Build and push cronjob Docker image to Docker Hub
         uses: docker/build-push-action@v1
         with:
@@ -57,12 +67,13 @@ jobs:
           tag_with_ref: true
           tag_with_sha: true
 
-      - name: Build and push backend Docker image to Docker Hub
+      - name: Build and push mail Docker image to Docker Hub
         uses: docker/build-push-action@v1
         with:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
-          repository: ticketvise/backend
+          path: postfix
+          repository: ticketvise/mail
           add_git_labels: true
           tag_with_ref: true
           tag_with_sha: true

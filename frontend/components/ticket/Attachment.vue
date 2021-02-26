@@ -33,11 +33,11 @@
       </div>
     </div>
     <div class="relative" v-else>
-        <a :href="attachment.file"
-            :download="getFilename(attachment.file)"
-            class="flex items-center justify-center relative ml-auto rounded-full cursor-pointer w-6 h-6 text-center -mr-2 text-gray-700 hover:bg-gray-100">
-          <i class="fa fa-download"></i>
-        </a>
+      <a :href="attachment.file"
+         :download="getFilename(attachment.file)"
+         class="flex items-center justify-center relative ml-auto rounded-full cursor-pointer w-6 h-6 text-center -mr-2 text-gray-700 hover:bg-gray-100">
+        <i class="fa fa-download"></i>
+      </a>
     </div>
   </div>
 </template>
@@ -108,7 +108,10 @@ export default {
     },
     remove(attachment) {
       this.menu = false
-      axios.delete('/api' + window.location.pathname + '/attachments/' + attachment.id)
+      const inboxId = this.$route.params.inboxId
+      const ticketInboxId = this.$route.params.ticketInboxId
+
+      axios.delete(`/api/inboxes/${inboxId}/tickets/${ticketInboxId}/attachments/${attachment.id}`)
       this.$emit('remove')
     },
     away() {
