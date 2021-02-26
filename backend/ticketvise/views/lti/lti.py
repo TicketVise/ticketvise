@@ -63,7 +63,7 @@ class LtiView(View):
         if inbox is None:
             if "instructor" in user_roles:
                 inbox_name = form.cleaned_data["custom_course_name"]
-                inbox = Inbox.objects.create(code=inbox_code, name=inbox_name)
+                inbox = Inbox.objects.create(code=inbox_code, name=inbox_name, coordinator=user)
 
                 # Set default labels
                 Label.objects.create(inbox=inbox, color="#d73a4a", name="Assignment")

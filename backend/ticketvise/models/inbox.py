@@ -50,6 +50,7 @@ class Inbox(models.Model):
                                             default=SchedulingAlgorithm.LEAST_ASSIGNED_FIRST)
     round_robin_parameter = models.PositiveIntegerField(default=0)
     fixed_scheduling_assignee = models.ForeignKey("User", on_delete=models.CASCADE, blank=True, null=True)
+    coordinator = models.ForeignKey("User", on_delete=models.SET_NULL, blank=True, null=True, related_name='coordinator')
     show_assignee_to_guest = models.BooleanField(default=False)
     close_answered_weeks = models.PositiveIntegerField(default=0)
     alert_coordinator_unanswered_days = models.PositiveIntegerField(default=0)
@@ -87,6 +88,14 @@ class Inbox(models.Model):
         roles = [Role.AGENT, Role.MANAGER]
         return User.objects.filter(inbox_relationship__inbox=self, inbox_relationship__role__in=roles)
 
+    def get_coordinators(self):
+        """
+        :return: All coordinators in the inbox.
+        :rtype: QuerySet<:class:`User`>
+        """
+        roles = [Role.MANAGER]
+        return User.objects.filter(inbox_relationship__inbox=self, inbox_relationship__role__in=roles)
+
     def get_assignable_assistants_and_coordinators(self):
         """
         :return: All assistants and coordinators in the inbox.
@@ -95,14 +104,6 @@ class Inbox(models.Model):
         roles = [Role.AGENT, Role.MANAGER]
         return User.objects.filter(inbox_relationship__inbox=self, inbox_relationship__role__in=roles,
                                    inbox_relationship__is_assignable=True)
-
-    def get_coordinator(self):
-        """
-        :return: Get the first coordinator of the course
-        :rtype: QuerySet<:class:`User`>
-        """
-        return User.objects.filter(inbox_relationship__inbox=self, inbox_relationship__role=Role.MANAGER) \
-            .order_by("date_created").first()
 
     def get_tickets_by_assignee(self, assignee, status=None):
         """

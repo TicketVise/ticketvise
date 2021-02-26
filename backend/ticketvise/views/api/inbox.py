@@ -33,7 +33,11 @@ class InboxSerializer(DynamicFieldsModelSerializer):
         return LabelSerializer(labels, many=True, read_only=False).data
 
     def get_coordinator(self, obj):
-        return UserSerializer(obj.get_coordinator()).data
+        if not obj.coordinator:
+            return None
+
+        return UserSerializer(obj.coordinator,
+            fields=(["first_name", "last_name", "username", "avatar_url", "id"])).data
 
     class Meta:
         model = Inbox
@@ -178,7 +182,7 @@ class InboxSettingsApiView(RetrieveUpdateAPIView):
     def get_serializer(self, *args, **kwargs):
         return InboxSerializer(*args, **kwargs, fields=(
             "name", "id", "color", "image", "scheduling_algorithm", "code", "show_assignee_to_guest",
-            "fixed_scheduling_assignee", "close_answered_weeks", "alert_coordinator_unanswered_days"))
+            "fixed_scheduling_assignee", "close_answered_weeks", "alert_coordinator_unanswered_days", "coordinator"))
 
     def retrieve(self, request, *args, **kwargs):
         inbox = self.get_object()
@@ -186,7 +190,8 @@ class InboxSettingsApiView(RetrieveUpdateAPIView):
         response = {
             "inbox": self.get_serializer(inbox).data,
             "scheduling_options": SchedulingAlgorithm.choices,
-            "staff": UserSerializer(inbox.get_assistants_and_coordinators(), many=True).data
+            "staff": UserSerializer(inbox.get_assistants_and_coordinators(), many=True).data,
+            "coordinators": UserSerializer(inbox.get_coordinators(), many=True).data
         }
 
         return Response(response)
@@ -196,6 +201,11 @@ class InboxSettingsApiView(RetrieveUpdateAPIView):
             "fixed_scheduling_assignee"].isdigit():
             request.POST._mutable = True
             request.POST["fixed_scheduling_assignee"] = None
+
+        coordinator = User.objects.get(pk=request.POST["coordinator"])
+        print(coordinator)
+        request.POST._mutable = True
+        request.POST["coordinator"] = coordinator
         return super().update(request, *args, **kwargs)
 
 

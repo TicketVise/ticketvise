@@ -63,6 +63,22 @@
                class="block" name="show_assignee_to_guest" id="show_assignee_to_guest">
       </dd>
     </div>
+    <div class="bg-gray-50 px-4 py-3 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6 border-b-2">
+      <label for="coordinator"
+             class="text-sm leading-5 font-medium text-gray-700 flex items-center">
+        Displayed coordinator
+      </label>
+      <dd class="text-sm leading-5 text-gray-900 sm:mt-0 sm:col-span-2">
+        <select v-if="inbox.coordinator"
+                name="coordinator" id="coordinator"
+                class="block appearance-none bg-white border border-gray-400 hover:border-gray-500 px-4 py-1 pr-8 rounded shadow-sm leading-tight focus:outline-none focus:shadow-outline"
+                v-model="inbox.coordinator.id">
+          <option :value="value.id" v-for="value in coordinators" :key="value.id" :selected="inbox.coordinator.id == value.id">
+            {{ value.first_name }} {{ value.last_name }}
+          </option>
+        </select>
+      </dd>
+    </div>
     <h3 class="text-xl mt-4 leading-6 font-medium text-gray-900 p-2 pb-1">
       Tickets
     </h3>
@@ -162,6 +178,7 @@
         inbox: {},
         im_url: "",
         staff: [],
+        coordinators: [],
         scheduling_options: [],
         errors: [],
         saved: false
@@ -171,6 +188,7 @@
       axios.get(`/api/inboxes/${this.$route.params.inboxId}/settings`).then(response => {
         this.inbox = response.data.inbox;
         this.staff = response.data.staff;
+        this.coordinators = response.data.coordinators;
         this.scheduling_options = response.data.scheduling_options
         this.im_url = this.inbox.image;
       })
@@ -183,7 +201,9 @@
         let formData = new FormData();
 
         for (let key in this.inbox) {
-          if (key !== "image") {
+          if (key === "coordinator") {
+            formData.append(key, this.inbox[key].id)
+          } else if (key !== "image") {
             formData.append(key, this.inbox[key]);
           } else if (this.inbox[key] !== this.im_url) {
             formData.append(key, this.inbox[key]);
