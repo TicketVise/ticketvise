@@ -1,27 +1,27 @@
 <template>
   <div>
-    <navigation v-if="show_navigation">
+    <!-- <navigation v-if="show_navigation">
       <router-view></router-view>
     </navigation>
-    <router-view v-else></router-view>
+    <router-view v-else></router-view> -->
+    <component :is="layout">
+      <router-view\>
+    </component>
   </div>
 </template>
 
 <script>
-
-import Navigation from "./components/Navigation";
+const default_layout = 'default'
 
 export default {
   name: "App",
-  components: {Navigation},
   computed: {
-    show_navigation() {
-      return this.$store.getters.isAuthenticated
+    // show_navigation() {
+    //   return this.$store.getters.isAuthenticated
+    // }
+    layout() {
+      return (this.$route.meta.layout || default_layout) + '-layout'
     }
   }
 }
 </script>
-
-<style scoped>
-
-</style>

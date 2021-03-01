@@ -18,6 +18,18 @@ files.keys().map(key =>
     )
 )
 
+/**
+ * Load the different layouts in.
+ */
+import Default from "./layouts/Default.vue"
+import ThickHeader from "./layouts/ThickHeader.vue"
+
+Vue.component('default-layout', Default);
+Vue.component('thick-header-layout', ThickHeader);
+
+/**
+ * Create the VueJS instance.
+ */
 new Vue({
     store: store,
     router: router,
