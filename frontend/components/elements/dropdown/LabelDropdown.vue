@@ -20,7 +20,7 @@
 
       <div class="absolute mt-1 w-full rounded-md bg-white shadow-lg z-50" v-if="open && values && values.length">
         <ul aria-activedescendant="listbox-item-3" aria-labelledby="listbox-label"
-            class="max-h-56 rounded-md py-1 text-base leading-6 shadow-xs overflow-auto focus:outline-none sm:text-sm sm:leading-5"
+            class="max-h-56 rounded-md py-1 text-base leading-6 ring-1 ring-black ring-opacity-5 overflow-auto focus:outline-none sm:text-sm sm:leading-5"
             role="listbox"
             tabindex="-1">
           <li :key="item.id" :value="item.id" @click="switchItem(item)"

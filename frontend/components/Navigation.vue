@@ -46,7 +46,7 @@
                   </button>
                   <div class="origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg"
                        v-show="openSupport" @click="toggleSupport()">
-                    <div class="py-1 rounded-md bg-white shadow-xs" role="menu" aria-orientation="vertical"
+                    <div class="py-1 rounded-md bg-white ring-1 ring-black ring-opacity-5" role="menu" aria-orientation="vertical"
                          aria-labelledby="user-menu">
                       <a href="https://ticketvise.com/getting-started/" target="_blank"
                                    class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
@@ -96,7 +96,7 @@
                 </div>
                 <div class="origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg"
                      v-show="openProfile" @click="toggleProfile()">
-                  <div class="py-1 rounded-md bg-white shadow-xs" role="menu" aria-orientation="vertical"
+                  <div class="py-1 rounded-md bg-white ring-1 ring-black ring-opacity-5" role="menu" aria-orientation="vertical"
                        aria-labelledby="user-menu">
                     <router-link to="/account" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                                  role="menuitem">Account

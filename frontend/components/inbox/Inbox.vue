@@ -18,7 +18,7 @@
 
         <div class="p-4">
           <router-link :to="'/inboxes/' + $route.params.inboxId + '/tickets/new'"
-                       class="inline-flex w-full justify-center items-center px-4 py-2 border border-transparent text-sm leading-5 font-medium rounded-md text-white bg-primary hover:bg-orange-500 focus:outline-none focus:shadow-outline-orange focus:border-orange-700 active:bg-orange-700 transition duration-150 ease-in-out">
+                       class="inline-flex w-full justify-center items-center px-4 py-2 border border-transparent text-sm leading-5 font-medium rounded-md text-white bg-primary hover:bg-orange-500 focus:outline-none focus:ring-orange focus:border-orange-700 active:bg-orange-700 transition duration-150 ease-in-out">
             <i class="fa fa-plus mr-2"></i>
             <span>New Ticket</span>
           </router-link>
@@ -104,7 +104,7 @@
                     <router-link :to="'/inboxes/' + $route.params.inboxId + '/tickets/new'"
                                  class="inline-flex w-full justify-center items-center px-4 py-2 border border-transparent text-sm
                        leading-5 font-medium rounded-md text-white bg-primary hover:bg-orange-500 focus:outline-none
-                       focus:shadow-outline-orange focus:border-orange-700 active:bg-orange-700 transition duration-150
+                       focus:ring-orange focus:border-orange-700 active:bg-orange-700 transition duration-150
                        ease-in-out">
                       <i class="fa fa-plus mr-2"></i>
                       <span>New Ticket</span>

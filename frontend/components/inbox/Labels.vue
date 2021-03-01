@@ -4,7 +4,7 @@
     <div class="flex w-full p-2 sm:px-0 sm:pb-4 space-x-2">
       <search-bar v-model="query" v-on:input="search" class="flex-grow px-2 my-2"/>
       <router-link type="button" :to="add_url"
-         class="inline-flex items-center px-4 my-2 border border-transparent text-sm leading-5 font-medium rounded-md text-white bg-primary hover:bg-orange-500 focus:outline-none focus:shadow-outline-orange focus:border-orange-700 active:bg-orange-700 transition duration-150 ease-in-out">
+         class="inline-flex items-center px-4 my-2 border border-transparent text-sm leading-5 font-medium rounded-md text-white bg-primary hover:bg-orange-500 focus:outline-none focus:ring-orange focus:border-orange-700 active:bg-orange-700 transition duration-150 ease-in-out">
         <i class="fa fa-plus mr-2"></i>
         Add
       </router-link>
@@ -33,15 +33,15 @@
             </thead>
             <tbody v-if="page" class="bg-white">
               <tr :key="label.name" v-for="label in page.results">
-                <td class="px-6 py-4 whitespace-no-wrap border-b border-gray-200">
+                <td class="px-6 py-4 whitespace-nowrap border-b border-gray-200">
                   <div class="text-sm leading-5 text-gray-900 font-medium">{{ label.name }}</div>
                 </td>
-                <td class="px-6 py-4 whitespace-no-wrap border-b border-gray-200">
+                <td class="px-6 py-4 whitespace-nowrap border-b border-gray-200">
                   <span class="flex rounded-full shadow uppercase px-2 py-1 text-xs font-bold mr-3"
                         :style="{ background: label.color }"></span>
                   <div class="text-sm leading-5 text-gray-500 uppercase">{{ label.color }}</div>
                 </td>
-                <td class="px-6 py-4 whitespace-no-wrap border-b border-gray-200">
+                <td class="px-6 py-4 whitespace-nowrap border-b border-gray-200">
                   <span v-if="label.is_visible_to_guest"
                         class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
                     Visible
@@ -51,7 +51,7 @@
                     Invisible
                   </span>
                 </td>
-                <td class="px-6 py-4 whitespace-no-wrap border-b border-gray-200">
+                <td class="px-6 py-4 whitespace-nowrap border-b border-gray-200">
                   <span v-if="label.is_active"
                         class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
                     Active
@@ -61,7 +61,7 @@
                     Inactive
                   </span>
                 </td>
-                <td class="px-6 py-4 whitespace-no-wrap text-right border-b border-gray-200 text-sm leading-5 font-medium">
+                <td class="px-6 py-4 whitespace-nowrap text-right border-b border-gray-200 text-sm leading-5 font-medium">
                   <router-link :to="getLabelUrl(label)"
                     class="text-indigo-600 hover:text-indigo-900">Edit</router-link>
                 </td>

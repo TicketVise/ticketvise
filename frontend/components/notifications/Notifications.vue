@@ -15,7 +15,7 @@
         <div class="mt-2 flex xl:mt-0 xl:ml-4 space-x-4">
           <span class="shadow-sm rounded-md">
             <button v-on:click="markAllAsRead"
-              class="inline-flex items-center px-4 py-2 border border-transparent text-sm leading-5 font-medium rounded-md text-white bg-primary hover:bg-orange-500 focus:outline-none focus:shadow-outline-orange focus:border-orange-700 active:bg-orange-700 transition duration-150 ease-in-out">
+              class="inline-flex items-center px-4 py-2 border border-transparent text-sm leading-5 font-medium rounded-md text-white bg-primary hover:bg-orange-500 focus:outline-none focus:ring-orange focus:border-orange-700 active:bg-orange-700 transition duration-150 ease-in-out">
               Mark all as read
             </button>
           </span>
