@@ -5,7 +5,7 @@
     </navigation>
     <router-view v-else></router-view> -->
     <component :is="layout">
-      <router-view\>
+      <router-view/>
     </component>
   </div>
 </template>

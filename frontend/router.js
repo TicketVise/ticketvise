@@ -22,8 +22,8 @@ Vue.use(VueRouter)
 const router = new VueRouter({
     routes: [
         { path: "/notifications", component: Notifications, name: "Notifications" },
-        { path: "/", component: Inboxes, name: "Home" },
-        { path: "/login", component: Login, name: "Login" },
+        { path: "/", redirect: { name: "Login" } },
+        { path: "/login", component: Login, name: "Login", meta: { layout: "auth-form" } },
         { path: "/inboxes", component: Inboxes, name: "Inboxes", meta: { layout: "thick-header" } },
         {
             path: "/inboxes/:inboxId",

@@ -5,6 +5,8 @@ import App from "./App";
 import store from "./store";
 import router from "./router";
 
+import './styles/index.scss'
+
 /**
  * Load every vue single file components.
  */
@@ -23,9 +25,11 @@ files.keys().map(key =>
  */
 import Default from "./layouts/Default.vue"
 import ThickHeader from "./layouts/ThickHeader.vue"
+import AuthForm from "./layouts/AuthForm.vue"
 
 Vue.component('default-layout', Default);
 Vue.component('thick-header-layout', ThickHeader);
+Vue.component('auth-form-layout', AuthForm);
 
 /**
  * Create the VueJS instance.

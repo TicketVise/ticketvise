@@ -20,7 +20,7 @@
             </label>
             <input v-model="username"
                    class="appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none"
-                   id="username" type="text" placeholder="user@example.com" name="username" autofocus>
+                   id="username" type="text" placeholder="user@example.com" name="username">
           </div>
           <div class="mb-6">
             <label class="block text-gray-700 text-sm font-bold mb-2" for="password">
