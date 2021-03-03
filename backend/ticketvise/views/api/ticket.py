@@ -101,25 +101,6 @@ class AssigneeUpdateSerializer(ModelSerializer):
             raise ValidationError("User doesn't have the right permissions to be assigned to this ticket")
         return assignee
 
-
-class TicketTitleUpdateSerializer(ModelSerializer):
-    class Meta:
-        model = Ticket
-        fields = ["title"]
-
-
-class TicketIsPublicUpdateSerializer(ModelSerializer):
-    class Meta:
-        model = Ticket
-        fields = ["is_public"]
-
-
-class TicketPublishRequestedUpdateSerializer(ModelSerializer):
-    class Meta:
-        model = Ticket
-        fields = ["publish_requested"]
-
-
 class TicketSerializer(DynamicFieldsModelSerializer):
     """
     Allows data to be converted into Python datatypes for the ticket.
@@ -584,7 +565,9 @@ class TicketSharedAPIView(UpdateAPIView):
 
 class TicketTitleAPIView(UpdateAPIView):
     permission_classes = [UserIsTicketAuthorOrInboxStaffPermission]
-    serializer_class = TicketTitleUpdateSerializer
+
+    def get_serializer(self, *args, **kwargs):
+        return TicketSerializer(fields=["title"], *args, **kwargs)
 
     def get_object(self):
         inbox = get_object_or_404(Inbox, pk=self.kwargs["inbox_id"])
@@ -594,8 +577,9 @@ class TicketTitleAPIView(UpdateAPIView):
 
 class TicketIsPublicAPIView(UpdateAPIView):
     permission_classes = [UserIsTicketAuthorOrInboxStaffPermission]
-    serializer_class = TicketIsPublicUpdateSerializer
 
+    def get_serializer(self, *args, **kwargs):
+        return TicketSerializer(fields=["is_public"], *args, **kwargs)
     def get_object(self):
         inbox = get_object_or_404(Inbox, pk=self.kwargs["inbox_id"])
 
@@ -604,7 +588,9 @@ class TicketIsPublicAPIView(UpdateAPIView):
 
 class TicketRequestPublishAPIView(UpdateAPIView):
     permission_classes = [UserIsInboxStaffPermission]
-    serializer_class = TicketPublishRequestedUpdateSerializer
+
+    def get_serializer(self, *args, **kwargs):
+        return TicketSerializer(fields=["publish_requested"], *args, **kwargs)
 
     def get_object(self):
         inbox = get_object_or_404(Inbox, pk=self.kwargs["inbox_id"])
