@@ -136,6 +136,9 @@
           </ul>
 
           <div class="lg:container">
+            <div v-if="ticket.publish_requested && ticket.author === user">
+              HALLO, WIL JIJ JE TICKET PUBLICEREN?
+            </div>
             <external-tab v-show="ticket && user && replies && events && activeTab === 'external'" :ticket="ticket"
                           :replies="replies" :events="events" v-on:post="onReplyPost" :user="user"
                           :is_staff="is_staff"/>

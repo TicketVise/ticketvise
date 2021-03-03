@@ -101,6 +101,7 @@ class AssigneeUpdateSerializer(ModelSerializer):
             raise ValidationError("User doesn't have the right permissions to be assigned to this ticket")
         return assignee
 
+
 class TicketSerializer(DynamicFieldsModelSerializer):
     """
     Allows data to be converted into Python datatypes for the ticket.
@@ -207,7 +208,7 @@ class InboxTicketsApiView(ListAPIView):
 
         if not self.request.user.is_assistant_or_coordinator(inbox) and not self.request.user.is_superuser:
             tickets = tickets.filter(author=self.request.user) | tickets.filter(
-                shared_with__id__contains=self.request.user.id)
+                shared_with__id__exact=self.request.user.id)
         elif show_personal:
             tickets = tickets.filter(assignee=self.request.user) | \
                       tickets.filter(author=self.request.user) | \
@@ -580,6 +581,7 @@ class TicketIsPublicAPIView(UpdateAPIView):
 
     def get_serializer(self, *args, **kwargs):
         return TicketSerializer(fields=["is_public"], *args, **kwargs)
+
     def get_object(self):
         inbox = get_object_or_404(Inbox, pk=self.kwargs["inbox_id"])
 
