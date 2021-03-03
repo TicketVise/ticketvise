@@ -108,6 +108,18 @@ class TicketTitleUpdateSerializer(ModelSerializer):
         fields = ["title"]
 
 
+class TicketIsPublicUpdateSerializer(ModelSerializer):
+    class Meta:
+        model = Ticket
+        fields = ["is_public"]
+
+
+class TicketPublishRequestedUpdateSerializer(ModelSerializer):
+    class Meta:
+        model = Ticket
+        fields = ["publish_requested"]
+
+
 class TicketSerializer(DynamicFieldsModelSerializer):
     """
     Allows data to be converted into Python datatypes for the ticket.
@@ -169,7 +181,7 @@ class TicketSerializer(DynamicFieldsModelSerializer):
         #: Tells the serializer to use these fields from the :class:`Ticket` model.
         fields = ["id", "inbox", "title", "ticket_inbox_id", "author", "content", "date_created", "status", "labels",
                   "assignee", "shared_with", "participants", "author_role", "attachments", "shared_with_by",
-                  "attachments"]
+                  "attachments", "is_public", "publish_requested"]
 
 
 class InboxTicketsApiView(ListAPIView):
@@ -325,7 +337,7 @@ class TicketApiView(RetrieveAPIView):
             ticket_data = TicketSerializer(ticket, fields=(
                 "id", "inbox", "title", "ticket_inbox_id", "author", "content", "date_created", "status", "labels",
                 "assignee", "attachments", "participants", "author_role", "attachments", "shared_with_by",
-                "shared_with")).data
+                "shared_with", "is_public", "publish_requested")).data
             response["ticket"] = ticket_data
 
         if json.loads(request.GET.get("me", "false")):
@@ -573,6 +585,26 @@ class TicketSharedAPIView(UpdateAPIView):
 class TicketTitleAPIView(UpdateAPIView):
     permission_classes = [UserIsTicketAuthorOrInboxStaffPermission]
     serializer_class = TicketTitleUpdateSerializer
+
+    def get_object(self):
+        inbox = get_object_or_404(Inbox, pk=self.kwargs["inbox_id"])
+
+        return Ticket.objects.get(inbox=inbox, ticket_inbox_id=self.kwargs["ticket_inbox_id"])
+
+
+class TicketIsPublicAPIView(UpdateAPIView):
+    permission_classes = [UserIsTicketAuthorOrInboxStaffPermission]
+    serializer_class = TicketIsPublicUpdateSerializer
+
+    def get_object(self):
+        inbox = get_object_or_404(Inbox, pk=self.kwargs["inbox_id"])
+
+        return Ticket.objects.get(inbox=inbox, ticket_inbox_id=self.kwargs["ticket_inbox_id"])
+
+
+class TicketRequestPublishAPIView(UpdateAPIView):
+    permission_classes = [UserIsInboxStaffPermission]
+    serializer_class = TicketPublishRequestedUpdateSerializer
 
     def get_object(self):
         inbox = get_object_or_404(Inbox, pk=self.kwargs["inbox_id"])

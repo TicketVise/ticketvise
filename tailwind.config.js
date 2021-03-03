@@ -11,7 +11,8 @@ module.exports = {
                 'tv-blue-darker': '#061732',
                 'tv-orange': '#dd6b20',
                 'primary': '#dd6b20',
-                'tv-pink': '#FF1F4F'
+                'tv-pink': '#FF1F4F',
+                opacity: ['disabled'],
             },
             fontSize: {
                 '2xs': '.625rem'

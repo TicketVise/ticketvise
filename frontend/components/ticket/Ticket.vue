@@ -1,5 +1,7 @@
 <template>
   <div v-if="ticket" class="min-h-full flex flex-1 flex-col">
+    <publish-confirmation @click="requestPublish" @cancel="publishConfirmationModal = false"
+                          v-if="publishConfirmationModal"></publish-confirmation>
     <div class="lg:h-full flex-1 flex flex-col-reverse items-stretch lg:flex-row w-full">
       <div class="max-w-screen lg:max-w-sm bg-gray-100 md:border-r border-t lg:border-t-0 space-y-2 pb-4">
         <!-- Ticket Author -->
@@ -113,6 +115,14 @@
                 Reopen Ticket
               </button>
             </span>
+            <span v-if="!ticket.is_public" class="shadow-sm rounded-md">
+              <button type="button" @click="publishConfirmationModal = true"
+                      v-if="is_staff && !ticket.publish_requested && !ticket.is_public"
+                      class="inline-flex tooltip items-center px-4 py-2 border border-transparent text-sm leading-5 font-medium rounded-md text-white bg-primary hover:bg-orange-500 focus:outline-none focus:shadow-outline-orange focus:border-orange-700 active:bg-orange-700 transition duration-150 ease-in-out">
+                <i class="fa fa-share-square-o  mr-2"></i>
+                Publish Ticket
+              </button>
+            </span>
           </div>
         </div>
         <div class="flex flex-col">
@@ -127,7 +137,8 @@
 
           <div class="lg:container">
             <external-tab v-show="ticket && user && replies && events && activeTab === 'external'" :ticket="ticket"
-                          :replies="replies" :events="events" v-on:post="onReplyPost" :user="user"/>
+                          :replies="replies" :events="events" v-on:post="onReplyPost" :user="user"
+                          :is_staff="is_staff"/>
             <internal-tab v-show="ticket && user && comments && is_staff && activeTab === 'internal'" :ticket="ticket"
                           :comments="comments" v-on:post="onCommentPost" :user="user" :staff="staff_excluding_self"/>
             <attachments-tab v-if="ticket && activeTab === 'attachments'" :ticket="ticket" @uploaded="updateTicket"
@@ -159,9 +170,11 @@
   import RecentQuestions from "./RecentQuestions";
   import {calendarDate} from "../../utils";
   import Error from "../elements/message/Error";
+  import PublishConfirmation from "./PublishConfirmation";
 
   export default {
     components: {
+      PublishConfirmation,
       Error,
       EditShareWith,
       Avatars,
@@ -183,6 +196,7 @@
         inbox: null,
         ticket: null,
         editTitleActive: false,
+        publishConfirmationModal: false,
         replies: [],
         labels: [],
         comments: [],
@@ -309,6 +323,13 @@
         }).then(response => {
           this.ticket.status = response.data.ticket.status;
         });
+      },
+      requestPublish: function () {
+        this.publishConfirmationModal = false
+        axios.put(this.getTicketUrl() + "/request-publish",
+            {"publish_requested": true}).then(
+                response => this.ticket.publish_requested = response.data
+        )
       },
       updateSharedWith() {
         let formData = new FormData();
