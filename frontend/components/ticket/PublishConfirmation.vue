@@ -16,7 +16,7 @@
           </h3>
           <div class="mt-2">
             <p class="text-sm text-gray-500">
-              Publishing a ticket will make it visible to all users in this inbox. This help students and prevents duplicate questions. Before publishing, the author of the ticket will need to approve the request to make this ticket public.
+              Publishing a ticket will make it visible to all users in this inbox. This helps students and prevents duplicate questions. Before publishing, the author of the ticket will need to approve the request to make this ticket public.
             </p>
           </div>
         </div>

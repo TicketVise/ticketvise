@@ -1,7 +1,5 @@
 <template>
   <div>
-    <publish-confirmation @click="submitReplyPublish" @cancel="publishConfirmationModal = false"
-                          v-if="publishConfirmationModal"></publish-confirmation>
     <div class="flex flex-column flex-wrap w-full pr-4">
       <div class="mt-3 w-full">
         <comment :comment="ticket"/>
@@ -22,12 +20,6 @@
                     class="group relative w-full sm:w-auto flex justify-center sm:justify-start items-center py-2 px-4 border border-transparent text-sm leading-5 font-medium rounded-md text-white bg-primary hover:bg-orange-500 focus:outline-none focus:border-orange-700 focus:shadow-outline-orange active:bg-orange-700 transition duration-150 ease-in-out">
               <i class="fa fa-reply text-orange-200 absolute sm:relative left-4 sm:left-auto mr-2"></i>
               {{ button_text }}
-            </button>
-            <button @click="publishConfirmationModal = true"
-                    v-if="is_staff && !ticket.publish_requested && !ticket.is_public"
-                    class="group relative w-full sm:w-auto flex justify-center sm:justify-start items-center py-2 px-4 border border-transparent text-sm leading-5 font-medium rounded-md text-white bg-primary hover:bg-orange-500 focus:outline-none focus:border-orange-700 focus:shadow-outline-orange active:bg-orange-700 transition duration-150 ease-in-out">
-              <i class="fa fa-reply text-orange-200 absolute sm:relative left-4 sm:left-auto mr-2"></i>
-              Reply and Publish
             </button>
           </div>
         </div>
@@ -81,7 +73,6 @@
     data() {
       return {
         staff: [],
-        publishConfirmationModal: false,
       }
     },
     methods: {
@@ -98,19 +89,6 @@
             }).catch(response => {
           return response
         })
-      },
-      submitReplyPublish() {
-        if (!this.submitReply()) {
-          // only request publish if no error is returned
-          const inboxId = this.$route.params.inboxId
-          const ticketInboxId = this.$route.params.ticketInboxId
-
-          this.publishConfirmationModal = false
-          axios.put(`/api/inboxes/${inboxId}/tickets/${ticketInboxId}/request-publish`,
-              {"publish_requested": true}).then(
-              response => this.ticket.publish_requested = response.data
-          )
-        }
       }
     },
     computed: {

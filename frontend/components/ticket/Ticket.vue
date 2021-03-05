@@ -117,10 +117,10 @@
             </span>
             <span v-if="!ticket.is_public" class="shadow-sm rounded-md">
               <button type="button" @click="publishConfirmationModal = true"
-                      v-if="is_staff && !ticket.publish_requested && !ticket.is_public"
-                      class="inline-flex tooltip items-center px-4 py-2 border border-transparent text-sm leading-5 font-medium rounded-md text-white bg-primary hover:bg-orange-500 focus:outline-none focus:shadow-outline-orange focus:border-orange-700 active:bg-orange-700 transition duration-150 ease-in-out">
+                      v-if="is_staff && !ticket.publish_request_created && !ticket.is_public"
+                      class="inline-flex items-center px-4 py-2 border border-transparent text-sm leading-5 font-medium rounded-md text-white bg-primary hover:bg-orange-500 focus:outline-none focus:shadow-outline-orange focus:border-orange-700 active:bg-orange-700 transition duration-150 ease-in-out">
                 <i class="fa fa-share-square-o  mr-2"></i>
-                Publish Ticket
+                Request to publish
               </button>
             </span>
           </div>
@@ -136,8 +136,49 @@
           </ul>
 
           <div class="lg:container">
-            <div v-if="ticket.publish_requested && ticket.author === user">
-              HALLO, WIL JIJ JE TICKET PUBLICEREN?
+            <div class="rounded-md bg-orange-100 p-4 ml-8 mr-4" v-if="ticket.publish_request_created && is_staff">
+              <div class="flex">
+                <div class="flex-shrink-0">
+                  <!-- Heroicon name: solid/check-circle -->
+                  <svg class="h-5 w-5 text-primary" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"
+                       fill="currentColor" aria-hidden="true">
+                    <path fill-rule="evenodd"
+                          d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                          clip-rule="evenodd"/>
+                  </svg>
+                </div>
+                <div class="ml-3">
+                  <h3 class="text-sm font-medium text-gray-800">
+                    Request pending
+                  </h3>
+                  <div class="mt-2 text-sm text-gray-700">
+                    <p>
+                      The request to publish this ticket is currently pending. Once the author of the ticket has
+                      accepted the request, this ticket will be public.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="rounded-md bg-orange-100 ml-8 mr-4"
+                 v-if="ticket.publish_request_created && ticket.author.id == user.id">
+              <div class="px-4 py-5 sm:p-6">
+                <h3 class="text-lg leading-6 font-medium text-gray-900">
+                  Sharing is caring
+                </h3>
+                <div class="mt-2 max-w-xl text-sm text-gray-500">
+                  <p>
+                    USERNAME has requested that this ticket is made public. Public tickets are visible to everyone in
+                    this inbox, helping them with questions before they need to ask them. This ticket can be published
+                    as you wish </p>
+                </div>
+                <div class="mt-5">
+                  <label>Anonymously</label>
+                  <input type="checkbox" class="border-2">
+                  <submit-button class="bg-primary text-white"> Publish ticket anonymously
+                  </submit-button>
+                </div>
+              </div>
             </div>
             <external-tab v-show="ticket && user && replies && events && activeTab === 'external'" :ticket="ticket"
                           :replies="replies" :events="events" v-on:post="onReplyPost" :user="user"
@@ -174,9 +215,13 @@
   import {calendarDate} from "../../utils";
   import Error from "../elements/message/Error";
   import PublishConfirmation from "./PublishConfirmation";
+  import SubmitButton from "../elements/buttons/SubmitButton";
+  import Label from "../inbox/Label";
 
   export default {
     components: {
+      Label,
+      SubmitButton,
       PublishConfirmation,
       Error,
       EditShareWith,
@@ -330,8 +375,8 @@
       requestPublish: function () {
         this.publishConfirmationModal = false
         axios.put(this.getTicketUrl() + "/request-publish",
-            {"publish_requested": true}).then(
-                response => this.ticket.publish_requested = response.data
+            {"publish_request_initiator": this.user.id}).then(
+            response => this.ticket.publish_request_initiator = response.data
         )
       },
       updateSharedWith() {

@@ -11,6 +11,7 @@ Contains classes for the API interface to dynamically load models using AJAX.
 * :class:`InboxTicketView`
 """
 import json
+from datetime import datetime
 
 from django.contrib.postgres.search import SearchVector, SearchQuery
 from django.core.exceptions import ValidationError
@@ -102,6 +103,20 @@ class AssigneeUpdateSerializer(ModelSerializer):
         return assignee
 
 
+class PublishRequestInitiatorUpdateSerializer(ModelSerializer):
+    class Meta:
+        model = Ticket
+        fields = ["publish_request_initiator"]
+
+    def validate_assignee(self, initiator):
+        inbox = self.instance.inbox
+        if not initiator:
+            return None
+        elif not initiator.is_assistant_or_coordinator(inbox):
+            raise ValidationError("You don't have the right permissions to request a publish")
+        return initiator
+
+
 class TicketSerializer(DynamicFieldsModelSerializer):
     """
     Allows data to be converted into Python datatypes for the ticket.
@@ -110,6 +125,7 @@ class TicketSerializer(DynamicFieldsModelSerializer):
     shared_with = UserSerializer(read_only=True, many=True,
                                  fields=(["first_name", "last_name", "username", "avatar_url", "id"]))
     assignee = serializers.SerializerMethodField()
+    publish_request_initiator = serializers.SerializerMethodField()
     labels = serializers.SerializerMethodField()
     participants = serializers.SerializerMethodField()
     author_role = serializers.SerializerMethodField()
@@ -150,6 +166,15 @@ class TicketSerializer(DynamicFieldsModelSerializer):
 
         return None
 
+    def get_publish_request_initiator(self, obj):
+        user = CurrentUserMiddleware.get_current_user()
+
+        if user and (user.is_assistant_or_coordinator(obj.inbox) or obj.inbox.show_assignee_to_guest):
+            return UserSerializer(obj.assignee,
+                                  fields=(["first_name", "last_name", "avatar_url", "id"])).data
+
+        return None
+
     class Meta:
         """
         Define the model and fields.
@@ -163,7 +188,7 @@ class TicketSerializer(DynamicFieldsModelSerializer):
         #: Tells the serializer to use these fields from the :class:`Ticket` model.
         fields = ["id", "inbox", "title", "ticket_inbox_id", "author", "content", "date_created", "status", "labels",
                   "assignee", "shared_with", "participants", "author_role", "attachments", "shared_with_by",
-                  "attachments", "is_public", "publish_requested"]
+                  "attachments", "is_public", "publish_request_initiator", "publish_request_created"]
 
 
 class InboxTicketsApiView(ListAPIView):
@@ -319,7 +344,7 @@ class TicketApiView(RetrieveAPIView):
             ticket_data = TicketSerializer(ticket, fields=(
                 "id", "inbox", "title", "ticket_inbox_id", "author", "content", "date_created", "status", "labels",
                 "assignee", "attachments", "participants", "author_role", "attachments", "shared_with_by",
-                "shared_with", "is_public", "publish_requested")).data
+                "shared_with", "is_public", "publish_request_initiator", "publish_request_created")).data
             response["ticket"] = ticket_data
 
         if json.loads(request.GET.get("me", "false")):
@@ -590,11 +615,15 @@ class TicketIsPublicAPIView(UpdateAPIView):
 
 class TicketRequestPublishAPIView(UpdateAPIView):
     permission_classes = [UserIsInboxStaffPermission]
-
-    def get_serializer(self, *args, **kwargs):
-        return TicketSerializer(fields=["publish_requested"], *args, **kwargs)
+    serializer_class = PublishRequestInitiatorUpdateSerializer
 
     def get_object(self):
         inbox = get_object_or_404(Inbox, pk=self.kwargs["inbox_id"])
 
         return Ticket.objects.get(inbox=inbox, ticket_inbox_id=self.kwargs["ticket_inbox_id"])
+
+    def update(self, request, *args, **kwargs):
+        ticket = self.get_object()
+        ticket.publish_request_created = datetime.now()
+        ticket.save()
+        return super().update(request, *args, **kwargs)
