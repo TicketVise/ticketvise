@@ -11,7 +11,6 @@ Contains classes for the API interface to dynamically load models using AJAX.
 * :class:`InboxTicketView`
 """
 import json
-from datetime import datetime
 
 from django.contrib.postgres.search import SearchVector, SearchQuery
 from django.core.exceptions import ValidationError
@@ -19,6 +18,7 @@ from django.core.paginator import Paginator
 from django.db.models import Exists, OuterRef, Q
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
+from django.utils import timezone
 from rest_framework import serializers
 from rest_framework.generics import UpdateAPIView, ListAPIView, RetrieveAPIView, CreateAPIView, DestroyAPIView
 from rest_framework.response import Response
@@ -103,12 +103,12 @@ class AssigneeUpdateSerializer(ModelSerializer):
         return assignee
 
 
-class PublishRequestInitiatorUpdateSerializer(ModelSerializer):
+class PublishRequestUpdateSerializer(ModelSerializer):
     class Meta:
         model = Ticket
-        fields = ["publish_request_initiator"]
+        fields = ["publish_request_initiator", "publish_request_created"]
 
-    def validate_assignee(self, initiator):
+    def validate_publish_request_initiator(self, initiator):
         inbox = self.instance.inbox
         if not initiator:
             return None
@@ -124,8 +124,8 @@ class TicketSerializer(DynamicFieldsModelSerializer):
     author = UserSerializer(read_only=True, fields=(["first_name", "last_name", "username", "avatar_url", "id"]))
     shared_with = UserSerializer(read_only=True, many=True,
                                  fields=(["first_name", "last_name", "username", "avatar_url", "id"]))
+    publish_request_initiator = UserSerializer(fields=(["first_name", "last_name", "avatar_url", "id"]))
     assignee = serializers.SerializerMethodField()
-    publish_request_initiator = serializers.SerializerMethodField()
     labels = serializers.SerializerMethodField()
     participants = serializers.SerializerMethodField()
     author_role = serializers.SerializerMethodField()
@@ -166,15 +166,6 @@ class TicketSerializer(DynamicFieldsModelSerializer):
 
         return None
 
-    def get_publish_request_initiator(self, obj):
-        user = CurrentUserMiddleware.get_current_user()
-
-        if user and (user.is_assistant_or_coordinator(obj.inbox) or obj.inbox.show_assignee_to_guest):
-            return UserSerializer(obj.assignee,
-                                  fields=(["first_name", "last_name", "avatar_url", "id"])).data
-
-        return None
-
     class Meta:
         """
         Define the model and fields.
@@ -188,7 +179,7 @@ class TicketSerializer(DynamicFieldsModelSerializer):
         #: Tells the serializer to use these fields from the :class:`Ticket` model.
         fields = ["id", "inbox", "title", "ticket_inbox_id", "author", "content", "date_created", "status", "labels",
                   "assignee", "shared_with", "participants", "author_role", "attachments", "shared_with_by",
-                  "attachments", "is_public", "publish_request_initiator", "publish_request_created"]
+                  "attachments", "is_public", "publish_request_initiator", "publish_request_created", "is_anonymous"]
 
 
 class InboxTicketsApiView(ListAPIView):
@@ -601,21 +592,27 @@ class TicketTitleAPIView(UpdateAPIView):
         return Ticket.objects.get(inbox=inbox, ticket_inbox_id=self.kwargs["ticket_inbox_id"])
 
 
-class TicketIsPublicAPIView(UpdateAPIView):
+class TicketPublishAPIView(UpdateAPIView):
     permission_classes = [UserIsTicketAuthorOrInboxStaffPermission]
 
     def get_serializer(self, *args, **kwargs):
-        return TicketSerializer(fields=["is_public"], *args, **kwargs)
+        return TicketSerializer(fields=["is_public", "is_anonymous"], *args, **kwargs)
 
     def get_object(self):
         inbox = get_object_or_404(Inbox, pk=self.kwargs["inbox_id"])
 
         return Ticket.objects.get(inbox=inbox, ticket_inbox_id=self.kwargs["ticket_inbox_id"])
 
+    def update(self, request, *args, **kwargs):
+        # Tickets can only be made public, not hidden again.
+        ticket = self.get_object()
+        ticket.is_public = True
+        ticket.save()
+        return super().update(request, *args, **kwargs)
 
 class TicketRequestPublishAPIView(UpdateAPIView):
     permission_classes = [UserIsInboxStaffPermission]
-    serializer_class = PublishRequestInitiatorUpdateSerializer
+    serializer_class = PublishRequestUpdateSerializer
 
     def get_object(self):
         inbox = get_object_or_404(Inbox, pk=self.kwargs["inbox_id"])
@@ -624,6 +621,6 @@ class TicketRequestPublishAPIView(UpdateAPIView):
 
     def update(self, request, *args, **kwargs):
         ticket = self.get_object()
-        ticket.publish_request_created = datetime.now()
+        ticket.publish_request_created = timezone.now()
         ticket.save()
         return super().update(request, *args, **kwargs)

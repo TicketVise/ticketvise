@@ -115,9 +115,8 @@
                 Reopen Ticket
               </button>
             </span>
-            <span v-if="!ticket.is_public" class="shadow-sm rounded-md">
+            <span v-if="is_staff && !ticket.publish_request_created && !ticket.is_public" class="shadow-sm rounded-md">
               <button type="button" @click="publishConfirmationModal = true"
-                      v-if="is_staff && !ticket.publish_request_created && !ticket.is_public"
                       class="inline-flex items-center px-4 py-2 border border-transparent text-sm leading-5 font-medium rounded-md text-white bg-primary hover:bg-orange-500 focus:outline-none focus:shadow-outline-orange focus:border-orange-700 active:bg-orange-700 transition duration-150 ease-in-out">
                 <i class="fa fa-share-square-o  mr-2"></i>
                 Request to publish
@@ -136,7 +135,7 @@
           </ul>
 
           <div class="lg:container">
-            <div class="rounded-md bg-orange-100 p-4 ml-8 mr-4" v-if="ticket.publish_request_created && is_staff">
+            <div class="rounded-md bg-orange-100 p-4 ml-8 mr-4" v-if="!ticket.is_public && ticket.publish_request_created && is_staff">
               <div class="flex">
                 <div class="flex-shrink-0">
                   <!-- Heroicon name: solid/check-circle -->
@@ -157,37 +156,41 @@
                       accepted the request, this ticket will be public.
                     </p>
                   </div>
-                </div>
+                </div>k
               </div>
             </div>
             <div class="rounded-md bg-orange-100 ml-8 mr-4"
-                 v-if="ticket.publish_request_created && ticket.author.id == user.id">
+                 v-if="!ticket.is_public && ticket.publish_request_initiator && ticket.author.id == user.id">
               <div class="px-4 py-5 sm:p-6">
                 <h3 class="text-lg leading-6 font-medium text-gray-900">
                   Sharing is caring
                 </h3>
                 <div class="mt-2 max-w-xl text-sm text-gray-500">
-                  <p>
-                    USERNAME has requested that this ticket is made public. Public tickets are visible to everyone in
-                    this inbox, helping them with questions before they need to ask them. This ticket can be published
-                    as you wish </p>
+                  <p>{{ ticket.publish_request_initiator.first_name }} {{ticket.publish_request_initiator.last_name}}
+                    has requested that this ticket is made public. Public tickets are visible to everyone in this inbox,
+                    helping them with questions before they need to ask them. This ticket can be anonymized before
+                    publishing if you wish.
+                  </p>
                 </div>
-                <div class="mt-5">
-                  <label>Anonymously</label>
-                  <input type="checkbox" class="border-2">
-                  <submit-button class="bg-primary text-white"> Publish ticket anonymously
-                  </submit-button>
+                <div class="flex flex-row items-center my-4">
+                  <input type="checkbox" v-model="ticket.is_anonymous"
+                         class="h-4 w-4 text-primary focus:ring-orange-500 border-gray-300 rounded">
+                  <label for="remember_me" class="ml-2 block text-sm text-gray-900">
+                    Anonymize before publish
+                  </label>
                 </div>
+                <submit-button @click="publishTicket" class="bg-primary text-white"> Publish ticket
+                </submit-button>
               </div>
             </div>
-            <external-tab v-show="ticket && user && replies && events && activeTab === 'external'" :ticket="ticket"
-                          :replies="replies" :events="events" v-on:post="onReplyPost" :user="user"
-                          :is_staff="is_staff"/>
-            <internal-tab v-show="ticket && user && comments && is_staff && activeTab === 'internal'" :ticket="ticket"
-                          :comments="comments" v-on:post="onCommentPost" :user="user" :staff="staff_excluding_self"/>
-            <attachments-tab v-if="ticket && activeTab === 'attachments'" :ticket="ticket" @uploaded="updateTicket"
-                             :is_staff="is_staff" :user="user"/>
           </div>
+          <external-tab v-show="ticket && user && replies && events && activeTab === 'external'" :ticket="ticket"
+                        :replies="replies" :events="events" v-on:post="onReplyPost" :user="user"
+                        :is_staff="is_staff"/>
+          <internal-tab v-show="ticket && user && comments && is_staff && activeTab === 'internal'" :ticket="ticket"
+                        :comments="comments" v-on:post="onCommentPost" :user="user" :staff="staff_excluding_self"/>
+          <attachments-tab v-if="ticket && activeTab === 'attachments'" :ticket="ticket" @uploaded="updateTicket"
+                           :is_staff="is_staff" :user="user"/>
         </div>
       </div>
     </div>
@@ -376,7 +379,19 @@
         this.publishConfirmationModal = false
         axios.put(this.getTicketUrl() + "/request-publish",
             {"publish_request_initiator": this.user.id}).then(
-            response => this.ticket.publish_request_initiator = response.data
+            response => {
+              this.ticket.publish_request_initiator = response.data.publish_request_initiator
+              this.ticket.publish_request_created = response.data.publish_request_created
+            }
+        )
+      },
+      publishTicket: function () {
+        axios.put(this.getTicketUrl() + "/publish",
+            {"is_public": true, "is_anonymous": this.ticket.is_anonymous}).then(
+            response => {
+              this.ticket.is_public = response.data.is_public
+              this.ticket.is_anonymous = response.data.is_anonymous
+            }
         )
       },
       updateSharedWith() {
