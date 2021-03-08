@@ -8,7 +8,7 @@ export function calendarDate(date) {
         nextDay: '[Tomorrow at] HH:mm',
         lastWeek: '[Last] dddd [at] HH:mm',
         nextWeek: 'dddd [at] HH:mm',
-        sameElse: 'LL [at] HH:mm'
+        sameElse: 'L [at] HH:mm'
     });
 }
 
