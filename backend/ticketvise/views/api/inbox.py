@@ -128,7 +128,7 @@ class InboxGuestsAPIView(ListAPIView):
 
     def get_serializer(self, *args, **kwargs):
         return UserSerializer(*args, **kwargs, fields=(
-            "first_name", "last_name", "email", "username", "avatar_url", "id", "is_active"))
+            "first_name", "last_name", "username", "avatar_url", "id"))
 
     def get_queryset(self):
         q = self.request.GET.get("q", "")

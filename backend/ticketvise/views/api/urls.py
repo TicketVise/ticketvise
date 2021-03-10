@@ -14,9 +14,9 @@ from ticketvise.views.api.statistics import InboxTicketsPerDateTypeStatisticsApi
 from ticketvise.views.api.ticket import TicketApiView, TicketUpdateAssignee, \
     TicketAttachmentsApiView, AttachmentViewApiView, \
     RecentTicketApiView, InboxTicketsApiView, TicketLabelApiView, TicketCreateApiView, TicketSharedAPIView, \
-    TicketsApiView, OpenTicketApiView, CloseTicketApiView
+    TicketsApiView, OpenTicketApiView, CloseTicketApiView, TicketTitleAPIView
 from ticketvise.views.api.user import UserRoleApiView, CurrentUserApiView, NotificationsSettingsAPIView, \
-    UserGetFromUsernameApiView, UsersApiView, IntroductionAPIView
+    UsersApiView, IntroductionAPIView
 
 urlpatterns = [
     path("login", LoginApiView.as_view()),
@@ -34,12 +34,12 @@ urlpatterns = [
     path("inboxes/<int:inbox_id>/tickets/<int:ticket_inbox_id>/status/close", CloseTicketApiView.as_view()),
     path("inboxes/<int:inbox_id>/tickets/<int:ticket_inbox_id>/replies/post", CreateReplyApiView.as_view()),
     path("inboxes/<int:inbox_id>/tickets/<int:ticket_inbox_id>/shared", TicketSharedAPIView.as_view()),
+    path("inboxes/<int:inbox_id>/tickets/<int:ticket_inbox_id>/title", TicketTitleAPIView.as_view()),
     path("inboxes/<int:inbox_id>/users/<int:user_id>/tickets/recent", RecentTicketApiView.as_view()),
     path("inboxes/<int:inbox_id>/role", UserRoleApiView.as_view()),
     path("inboxes/<int:inbox_id>/guests", InboxGuestsAPIView.as_view()),
     path("inboxes/<int:inbox_id>/users", InboxUsersApiView.as_view(), name="api_inbox_users"),
     path("inboxes/<int:inbox_id>/users/<int:user_id>", UserInboxApiView.as_view(), name="api_inbox_user"),
-    path("inboxes/<int:inbox_id>/users/<str:username>", UserGetFromUsernameApiView.as_view()),
     path("inboxes/<int:inbox_id>/staff", InboxStaffApiView.as_view(), name="api_inbox_staff"),
     path("inboxes/<int:inbox_id>/labels", InboxLabelsApiView.as_view(), name="api_inbox_labels"),
     path("inboxes/<int:inbox_id>/labels/all", AllInboxLabelsApiView.as_view(), name="api_all_inbox_labels"),
