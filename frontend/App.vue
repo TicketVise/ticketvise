@@ -5,7 +5,8 @@
     </navigation>
     <router-view v-else></router-view> -->
     <component :is="layout">
-      <router-view/>
+      <router-view :key="$route.fullPath" />
+      <!-- <router-view/> -->
     </component>
   </div>
 </template>

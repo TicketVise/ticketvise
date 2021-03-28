@@ -26,7 +26,7 @@
                     to="/inboxes"
                     class="px-3 py-2 rounded-md text-sm font-medium text-gray-300 hover:text-white hover:bg-gray-700 focus:outline-none focus:text-white focus:bg-gray-700"
                     active-class="text-white bg-gray-900"
-                    >Inboxes
+                    >Dashboard
                   </router-link>
                   <router-link
                     v-if="user.is_superuser"

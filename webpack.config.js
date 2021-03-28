@@ -1,5 +1,6 @@
 const path = require('path')
-const VueLoaderPlugin = require('vue-loader/lib/plugin')
+const { VueLoaderPlugin } = require('vue-loader')
+const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin
 
 module.exports = {
   entry: './frontend/index.js',
@@ -14,6 +15,10 @@ module.exports = {
       'vue$': 'vue/dist/vue.esm.js'
     },
     extensions: ['*', '.js', '.vue', '.json']
+  },
+
+  watchOptions: {
+    ignored: /node_modules/
   },
 
   module: {
@@ -60,10 +65,7 @@ module.exports = {
             loader: "extract-loader"
           },
           {
-            loader: 'webpack-mjml-loader',
-            options: {
-              minify: process.env.NODE_ENV === "production"
-            }
+            loader: 'webpack-mjml-loader'
           }
         ]
       }
@@ -72,5 +74,13 @@ module.exports = {
 
   plugins: [
     new VueLoaderPlugin()
-  ]
+  ],
+
+  optimization: {
+    minimize: false,
+    minimizer: [
+      `...`,
+      new BundleAnalyzerPlugin()
+    ]
+  }
 }

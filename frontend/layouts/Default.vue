@@ -48,7 +48,7 @@
                        v-show="openSupport" @click="toggleSupport()">
                     <div class="py-1 rounded-md bg-white ring-1 ring-black ring-opacity-5" role="menu" aria-orientation="vertical"
                          aria-labelledby="user-menu">
-                      <a href="https://ticketvise.com/getting-started/" target="_blank"
+                      <a href="https://ticketvise.com/getting-started/" target="_blank" rel="noopener"
                                    class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                                    role="menuitem">Getting started
                       </a>

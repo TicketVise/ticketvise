@@ -1,5 +1,8 @@
 module.exports = {
-    purge: [],
+    purge: [
+        './frontend/**/*.vue',
+        './backend/ticketvise/templates/**/*.html'
+    ],
     theme: {
         extend: {
             colors: {
@@ -23,6 +26,7 @@ module.exports = {
                 '1/4': '25%',
                 '1/2': '50%',
                 '3/4': '75%',
+                '3/5': '60%',
                 'full': '100%',
                 'side': '275px'
             },

@@ -1,11 +1,11 @@
 @charset "utf-8";
+@import "tailwindcss/base";
+@import "tailwindcss/components";
+@import "tailwindcss/utilities";
 @import "variables";
 @import "~font-awesome/scss/font-awesome";
 @import "~tributejs/tribute.css";
 @import "style.css";
-@import "~tailwindcss/base";
-@import "~tailwindcss/components";
-@import "~tailwindcss/utilities";
 
 [x-cloak] { display: none; }
 
@@ -44,7 +44,7 @@
       #{percentage($random-yoyo-time)} {
         transform: translate($random-x-end, $random-yoyo-y) scale($random-scale);
       }
-      
+
       to {
         transform: translate($random-x-end-yoyo, 100vh) scale($random-scale);
       }

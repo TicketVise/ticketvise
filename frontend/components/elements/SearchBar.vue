@@ -1,6 +1,6 @@
 <template>
   <div class="flex border border-gray-300 rounded-md overflow-hidden">
-    <input @keyup="emitValue" class="flex-grow w-full p-2 mx-1 focus:outline-none" placeholder="Search"
+    <input @keyup="emitValue" class="flex-grow w-full p-2 mx-1 border-none focus:outline-none" placeholder="Search"
            type="text" v-model="search">
     <button @click="emitValue"
             class="bg-white w-auto flex justify-end items-center text-gray-600 p-2 hover:text-gray-500">
