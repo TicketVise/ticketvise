@@ -17,6 +17,25 @@
 
           <div class="flex space-x-2 mt-1">
             <div class="flex items-center text-xs text-gray-500">
+              <!-- Heroicon name: code -->
+              <svg
+                class="w-4 h-4 mr-1"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"
+                ></path>
+              </svg>
+              <span v-if="inbox">{{ inbox.inbox.code }}</span>
+              <div v-else class="h-5 w-24 bg-gray-200 rounded" />
+            </div>
+            <div class="flex items-center text-xs text-gray-500">
               <!-- Heroicon name: user -->
               <svg
                 class="w-4 h-4 mr-1"
@@ -36,25 +55,6 @@
                 >{{ inbox.inbox.coordinator.first_name }}
                 {{ inbox.inbox.coordinator.last_name }}</span
               >
-              <div v-else class="h-5 w-24 bg-gray-200 rounded" />
-            </div>
-            <div class="flex items-center text-xs text-gray-500">
-              <!-- Heroicon name: code -->
-              <svg
-                class="w-4 h-4 mr-1"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"
-                ></path>
-              </svg>
-              <span v-if="inbox">{{ inbox.inbox.code }}</span>
               <div v-else class="h-5 w-24 bg-gray-200 rounded" />
             </div>
           </div>

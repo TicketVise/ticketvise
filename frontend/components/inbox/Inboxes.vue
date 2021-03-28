@@ -35,7 +35,7 @@
         class="w-1/2 md:w-1/3 mx-auto py-8"
       />
       <span class="text-gray-600 text-lg md:text-xl">
-        {{ showAll ? 'You have no inboxes' : 'You have no bookmarks, try adding them' }}
+        {{ showAll ? 'You have no inboxes' : 'Bookmarking inboxes makes them appear here' }}
       </span>
     </div>
   </div>

@@ -20,7 +20,7 @@
                   ><span class="text-2xl text-primary font-bold">Vise</span>
                 </router-link>
               </div>
-              <div class="hidden lg:block lg:ml-10">
+              <div class="hidden md:block md:ml-10">
                 <div class="flex space-x-4">
                   <router-link
                     to="/inboxes"
@@ -256,7 +256,7 @@
               </div>
               <div class="ml-3">
                 <div class="text-base font-medium leading-none text-white">
-                  {{ user.full_name }}
+                  {{ user.first_name }} {{ user.last_name }}
                 </div>
                 <div
                   class="mt-1 text-sm font-medium leading-none text-gray-400"
