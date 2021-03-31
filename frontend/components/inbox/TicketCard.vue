@@ -1,6 +1,6 @@
 <template>
   <div
-    class="relative rounded overflow-hidden shadow bg-white p-2 border border-gray-200"
+    class="relative rounded overflow-hidden bg-white p-2 border"
     v-bind:class="{ 'py-1': small, 'border-primary': ticket.assignee.username == user.username }"
   >
     <div class="flex justify-between items-start pb-1">
