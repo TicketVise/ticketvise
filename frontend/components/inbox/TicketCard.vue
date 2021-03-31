@@ -1,7 +1,7 @@
 <template>
   <div
     class="relative rounded overflow-hidden bg-white p-2 border"
-    v-bind:class="{ 'py-1': small, 'border-primary': ticket.assignee.username == user.username }"
+    v-bind:class="{ 'py-1': small, 'border-primary': ticket.assignee && ticket.assignee.username == user.username }"
   >
     <div class="flex justify-between items-start pb-1">
       <router-link
