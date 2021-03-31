@@ -1,7 +1,7 @@
 <template>
   <div
     class="relative rounded overflow-hidden bg-white p-2 border"
-    v-bind:class="{ 'py-1': small, 'border-primary': ticket.assignee && ticket.assignee.username == user.username }"
+    v-bind:class="{ 'py-1': small, 'border-primary': assignee.username == user.username }"
   >
     <div class="flex justify-between items-start pb-1">
       <router-link
@@ -20,13 +20,13 @@
       <h3 v-if="!small" class="text-xs text-gray-500">
         <span class="font-medium">{{ ticket.author.first_name }} {{ ticket.author.last_name }}</span>・{{ date(ticket.date_created) }}
       </h3>
-      <div v-if="ticket.labels.length == 0 && ticket.assignee.avatar_url" class="flex-shrink-0">
-        <img class="h-5 w-5 rounded-full" :src="ticket.assignee.avatar_url" alt="" :title="ticket.assignee.first_name + ' ' + ticket.assignee.last_name" />
+      <div v-if="ticket.labels.length == 0 && assignee.avatar_url" class="flex-shrink-0">
+        <img class="h-5 w-5 rounded-full" :src="assignee.avatar_url" alt="" :title="assignee.first_name + ' ' + assignee.last_name" />
       </div>
     </div>
     <!-- TODO: Implement easy assign button. -->
     <!-- <h3
-      v-if="!ticket || !ticket.assignee || !ticket.assignee.username"
+      v-if="!ticket || !assignee || !assignee.username"
       class="text-xs text-gray-500"
       >Assignee: No one—<button class="hover:text-orange-600 no-underline">
         Assign yourself
@@ -34,7 +34,7 @@
     > -->
     <!-- <h3
       class="text-xs text-gray-500"
-      v-if="!small && ticket.assignee && ticket.assignee.username"
+      v-if="!small && assignee && assignee.username"
     >
       {{ ticket.author.first_name }} {{ ticket.author.last_name }}
     </h3> -->
@@ -49,8 +49,8 @@
           {{ label.name }}
         </chip>
       </div>
-      <div v-if="ticket.labels.length > 0 && ticket.assignee.avatar_url" class="flex-shrink-0">
-        <img class="h-5 w-5 rounded-full" :src="ticket.assignee.avatar_url" alt="" :title="ticket.assignee.first_name + ' ' + ticket.assignee.last_name" />
+      <div v-if="ticket.labels.length > 0 && assignee.avatar_url" class="flex-shrink-0">
+        <img class="h-5 w-5 rounded-full" :src="assignee.avatar_url" alt="" :title="assignee.first_name + ' ' + assignee.last_name" />
       </div>
     </div>
   </div>
@@ -91,6 +91,9 @@ export default {
     },
     user() {
       return this.$store.state.user;
+    },
+    assignee() {
+      return this.ticket ? this.ticket.assignee : {}
     }
   },
 };
