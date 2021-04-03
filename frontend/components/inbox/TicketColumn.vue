@@ -17,8 +17,8 @@
           <div v-for="i of length" :key="i" class="h-24 w-full bg-gray-200 rounded"/>
         </div>
 
-        <div class="flex justify-center">
-          <submit-button v-if="has_next" @click="$emit('input')" class="bg-white">
+        <div v-if="has_next" class="flex justify-center">
+          <submit-button @click="$emit('input')" class="bg-white">
             Load More
           </submit-button>
         </div>
