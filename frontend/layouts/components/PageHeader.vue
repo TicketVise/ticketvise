@@ -132,13 +132,6 @@
                   0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"
                   />
                 </svg>
-                <!--              {% number_of_unread_notifications user as count %}-->
-                <!--              {% if count > 0 %}-->
-                <!--              <div-->
-                <!--                  class="flex justify-center items-center absolute top-0 transform translate-x-4 h-4 min-w-4 w-auto bg-primary rounded-full p-0.5">-->
-                <!--                <span class="rounded-full text-white text-center text-2xs">{{ count }}</span>-->
-                <!--              </div>-->
-                <!--              {% endif %}-->
               </router-link>
 
               <!-- Profile dropdown -->
@@ -245,13 +238,6 @@
           active-class="text-white bg-gray-900"
         >
           Notifications
-
-          <!--          {% number_of_unread_notifications user as count %}-->
-          <!--          {% if count > 0 %}-->
-          <!--          <div class="flex justify-center items-center h-4 min-w-4 bg-primary rounded-full ml-2">-->
-          <!--            <span class="rounded-full text-white text-center text-2xs">{{ count }}</span>-->
-          <!--          </div>-->
-          <!--          {% endif %}-->
         </router-link>
         <router-link
           v-if="user.is_superuser"
