@@ -115,7 +115,7 @@
                 Reopen Ticket
               </button>
             </span>
-            <span v-if="is_staff && !ticket.publish_request_created && !ticket.is_public" class="shadow-sm rounded-md">
+            <span v-if="is_staff && !ticket.publish_request_created && !ticket.is_published" class="shadow-sm rounded-md">
               <button type="button" @click="publishConfirmationModal = true"
                       class="inline-flex items-center px-4 py-2 border border-transparent text-sm leading-5 font-medium rounded-md text-white bg-primary hover:bg-orange-500 focus:outline-none focus:shadow-outline-orange focus:border-orange-700 active:bg-orange-700 transition duration-150 ease-in-out">
                 <i class="fa fa-share-square-o  mr-2"></i>
@@ -135,7 +135,8 @@
           </ul>
 
           <div class="lg:container">
-            <div class="rounded-md bg-orange-100 p-4 ml-8 mr-4" v-if="!ticket.is_public && ticket.publish_request_created && is_staff">
+            <div class="rounded-md bg-orange-100 p-4 ml-8 mr-4"
+                 v-if="!ticket.is_published && ticket.publish_request_created && is_staff">
               <div class="flex">
                 <div class="flex-shrink-0">
                   <!-- Heroicon name: solid/check-circle -->
@@ -156,11 +157,11 @@
                       accepted the request, this ticket will be public.
                     </p>
                   </div>
-                </div>k
+                </div>
               </div>
             </div>
             <div class="rounded-md bg-orange-100 ml-8 mr-4"
-                 v-if="!ticket.is_public && ticket.publish_request_initiator && ticket.author.id == user.id">
+                 v-if="!ticket.is_published && ticket.publish_request_initiator && ticket.author.id == user.id">
               <div class="px-4 py-5 sm:p-6">
                 <h3 class="text-lg leading-6 font-medium text-gray-900">
                   Sharing is caring
@@ -168,8 +169,9 @@
                 <div class="mt-2 max-w-xl text-sm text-gray-500">
                   <p>{{ ticket.publish_request_initiator.first_name }} {{ticket.publish_request_initiator.last_name}}
                     has requested that this ticket is made public. Public tickets are visible to everyone in this inbox,
-                    helping them with questions before they need to ask them. This ticket can be anonymized before
-                    publishing if you wish.
+                    helping them with questions before they need to ask them. You can anonymize this ticket before it is
+                    published. An anonymous ticket does not show the author or its role, but does show the conversation
+                    and attachments.
                   </p>
                 </div>
                 <div class="flex flex-row items-center my-4">
@@ -387,9 +389,9 @@
       },
       publishTicket: function () {
         axios.put(this.getTicketUrl() + "/publish",
-            {"is_public": true, "is_anonymous": this.ticket.is_anonymous}).then(
+            {"is_published": true, "is_anonymous": this.ticket.is_anonymous}).then(
             response => {
-              this.ticket.is_public = response.data.is_public
+              this.ticket.is_published = response.data.is_published
               this.ticket.is_anonymous = response.data.is_anonymous
             }
         )

@@ -57,7 +57,7 @@ class Ticket(models.Model):
     status = models.CharField(max_length=8, choices=Status.choices, default=Status.PENDING)
     content = models.TextField()
     labels = models.ManyToManyField("Label", blank=True, related_name="tickets", through="TicketLabel")
-    is_public = models.BooleanField(default=False)
+    is_published = models.DateTimeField(auto_now_add=False, null=True, default=None)
     is_anonymous = models.BooleanField(default=False)
     publish_request_initiator = models.ForeignKey("User", on_delete=models.CASCADE, blank=True, null=True,
                                                   related_name="publish_request_initiator")
