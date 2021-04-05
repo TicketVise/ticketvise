@@ -3,15 +3,6 @@
     <div class="flex flex-col md:grid md:grid-cols-5 md:gap-2 p-4 space-y-2 md:space-y-0">
       <div class="flex space-x-2 md:col-span-2 xl:col-span-3 items-center">
         <search-bar v-model="search" v-on:input="callDebounceSearch" class="flex-grow px-2"></search-bar>
-
-        <!-- Change view -->
-        <button
-                class="md:hidden border rounded h-10 px-3 focus:outline-none hover:bg-gray-100"
-                :title="list ? 'Show Columns View' : 'Show List View'"
-                @click="toggleView"
-        >
-          <font-awesome-icon :icon="list ? 'columns' : 'list'"></font-awesome-icon>
-        </button>
       </div>
 
       <div class="flex space-x-2 md:col-span-3 xl:col-span-2 items-center">
@@ -21,56 +12,56 @@
         </div>
 
         <submit-button
-                :class="showPersonal ? `bg-orange-500 text-white` : `bg-gray-100 text-black` "
-                @click="togglePersonal"
-                class="px-2 md:m-0 h-10"
-                v-if="is_staff"
+          :class="showPersonal ? `bg-orange-500 text-white` : `bg-gray-100 text-black` "
+          @click="togglePersonal"
+          class="px-2 md:m-0 h-10"
+          v-if="is_staff"
         >
           <font-awesome-icon :icon="showPersonal ? 'check' : 'minus'" class="mr-2"></font-awesome-icon>
           My Tickets
         </submit-button>
-
-        <!-- Change view -->
-        <button
-                class="hidden md:block border rounded h-10 px-3 focus:outline-none hover:bg-gray-100"
-                :title="list ? 'Show Columns View' : 'Show List View'"
-                @click="toggleView"
-        >
-          <font-awesome-icon :icon="list ? 'columns' : 'list'"></font-awesome-icon>
-        </button>
       </div>
     </div>
 
-    <!-- List -->
-    <div v-if="list" class="container mx-auto flex flex-col space-y-4 mb-4">
-      <ticket-list
-              v-for="(column, i) in tickets"
-              :key="i"
-              :color="colors[column.label]"
-              :title="column.label"
-              :personal="showPersonal"
-              :ticket-list="column.tickets"
-              :has_next="column.has_next"
-              :length="column.total"
-              @input="loadStatus(column.label)"
+    <!-- Columns -->
+    <div class="max-w-full flex flex-grow overflow-x-auto pl-4 b-4">
+      <ticket-column
+        v-for="(column, i) in tickets"
+        :key="i"
+        :color="colors[column.label]"
+        :title="column.label"
+        :personal="showPersonal"
+        :ticket-list="column.tickets"
+        :has_next="column.has_next"
+        :length="column.total"
+        @input="loadStatus(column.label)"
+        class="min-w-3/5 sm:min-w-1/2 md:min-w-0 pr-4"
       />
     </div>
 
-    <!-- Columns -->
-    <div v-else class="max-w-full flex md:space-x-4 flex-grow overflow-x-auto px-4 mb-4 space-x-2">
-      <ticket-column
-              v-for="(column, i) in tickets"
-              :key="i"
-              :color="colors[column.label]"
-              :title="column.label"
-              :personal="showPersonal"
-              :ticket-list="column.tickets"
-              :has_next="column.has_next"
-              :length="column.total"
-              @input="loadStatus(column.label)"
-              class="min-w-3/4 sm:min-w-1/2 md:min-w-0"
-      />
-    </div>
+    <!-- Floating action button for new ticket -->
+    <router-link
+      :to="'/inboxes/' + $route.params.inboxId + '/tickets/new'"
+      exact
+      type="button"
+      class="md:hidden fixed right-4 bottom-4 inline-flex items-center px-3.5 py-2 border border-transparent text-sm leading-4 font-medium rounded-full shadow text-white bg-primary hover:bg-orange-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500 z-10"
+    >
+      <svg
+        class="-ml-0.5 mr-2 h-6 w-6"
+        fill="none"
+        stroke="currentColor"
+        viewBox="0 0 24 24"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          d="M12 6v6m0 0v6m0-6h6m-6 0H6"
+        ></path>
+      </svg>
+      New Ticket
+    </router-link>
   </section>
 </template>
 
@@ -81,13 +72,12 @@
   import LabelDropdown from "../elements/dropdown/LabelDropdown";
 
   import {library} from '@fortawesome/fontawesome-svg-core'
-  import {faCheck, faColumns, faList, faMinus} from '@fortawesome/free-solid-svg-icons'
+  import {faCheck, faMinus} from '@fortawesome/free-solid-svg-icons'
   import {FontAwesomeIcon} from '@fortawesome/vue-fontawesome'
   import axios from "axios";
   import _ from 'lodash';
-  import TicketList from "./TicketList";
 
-  library.add([faColumns, faList, faMinus, faCheck])
+  library.add([faMinus, faCheck])
 
   const UNLABELLED_LABEL = {
     id: 0,
@@ -97,7 +87,6 @@
 
   export default {
     components: {
-      TicketList,
       TicketColumn,
       LabelDropdown,
       SubmitButton,
@@ -111,14 +100,18 @@
         'Awaiting response': '#2a9d8f',
         'Closed': '#264653'
       },
-      tickets: [],
+      tickets: [
+        { label: 'Pending', total: 1 },
+        { label: 'Assigned', total: 4 },
+        { label: 'Awaiting response', total: 2 },
+        { label: 'Closed', total: 3 }
+      ],
       search: null,
       showPersonal: false,
       labels: [],
       label: null,
       inbox_labels: [],
       is_staff: false,
-      list: false,
     }),
     methods: {
       get_tickets() {
@@ -149,9 +142,6 @@
         this.labels = items
 
         this.get_tickets()
-      },
-      toggleView() {
-        this.list = !this.list
       },
       togglePersonal() {
         this.showPersonal = !this.showPersonal
@@ -195,7 +185,6 @@
 
       axios.get(`/api/inboxes/${this.$route.params.inboxId}/role`).then(response => {
         this.is_staff = response.data && (response.data.key === 'AGENT' || response.data.key === 'MANAGER')
-        this.list = !this.is_staff
       })
 
       this.get_tickets()

@@ -285,7 +285,7 @@ class InboxTicketsApiView(ListAPIView):
                 "label": status.label,
                 "tickets": TicketSerializer(
                     query_set.filter(status=status)[:self.page_size], many=True, fields=(
-                        "id", "title", "name", "assignee", "ticket_inbox_id", "date_created", "labels")).data
+                        "id", "title", "name", "assignee", "author", "ticket_inbox_id", "date_created", "labels")).data
             } for status in Status if status != Status.PENDING
                                       or (inbox.scheduling_algorithm == SchedulingAlgorithm.FIXED
                                           and inbox.fixed_scheduling_assignee is None)

@@ -1,27 +1,18 @@
 <template>
-  <div>
-    <navigation v-if="show_navigation">
-      <router-view></router-view>
-    </navigation>
-    <router-view v-else></router-view>
-  </div>
+  <component :is="layout">
+    <router-view :key="$route.fullPath" />
+  </component>
 </template>
 
 <script>
-
-import Navigation from "./components/Navigation";
+const default_layout = 'default'
 
 export default {
   name: "App",
-  components: {Navigation},
   computed: {
-    show_navigation() {
-      return this.$store.getters.isAuthenticated
+    layout() {
+      return (this.$route.meta.layout || default_layout) + '-layout'
     }
   }
 }
 </script>
-
-<style scoped>
-
-</style>

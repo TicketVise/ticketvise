@@ -16,7 +16,7 @@
         </div>
         <div class="hidden md:flex flex-col">
           <span class="text-gray-800">
-            <span class="font-bold">Started:</span> 
+            <span class="font-bold">Started:</span>
             {{ date(inbox.date_created) }}
           </span>
           <span class="text-gray-800">
@@ -39,7 +39,7 @@
         </div>
         <div class="flex flex-col items-center">
           <span class="text-orange-500 text-2xl">
-            {{ stats ? stats.tickets : '' }}
+            {{ stats ? stats.total_tickets : '' }}
           </span>
           <span class="text-gray-700">Tickets</span>
         </div>

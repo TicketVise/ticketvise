@@ -7,7 +7,7 @@
       <dd class="mt-1 text-sm leading-5 text-gray-900 sm:mt-0 sm:col-span-2">
         <input type="text"
                v-model="inbox.name"
-               class="block appearance-none w-full bg-white border px-4 py-2 pr-8 rounded shadow-sm leading-tight focus:outline-none focus:shadow-outline"
+               class="block appearance-none w-full bg-white border px-4 py-2 pr-8 rounded shadow-sm leading-tight focus:outline-none focus:ring"
                name="name">
         <error v-for="error in errors.name" :key="error" :message="error"></error>
       </dd>
@@ -19,7 +19,7 @@
       <dd class="mt-1 text-sm leading-5 text-gray-900 sm:mt-0 sm:col-span-2">
         <input type="text"
                v-model="inbox.code"
-               class="block appearance-none w-full bg-white border px-4 py-2 pr-8 rounded shadow-sm leading-tight focus:outline-none focus:shadow-outline"
+               class="block appearance-none w-full bg-white border px-4 py-2 pr-8 rounded shadow-sm leading-tight focus:outline-none focus:ring"
                name="code">
         <error v-for="error in errors.code" :key="error" :message="error"></error>
       </dd>
@@ -31,7 +31,7 @@
       <dd class="mt-1 text-sm leading-5 text-gray-900 sm:mt-0 sm:col-span-2">
         <input type="color"
                v-model="inbox.color"
-               class="block appearance-none w-full bg-white border border-gray-400 hover:border-gray-500 overflow-hidden rounded shadow-sm leading-tight focus:outline-none focus:shadow-outline"
+               class="block appearance-none w-full bg-white border border-gray-400 hover:border-gray-500 overflow-hidden rounded shadow-sm leading-tight focus:outline-none focus:ring"
                name="color">
         <error v-for="error in errors.color" :key="error" :message="error"></error>
       </dd>
@@ -72,7 +72,7 @@
       </label>
       <dd class="text-sm leading-5 text-gray-900 sm:mt-0 sm:col-span-2">
         <select name="close_answered_weeks" id="close_answered_weeks"
-                class="block appearance-none bg-white border border-gray-400 hover:border-gray-500 px-4 py-1 pr-8 rounded shadow-sm leading-tight focus:outline-none focus:shadow-outline"
+                class="block appearance-none bg-white border border-gray-400 hover:border-gray-500 px-4 py-1 pr-8 rounded shadow-sm leading-tight focus:outline-none focus:ring"
                 v-model="inbox.close_answered_weeks">
           <option value="0">Disabled</option>
           <option value="1"> 1 week</option>
@@ -89,7 +89,7 @@
       </label>
       <dd class="text-sm leading-5 text-gray-900 sm:mt-0 sm:col-span-2">
         <select name="alert_coordinator_unanswered_days" id="alert_coordinator_unanswered_days"
-                class="block appearance-none bg-white border border-gray-400 hover:border-gray-500 px-4 py-1 pr-8 rounded shadow-sm leading-tight focus:outline-none focus:shadow-outline"
+                class="block appearance-none bg-white border border-gray-400 hover:border-gray-500 px-4 py-1 pr-8 rounded shadow-sm leading-tight focus:outline-none focus:ring"
                 v-model="inbox.alert_coordinator_unanswered_days">
           <option value="0">Disabled</option>
           <option value="1">1 day</option>
@@ -103,7 +103,7 @@
       </label>
       <dd class="text-sm leading-5 text-gray-900 sm:mt-0 sm:col-span-2">
         <select name="scheduling_algorithm" id="scheduling_algorithm"
-                class="block appearance-none bg-white border border-gray-400 hover:border-gray-500 px-4 py-1 pr-8 rounded shadow-sm leading-tight focus:outline-none focus:shadow-outline"
+                class="block appearance-none bg-white border border-gray-400 hover:border-gray-500 px-4 py-1 pr-8 rounded shadow-sm leading-tight focus:outline-none focus:ring"
                 v-model="inbox.scheduling_algorithm">
           <option :value="option[0]" v-for="option in scheduling_options" :key="option[0]">
             {{ option[1] }}
@@ -116,7 +116,7 @@
       </label>
       <dd class="text-sm leading-5 text-gray-900 sm:mt-0 sm:col-span-2">
         <select name="fixed_scheduling_assignee" id="fixed_scheduling_assignee"
-                class="block appearance-none bg-white border border-gray-400 hover:border-gray-500 px-4 py-1 pr-8 rounded shadow-sm leading-tight focus:outline-none focus:shadow-outline"
+                class="block appearance-none bg-white border border-gray-400 hover:border-gray-500 px-4 py-1 pr-8 rounded shadow-sm leading-tight focus:outline-none focus:ring"
                 v-model="inbox.fixed_scheduling_assignee">
           <option :value="null">None</option>
           <option :value="value.id" v-for="value in staff" :key="value.id">
@@ -132,14 +132,14 @@
     </div>
     <div class="p-2 px-4 sm:pr-0 flex space-x-2 sm:mx-4 justify-end">
       <button type="button" @click="onCancel()"
-              class="group inline-flex items-center px-4 py-2 border border-gray-300 text-sm leading-5 font-medium rounded-md text-gray-700 bg-white hover:text-gray-500 focus:outline-none focus:shadow-outline-blue focus:border-blue-300 active:text-gray-800 active:bg-gray-50">
+              class="group inline-flex items-center px-4 py-2 border border-gray-300 text-sm leading-5 font-medium rounded-md text-gray-700 bg-white hover:text-gray-500 focus:outline-none focus:ring-blue focus:border-blue-300 active:text-gray-800 active:bg-gray-50">
         <span class="left-0 inset-y-0 flex items-center">
           <i class="fa fa-times mr-2"></i>
         </span>
         Cancel
       </button>
       <button type="button" @click="onSave()"
-              class="group inline-flex justify-center items-center px-4 py-2 border border-transparent text-sm leading-5 font-medium rounded-md bg-green-200 text-green-700 hover:bg-green-100 focus:outline-none focus:shadow-outline-indigo focus:border-green-700 active:bg-green-700 ">
+              class="group inline-flex justify-center items-center px-4 py-2 border border-transparent text-sm leading-5 font-medium rounded-md bg-green-200 text-green-700 hover:bg-green-100 focus:outline-none focus:ring-indigo focus:border-green-700 active:bg-green-700 ">
         <span class="left-0 inset-y-0 flex items-center">
           <i class="fa fa-check mr-2"></i>
         </span>

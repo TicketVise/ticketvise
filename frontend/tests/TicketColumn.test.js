@@ -135,8 +135,10 @@ it("Column content", () => {
       color: colorData,
       has_next: false,
       length: ticketListData.length
-    }
+    },
+    stubs: ['router-link', 'router-view']
   });
+
   const header = wrapper.findAll("div").at(0);
   expect(header.text()).toContain(titleData);
   expect(header.text()).toContain(ticketListData.length);

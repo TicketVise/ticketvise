@@ -101,14 +101,14 @@
             </button>
             <span v-if="ticket.status !== 'CLSD'" class="shadow-sm rounded-md">
               <button type="button" @click="closeTicket"
-                      class="inline-flex items-center px-4 py-2 border border-transparent text-sm leading-5 font-medium rounded-md text-white bg-primary hover:bg-orange-500 focus:outline-none focus:shadow-outline-orange focus:border-orange-700 active:bg-orange-700 transition duration-150 ease-in-out">
+                      class="inline-flex items-center px-4 py-2 border border-transparent text-sm leading-5 font-medium rounded-md text-white bg-primary hover:bg-orange-500 focus:outline-none focus:ring-orange focus:border-orange-700 active:bg-orange-700 transition duration-150 ease-in-out">
                 <i class="fa fa-archive mr-2"></i>
                 Close Ticket
               </button>
             </span>
             <span v-if="is_staff && ticket.status === 'CLSD'" class="shadow-sm rounded-md">
               <button type="button" @click="openTicket"
-                      class="inline-flex items-center px-4 py-2 border border-transparent text-sm leading-5 font-medium rounded-md text-white bg-primary hover:bg-orange-500 focus:outline-none focus:shadow-outline-orange focus:border-orange-700 active:bg-orange-700 transition duration-150 ease-in-out">
+                      class="inline-flex items-center px-4 py-2 border border-transparent text-sm leading-5 font-medium rounded-md text-white bg-primary hover:bg-orange-500 focus:outline-none focus:ring-orange focus:border-orange-700 active:bg-orange-700 transition duration-150 ease-in-out">
                 <i class="fa fa-envelope-open-o mr-2"></i>
                 Reopen Ticket
               </button>

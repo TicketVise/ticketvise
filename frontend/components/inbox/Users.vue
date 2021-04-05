@@ -27,7 +27,7 @@
             <tbody class="bg-white" v-if="page">
 
             <tr v-for="inboxUser in page.results" :key="inboxUser.id">
-              <td class="px-6 py-4 whitespace-no-wrap border-b border-gray-200">
+              <td class="px-6 py-4 whitespace-nowrap border-b border-gray-200">
 
                 <div class="flex items-center">
                   <div class="flex-shrink-0 h-10 w-10">
@@ -41,10 +41,10 @@
                   </div>
                 </div>
               </td>
-              <td class="px-6 py-4 whitespace-no-wrap border-b border-gray-200">
+              <td class="px-6 py-4 whitespace-nowrap border-b border-gray-200">
                 <div class="text-sm leading-5 text-gray-900">@{{ inboxUser.user.username }}</div>
               </td>
-              <td class="px-6 py-4 whitespace-no-wrap border-b border-gray-200">
+              <td class="px-6 py-4 whitespace-nowrap border-b border-gray-200">
                 <span v-if="inboxUser.user.is_active"
                       class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
                   Active
@@ -54,10 +54,10 @@
                   Inactive
                 </span>
               </td>
-              <td class="px-6 py-4 whitespace-no-wrap border-b border-gray-200 text-sm leading-5 text-gray-500">
+              <td class="px-6 py-4 whitespace-nowrap border-b border-gray-200 text-sm leading-5 text-gray-500">
                 {{ inboxUser.role_label }}
               </td>
-              <td class="px-6 py-4 whitespace-no-wrap text-right border-b border-gray-200 text-sm leading-5 font-medium">
+              <td class="px-6 py-4 whitespace-nowrap text-right border-b border-gray-200 text-sm leading-5 font-medium">
                 <router-link :to="getInboxUserUrl(inboxUser)" class="text-indigo-600 hover:text-indigo-900">
                   Edit
                 </router-link>

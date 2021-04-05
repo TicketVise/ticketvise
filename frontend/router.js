@@ -21,35 +21,36 @@ Vue.use(VueRouter)
 
 const router = new VueRouter({
     routes: [
-        {path: "/notifications", component: Notifications, name: "Notifications"},
-        {path: "/", component: Inboxes, name: "Home"},
-        {path: "/login", component: Login, name: "Login"},
-        {path: "/inboxes", component: Inboxes, name: "Inboxes"},
+        { path: "/notifications", component: Notifications, name: "Notifications" },
+        { path: "/", redirect: { name: "Login" } },
+        { path: "/login", component: Login, name: "Login", meta: { layout: "auth-form" } },
+        { path: "/inboxes", component: Inboxes, name: "Inboxes", meta: { layout: "thick-header" } },
         {
             path: "/inboxes/:inboxId",
             component: Inbox,
+            redirect: { name: "Inbox" },
             children: [
-                {path: "tickets", component: TicketOverview, name: "Inbox"},
-                {path: "tickets/new", component: TicketForm, name: "NewTicket"},
-                {path: "statistics", component: InboxStatistics, name: "InboxStatistics"},
-                {path: "settings", component: InboxSettings, name: "InboxSettings"},
-                {path: "users", component: Users, name: "InboxUsers"},
-                {path: "users/:userId", component: User, name: "InboxUser"},
-                {path: "labels", component: Labels, name: "InboxLabels"},
-                {path: "labels/:labelId", component: Label, name: "InboxLabel"},
+                { path: "tickets", component: TicketOverview, name: "Inbox", meta: { layout: "inbox" } },
+                { path: "tickets/new", component: TicketForm, name: "NewTicket", meta: { layout: "inbox" } },
+                { path: "statistics", component: InboxStatistics, name: "InboxStatistics", meta: { layout: "inbox" } },
+                { path: "settings", component: InboxSettings, name: "InboxSettings", meta: { layout: "inbox" } },
+                { path: "users", component: Users, name: "InboxUsers", meta: { layout: "inbox" } },
+                { path: "users/:userId", component: User, name: "InboxUser", meta: { layout: "inbox" } },
+                { path: "labels", component: Labels, name: "InboxLabels", meta: { layout: "inbox" } },
+                { path: "labels/:labelId", component: Label, name: "InboxLabel", meta: { layout: "inbox" } },
             ]
         },
-        {path: "/inboxes/:inboxId/tickets/:ticketInboxId", component: Ticket, name: "Ticket"},
-        {path: "/account", component: Account, name: "Account"},
-        {path: "/admin", component: Admin, name: "Admin"}
+        { path: "/inboxes/:inboxId/tickets/:ticketInboxId", component: Ticket, name: "Ticket" },
+        { path: "/account", component: Account, name: "Account" },
+        { path: "/admin", component: Admin, name: "Admin" }
     ]
 })
 
 router.beforeEach((to, from, next) => {
     if (to.name !== 'Login' && !store.getters.isAuthenticated) {
-        next({name: 'Login'})
+        next({ name: 'Login' })
     } else if (to.name === "Login" && store.getters.isAuthenticated) {
-        next({name: "Inboxes"})
+        next({ name: "Inboxes" })
     } else {
         next()
     }

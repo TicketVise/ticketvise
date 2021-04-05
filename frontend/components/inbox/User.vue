@@ -64,14 +64,14 @@
 
     <div class="p-2 px-4 sm:pr-0 flex space-x-2 sm:mx-4 justify-end">
       <button type="button" @click="onCancel"
-              class="group inline-flex items-center px-4 py-2 border border-gray-300 text-sm leading-5 font-medium rounded-md text-gray-700 bg-white hover:text-gray-500 focus:outline-none focus:shadow-outline-blue focus:border-blue-300 active:text-gray-800 active:bg-gray-50">
+              class="group inline-flex items-center px-4 py-2 border border-gray-300 text-sm leading-5 font-medium rounded-md text-gray-700 bg-white hover:text-gray-500 focus:outline-none focus:ring-blue focus:border-blue-300 active:text-gray-800 active:bg-gray-50">
         <span class="left-0 inset-y-0 flex items-center">
           <i class="fa fa-times mr-2"></i>
         </span>
         Cancel
       </button>
       <button type="button" @click="onSave()"
-              class="group inline-flex justify-center items-center px-4 py-2 border border-transparent text-sm leading-5 font-medium rounded-md bg-green-200 text-green-700 hover:bg-green-100 focus:outline-none focus:shadow-outline-indigo focus:border-green-700 active:bg-green-700 ">
+              class="group inline-flex justify-center items-center px-4 py-2 border border-transparent text-sm leading-5 font-medium rounded-md bg-green-200 text-green-700 hover:bg-green-100 focus:outline-none focus:ring-indigo focus:border-green-700 active:bg-green-700 ">
         <span class="left-0 inset-y-0 flex items-center">
           <i class="fa fa-check mr-2"></i>
         </span>
@@ -88,7 +88,7 @@
         The user will lose access to the inbox and will be unable to create new tickets or answer tickets.
       </p>
       <button type="button" @click="onDelete()"
-              class="w-full sm:w-auto mt-4 inline-flex justify-center items-center rounded-md border border-transparent px-4 py-2 bg-red-200 text-red-600 co text-base leading-6 font-medium shadow-sm hover:bg-red-100 focus:outline-none focus:border-red-700 focus:shadow-outline-red transition ease-in-out duration-150 sm:text-sm sm:leading-5">
+              class="w-full sm:w-auto mt-4 inline-flex justify-center items-center rounded-md border border-transparent px-4 py-2 bg-red-200 text-red-600 co text-base leading-6 font-medium shadow-sm hover:bg-red-100 focus:outline-none focus:border-red-700 focus:ring-red transition ease-in-out duration-150 sm:text-sm sm:leading-5">
         <i class="fa fa-trash mr-3"></i>
         Remove
       </button>
