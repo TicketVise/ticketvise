@@ -16,7 +16,7 @@ from django.contrib.postgres.search import SearchVector, SearchQuery
 from django.core.exceptions import ValidationError
 from django.core.paginator import Paginator
 from django.db.models import Exists, OuterRef, Q
-from django.http import JsonResponse
+from django.http import JsonResponse, Http404
 from django.shortcuts import get_object_or_404
 from django.utils import timezone
 from rest_framework import serializers
@@ -415,6 +415,9 @@ class PublicTicketAPIView(RetrieveAPIView):
         ticket = get_object_or_404(Ticket, inbox=inbox, ticket_inbox_id=self.kwargs["ticket_inbox_id"])
         response = {}
 
+        if not ticket.is_published:
+            raise Http404("No public ticket found with ticket_inbox_id %d", self.kwargs["ticket_inbox_id"])
+
         if ticket.is_anonymous:
             response["ticket"] = TicketSerializer(ticket, fields=(
                 "id", "inbox", "title", "ticket_inbox_id", "content", "date_created", "labels",
@@ -670,5 +673,6 @@ class TicketRequestPublishAPIView(UpdateAPIView):
     def update(self, request, *args, **kwargs):
         ticket = self.get_object()
         ticket.publish_request_created = timezone.now()
+        ticket.publish_request_initiator = request.user
         ticket.save()
         return super().update(request, *args, **kwargs)

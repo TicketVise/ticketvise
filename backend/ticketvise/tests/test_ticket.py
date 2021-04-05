@@ -9,6 +9,7 @@ from django.db import transaction
 from django.http import JsonResponse
 from django.test import TransactionTestCase
 from django.urls import reverse
+from django.utils import timezone
 from rest_framework.test import APIClient
 
 from ticketvise.models.comment import Comment
@@ -68,6 +69,14 @@ class TicketTestCase(TransactionTestCase):
                                              content="TestContent", inbox=self.inbox)
         self.ticket3.add_label(self.label)
         self.ticket2.add_label(self.label2)
+
+        self.ticket3 = Ticket.objects.create(author=self.student, assignee=self.assistant, title="Ticket3",
+                                             content="TestContent", inbox=self.inbox, is_published=timezone.now(),
+                                             is_anonymous=False)
+
+        self.ticket4 = Ticket.objects.create(author=self.student, assignee=self.assistant, title="Ticket3",
+                                             content="TestContent", inbox=self.inbox, is_published=timezone.now(),
+                                             is_anonymous=True)
 
 
 class TicketTestBackendCase(TicketTestCase):
