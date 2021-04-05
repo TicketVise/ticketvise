@@ -169,7 +169,7 @@ it("Listview change", async () => {
     });
 
     let buttons = wrapper.findAll("button");
-    let myTicketsButton = buttons.at(2);
+    let myTicketsButton = buttons.at(1);
 
     expect(myTicketsButton.html()).toContain("My Tickets");
 });
