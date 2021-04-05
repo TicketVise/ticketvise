@@ -380,8 +380,8 @@
       }
     },
     created() {
-      // this.getTickets()
-      this.loadTicket()
+      this.getTickets()
+      // this.loadTicket()
     },
     methods: {
       getTickets: function () {
@@ -409,7 +409,7 @@
         this.get_tickets()
       },
       loadTicket: function () {
-        // Load single ticket
+        // Load single ticket for in the public ticket page.
         const inboxId = this.$route.params.inboxId
         const ticketInboxId = this.$route.params.ticketInboxId
 
