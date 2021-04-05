@@ -194,37 +194,19 @@ class InboxTicketsApiView(ListAPIView):
         show_personal = str(self.request.GET.get("show_personal", False)) == "true"
         labels = list(map(int, self.request.GET.getlist("labels[]", [])))
         q = self.request.GET.get("q", "")
+        public = self.request.GET.get("public", False)
+
+        tickets = Ticket.objects.filter(inbox=inbox, is_published__isnull=not public)
 
         if q:
-            query = SearchQuery(q)
-
-            # Load comments and replies if permissions are right, else load only replies.
-            is_reply = [True]
-            if self.request.user.is_assistant_or_coordinator(inbox) or self.request.user.is_superuser:
-                is_reply = [True, False]
-
-            users = User.objects.annotate(search=SearchVector("first_name", "username", "last_name", "email")).filter(
-                search=query, inbox_relationship__inbox=inbox)
-
-            replies = Comment.objects.annotate(search=SearchVector("content")).filter(search=query,
-                                                                                      ticket__inbox=inbox,
-                                                                                      is_reply__in=is_reply).values(
-                "ticket")
-
-            tickets = Ticket.objects.annotate(
-                search=SearchVector("title", "content", "ticket_inbox_id")).filter(search=query, inbox=inbox)
-
-            tickets = tickets | Ticket.objects.filter(
-                Q(author__in=users) | Q(assignee__in=users) | Q(shared_with__in=users) | Q(id__in=replies), inbox=inbox)
-
-        else:
-            tickets = Ticket.objects.filter(inbox=inbox)
+            tickets = self.search_tickets(q, tickets, inbox)
 
         tickets = tickets.order_by("-date_created")
 
-        if not self.request.user.is_assistant_or_coordinator(inbox) and not self.request.user.is_superuser:
-            tickets = tickets.filter(author=self.request.user) | tickets.filter(
-                shared_with__id__exact=self.request.user.id)
+        if not self.request.user.is_assistant_or_coordinator(inbox) and \
+                not self.request.user.is_superuser and not public:
+            tickets = tickets.filter(author=self.request.user) | \
+                      tickets.filter(shared_with__id__exact=self.request.user.id)
         elif show_personal:
             tickets = tickets.filter(assignee=self.request.user) | \
                       tickets.filter(author=self.request.user) | \
@@ -256,6 +238,7 @@ class InboxTicketsApiView(ListAPIView):
         status = self.request.GET.get("status", "")
         tickets = self.get_queryset()
         page_num = self.request.GET.get("page", 1)
+        public = self.request.GET.get("public", True)
 
         # If no status is given, return the first page of all status
         if not status:
@@ -273,9 +256,15 @@ class InboxTicketsApiView(ListAPIView):
 
         page = paginator.page(page_num)
 
+        if public:
+            results = TicketSerializer(page.object_list, many=True, fields=(
+                "id", "title", "date_created", "labels")).data
+        else:
+            results = TicketSerializer(page.object_list, many=True, fields=(
+                "id", "title", "name", "assignee", "ticket_inbox_id", "date_created", "labels")).data
+
         return Response({
-            "results": TicketSerializer(page.object_list, many=True, fields=(
-                "id", "title", "name", "assignee", "ticket_inbox_id", "date_created", "labels")).data,
+            "results": results,
             "has_next": page.has_next(),
         })
 
@@ -303,6 +292,32 @@ class InboxTicketsApiView(ListAPIView):
         ]
 
         return JsonResponse(data=columns, safe=False)
+
+    def search_tickets(self, q, tickets, inbox):
+        query = SearchQuery(q)
+
+        # Load comments and replies if permissions are right, else load only replies.
+        is_reply = [True]
+        if self.request.user.is_assistant_or_coordinator(inbox) or self.request.user.is_superuser:
+            is_reply = [True, False]
+
+        # Search users
+        users = User.objects.annotate(search=SearchVector("first_name", "username", "last_name", "email")).filter(
+            search=query, inbox_relationship__inbox=inbox)
+
+        # Search replies
+        replies = Comment.objects.annotate(search=SearchVector("content")) \
+            .filter(search=query, ticket__inbox=inbox, is_reply__in=is_reply).values("ticket")
+
+        # Search ticket
+        tickets = tickets.annotate(
+            search=SearchVector("title", "content", "ticket_inbox_id")).filter(search=query)
+
+        # Combine searches
+        tickets = tickets | tickets.filter(
+            Q(author__in=users) | Q(assignee__in=users) | Q(shared_with__in=users) | Q(id__in=replies))
+
+        return tickets
 
 
 class TicketsApiView(APIView):
