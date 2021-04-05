@@ -194,7 +194,7 @@ class InboxTicketsApiView(ListAPIView):
         show_personal = str(self.request.GET.get("show_personal", False)) == "true"
         labels = list(map(int, self.request.GET.getlist("labels[]", [])))
         q = self.request.GET.get("q", "")
-        public = self.request.GET.get("public", False)
+        public = str(self.request.GET.get("public", False)) == "true"
 
         tickets = Ticket.objects.filter(inbox=inbox, is_published__isnull=not public)
 
@@ -238,7 +238,7 @@ class InboxTicketsApiView(ListAPIView):
         status = self.request.GET.get("status", "")
         tickets = self.get_queryset()
         page_num = self.request.GET.get("page", 1)
-        public = self.request.GET.get("public", True)
+        public = str(self.request.GET.get("public", False)) == "true"
 
         # If no status is given, return the first page of all status
         if not status:
@@ -347,25 +347,10 @@ class TicketApiView(RetrieveAPIView):
             response["role"] = current_role
 
         if json.loads(request.GET.get("ticket", "false")):
-            if request.user.is_assistant_or_coordinator(inbox) or not ticket.is_published or \
-                    ticket.author.id == request.user.id or request.user.id in ticket.shared_with:
-                # All information for staff, author and shared.
-                ticket_data = TicketSerializer(ticket, fields=(
-                    "id", "inbox", "title", "ticket_inbox_id", "author", "content", "date_created", "status", "labels",
-                    "assignee", "attachments", "participants", "author_role", "shared_with_by",
-                    "shared_with", "is_published", "publish_request_initiator", "publish_request_created")).data
-            elif not ticket.is_anonymous:
-                # Public ticket
-                ticket_data = TicketSerializer(ticket, fields=(
-                    "id", "inbox", "title", "ticket_inbox_id", "author", "content", "date_created", "status", "labels",
-                    "attachments", "author_role")).data
-            else:
-                # Anonymized public ticket
-                ticket_data = TicketSerializer(ticket, fields=(
-                    "id", "inbox", "title", "ticket_inbox_id", "content", "date_created", "status", "labels",
-                    "attachments")).data
-
-            response["ticket"] = ticket_data
+            response["ticket"] = TicketSerializer(ticket, fields=(
+                "id", "inbox", "title", "ticket_inbox_id", "author", "content", "date_created", "status", "labels",
+                "assignee", "attachments", "participants", "author_role", "shared_with_by",
+                "shared_with", "is_public", "publish_request_initiator", "publish_request_created")).data
 
         if json.loads(request.GET.get("me", "false")):
             user_data = UserSerializer(request.user,
@@ -405,6 +390,26 @@ class TicketApiView(RetrieveAPIView):
                 comments_data = CommentSerializer(comments, many=True).data
 
                 response["comments"] = comments_data
+
+        return Response(response)
+
+
+class PublicTicketAPIView(RetrieveAPIView):
+    permission_classes = [UserIsInInboxPermission]
+
+    def get(self, *args, **kwargs):
+        inbox = get_object_or_404(Inbox, pk=self.kwargs["inbox_id"])
+        ticket = get_object_or_404(Ticket, inbox=inbox, ticket_inbox_id=self.kwargs["ticket_inbox_id"])
+        response = {}
+
+        if ticket.is_anonymous:
+            response["ticket"] = TicketSerializer(ticket, fields=(
+                "id", "inbox", "title", "ticket_inbox_id", "content", "date_created", "labels",
+                "attachments")).data
+        else:
+            response["ticket"] = TicketSerializer(ticket, fields=(
+                "id", "inbox", "title", "ticket_inbox_id", "author", "content", "date_created", "labels",
+                "attachments", "author_role")).data
 
         return Response(response)
 

@@ -362,10 +362,61 @@
 
 <script>
   import SearchBar from "../elements/SearchBar";
+  import axios from "axios";
+  import _ from "lodash";
 
   export default {
     name: "PublicTickets",
-    components: {SearchBar}
+    components: {SearchBar},
+    data() {
+      return {
+        inbox: null,
+        ticket: null,
+        replies: [],
+        labels: [],
+        comments: [],
+        staff: [],
+        events: [],
+      }
+    },
+    created() {
+      // this.getTickets()
+      this.loadTicket()
+    },
+    methods: {
+      getTickets: function () {
+        // Call this function by using callDebounceSearch when searching
+        let labels_ids = [];
+        this.labels.forEach(label => labels_ids.push(label.id));
+        const inboxId = this.$route.params.inboxId
+
+        axios.get(`/api/inboxes/${inboxId}/tickets`, {
+          params: {
+            q: this.search, // Query to search for tickets
+            labels: labels_ids, // To filter on labels
+            public: true // Defines that public tickets should be loaded
+          }
+        }).then(response => {
+          this.tickets = response.data
+        })
+      },
+      callDebounceSearch: _.debounce(function () {
+        this.get_tickets();
+      }, 300),
+      deleteEvent(index) {
+        this.labels.splice(index, 1)
+
+        this.get_tickets()
+      },
+      loadTicket: function () {
+        // Load single ticket
+        const inboxId = this.$route.params.inboxId
+
+        axios.get(`/api/inboxes/${inboxId}/public/23`).then(response => {
+          this.ticket = response.data.ticket;
+        });
+      },
+    }
   }
 </script>
 

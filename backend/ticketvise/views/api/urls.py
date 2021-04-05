@@ -15,7 +15,7 @@ from ticketvise.views.api.ticket import TicketApiView, TicketUpdateAssignee, \
     TicketAttachmentsApiView, AttachmentViewApiView, \
     RecentTicketApiView, InboxTicketsApiView, TicketLabelApiView, TicketCreateApiView, TicketSharedAPIView, \
     TicketsApiView, OpenTicketApiView, CloseTicketApiView, TicketTitleAPIView, TicketRequestPublishAPIView, \
-    TicketPublishAPIView
+    TicketPublishAPIView, PublicTicketAPIView
 from ticketvise.views.api.user import UserRoleApiView, CurrentUserApiView, NotificationsSettingsAPIView, \
     UsersApiView, IntroductionAPIView
 
@@ -38,6 +38,7 @@ urlpatterns = [
     path("inboxes/<int:inbox_id>/tickets/<int:ticket_inbox_id>/title", TicketTitleAPIView.as_view()),
     path("inboxes/<int:inbox_id>/tickets/<int:ticket_inbox_id>/request-publish", TicketRequestPublishAPIView.as_view()),
     path("inboxes/<int:inbox_id>/tickets/<int:ticket_inbox_id>/publish", TicketPublishAPIView.as_view()),
+    path("inboxes/<int:inbox_id>/public/<int:ticket_inbox_id>", PublicTicketAPIView.as_view()),
     path("inboxes/<int:inbox_id>/users/<int:user_id>/tickets/recent", RecentTicketApiView.as_view()),
     path("inboxes/<int:inbox_id>/role", UserRoleApiView.as_view()),
     path("inboxes/<int:inbox_id>/guests", InboxGuestsAPIView.as_view()),
