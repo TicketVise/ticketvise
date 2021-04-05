@@ -129,7 +129,7 @@ class TicketSerializer(DynamicFieldsModelSerializer):
     labels = serializers.SerializerMethodField()
     participants = serializers.SerializerMethodField()
     author_role = serializers.SerializerMethodField()
-    attachments = TicketAttachmentSerializer(many=True, read_only=True)
+    attachments = serializers.SerializerMethodField()
     shared_with_by = TicketSharedUserSerializer(many=True, read_only=True)
 
     def get_author_role(self, obj):
@@ -163,6 +163,17 @@ class TicketSerializer(DynamicFieldsModelSerializer):
         if user and (user.is_assistant_or_coordinator(obj.inbox) or obj.inbox.show_assignee_to_guest):
             return UserSerializer(obj.assignee,
                                   fields=(["first_name", "last_name", "username", "avatar_url", "id"])).data
+
+        return None
+
+    def get_attachment(self, obj):
+        user = CurrentUserMiddleware.get_current_user()
+
+        if user and \
+                (user.is_assistant_or_coordinator(obj.inbox) or user.id == obj.author.id or user.id in obj.shared_with):
+            return TicketAttachmentSerializer(many=True, read_only=True)
+        elif obj.is_published:
+            return TicketAttachmentSerializer(fields=["id", "file", "date_created"], many=True, read_only=True)
 
         return None
 

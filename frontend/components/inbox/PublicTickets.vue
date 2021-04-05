@@ -411,8 +411,9 @@
       loadTicket: function () {
         // Load single ticket
         const inboxId = this.$route.params.inboxId
+        const ticketInboxId = this.$route.params.ticketInboxId
 
-        axios.get(`/api/inboxes/${inboxId}/public/23`).then(response => {
+        axios.get(`/api/inboxes/${inboxId}/public/${ticketInboxId}`).then(response => {
           this.ticket = response.data.ticket;
         });
       },
