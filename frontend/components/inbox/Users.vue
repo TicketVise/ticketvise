@@ -1,120 +1,422 @@
 <template>
-  <div class="container mx-auto lg:px-4 pb-4">
-    <search-bar v-model="query" v-on:input="search" class="flex-grow px-2 my-2"/>
+  <div
+    class="h-main-header md:h-main flex flex-col min-w-0 flex-1 overflow-hidden"
+  >
+    <div class="flex-1 relative z-0 flex overflow-hidden">
+      <main
+        class="flex-1 relative z-0 overflow-y-auto focus:outline-none order-last"
+        tabindex="0"
+      >
+        <!-- Breadcrumb -->
+        <nav
+          v-show="!show_list"
+          class="flex items-start px-4 py-3 sm:px-6 lg:px-8 lg:hidden"
+          aria-label="Breadcrumb"
+        >
+          <a
+            @click="show_list = true"
+            class="inline-flex items-center space-x-3 text-sm font-medium text-gray-900"
+          >
+            <!-- Heroicon name: solid/chevron-left -->
+            <svg
+              class="-ml-2 h-5 w-5 text-gray-400"
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 20 20"
+              fill="currentColor"
+              aria-hidden="true"
+            >
+              <path
+                fill-rule="evenodd"
+                d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z"
+                clip-rule="evenodd"
+              />
+            </svg>
+            <span>List of users</span>
+          </a>
+        </nav>
 
-    <div class="flex flex-col">
-      <div class="-my-2 py-2 overflow-x-auto px-2 sm:-mx-6 sm:px-6 lg:-mx-8 lg:px-8">
-        <div
-            class="align-middle inline-block min-w-full sm:shadow overflow-hidden sm:rounded-lg border-b border-gray-200">
-          <table class="min-w-full">
-            <thead>
-            <tr>
-              <th class="px-6 py-3 border-b border-gray-200 bg-gray-50 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
-                Name
-              </th>
-              <th class="px-6 py-3 border-b border-gray-200 bg-gray-50 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
-                Username
-              </th>
-              <th class="px-6 py-3 border-b border-gray-200 bg-gray-50 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
-                Status
-              </th>
-              <th class="px-6 py-3 border-b border-gray-200 bg-gray-50 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
-                Role
-              </th>
-              <th class="px-6 py-3 border-b border-gray-200 bg-gray-50"></th>
-            </tr>
-            </thead>
-            <tbody class="bg-white" v-if="page">
-
-            <tr v-for="inboxUser in page.results" :key="inboxUser.id">
-              <td class="px-6 py-4 whitespace-nowrap border-b border-gray-200">
-
-                <div class="flex items-center">
-                  <div class="flex-shrink-0 h-10 w-10">
-                    <img class="h-10 w-10 rounded-full" :src="inboxUser.user.avatar_url" alt=""/>
-                  </div>
-                  <div class="ml-4">
-                    <div class="text-sm leading-5 font-medium text-gray-900">
-                      {{ inboxUser.user.get_full_name }}
-                    </div>
-                    <div class="text-sm leading-5 text-gray-500">{{ inboxUser.user.email }}</div>
+        <article v-if="show && !show_list">
+          <!-- Profile header -->
+          <div>
+            <div>
+              <img
+                class="h-32 w-full object-cover lg:h-48"
+                src="https://images.unsplash.com/photo-1523978591478-c753949ff840?ixid=MXwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80"
+                alt=""
+              />
+            </div>
+            <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+              <div class="-mt-12 sm:-mt-16 sm:flex sm:items-end sm:space-x-5">
+                <div class="flex">
+                  <img
+                    class="h-24 w-24 rounded-full ring-4 ring-white sm:h-32 sm:w-32"
+                    :src="show.user.avatar_url"
+                    alt=""
+                  />
+                </div>
+                <div
+                  class="mt-6 sm:flex-1 sm:min-w-0 sm:flex sm:items-center sm:justify-end sm:space-x-6 sm:pb-1"
+                >
+                  <div class="sm:hidden 2xl:block mt-6 min-w-0 flex-1">
+                    <h1 class="text-2xl font-bold text-gray-900 truncate">
+                      {{ show.user.first_name }} {{ show.user.last_name }}
+                    </h1>
                   </div>
                 </div>
-              </td>
-              <td class="px-6 py-4 whitespace-nowrap border-b border-gray-200">
-                <div class="text-sm leading-5 text-gray-900">@{{ inboxUser.user.username }}</div>
-              </td>
-              <td class="px-6 py-4 whitespace-nowrap border-b border-gray-200">
-                <span v-if="inboxUser.user.is_active"
-                      class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
-                  Active
-                </span>
-                <span v-else
-                      class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">
-                  Inactive
-                </span>
-              </td>
-              <td class="px-6 py-4 whitespace-nowrap border-b border-gray-200 text-sm leading-5 text-gray-500">
-                {{ inboxUser.role_label }}
-              </td>
-              <td class="px-6 py-4 whitespace-nowrap text-right border-b border-gray-200 text-sm leading-5 font-medium">
-                <router-link :to="getInboxUserUrl(inboxUser)" class="text-indigo-600 hover:text-indigo-900">
-                  Edit
-                </router-link>
-              </td>
-            </tr>
-            </tbody>
-          </table>
-          <div class="bg-white px-4 py-3 flex items-center justify-between border-t border-gray-200 sm:px-6">
-            <pagination v-if="page" :page="page" @go="performSearch"/>
+              </div>
+              <div class="hidden sm:block 2xl:hidden mt-6 min-w-0 flex-1">
+                <h1 class="text-2xl font-bold text-gray-900 truncate">
+                  {{ show.user.first_name }} {{ show.user.last_name }}
+                </h1>
+              </div>
+            </div>
+          </div>
+
+          <!-- Tabs -->
+          <div class="mt-6 sm:mt-2 2xl:mt-5">
+            <div class="border-b border-gray-200">
+              <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+                <nav class="-mb-px flex space-x-8" aria-label="Tabs">
+                  <div
+                    @click="tab = 'profile'"
+                    class="border-transparent text-gray-500 hover:text-gray-700 whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm cursor-pointer"
+                    :class="tab == 'profile' ? 'border-primary text-gray-900' : 'hover:border-gray-300'"
+                    aria-current="page"
+                  >
+                    Profile
+                  </div>
+
+                  <div
+                    @click="tab = 'tickets'"
+                    class="border-transparent text-gray-500 hover:text-gray-700 whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm cursor-pointer"
+                    :class="tab == 'tickets' ? 'border-primary text-gray-900' : 'hover:border-gray-300'"
+                  >
+                    Tickets
+                    <span
+                      class="bg-gray-100 text-gray-900 inline-block ml-2 py-0.5 px-2.5 rounded-full text-xs font-medium"
+                      :class="tab == 'tickets' ? 'bg-orange-100 text-orange-600' : 'bg-gray-100 text-gray-900'"
+                    >
+                      {{ tickets.length }}
+                    </span>
+                  </div>
+
+                  <!-- <div
+                    @click="tab = 'insights'"
+                    class="border-transparent text-gray-500 hover:text-gray-700 whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm cursor-pointer"
+                    :class="tab == 'insights' ? 'border-primary text-gray-900' : 'hover:border-gray-300'"
+                  >
+                    Insights
+                  </div> -->
+                </nav>
+              </div>
+            </div>
+          </div>
+
+          <!-- Description list -->
+          <div
+            v-show="tab == 'profile'"
+            class="mt-6 max-w-5xl mx-auto px-4 sm:px-6 lg:px-8"
+          >
+            <dl class="grid grid-cols-1 gap-x-4 gap-y-8 sm:grid-cols-2">
+              <div class="sm:col-span-1">
+                <dt class="text-sm font-medium text-gray-500">Role</dt>
+                <dd class="mt-1 text-sm text-gray-900">
+                  {{ show.role_label }}
+                </dd>
+              </div>
+
+              <div class="sm:col-span-1">
+                <dt class="text-sm font-medium text-gray-500">Email</dt>
+                <dd class="mt-1 text-sm text-gray-900">
+                  {{ show.user.email }}
+                </dd>
+              </div>
+
+              <div class="sm:col-span-1">
+                <dt class="text-sm font-medium text-gray-500">Full Name</dt>
+                <dd class="mt-1 text-sm text-gray-900">
+                  {{ show.user.first_name }} {{ show.user.last_name }}
+                </dd>
+              </div>
+
+              <div class="sm:col-span-1">
+                <dt class="text-sm font-medium text-gray-500">Username</dt>
+                <dd class="mt-1 text-sm text-gray-900">
+                  {{ show.user.username }}
+                </dd>
+              </div>
+            </dl>
+
+            <!-- Statistics -->
+            <div class="mt-8 pb-4">
+              <h2 class="text-sm font-medium text-gray-500">Statistics</h2>
+              <div class="mt-1 grid grid-cols-1 gap-4 sm:grid-cols-2">
+                <div
+                  class="rounded border flex-grow py-2 px-4 flex md:flex-col-reverse space-x-2 md:space-x-0 items-center md:items-start"
+                >
+                  <div class="flex items-baseline sm:mt-1">
+                    <h2 class="text-2xl font-medium text-orange-500">{{ tickets.length }}</h2>
+                  </div>
+                  <h3 class="text-lg leading-6 font-medium text-gray-900">
+                    Tickets
+                  </h3>
+                </div>
+
+                <div
+                  class="rounded border flex-grow py-2 px-4 flex md:flex-col-reverse space-x-2 md:space-x-0 items-center md:items-start"
+                >
+                  <div class="flex items-baseline sm:mt-1">
+                    <h2 class="text-2xl font-medium text-orange-500">{{ average }}<span class="text-gray-400 text-xs"> / per inbox</span></h2>
+                  </div>
+                  <h3 class="text-lg leading-6 font-medium text-gray-900">
+                    Average tickets
+                  </h3>
+                </div>
+
+                <!-- <div
+                  class="rounded border flex-grow py-2 px-4 flex md:flex-col-reverse space-x-2 md:space-x-0 items-center md:items-start"
+                >
+                  <div class="flex items-baseline mt-1">
+                    <h2 class="text-2xl font-medium text-orange-500">2</h2>
+                  </div>
+                  <h3 class="text-lg leading-6 font-medium text-gray-900">
+                    Public tickets
+                  </h3>
+                </div> -->
+              </div>
+            </div>
+          </div>
+
+          <!-- Tickets list -->
+          <div v-show="tab == 'tickets'" class="mt-6 max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="space-y-2 mb-4" v-if="tickets.length > 0">
+              <ticket-card
+                :key="ticket.id"
+                :ticket="ticket"
+                v-for="ticket in tickets" />
+            </div>
+
+            <div v-else class="text-center mb-4">
+              <img
+                src="/static/img/svg/undraw_blank_canvas_3rbb.svg"
+                alt="Nothing here"
+                class="w-1/2 md:w-1/3 mx-auto py-8"
+              />
+              <span class="text-gray-600 text-lg md:text-xl">
+                This user doesn't have any tickets yet
+              </span>
+            </div>
+          </div>
+        </article>
+      </main>
+
+      <!-- Users list -->
+      <aside
+        class="w-full lg:w-96 lg:border-r order-first flex flex-col border-gray-200"
+        :class="{ 'hidden lg:flex lg:flex-col flex-shrink-0': !show_list}"
+      >
+        <div class="p-4">
+          <h2 class="text-lg font-medium text-gray-900">Inbox Users</h2>
+          <p class="mt-1 text-sm text-gray-600">
+            Search users of {{ users ? users.length : "" }} employees
+          </p>
+          <div class="mt-6 flex space-x-4 items-center">
+            <search-bar small v-model="query" v-on:input="search" class="flex-grow my-2"/>
+
+            <div v-on-clickaway="away" class="relative inline-block text-left">
+              <div>
+                <button @click="filter_menu = !filter_menu" type="button" class="inline-flex justify-center w-full rounded-md border border-gray-300 px-4 py-2 bg-white font-medium text-gray-700 hover:bg-gray-50 focus:outline-none" id="options-menu" aria-expanded="true" aria-haspopup="true">
+                  <svg
+                    class="h-5 w-5 text-gray-400"
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 20 20"
+                    fill="currentColor"
+                    aria-hidden="true"
+                  >
+                    <path
+                      fill-rule="evenodd"
+                      d="M3 3a1 1 0 011-1h12a1 1 0 011 1v3a1 1 0 01-.293.707L12 11.414V15a1 1 0 01-.293.707l-2 2A1 1 0 018 17v-5.586L3.293 6.707A1 1 0 013 6V3z"
+                      clip-rule="evenodd"
+                    />
+                  </svg>
+                </button>
+              </div>
+
+              <!--
+                Dropdown menu, show/hide based on menu state.
+
+                Entering: "transition ease-out duration-100"
+                  From: "transform opacity-0 scale-95"
+                  To: "transform opacity-100 scale-100"
+                Leaving: "transition ease-in duration-75"
+                  From: "transform opacity-100 scale-100"
+                  To: "transform opacity-0 scale-95"
+              -->
+              <div v-show="filter_menu" class="origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-xl bg-white ring-1 ring-black ring-opacity-5 focus:outline-none z-20" role="menu" aria-orientation="vertical" aria-labelledby="options-menu">
+                <div class="py-1" role="none">
+                  <a @click="away(); filter = 'name'; performSearch()" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900 cursor-pointer" role="menuitem">Name</a>
+                  <a @click="away(); filter = 'function'; performSearch()" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900 cursor-pointer" role="menuitem">Function</a>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
-      </div>
+
+        <!-- Directory list -->
+        <nav class="flex-1 min-h-0 overflow-y-auto" aria-label="Directory">
+          <div v-if="Object.keys(sorted).length == 0" class="text-center">
+            <img
+              src="/static/img/svg/undraw_empty_xct9.svg"
+              alt="Nothing here"
+              class="w-3/5 mx-auto py-8"
+            />
+            <span class="text-gray-600 text-lg">
+              We couldn't find any users
+            </span>
+          </div>
+          <div class="relative" v-for="(list, letter) in sorted" :key="letter">
+            <div
+              class="z-10 sticky top-0 border-t border-b border-gray-200 bg-gray-50 px-6 py-1 text-sm font-medium text-gray-500"
+            >
+              <h3>{{ letter }}</h3>
+            </div>
+            <ul class="relative z-0 divide-y divide-gray-200">
+              <li v-for="user in list" :key="user.user.id">
+                <div
+                  class="relative px-6 py-5 flex items-center space-x-3 hover:bg-gray-50 focus-within:ring-2 focus-within:ring-inset focus-within:ring-pink-500"
+                >
+                  <div class="flex-shrink-0">
+                    <img
+                      class="h-10 w-10 rounded-full"
+                      :src="user.user.avatar_url"
+                      alt=""
+                    />
+                  </div>
+                  <div class="flex-1 min-w-0">
+                    <div
+                      @click="show = user; tab = 'profile'; show_list = false"
+                      class="cursor-pointer focus:outline-none"
+                    >
+                      <!-- Extend touch target to entire panel -->
+                      <span class="absolute inset-0" aria-hidden="true"></span>
+                      <p class="text-sm font-medium text-gray-900">
+                        {{ user.user.first_name }} {{ user.user.last_name }}
+                      </p>
+                      <p class="text-sm text-gray-500 truncate">
+                        {{ user.role_label }}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </li>
+            </ul>
+          </div>
+        </nav>
+      </aside>
     </div>
   </div>
 </template>
 
 <script>
 import SearchBar from "../elements/SearchBar";
+import { mixin as clickaway } from "vue-clickaway";
 import axios from "axios";
-import {debounce} from "lodash";
+import { debounce } from "lodash";
 import Pagination from "./Pagination";
 
 export default {
   name: "Users",
-  components: {Pagination, SearchBar},
+  mixins: [clickaway],
+  components: { Pagination, SearchBar },
   data() {
     return {
-      query: "",
-      page: null
-    }
+      query: '',
+      users: [],
+      sorted: [],
+      show: null,
+      show_list: true,
+      tab: "profile",
+      tickets: [],
+      average: 0,
+      filter_menu: false,
+      filter: 'name'
+    };
   },
   mounted() {
-    this.performSearch()
+    const inboxId = this.$route.params.inboxId;
+    axios
+      .get(`/api/inboxes/${inboxId}/users`)
+      .then((response) => {
+        this.users = response.data
+      })
+
+    this.performSearch();
   },
   methods: {
-    performSearch: function (page) {
-      const inboxId = this.$route.params.inboxId
-      axios.get(`/api/inboxes/${inboxId}/users`, {
-        params: {
-          q: this.query,
-          page: page
-        }
-      }).then(response => {
-        this.page = response.data
-      })
+    away() {
+      this.filter_menu = false;
+    },
+    performSearch: function () {
+      const inboxId = this.$route.params.inboxId;
+      axios
+        .get(`/api/inboxes/${inboxId}/users`, {
+          params: {
+            q: this.query,
+          },
+        })
+        .then((response) => {
+          /* Group users by letter. */
+          const grouped = {}
+          for (let user of response.data) {
+            if (this.filter == 'name') {
+              if (!grouped[user.user.first_name[0]])
+                grouped[user.user.first_name[0]] = [user]
+              else grouped[user.user.first_name[0]].push(user)
+            } else if (this.filter == 'function') {
+              if (!grouped[user.role_label])
+                grouped[user.role_label] = [user]
+              else grouped[user.role_label].push(user)
+            }
+          }
+
+          let keys = Object.keys(grouped).sort()
+          if (this.filter == 'function')
+            keys = Object.keys(grouped).sort((a, b) => grouped[a].length - grouped[b].length)
+
+          let sorted = {}
+          keys.forEach((v, i) => {
+            sorted[v] = grouped[v]
+          })
+
+          this.sorted = sorted
+        });
     },
     search: debounce(function () {
-      this.performSearch()
+      this.performSearch();
     }, 250),
     getInboxUserUrl: function (inboxUser) {
-      const inboxId = this.$route.params.inboxId
-      return `/inboxes/${inboxId}/users/${inboxUser.user.id}`
+      const inboxId = this.$route.params.inboxId;
+      return `/inboxes/${inboxId}/users/${inboxUser.user.id}`;
+    }
+  },
+  watch: {
+    show() {
+      const inboxId = this.$route.params.inboxId;
+      axios
+        .get(`/api/inboxes/${inboxId}/users/${this.show.user.id}/tickets`)
+        .then((response) => {
+          this.tickets = response.data
+        })
+
+      axios
+        .get(`/api/inboxes/${inboxId}/users/${this.show.user.id}/tickets/average`)
+        .then((response) => {
+          this.average = response.data.average
+        })
     }
   }
-}
+};
 </script>
 
 <style scoped>
-
 </style>

@@ -19,7 +19,7 @@ from django.db.models import Exists, OuterRef, Q
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
 from rest_framework import serializers
-from rest_framework.generics import UpdateAPIView, ListAPIView, RetrieveAPIView, CreateAPIView, DestroyAPIView
+from rest_framework.generics import GenericAPIView, UpdateAPIView, ListAPIView, RetrieveAPIView, CreateAPIView, DestroyAPIView
 from rest_framework.response import Response
 from rest_framework.serializers import ModelSerializer
 from rest_framework.views import APIView
@@ -368,6 +368,34 @@ class TicketApiView(RetrieveAPIView):
                 response["comments"] = comments_data
 
         return Response(response)
+
+
+class UserTicketsApiView(ListAPIView):
+    serializer_class = TicketSerializer
+    permission_classes = [UserIsInboxStaffPermission]
+
+    def get_queryset(self):
+        author = get_object_or_404(User, pk=self.kwargs["user_id"])
+        inbox = get_object_or_404(Inbox, pk=self.kwargs["inbox_id"])
+
+        return Ticket.objects.filter(author=author, inbox=inbox).order_by("-date_created")
+
+
+class UserAverageApiView(RetrieveAPIView):
+    permission_classes = [UserIsInboxStaffPermission]
+
+    def retrieve(self, request, *args, **kwargs):
+        author = get_object_or_404(User, pk=kwargs["user_id"])
+
+        total = []
+        inboxes = UserInbox.objects.filter(user=author)
+        for inb in inboxes:
+            total.append(Ticket.objects.filter(author=author, inbox=inb.inbox).count())
+
+        if len(total) == 0:
+            return Response({ "average": 0 })
+
+        return Response({ "average": sum(total) / len(total) })
 
 
 class RecentTicketApiView(ListAPIView):

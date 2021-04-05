@@ -35,6 +35,10 @@ module.exports = {
             },
             width: {
                 'side': '275px'
+            },
+            height: {
+                'main': 'calc(100vh - 64px)',
+                'main-header': 'calc(100vh - 125px)',
             }
         }
     },

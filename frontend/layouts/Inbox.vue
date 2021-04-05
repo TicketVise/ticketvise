@@ -6,7 +6,7 @@
 
       <inbox-menu ref="menu" :inbox="inbox" v-on:goto="updateInbox" />
 
-      <div class="flex flex-col w-0 flex-1">
+      <div class="flex flex-col w-0 h-full flex-1">
         <div class="flex flex-col md:hidden px-4 pt-2">
           <div class="flex justify-between items-center space-x-2">
             <h2 v-if="inbox" class="font-bold leading-6 text-gray-900 text-lg truncate">
@@ -65,13 +65,7 @@
           aria-hidden="true"
         />
 
-        <main
-          class="flex-1 relative z-0 overflow-y-auto focus:outline-none"
-          tabindex="0"
-        >
-
-          <slot />
-        </main>
+        <slot />
       </div>
     </div>
   </div>
