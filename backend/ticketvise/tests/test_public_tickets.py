@@ -108,7 +108,7 @@ class PublicTicketTestBackendCase(TicketTestCase):
         self.assertEqual(response.status_code, 200)
 
         ticket = Ticket.objects.get(id=ticket.id)
-        self.assertTrue(ticket.is_published)
+        self.assertTrue(ticket.is_public)
 
     def test_publish_ticket_not_requested_ticket(self):
         self.client.force_authenticate(self.student)
@@ -120,4 +120,4 @@ class PublicTicketTestBackendCase(TicketTestCase):
         self.assertEqual(response.status_code, 200)
 
         ticket = Ticket.objects.get(id=ticket.id)
-        self.assertTrue(ticket.is_published)
+        self.assertTrue(ticket.is_public)

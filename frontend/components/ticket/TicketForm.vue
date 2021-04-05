@@ -82,6 +82,8 @@
         inbox_labels: null,
         errors: [],
         shared_with: [],
+        is_public: false,
+        is_anonymous: false
       }
     },
     mounted() {

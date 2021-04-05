@@ -71,11 +71,11 @@ class TicketTestCase(TransactionTestCase):
         self.ticket2.add_label(self.label2)
 
         self.ticket3 = Ticket.objects.create(author=self.student, assignee=self.assistant, title="Ticket3",
-                                             content="TestContent", inbox=self.inbox, is_published=timezone.now(),
+                                             content="TestContent", inbox=self.inbox, is_public=timezone.now(),
                                              is_anonymous=False)
 
         self.ticket4 = Ticket.objects.create(author=self.student, assignee=self.assistant, title="Ticket3",
-                                             content="TestContent", inbox=self.inbox, is_published=timezone.now(),
+                                             content="TestContent", inbox=self.inbox, is_public=timezone.now(),
                                              is_anonymous=True)
 
 

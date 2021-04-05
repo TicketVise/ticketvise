@@ -174,7 +174,7 @@ class TicketSerializer(DynamicFieldsModelSerializer):
                  user.id == obj.author.id or
                  obj.shared_with.filter(id=user.id).exists()):
             return TicketAttachmentSerializer(many=True, read_only=True).data
-        elif obj.is_published:
+        elif obj.is_public:
             return TicketAttachmentSerializer(fields=["id", "file", "date_created"], many=True, read_only=True).data
 
         return None
@@ -192,7 +192,7 @@ class TicketSerializer(DynamicFieldsModelSerializer):
         #: Tells the serializer to use these fields from the :class:`Ticket` model.
         fields = ["id", "inbox", "title", "ticket_inbox_id", "author", "content", "date_created", "status", "labels",
                   "assignee", "shared_with", "participants", "author_role", "attachments", "shared_with_by",
-                  "attachments", "is_published", "publish_request_initiator", "publish_request_created", "is_anonymous"]
+                  "attachments", "is_public", "publish_request_initiator", "publish_request_created", "is_anonymous"]
 
 
 class InboxTicketsApiView(ListAPIView):
@@ -209,12 +209,12 @@ class InboxTicketsApiView(ListAPIView):
         q = self.request.GET.get("q", "")
         public = str(self.request.GET.get("public", False)) == "true"
 
-        tickets = Ticket.objects.filter(inbox=inbox, is_published__isnull=not public)
+        tickets = Ticket.objects.filter(inbox=inbox, is_public__isnull=not public)
 
         if q:
             tickets = self.search_tickets(q, inbox)
 
-        tickets = tickets.filter(is_published__isnull=not public).order_by("-date_created")
+        tickets = tickets.filter(is_public__isnull=not public).order_by("-date_created")
 
         if not self.request.user.is_assistant_or_coordinator(inbox) and \
                 not self.request.user.is_superuser and not public:
@@ -415,7 +415,7 @@ class PublicTicketAPIView(RetrieveAPIView):
         ticket = get_object_or_404(Ticket, inbox=inbox, ticket_inbox_id=self.kwargs["ticket_inbox_id"])
         response = {}
 
-        if not ticket.is_published:
+        if not ticket.is_public:
             raise Http404("No public ticket found with ticket_inbox_id %d", self.kwargs["ticket_inbox_id"])
 
         if ticket.is_anonymous:
@@ -646,7 +646,7 @@ class TicketPublishAPIView(UpdateAPIView):
     permission_classes = [UserIsTicketAuthorOrInboxStaffPermission]
 
     def get_serializer(self, *args, **kwargs):
-        return TicketSerializer(fields=["is_published", "is_anonymous"], *args, **kwargs)
+        return TicketSerializer(fields=["is_public", "is_anonymous"], *args, **kwargs)
 
     def get_object(self):
         inbox = get_object_or_404(Inbox, pk=self.kwargs["inbox_id"])
@@ -656,7 +656,7 @@ class TicketPublishAPIView(UpdateAPIView):
     def update(self, request, *args, **kwargs):
         # Tickets can only be made public, not hidden again.
         ticket = self.get_object()
-        ticket.is_published = timezone.now()
+        ticket.is_public = timezone.now()
         ticket.save()
         return super().update(request, *args, **kwargs)
 

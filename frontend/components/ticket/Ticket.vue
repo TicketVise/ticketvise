@@ -115,7 +115,7 @@
                 Reopen Ticket
               </button>
             </span>
-            <span v-if="is_staff && !ticket.publish_request_created && !ticket.is_published" class="shadow-sm rounded-md">
+            <span v-if="is_staff && !ticket.publish_request_created && !ticket.is_public" class="shadow-sm rounded-md">
               <button type="button" @click="publishConfirmationModal = true"
                       class="inline-flex items-center px-4 py-2 border border-transparent text-sm leading-5 font-medium rounded-md text-white bg-primary hover:bg-orange-500 focus:outline-none focus:shadow-outline-orange focus:border-orange-700 active:bg-orange-700 transition duration-150 ease-in-out">
                 <i class="fa fa-share-square-o  mr-2"></i>
@@ -136,7 +136,7 @@
 
           <div class="lg:container">
             <div class="rounded-md bg-orange-100 p-4 ml-8 mr-4"
-                 v-if="!ticket.is_published && ticket.publish_request_created && is_staff">
+                 v-if="!ticket.is_public && ticket.publish_request_created && is_staff">
               <div class="flex">
                 <div class="flex-shrink-0">
                   <!-- Heroicon name: solid/check-circle -->
@@ -161,7 +161,7 @@
               </div>
             </div>
             <div class="rounded-md bg-orange-100 ml-8 mr-4"
-                 v-if="!ticket.is_published && ticket.publish_request_initiator && ticket.author.id == user.id">
+                 v-if="!ticket.is_public && ticket.publish_request_initiator && ticket.author.id == user.id">
               <div class="px-4 py-5 sm:p-6">
                 <h3 class="text-lg leading-6 font-medium text-gray-900">
                   Sharing is caring
@@ -389,9 +389,9 @@
       },
       publishTicket: function () {
         axios.put(this.getTicketUrl() + "/publish",
-            {"is_published": true, "is_anonymous": this.ticket.is_anonymous}).then(
+            {"is_public": true, "is_anonymous": this.ticket.is_anonymous}).then(
             response => {
-              this.ticket.is_published = response.data.is_published
+              this.ticket.is_public = response.data.is_public
               this.ticket.is_anonymous = response.data.is_anonymous
             }
         )

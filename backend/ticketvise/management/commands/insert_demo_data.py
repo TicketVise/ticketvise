@@ -750,7 +750,7 @@ class Command(BaseCommand):
             inbox=inbox_pse,
             title="This ticket should be public",
             content="Everybody should be able to see this",
-            is_published=timezone.now(),
+            is_public=timezone.now(),
         )
         ticket_43.date_created = timezone.now() - datetime.timedelta(days=2, hours=16)
         ticket_43.date_edited = timezone.now() - datetime.timedelta(days=2, hours=16)
