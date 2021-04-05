@@ -61,3 +61,8 @@ class InboxTestCase(TransactionTestCase):
 
         self.assertFalse(data["has_next"])
         self.assertEqual(len(data["results"]), 1)
+
+    # def test_load_public_tickets_200(self):
+    #     self.client.force_authenticate(self.student2)
+    #     response = self.client.get(reverse("api_inbox_public_tickets", args=[self.inbox.id]))
+    #     self.assertEqual(response.status_code, 200)

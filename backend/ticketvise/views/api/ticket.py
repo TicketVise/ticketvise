@@ -166,14 +166,16 @@ class TicketSerializer(DynamicFieldsModelSerializer):
 
         return None
 
-    def get_attachment(self, obj):
+    def get_attachments(self, obj):
         user = CurrentUserMiddleware.get_current_user()
 
         if user and \
-                (user.is_assistant_or_coordinator(obj.inbox) or user.id == obj.author.id or user.id in obj.shared_with):
-            return TicketAttachmentSerializer(many=True, read_only=True)
+                (user.is_assistant_or_coordinator(obj.inbox) or
+                 user.id == obj.author.id or
+                 obj.shared_with.filter(id=user.id).exists()):
+            return TicketAttachmentSerializer(many=True, read_only=True).data
         elif obj.is_published:
-            return TicketAttachmentSerializer(fields=["id", "file", "date_created"], many=True, read_only=True)
+            return TicketAttachmentSerializer(fields=["id", "file", "date_created"], many=True, read_only=True).data
 
         return None
 
@@ -210,9 +212,9 @@ class InboxTicketsApiView(ListAPIView):
         tickets = Ticket.objects.filter(inbox=inbox, is_published__isnull=not public)
 
         if q:
-            tickets = self.search_tickets(q, tickets, inbox)
+            tickets = self.search_tickets(q, inbox)
 
-        tickets = tickets.order_by("-date_created")
+        tickets = tickets.filter(is_published__isnull=not public).order_by("-date_created")
 
         if not self.request.user.is_assistant_or_coordinator(inbox) and \
                 not self.request.user.is_superuser and not public:
@@ -304,7 +306,7 @@ class InboxTicketsApiView(ListAPIView):
 
         return JsonResponse(data=columns, safe=False)
 
-    def search_tickets(self, q, tickets, inbox):
+    def search_tickets(self, q, inbox):
         query = SearchQuery(q)
 
         # Load comments and replies if permissions are right, else load only replies.
@@ -321,11 +323,11 @@ class InboxTicketsApiView(ListAPIView):
             .filter(search=query, ticket__inbox=inbox, is_reply__in=is_reply).values("ticket")
 
         # Search ticket
-        tickets = tickets.annotate(
+        tickets = Ticket.objects.annotate(
             search=SearchVector("title", "content", "ticket_inbox_id")).filter(search=query)
 
         # Combine searches
-        tickets = tickets | tickets.filter(
+        tickets = tickets | Ticket.objects.filter(
             Q(author__in=users) | Q(assignee__in=users) | Q(shared_with__in=users) | Q(id__in=replies))
 
         return tickets
