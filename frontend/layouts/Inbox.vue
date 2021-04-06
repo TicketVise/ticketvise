@@ -6,7 +6,7 @@
 
       <inbox-menu ref="menu" :inbox="inbox" v-on:goto="updateInbox" />
 
-      <div class="flex flex-col w-0 h-full flex-1">
+      <div class="flex flex-col w-0 flex-1">
         <div class="flex flex-col md:hidden px-4 pt-2">
           <div class="flex justify-between items-center space-x-2">
             <h2 v-if="inbox" class="font-bold leading-6 text-gray-900 text-lg truncate">
@@ -68,6 +68,7 @@
         <slot />
       </div>
 
+      <!-- Show a warning message to admins if they visit an inbox page. -->
       <div v-show="user.is_superuser && showAlert" class="absolute top-8 flex justify-center w-full">
         <div class="mx-auto shadow-xl rounded-md bg-yellow-50 p-4">
           <div class="flex">

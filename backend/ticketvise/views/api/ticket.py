@@ -19,7 +19,7 @@ from django.db.models import Exists, OuterRef, Q
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
 from rest_framework import serializers
-from rest_framework.generics import GenericAPIView, UpdateAPIView, ListAPIView, RetrieveAPIView, CreateAPIView, DestroyAPIView
+from rest_framework.generics import UpdateAPIView, ListAPIView, RetrieveAPIView, CreateAPIView, DestroyAPIView
 from rest_framework.response import Response
 from rest_framework.serializers import ModelSerializer
 from rest_framework.views import APIView
@@ -371,6 +371,9 @@ class TicketApiView(RetrieveAPIView):
 
 
 class UserTicketsApiView(ListAPIView):
+    """
+    Retrieve every ticket from a user in an inbox.
+    """
     serializer_class = TicketSerializer
     permission_classes = [UserIsInboxStaffPermission]
 
@@ -382,6 +385,9 @@ class UserTicketsApiView(ListAPIView):
 
 
 class UserAverageApiView(RetrieveAPIView):
+    """
+    Return the number of average tickets per inbox for a given user.
+    """
     permission_classes = [UserIsInboxStaffPermission]
 
     def retrieve(self, request, *args, **kwargs):
