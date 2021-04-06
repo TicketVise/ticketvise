@@ -79,7 +79,6 @@
         </div>
       </div>
 
-
       <submit-button v-on:click.native="submit" text="Submit" class="bg-primary hover:bg-orange-500 text-white">
         <i class="fa fa-paper-plane mr-2"></i>
       </submit-button>

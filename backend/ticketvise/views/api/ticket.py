@@ -207,9 +207,12 @@ class InboxTicketsApiView(ListAPIView):
         show_personal = str(self.request.GET.get("show_personal", False)) == "true"
         labels = list(map(int, self.request.GET.getlist("labels[]", [])))
         q = self.request.GET.get("q", "")
-        public = str(self.request.GET.get("public", False)) == "true"
+        public = json.loads(self.request.GET.get("public", "false"))
 
-        tickets = Ticket.objects.filter(inbox=inbox, is_public__isnull=not public)
+        if public:
+            tickets = Ticket.objects.filter(inbox=inbox, is_public__isnull=not public)
+        else:
+            tickets = Ticket.objects.filter(inbox=inbox)
 
         if q:
             tickets = self.search_tickets(q, inbox)
@@ -248,10 +251,10 @@ class InboxTicketsApiView(ListAPIView):
         :rtype: JsonResponse
         """
         inbox = get_object_or_404(Inbox, pk=kwargs["inbox_id"])
-        status = self.request.GET.get("status", "")
         tickets = self.get_queryset()
-        page_num = self.request.GET.get("page", 1)
-        public = str(self.request.GET.get("public", False)) == "true"
+        status = request.GET.get("status", "")
+        page_num = request.GET.get("page", 1)
+        public = json.loads(request.GET.get("public", "false"))
 
         # If no status is given, return the first page of all status
         if not status:
