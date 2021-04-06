@@ -1,7 +1,7 @@
 from django.shortcuts import get_object_or_404
 from django.utils import timezone
 from rest_framework import serializers
-from rest_framework.generics import CreateAPIView
+from rest_framework.generics import CreateAPIView, UpdateAPIView
 from rest_framework.serializers import ModelSerializer
 
 from ticketvise.models.comment import Comment
@@ -45,7 +45,7 @@ class CreateReplyApiView(CreateAPIView):
         inbox_id = self.kwargs["inbox_id"]
         ticket_inbox_id = self.kwargs["ticket_inbox_id"]
         ticket = get_object_or_404(Ticket, inbox_id=inbox_id, ticket_inbox_id=ticket_inbox_id)
-        inbox = get_object_or_404(Inbox, inbox_id=inbox_id)
+        inbox = get_object_or_404(Inbox, id=inbox_id)
         is_approved = None
 
         # Replies from staff are always approved
@@ -53,3 +53,10 @@ class CreateReplyApiView(CreateAPIView):
             is_approved = timezone.now()
 
         serializer.save(ticket=ticket, author=self.request.user, is_reply=True, is_approved=is_approved)
+
+
+class ApproveCommentAPIView(UpdateAPIView):
+    permission_classes = [UserIsInboxStaffPermission]
+
+    def get_serializer(self, *args, **kwargs):
+        return CommentSerializer(fields=["is_approved"], *args, **kwargs)
