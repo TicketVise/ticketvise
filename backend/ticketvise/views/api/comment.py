@@ -8,11 +8,12 @@ from ticketvise.models.comment import Comment
 from ticketvise.models.inbox import Inbox
 from ticketvise.models.ticket import Ticket
 from ticketvise.models.user import UserInbox
+from ticketvise.views.api import DynamicFieldsModelSerializer
 from ticketvise.views.api.security import UserIsInboxStaffPermission, UserHasAccessToTicketPermission
 from ticketvise.views.api.user import UserSerializer, RoleSerializer
 
 
-class CommentSerializer(ModelSerializer):
+class CommentSerializer(DynamicFieldsModelSerializer):
     author = UserSerializer(read_only=True, fields=(["first_name", "last_name", "username", "avatar_url", "id"]))
     role = serializers.SerializerMethodField()
 
@@ -58,5 +59,14 @@ class CreateReplyApiView(CreateAPIView):
 class ApproveCommentAPIView(UpdateAPIView):
     permission_classes = [UserIsInboxStaffPermission]
 
+    def get_object(self):
+        comment_id = self.kwargs["comment_id"]
+        return get_object_or_404(Comment, id=comment_id)
+
     def get_serializer(self, *args, **kwargs):
-        return CommentSerializer(fields=["is_approved"], *args, **kwargs)
+        return CommentSerializer(fields=(["is_approved"]), *args, **kwargs)
+
+    def update(self, request, *args, **kwargs):
+        update_request = request
+        update_request.data["is_approved"] = timezone.now()
+        return super().update(update_request, *args, **kwargs)
