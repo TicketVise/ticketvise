@@ -2,7 +2,7 @@
   <section class="flex flex-col h-full flex-grow justify-start">
     <div class="flex flex-col md:grid md:grid-cols-5 md:gap-2 p-4 space-y-2 md:space-y-0">
       <div class="flex space-x-2 md:col-span-2 xl:col-span-3 items-center">
-        <search-bar v-model="search" v-on:input="callDebounceSearch" class="flex-grow px-2"></search-bar>
+        <search-bar v-model="search" v-on:input="callDebounceSearch"></search-bar>
       </div>
 
       <div class="flex space-x-2 md:col-span-3 xl:col-span-2 items-center">

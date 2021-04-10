@@ -370,6 +370,40 @@ class TicketApiView(RetrieveAPIView):
         return Response(response)
 
 
+class UserTicketsApiView(ListAPIView):
+    """
+    Retrieve every ticket from a user in an inbox.
+    """
+    serializer_class = TicketSerializer
+    permission_classes = [UserIsInboxStaffPermission]
+
+    def get_queryset(self):
+        author = get_object_or_404(User, pk=self.kwargs["user_id"])
+        inbox = get_object_or_404(Inbox, pk=self.kwargs["inbox_id"])
+
+        return Ticket.objects.filter(author=author, inbox=inbox).order_by("-date_created")
+
+
+class UserAverageApiView(RetrieveAPIView):
+    """
+    Return the number of average tickets per inbox for a given user.
+    """
+    permission_classes = [UserIsInboxStaffPermission]
+
+    def retrieve(self, request, *args, **kwargs):
+        author = get_object_or_404(User, pk=kwargs["user_id"])
+
+        total = []
+        inboxes = UserInbox.objects.filter(user=author)
+        for inb in inboxes:
+            total.append(Ticket.objects.filter(author=author, inbox=inb.inbox).count())
+
+        if len(total) == 0:
+            return Response({ "average": 0 })
+
+        return Response({ "average": sum(total) / len(total) })
+
+
 class RecentTicketApiView(ListAPIView):
     serializer_class = TicketSerializer
     permission_classes = [UserIsInboxStaffPermission]
