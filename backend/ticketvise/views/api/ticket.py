@@ -688,7 +688,7 @@ class PinUnpinTicketAPIView(UpdateAPIView):
     serializer_class = TicketSerializer
 
     def get_serializer(self, *args, **kwargs):
-        return TicketSerializer(fields=(["is_pinned", "pin_initiator"]))
+        return TicketSerializer(fields=["is_pinned", "pin_initiator"], *args, **kwargs)
 
     def get_object(self):
         inbox = get_object_or_404(Inbox, pk=self.kwargs["inbox_id"])
