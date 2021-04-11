@@ -155,3 +155,39 @@ class PublicTicketTestBackendCase(TicketTestCase):
 
         self.assertFalse(ticket.is_pinned)
         self.assertFalse(ticket.pin_initiator)
+
+    def test_unpin_ticket_as_staff(self):
+        self.client.force_authenticate(self.assistant)
+
+        ticket = Ticket.objects.create(author=self.student, assignee=self.assistant, title="temp ticket",
+                                       content="TestContent", inbox=self.inbox, is_pinned=timezone.now(),
+                                       pin_initiator=self.assistant)
+
+        self.assertTrue(ticket.is_pinned)
+        self.assertEqual(ticket.pin_initiator.id, self.assistant.id)
+
+        response = self.client.put(f"/api/inboxes/{ticket.inbox.id}/tickets/{ticket.ticket_inbox_id}/pin")
+        self.assertEqual(response.status_code, 200)
+
+        ticket = Ticket.objects.get(id=ticket.id)
+
+        self.assertFalse(ticket.is_pinned)
+        self.assertFalse(ticket.pin_initiator)
+
+    def test_unpin_ticket_as_author(self):
+        self.client.force_authenticate(self.student)
+
+        ticket = Ticket.objects.create(author=self.student, assignee=self.assistant, title="temp ticket",
+                                       content="TestContent", inbox=self.inbox, is_pinned=timezone.now(),
+                                       pin_initiator=self.assistant)
+
+        self.assertTrue(ticket.is_pinned)
+        self.assertEqual(ticket.pin_initiator.id, self.assistant.id)
+
+        response = self.client.put(f"/api/inboxes/{ticket.inbox.id}/tickets/{ticket.ticket_inbox_id}/pin")
+        self.assertEqual(response.status_code, 403)
+
+        ticket = Ticket.objects.get(id=ticket.id)
+
+        self.assertTrue(ticket.is_pinned)
+        self.assertEqual(ticket.pin_initiator.id, self.assistant.id)
