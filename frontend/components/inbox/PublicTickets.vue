@@ -402,12 +402,7 @@
       },
       callDebounceSearch: _.debounce(function () {
         this.get_tickets();
-      }, 300),
-      deleteEvent(index) {
-        this.labels.splice(index, 1)
-
-        this.get_tickets()
-      },
+      }, 300)
       loadTicket: function () {
         // Load single ticket for in the public ticket page.
         const inboxId = this.$route.params.inboxId

@@ -423,12 +423,12 @@ class PublicTicketAPIView(RetrieveAPIView):
 
         if ticket.is_anonymous:
             response["ticket"] = TicketSerializer(ticket, fields=(
-                "id", "inbox", "title", "ticket_inbox_id", "content", "date_created", "labels",
+                "id", "inbox", "title", "ticket_inbox_id", "content", "date_created", "labels", "participants",
                 "attachments")).data
         else:
             response["ticket"] = TicketSerializer(ticket, fields=(
                 "id", "inbox", "title", "ticket_inbox_id", "author", "content", "date_created", "labels",
-                "attachments", "author_role")).data
+                "participants", "attachments", "author_role")).data
 
         return Response(response)
 
