@@ -192,7 +192,8 @@ class TicketSerializer(DynamicFieldsModelSerializer):
         #: Tells the serializer to use these fields from the :class:`Ticket` model.
         fields = ["id", "inbox", "title", "ticket_inbox_id", "author", "content", "date_created", "status", "labels",
                   "assignee", "shared_with", "participants", "author_role", "attachments", "shared_with_by",
-                  "attachments", "is_public", "publish_request_initiator", "publish_request_created", "is_anonymous"]
+                  "is_pinned", "pin_initiator", "attachments", "is_public", "publish_request_initiator",
+                  "publish_request_created", "is_anonymous"]
 
 
 class InboxTicketsApiView(ListAPIView):
@@ -365,8 +366,9 @@ class TicketApiView(RetrieveAPIView):
         if json.loads(request.GET.get("ticket", "false")):
             response["ticket"] = TicketSerializer(ticket, fields=(
                 "id", "inbox", "title", "ticket_inbox_id", "author", "content", "date_created", "status", "labels",
-                "assignee", "attachments", "participants", "author_role", "shared_with_by",
-                "shared_with", "is_public", "publish_request_initiator", "publish_request_created")).data
+                "assignee", "attachments", "participants", "author_role", "shared_with_by", "is_pinned",
+                "pin_initiator", "shared_with", "is_public", "publish_request_initiator",
+                "publish_request_created")).data
 
         if json.loads(request.GET.get("me", "false")):
             user_data = UserSerializer(request.user,
@@ -424,11 +426,11 @@ class PublicTicketAPIView(RetrieveAPIView):
         if ticket.is_anonymous:
             response["ticket"] = TicketSerializer(ticket, fields=(
                 "id", "inbox", "title", "ticket_inbox_id", "content", "date_created", "labels", "participants",
-                "attachments")).data
+                "attachments", "is_pinned", "pin_initiator")).data
         else:
             response["ticket"] = TicketSerializer(ticket, fields=(
                 "id", "inbox", "title", "ticket_inbox_id", "author", "content", "date_created", "labels",
-                "participants", "attachments", "author_role")).data
+                "participants", "attachments", "author_role", "is_pinned", "pin_initiator")).data
 
         return Response(response)
 
@@ -677,5 +679,29 @@ class TicketRequestPublishAPIView(UpdateAPIView):
         ticket = self.get_object()
         ticket.publish_request_created = timezone.now()
         ticket.publish_request_initiator = request.user
+        ticket.save()
+        return super().update(request, *args, **kwargs)
+
+
+class PinUnpinTicketAPIView(UpdateAPIView):
+    permission_classes = [UserIsInboxStaffPermission]
+    serializer_class = TicketSerializer
+
+    def get_serializer(self, *args, **kwargs):
+        return TicketSerializer(fields=(["is_pinned", "pin_initiator"]))
+
+    def get_object(self):
+        inbox = get_object_or_404(Inbox, pk=self.kwargs["inbox_id"])
+
+        return Ticket.objects.get(inbox=inbox, ticket_inbox_id=self.kwargs["ticket_inbox_id"])
+
+    def update(self, request, *args, **kwargs):
+        ticket = self.get_object()
+        if ticket.is_pinned:
+            ticket.is_pinned = None
+            ticket.pin_initiator = None
+        else:
+            ticket.is_pinned = timezone.now()
+            ticket.pin_initiator = request.user
         ticket.save()
         return super().update(request, *args, **kwargs)

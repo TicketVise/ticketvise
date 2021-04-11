@@ -62,6 +62,9 @@ class Ticket(models.Model):
     publish_request_initiator = models.ForeignKey("User", on_delete=models.CASCADE, blank=True, null=True,
                                                   related_name="publish_request_initiator")
     publish_request_created = models.DateTimeField(auto_now_add=False, null=True, default=None)
+    is_pinned = models.DateTimeField(auto_now_add=False, null=True, default=None)
+    pin_initiator = models.ForeignKey("User", on_delete=models.CASCADE, blank=True, null=True,
+                                      related_name="pin_initiator")
     reply_message_id = models.UUIDField(default=uuid.uuid4, editable=False, unique=True, null=False)
     comment_message_id = models.UUIDField(default=uuid.uuid4, editable=False, unique=True, null=False)
     date_edited = models.DateTimeField(auto_now=True)
