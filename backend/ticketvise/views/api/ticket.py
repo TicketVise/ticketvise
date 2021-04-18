@@ -131,6 +131,7 @@ class TicketSerializer(DynamicFieldsModelSerializer):
     author_role = serializers.SerializerMethodField()
     attachments = serializers.SerializerMethodField()
     shared_with_by = TicketSharedUserSerializer(many=True, read_only=True)
+    date_latest_update = serializers.SerializerMethodField()
 
     def get_author_role(self, obj):
         author_role = UserInbox.objects.get(user=obj.author, inbox=obj.inbox).role
@@ -179,6 +180,25 @@ class TicketSerializer(DynamicFieldsModelSerializer):
 
         return None
 
+    def get_date_latest_update(self, obj):
+        user = CurrentUserMiddleware.get_current_user()
+        latest_dates = []
+
+        events = TicketEvent.objects.filter(ticket=obj).values_list("date_edited", flat=True)
+        if events:
+            latest_dates.append(max(events))
+
+        replies = Comment.objects.filter(ticket=obj, is_reply=True).values_list("date_edited", flat=True)
+        if replies:
+            latest_dates.append(max(replies))
+
+        if user and user.is_assistant_or_coordinator(obj.inbox):
+            comments = Comment.objects.filter(ticket=obj, is_reply=False).values_list("date_edited", flat=True)
+            if comments:
+                latest_dates.append(max(comments))
+
+        return max(latest_dates)
+
     class Meta:
         """
         Define the model and fields.
@@ -193,7 +213,7 @@ class TicketSerializer(DynamicFieldsModelSerializer):
         fields = ["id", "inbox", "title", "ticket_inbox_id", "author", "content", "date_created", "status", "labels",
                   "assignee", "shared_with", "participants", "author_role", "attachments", "shared_with_by",
                   "is_pinned", "pin_initiator", "attachments", "is_public", "publish_request_initiator",
-                  "publish_request_created", "is_anonymous"]
+                  "publish_request_created", "is_anonymous", "date_latest_update"]
 
 
 class InboxTicketsApiView(ListAPIView):
@@ -275,10 +295,11 @@ class InboxTicketsApiView(ListAPIView):
 
         if public:
             results = TicketSerializer(page.object_list, many=True, fields=(
-                "id", "title", "date_created", "labels")).data
+                "id", "title", "date_created", "labels", "date_latest_update")).data
         else:
             results = TicketSerializer(page.object_list, many=True, fields=(
-                "id", "title", "name", "assignee", "ticket_inbox_id", "date_created", "labels")).data
+                "id", "title", "name", "assignee", "ticket_inbox_id", "date_created", "labels",
+                "date_latest_update")).data
 
         return Response({
             "results": results,
@@ -301,7 +322,8 @@ class InboxTicketsApiView(ListAPIView):
                 "label": status.label,
                 "tickets": TicketSerializer(
                     query_set.filter(status=status)[:self.page_size], many=True, fields=(
-                        "id", "title", "name", "assignee", "ticket_inbox_id", "date_created", "labels")).data
+                        "id", "title", "name", "assignee", "ticket_inbox_id", "date_created", "labels",
+                        "date_latest_update")).data
             } for status in Status if status != Status.PENDING
                                       or (inbox.scheduling_algorithm == SchedulingAlgorithm.FIXED
                                           and inbox.fixed_scheduling_assignee is None)
@@ -368,7 +390,7 @@ class TicketApiView(RetrieveAPIView):
                 "id", "inbox", "title", "ticket_inbox_id", "author", "content", "date_created", "status", "labels",
                 "assignee", "attachments", "participants", "author_role", "shared_with_by", "is_pinned",
                 "pin_initiator", "shared_with", "is_public", "publish_request_initiator",
-                "publish_request_created")).data
+                "publish_request_created", "date_latest_update")).data
 
         if json.loads(request.GET.get("me", "false")):
             user_data = UserSerializer(request.user,

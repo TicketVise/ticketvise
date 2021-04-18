@@ -929,3 +929,63 @@ class TicketTestBackendCase(TicketTestCase):
         response = self.client.put(f"/api/inboxes/{self.ticket2.inbox.id}/tickets/{self.ticket2.ticket_inbox_id}/title",
                                    data)
         self.assertEqual(response.status_code, 403)
+
+    def test_last_update_event(self):
+        self.client.force_authenticate(self.student)
+
+        current_time = timezone.now()
+
+        serialized_ticket = TicketSerializer(self.ticket).data
+        self.assertLess(serialized_ticket["date_latest_update"], current_time)
+
+        response = self.client.put(f"/api/inboxes/{self.ticket.inbox.id}/tickets/{self.ticket.ticket_inbox_id}/title",
+                                   {"title": "something else"})
+        self.assertEqual(response.status_code, 200)
+
+        response = self.client.get(f"/api/inboxes/{self.inbox.id}/tickets/{self.ticket.ticket_inbox_id}",
+                                   {"ticket": "true"})
+        self.assertEqual(response.status_code, 200)
+        self.assertGreater(response.data["ticket"]["date_latest_update"], current_time)
+
+    def test_last_update_comment_as_assistant(self):
+        self.client.force_authenticate(self.assistant)
+
+        current_time = timezone.now()
+
+        serialized_ticket = TicketSerializer(self.ticket).data
+        self.assertLess(serialized_ticket["date_latest_update"], current_time)
+
+        response = self.client.post(f"/api/inboxes/{self.inbox.id}/tickets/{self.ticket.ticket_inbox_id}/comments/post",
+                                    {"content": "Testcontent"})
+        self.assertEqual(response.status_code, 201)
+
+        response = self.client.get(f"/api/inboxes/{self.inbox.id}/tickets/{self.ticket.ticket_inbox_id}",
+                                   {"ticket": "true"})
+        self.assertEqual(response.status_code, 200)
+        self.assertGreater(response.data["ticket"]["date_latest_update"], current_time)
+
+    def test_last_update_comment_as_student(self):
+        self.client.force_authenticate(self.assistant)
+
+        current_time = timezone.now()
+
+        serialized_ticket = TicketSerializer(self.ticket).data
+        self.assertLess(serialized_ticket["date_latest_update"], current_time)
+
+        response = self.client.post(f"/api/inboxes/{self.inbox.id}/tickets/{self.ticket.ticket_inbox_id}/comments/post",
+                                    {"content": "Testcontent"})
+        self.assertEqual(response.status_code, 201)
+
+        self.client.force_authenticate(self.student)
+
+        response = self.client.get(f"/api/inboxes/{self.inbox.id}/tickets/{self.ticket.ticket_inbox_id}",
+                                   {"ticket": "true"})
+        self.assertEqual(response.status_code, 200)
+        self.assertLess(response.data["ticket"]["date_latest_update"], current_time)
+
+    def test_last_update_inbox_tickets(self):
+        self.client.force_authenticate(self.assistant)
+
+        response = self.client.get(f"/api/inboxes/{self.inbox.id}/tickets")
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "date_latest_update")
