@@ -1,29 +1,12 @@
 from django.shortcuts import get_object_or_404
 from django.utils import timezone
-from rest_framework import serializers
 from rest_framework.generics import CreateAPIView, UpdateAPIView
-from rest_framework.serializers import ModelSerializer
 
 from ticketvise.models.comment import Comment
 from ticketvise.models.inbox import Inbox
 from ticketvise.models.ticket import Ticket
-from ticketvise.models.user import UserInbox
-from ticketvise.views.api import DynamicFieldsModelSerializer
+from ticketvise.views.api import CommentSerializer
 from ticketvise.views.api.security import UserIsInboxStaffPermission, UserHasAccessToTicketPermission
-from ticketvise.views.api.user import UserSerializer, RoleSerializer
-
-
-class CommentSerializer(DynamicFieldsModelSerializer):
-    author = UserSerializer(read_only=True, fields=(["first_name", "last_name", "username", "avatar_url", "id"]))
-    role = serializers.SerializerMethodField()
-
-    def get_role(self, obj):
-        role = UserInbox.objects.get(user=obj.author, inbox=obj.ticket.inbox).role
-        return RoleSerializer(role).data
-
-    class Meta:
-        model = Comment
-        fields = ["author", "content", "id", "date_created", "role", "is_approved"]
 
 
 class CreateCommentApiView(CreateAPIView):

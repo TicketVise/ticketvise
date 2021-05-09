@@ -25,22 +25,19 @@ from rest_framework.response import Response
 from rest_framework.serializers import ModelSerializer
 from rest_framework.views import APIView
 
-from ticketvise.middleware import CurrentUserMiddleware
 from ticketvise.models.comment import Comment
 from ticketvise.models.inbox import Inbox, SchedulingAlgorithm
 from ticketvise.models.label import Label
 from ticketvise.models.ticket import Ticket, TicketAttachment, TicketEvent, Status, TicketStatusEvent, \
-    TicketAssigneeEvent, TicketLabelEvent, TicketLabel, TicketSharedUser, TicketTitleEvent
-from ticketvise.models.user import User, UserInbox, Role
+    TicketAssigneeEvent, TicketLabelEvent, TicketLabel, TicketTitleEvent
+from ticketvise.models.user import User, Role
 from ticketvise.notifications import unread_related_ticket_notifications
-from ticketvise.views.api import DynamicFieldsModelSerializer
-from ticketvise.views.api.comment import CommentSerializer
+from ticketvise.views.api import CommentSerializer, TicketSerializer, LabelSerializer
 from ticketvise.views.api.inbox import InboxSerializer
-from ticketvise.views.api.labels import LabelSerializer
 from ticketvise.views.api.security import UserIsInInboxPermission, UserIsSuperUserPermission, \
     UserHasAccessToTicketPermission, UserIsInboxStaffPermission, UserIsTicketAuthorOrInboxStaffPermission, \
     UserIsAttachmentUploaderOrInboxStaffPermission
-from ticketvise.views.api.user import UserSerializer, RoleSerializer
+from ticketvise.views.api.user import UserSerializer, UserTicketSerializer
 
 
 class CreateTicketSerializer(ModelSerializer):
@@ -72,23 +69,6 @@ class CreateTicketSerializer(ModelSerializer):
         return shared_with
 
 
-class TicketAttachmentSerializer(ModelSerializer):
-    uploader = UserSerializer(read_only=True, fields=(["first_name", "last_name", "username", "avatar_url", "id"]))
-
-    class Meta:
-        model = TicketAttachment
-        fields = ["id", "file", "uploader", "date_created"]
-
-
-class TicketSharedUserSerializer(ModelSerializer):
-    user = UserSerializer(read_only=True, fields=(["first_name", "last_name", "username", "avatar_url", "id"]))
-    sharer = UserSerializer(read_only=True, fields=(["first_name", "last_name", "username", "avatar_url", "id"]))
-
-    class Meta:
-        model = TicketSharedUser
-        fields = ["id", "user", "sharer", "date_created"]
-
-
 class AssigneeUpdateSerializer(ModelSerializer):
     class Meta:
         model = Ticket
@@ -115,105 +95,6 @@ class PublishRequestUpdateSerializer(ModelSerializer):
         elif not initiator.is_assistant_or_coordinator(inbox):
             raise ValidationError("You don't have the right permissions to request a publish")
         return initiator
-
-
-class TicketSerializer(DynamicFieldsModelSerializer):
-    """
-    Allows data to be converted into Python datatypes for the ticket.
-    """
-    author = UserSerializer(read_only=True, fields=(["first_name", "last_name", "username", "avatar_url", "id"]))
-    shared_with = UserSerializer(read_only=True, many=True,
-                                 fields=(["first_name", "last_name", "username", "avatar_url", "id"]))
-    publish_request_initiator = UserSerializer(fields=(["first_name", "last_name", "avatar_url", "id"]))
-    assignee = serializers.SerializerMethodField()
-    labels = serializers.SerializerMethodField()
-    participants = serializers.SerializerMethodField()
-    author_role = serializers.SerializerMethodField()
-    attachments = serializers.SerializerMethodField()
-    shared_with_by = TicketSharedUserSerializer(many=True, read_only=True)
-    date_latest_update = serializers.SerializerMethodField()
-
-    def get_author_role(self, obj):
-        author_role = UserInbox.objects.get(user=obj.author, inbox=obj.inbox).role
-        return RoleSerializer(author_role).data
-
-    def get_participants(self, obj):
-        participants = list(User.objects.filter(comments__ticket=obj).distinct())
-
-        if obj.author not in participants:
-            participants.append(obj.author)
-
-        for user in obj.shared_with.all():
-            if user not in participants:
-                participants.append(user)
-
-        return UserSerializer(participants, many=True,
-                              fields=(["first_name", "last_name", "username", "avatar_url", "id"])).data
-
-    def get_labels(self, obj):
-        user = CurrentUserMiddleware.get_current_user()
-        labels = obj.labels.filter(is_active=True)
-        if user and not user.is_assistant_or_coordinator(obj.inbox):
-            labels = labels.filter(is_visible_to_guest=True)
-            return LabelSerializer(labels, many=True, read_only=True).data
-        return LabelSerializer(labels, many=True, read_only=True).data
-
-    def get_assignee(self, obj):
-        user = CurrentUserMiddleware.get_current_user()
-
-        if user and (user.is_assistant_or_coordinator(obj.inbox) or obj.inbox.show_assignee_to_guest):
-            return UserSerializer(obj.assignee,
-                                  fields=(["first_name", "last_name", "username", "avatar_url", "id"])).data
-
-        return None
-
-    def get_attachments(self, obj):
-        user = CurrentUserMiddleware.get_current_user()
-
-        if user and \
-                (user.is_assistant_or_coordinator(obj.inbox) or
-                 user.id == obj.author.id or
-                 obj.shared_with.filter(id=user.id).exists()):
-            return TicketAttachmentSerializer(many=True, read_only=True).data
-        elif obj.is_public:
-            return TicketAttachmentSerializer(fields=["id", "file", "date_created"], many=True, read_only=True).data
-
-        return None
-
-    def get_date_latest_update(self, obj):
-        user = CurrentUserMiddleware.get_current_user()
-        latest_dates = []
-
-        events = TicketEvent.objects.filter(ticket=obj).values_list("date_edited", flat=True)
-        if events:
-            latest_dates.append(max(events))
-
-        replies = Comment.objects.filter(ticket=obj, is_reply=True).values_list("date_edited", flat=True)
-        if replies:
-            latest_dates.append(max(replies))
-
-        if user and user.is_assistant_or_coordinator(obj.inbox):
-            comments = Comment.objects.filter(ticket=obj, is_reply=False).values_list("date_edited", flat=True)
-            if comments:
-                latest_dates.append(max(comments))
-
-        return max(latest_dates)
-
-    class Meta:
-        """
-        Define the model and fields.
-
-        :var Ticket model: The model.
-        :var list fields: Field defined to the model.
-        """
-
-        #: Tells the serializer to use the :class:`Ticket` model.
-        model = Ticket
-        #: Tells the serializer to use these fields from the :class:`Ticket` model.
-        fields = ["id", "inbox", "title", "ticket_inbox_id", "author", "content", "date_created", "status", "labels",
-                  "assignee", "shared_with", "participants", "author_role", "attachments", "shared_with_by",
-                  "is_pinned", "pin_initiator", "attachments", "is_public", "publish_request_initiator",
-                  "publish_request_created", "is_anonymous", "date_latest_update"]
 
 
 class InboxTicketsApiView(ListAPIView):
@@ -727,3 +608,8 @@ class PinUnpinTicketAPIView(UpdateAPIView):
             ticket.pin_initiator = request.user
         ticket.save()
         return super().update(request, *args, **kwargs)
+
+
+class SubscribeToTicketAPIView(CreateAPIView):
+    permission_classes = UserHasAccessToTicketPermission
+    serializer_class = UserTicketSerializer
