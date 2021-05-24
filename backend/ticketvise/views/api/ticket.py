@@ -19,7 +19,7 @@ from django.db.models import Exists, OuterRef, Q
 from django.http import JsonResponse, Http404
 from django.shortcuts import get_object_or_404
 from django.utils import timezone
-from rest_framework import serializers
+from rest_framework import serializers, status
 from rest_framework.generics import UpdateAPIView, ListAPIView, RetrieveAPIView, CreateAPIView, DestroyAPIView
 from rest_framework.response import Response
 from rest_framework.serializers import ModelSerializer
@@ -30,7 +30,7 @@ from ticketvise.models.inbox import Inbox, SchedulingAlgorithm
 from ticketvise.models.label import Label
 from ticketvise.models.ticket import Ticket, TicketAttachment, TicketEvent, Status, TicketStatusEvent, \
     TicketAssigneeEvent, TicketLabelEvent, TicketLabel, TicketTitleEvent
-from ticketvise.models.user import User, Role
+from ticketvise.models.user import User, Role, UserTicket
 from ticketvise.notifications import unread_related_ticket_notifications
 from ticketvise.views.api import CommentSerializer, TicketSerializer, LabelSerializer
 from ticketvise.views.api.inbox import InboxSerializer
@@ -611,5 +611,52 @@ class PinUnpinTicketAPIView(UpdateAPIView):
 
 
 class SubscribeToTicketAPIView(CreateAPIView):
-    permission_classes = UserHasAccessToTicketPermission
+    permission_classes = [UserHasAccessToTicketPermission]
     serializer_class = UserTicketSerializer
+
+    def create(self, request, *args, **kwargs):
+        inbox = get_object_or_404(Inbox, pk=self.kwargs["inbox_id"])
+        ticket = Ticket.objects.get(inbox=inbox, ticket_inbox_id=self.kwargs["ticket_inbox_id"])
+
+        if ticket in self.request.user.subscribed_tickets.all():
+            subscription = UserTicket.objects.get(user=self.request.user, ticket=ticket)
+            if subscription.date_removed:
+                # User has been subscribed and unsubscribed from ticket,
+                # Resubscribe by removing date_removed
+                subscription.date_removed = None
+                subscription.save()
+                serializer = self.get_serializer(subscription)
+                headers = self.get_success_headers(serializer.data)
+                return Response(serializer.data, status=status.HTTP_200_OK, headers=headers)
+            else:
+                # User is already subscribed
+                self.permission_denied(self.request)
+
+        # Create subscription
+        subscription = UserTicket.objects.create(user=self.request.user, ticket=ticket)
+        serializer = self.get_serializer(subscription)
+
+        headers = self.get_success_headers(serializer.data)
+        return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+
+
+class UnsubscribeFromTicketAPIView(UpdateAPIView):
+    permission_classes = [UserHasAccessToTicketPermission]
+    serializer_class = UserTicketSerializer
+
+    def get_object(self):
+        inbox = get_object_or_404(Inbox, pk=self.kwargs["inbox_id"])
+        ticket = get_object_or_404(Ticket, inbox=inbox, ticket_inbox_id=self.kwargs["ticket_inbox_id"])
+
+        return get_object_or_404(UserTicket, user=self.request.user, ticket=ticket)
+
+    def update(self, request, *args, **kwargs):
+        # Remove subscription by setting date_removed, keeping the record.
+        subscription = self.get_object()
+
+        subscription.date_removed = timezone.now()
+        subscription.save()
+
+        serializer = self.get_serializer(subscription)
+
+        return Response(serializer.data)

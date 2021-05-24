@@ -228,13 +228,6 @@ class User(AbstractUser):
         relationship.role = role
         relationship.save()
 
-    def add_subscription(self, ticket):
-        if ticket in self.subscribed_tickets.all():
-            raise ValueError(f"User is already subscribed to the ticket {ticket.ticket_inbox_id}")
-
-        subscription = UserTicket(user=self, ticket=ticket)
-        subscription.save()
-
 
 class UserInbox(models.Model):
     """
@@ -257,7 +250,7 @@ class UserInbox(models.Model):
 class UserTicket(models.Model):
     user = models.ForeignKey(User, related_name="ticket_relationship", on_delete=models.CASCADE)
     ticket = models.ForeignKey("Ticket", related_name="user_relationship", on_delete=models.CASCADE)
-    date_edited = models.DateTimeField(auto_now=True)
+    date_removed = models.DateTimeField(auto_now_add=False, null=True, default=None)
     date_created = models.DateTimeField(auto_now_add=True)
 
     class Meta:

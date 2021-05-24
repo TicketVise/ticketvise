@@ -34,7 +34,7 @@ class UserTicketSerializer(ModelSerializer):
 
     class Meta:
         model = UserTicket
-        fields = ["user", "ticket", "date_created", "date_edited"]
+        fields = ["user", "ticket", "date_created", "date_removed"]
 
 
 class UserNotificationSettingsSerializer(ModelSerializer):
