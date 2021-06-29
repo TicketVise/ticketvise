@@ -30,7 +30,17 @@ services:
         protocol: tcp
         mode: host
 
+  s3:
+    image: minio/minio
+    volumes:
+      - minio_data:/data
+    ports:
+      - 9000:9000
+    command: server /data
+
+
 volumes:
   static:
   media:
   postgres_data:
+  minio_data:

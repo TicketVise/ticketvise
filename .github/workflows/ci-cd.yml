@@ -93,6 +93,8 @@ jobs:
           LTI_SECRET: ${{ secrets.LTI_SECRET_DEV }}
           GIT_DIGEST: ${{ steps.git-sha7.outputs.sha7 }}
           EMAIL_PASSWORD: ${{ secrets.EMAIL_PASSWORD }}
+          MINIO_ACCESS_KEY: ${{ MINIO_ACCESS_KEY_DEV }}
+          MINIO_SECRET_KEY: ${{ MINIO_SECRET_KEY_DEV }}
           DOMAIN: dev.ticketvise.com
           SENTRY_DSN: ${{ secrets.SENTRY_DSN_BACKEND }}
         with:
@@ -112,6 +114,8 @@ jobs:
           LTI_SECRET: ${{ secrets.LTI_SECRET }}
           GIT_DIGEST: ${{ steps.git-sha7.outputs.sha7 }}
           EMAIL_PASSWORD: ${{ secrets.EMAIL_PASSWORD }}
+          MINIO_ACCESS_KEY: ${{ MINIO_ACCESS_KEY }}
+          MINIO_SECRET_KEY: ${{ MINIO_SECRET_KEY }}
           DOMAIN: uva.ticketvise.com
           SENTRY_DSN: ${{ secrets.SENTRY_DSN_BACKEND }}
         with:

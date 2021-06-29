@@ -50,3 +50,8 @@ services:
     image: ticketvise/cronjob
     build: ./cronjob
     command: sh -c "env > /etc/environment && cron -f"
+
+  s3:
+    environment:
+      MINIO_ACCESS_KEY: minio
+      MINIO_SECRET_KEY: Welkom01
