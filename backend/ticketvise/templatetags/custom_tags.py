@@ -9,5 +9,5 @@ register = template.Library()
 
 @register.filter(is_safe=True)
 @stringfilter
-def convert_markdown(value):
+def convert_markdown_to_html(value):
     return mark_safe(markdown.markdown(value))

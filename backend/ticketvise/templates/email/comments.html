@@ -257,7 +257,7 @@
                                     <div
                                             style="font-family:helvetica;font-size:16px;line-height:1;text-align:left;color:#1a202c;"
                                     >
-                                        <mj-raw>{{ ticket.content|convert_markdown }}</mj-raw>
+                                        <mj-raw>{{ ticket.content|convert_markdown_to_html }}</mj-raw>
                                     </div>
 
                                 </td>
@@ -353,7 +353,7 @@
                                         <div
                                                 style="font-family:helvetica;font-size:14px;line-height:1;text-align:left;color:#1a202c;"
                                         >
-                                            <mj-raw>{{ comment.content|convert_markdown }}</mj-raw>
+                                            <mj-raw>{{ comment.content|convert_markdown_to_html }}</mj-raw>
                                         </div>
 
                                     </td>
