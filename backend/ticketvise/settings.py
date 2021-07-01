@@ -141,7 +141,7 @@ AWS_STORAGE_BUCKET_NAME = os.environ.get("AWS_STORAGE_BUCKET_NAME", "dev")
 
 AWS_ACCESS_KEY_ID = os.environ.get("MINIO_ACCESS_KEY", "minio")
 AWS_SECRET_ACCESS_KEY = os.environ.get("MINIO_SECRET_KEY", "Welkom01")
-AWS_S3_ENDPOINT_URL = os.environ.get("MINIO_ENDPOINT_URL", "http://localhost:9000")
+AWS_S3_ENDPOINT_URL = os.environ.get("MINIO_ENDPOINT_URL", "http://s3:9000")
 
 AWS_MEDIA_LOCATION = 'media'
 MEDIA_URL = f"{AWS_S3_ENDPOINT_URL}/{AWS_MEDIA_LOCATION}/"
