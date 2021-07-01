@@ -55,3 +55,5 @@ services:
     environment:
       MINIO_ACCESS_KEY: minio
       MINIO_SECRET_KEY: Welkom01
+      MINIO_ENDPOINT_URL: http://minio:9000
+      AWS_STORAGE_BUCKET_NAME: dev

@@ -11,5 +11,3 @@ class TicketViseConfig(AppConfig):
         if not self.smtp_server:
             self.smtp_server = SmtpServer()
         self.smtp_server.start()
-
-
