@@ -1,6 +1,5 @@
 import Vue from 'vue'
 import 'alpinejs'
-import './email/index.js'
 import App from "./App";
 import store from "./store";
 import router from "./router";

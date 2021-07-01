@@ -47,26 +47,26 @@ services:
       DOMAIN: ${DOMAIN}
       SENTRY_DSN: ${SENTRY_DSN}
 
-  cronjob:
-    image: "ticketvise/cronjob:sha-${GIT_DIGEST}"
-    command: sh -c "env > /etc/environment && cron -f"
-    deploy:
-      restart_policy:
-        condition: on-failure
-        delay: 5s
-        max_attempts: 5
-        window: 10s
-    environment:
-      DEBUG: 0
-      SEND_MAIL: 1
-      DJANGO_SECRET: ${DJANGO_SECRET}
-      SMTP_OUTBOUND_PASSWORD: ${EMAIL_PASSWORD}
-      SQL_USER: ${SQL_USER}
-      SQL_PASSWORD: ${SQL_PASSWORD}
-      LTI_KEY: ${LTI_KEY}
-      LTI_SECRET: ${LTI_SECRET}
-      DOMAIN: ${DOMAIN}
-      SENTRY_DSN: ${SENTRY_DSN}
+#  cronjob:
+#    image: "ticketvise/cronjob:sha-${GIT_DIGEST}"
+#    command: sh -c "env > /etc/environment && cron -f"
+#    deploy:
+#      restart_policy:
+#        condition: on-failure
+#        delay: 5s
+#        max_attempts: 5
+#        window: 10s
+#    environment:
+#      DEBUG: 0
+#      SEND_MAIL: 1
+#      DJANGO_SECRET: ${DJANGO_SECRET}
+#      SMTP_OUTBOUND_PASSWORD: ${EMAIL_PASSWORD}
+#      SQL_USER: ${SQL_USER}
+#      SQL_PASSWORD: ${SQL_PASSWORD}
+#      LTI_KEY: ${LTI_KEY}
+#      LTI_SECRET: ${LTI_SECRET}
+#      DOMAIN: ${DOMAIN}
+#      SENTRY_DSN: ${SENTRY_DSN}
 
   proxy:
     image: "ticketvise/proxy:sha-${GIT_DIGEST}"

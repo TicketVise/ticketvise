@@ -46,7 +46,7 @@ services:
     environment:
       DOMAIN: ticketvise.com
 
-  cronjob:
-    image: ticketvise/cronjob
-    build: ./cronjob
-    command: sh -c "env > /etc/environment && cron -f"
+#  cronjob:
+#    image: ticketvise/cronjob
+#    build: ./cronjob
+#    command: sh -c "env > /etc/environment && cron -f"
