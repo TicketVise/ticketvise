@@ -1,5 +1,6 @@
 FROM alpine:3
 
+# Updating and installing packages
 RUN apk update && apk upgrade
 RUN apk add --no-cache bash postfix
 
@@ -37,30 +38,29 @@ RUN postconf -e "disable_vrfy_command = yes"
 
 # SMTP restriction for antispam.
 RUN postconf -e "smtpd_relay_restrictions = \
-    permit_mynetworks, \
-    permit_sasl_authenticated, \
-    reject_unknown_sender_domain, \
-    reject_unauth_destination"
+                    permit_mynetworks, \
+                    permit_sasl_authenticated, \
+                    reject_unknown_sender_domain, \
+                    reject_unauth_destination"
 
 RUN postconf -e "smtpd_recipient_restrictions = \
-    permit_mynetworks, \
-    reject_non_fqdn_helo_hostname, \
-    reject_non_fqdn_sender, \
-    reject_non_fqdn_recipient, \
-    reject_unknown_reverse_client_hostname, \
-    reject_invalid_helo_hostname, \
-    reject_unknown_helo_hostname, \
-    reject_unknown_sender_domain, \
-    reject_unknown_recipient_domain, \
-    reject_rbl_client cbl.abuseat.org, \
-    reject_rbl_client sbl.spamhaus.org, \
-    reject_rbl_client pbl.spamhaus.org, \
-    permit"
+                    permit_mynetworks, \
+                    reject_non_fqdn_helo_hostname, \
+                    reject_non_fqdn_sender, \
+                    reject_non_fqdn_recipient, \
+                    reject_unknown_reverse_client_hostname, \
+                    reject_invalid_helo_hostname, \
+                    reject_unknown_helo_hostname, \
+                    reject_unknown_sender_domain, \
+                    reject_unknown_recipient_domain, \
+                    reject_rbl_client cbl.abuseat.org, \
+                    reject_rbl_client sbl.spamhaus.org, \
+                    reject_rbl_client pbl.spamhaus.org, \
+                    permit"
 
 RUN postconf -e "smtpd_data_restrictions = \
-    reject_unauth_pipelining, \
-    permit"
+                    reject_unauth_pipelining, \
+                    permit"
 
 EXPOSE 25/tcp 465/tcp 587/tcp
-
 CMD ["postfix", "start-fg"]
