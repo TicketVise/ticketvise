@@ -43,5 +43,3 @@ services:
   mail:
     image: ticketvise/mail
     build: ./mail
-    environment:
-      DOMAIN: ticketvise.com

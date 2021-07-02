@@ -1,27 +1,23 @@
 FROM alpine:3
 
+# Transfer start up script
+COPY docker-entrypoint.sh /
+
 # Updating and installing packages
 RUN apk update && apk upgrade
 RUN apk add --no-cache bash postfix
 
-# Basic config
-RUN postconf -e "myhostname = mail.ticketvise.com"
-RUN postconf -e "myorigin = ticketvise.com"
-RUN postconf -e "inet_protocols = ipv4"
+# Log to stdout to show up in docker logs
+RUN postconf -e "maillog_file = /dev/stdout"
 
-# Log to stdout
-RUN postconf -e "maillog_file=/dev/stdout"
-
-# Disable local mail delivery
+# Disable local mail delivery for improved security
 RUN postconf -e "mydestination ="
 RUN postconf -e "local_recipient_maps ="
 RUN postconf -e "local_transport = error:local mail delivery is disabled"
 
-# Relay all incomming mail to web container
+# Relay all incomming mail to web container (only allowing $relay_domains, set in start up script)
 RUN echo "* smtp:[web]:2525" > /etc/postfix/transport
-RUN postconf -e "relay_domains = ticketvise.com"
 RUN postconf -e "transport_maps = lmdb:/etc/postfix/transport"
-RUN postconf -e "relay_recipient_maps ="
 RUN postmap lmdb:/etc/postfix/transport
 
 # Required SMTP client to start with HELO command and comply with the restrictions.
@@ -62,5 +58,6 @@ RUN postconf -e "smtpd_data_restrictions = \
                     reject_unauth_pipelining, \
                     permit"
 
-EXPOSE 25/tcp 465/tcp 587/tcp
+EXPOSE 25 465 587
+ENTRYPOINT ["/docker-entrypoint.sh"]
 CMD ["postfix", "start-fg"]
