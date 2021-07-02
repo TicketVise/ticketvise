@@ -3,7 +3,7 @@ Test Notifications
 -------------------------------
 This file tests the notification functionality on the website.
 """
-
+from django.core import mail
 from django.test import TestCase
 from rest_framework.test import APIClient
 
@@ -49,7 +49,7 @@ class NotificationsTestCase(TestCase):
         self.ticket = Ticket.objects.create(author=self.student, assignee=self.ta2,
                                             title="How to code?",
                                             inbox=self.inbox, content="wat is 1+1?")
-        self.comment = Comment.objects.create(ticket=self.ticket, author=self.ta2, content="Hello World")
+        self.comment = Comment.objects.create(ticket=self.ticket, author=self.ta2, content="# Hello World")
 
         self.ticket_2 = Ticket.objects.create(author=self.student, assignee=self.ta,
                                               title="How to code v2?",
@@ -224,6 +224,10 @@ class NotificationsTestCase(TestCase):
         self.assertEqual(mention_notification.content,
                          f"You have been mentioned by {comment.author.get_full_name()}")
         self.assertEqual(mention_notification.inbox, self.ticket.inbox)
+
+        # Checking if email is send and markdown content is converted to HTML
+        self.assertNotEqual(len(mail.outbox), 0)
+        self.assertInHTML('<h1>Hello World</h1>', mail.outbox[-1].alternatives[0][0])
 
     def test_getters_assigned_notifications(self):
         """
