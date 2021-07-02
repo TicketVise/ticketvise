@@ -42,7 +42,7 @@ services:
 
   mail:
     image: ticketvise/mail
-    build: ./postfix
+    build: ./mail
     environment:
       DOMAIN: ticketvise.com
 
