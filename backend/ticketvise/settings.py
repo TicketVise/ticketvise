@@ -132,7 +132,8 @@ DEFAULT_INBOX_IMAGE_PATH = "/static/img/inboxes/default-inbox.png"
 #: Directory for uploaded inbox images.
 INBOX_IMAGE_DIRECTORY = "media/img/inboxes"
 #: Set max upload size for files
-FILE_UPLOAD_MAX_MEMORY_SIZE = 314572800
+AWS_S3_MAX_MEMORY_SIZE = 314572800
+AWS_S3_FILE_OVERWRITE = False
 
 # S3 config
 DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
@@ -142,10 +143,12 @@ AWS_STORAGE_BUCKET_NAME = os.environ.get("AWS_STORAGE_BUCKET_NAME", "dev")
 AWS_ACCESS_KEY_ID = os.environ.get("MINIO_ACCESS_KEY", "minio")
 AWS_SECRET_ACCESS_KEY = os.environ.get("MINIO_SECRET_KEY", "Welkom01")
 AWS_S3_ENDPOINT_URL = os.environ.get("MINIO_ENDPOINT_URL", "http://s3:9000")
-AWS_QUERYSTRING_AUTH = False
+AWS_S3_CUSTOM_DOMAIN = f"localhost:9000/{AWS_STORAGE_BUCKET_NAME}"
+AWS_S3_SECURE_URLS = False
 
+AWS_QUERYSTRING_AUTH = False
 AWS_MEDIA_LOCATION = 'media'
-MEDIA_URL = f"{AWS_S3_ENDPOINT_URL}/{AWS_MEDIA_LOCATION}/"
+# MEDIA_URL = f"{AWS_S3_ENDPOINT_URL}/{AWS_MEDIA_LOCATION}/"
 
 
 #: Password validation
