@@ -106,7 +106,7 @@ services:
       MINIO_ENDPOINT_URL: ${MINIO_ENDPOINT_URL}
       AWS_STORAGE_BUCKET_NAME: ${AWS_STORAGE_BUCKET_NAME}
     healthcheck:
-      test: [ "CMD", "curl", "-f", "http://localhost:9000/minio/health/live" ]
+      test: [ "CMD", "curl", "-f", ${MINIO_ENDPOINT_URL}"/minio/health/live" ]
       interval: 30s
       timeout: 20s
       retries: 3
