@@ -195,7 +195,7 @@ SMTP_INBOUND_PORT = os.getenv("SMTP_INBOUND_PORT", 2525)
 if SEND_MAIL:
     EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 else:
-    EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+    EMAIL_BACKEND = 'django.core.mail.backends.locmem.EmailBackend'
 EMAIL_HOST = os.getenv("SMTP_OUTBOUND_HOST", "smtp.sendgrid.net")
 EMAIL_PORT = os.getenv("SMTP_OUTBOUND_PORT", 587)
 EMAIL_HOST_USER = os.getenv("SMTP_OUTBOUND_USER", "apikey")

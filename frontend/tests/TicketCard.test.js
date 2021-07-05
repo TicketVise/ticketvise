@@ -45,18 +45,16 @@ it("card content with assignee", () => {
         mocks: {
             $route: mockRoute,
             $router: mockRouter
-        }, propsData: {ticket: ticketData}
+        },
+        propsData: {ticket: ticketData},
+        stubs: ['router-link', 'router-view']
     });
 
     expect(wrapper.find("span").text()).toContain(ticketData.ticket_inbox_id);
     let headers = wrapper.findAll("h3");
-    expect(headers.length).toBe(2);
-    expect(headers.at(0).text()).toContain(calendarDate(ticketData.date_created));
-    expect(headers.at(1).text()).toContain("Assignee:");
-    expect(headers.at(1).text()).toContain(ticketData.assignee.first_name);
-    expect(headers.at(1).text()).toContain(ticketData.assignee.last_name);
-
-    expect(wrapper.find("router-link").text()).toBe(ticketData.title);
+    expect(headers.length).toBe(1);
+    expect(headers.at(0).text()).toContain(ticketData.author.first_name);
+    expect(headers.at(0).text()).toContain(ticketData.author.last_name);
 
     for (let i = 0; i < ticketData.labels.length; i++) {
         expect(wrapper.find("div").html()).toContain(ticketData.labels[i].name)
@@ -84,41 +82,3 @@ it("card content without assignee", () => {
 });
 
 ticketData.labels = [];
-
-it("card content without labels", () => {
-        const mockRoute = {
-        params: {
-            inboxId: 1
-        }
-    }
-    const mockRouter = {
-        push: jest.fn()
-    }
-    const wrapper = shallowMount(TicketCard, {        mocks: {
-            $route: mockRoute,
-            $router: mockRouter
-        },propsData: {ticket: ticketData}});
-
-    expect(wrapper.find("div").html()).toBe("<div class=\"space-x-1 select-none\"></div>")
-});
-
-it("card content small", () => {
-        const mockRoute = {
-        params: {
-            inboxId: 1
-        }
-    }
-    const mockRouter = {
-        push: jest.fn()
-    }
-    const wrapper = shallowMount(TicketCard, {
-      mocks: {
-        $route: mockRoute,
-        $router: mockRouter
-      }
-    ,propsData: {ticket: ticketData, small: true}});
-
-    expect(wrapper.find("span").text()).toBe(`#${ticketData.ticket_inbox_id}`);
-    expect(wrapper.find("div").exists()).toBeFalsy()
-});
-

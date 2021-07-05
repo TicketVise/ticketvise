@@ -103,7 +103,6 @@ class InboxesApiView(ListAPIView):
 
 class InboxUsersApiView(ListAPIView):
     serializer_class = UserInboxSerializer
-    pagination_class = StandardResultsSetPagination
     permission_classes = [UserIsInboxStaffPermission]
 
     def get_queryset(self):

@@ -26,7 +26,7 @@
           <div class="mt-2 sm:mt-0 sm:ml-4 space-x-4 hidden sm:flex">
             <span class="shadow-sm rounded-md">
               <a href="/admin/django"
-                class="inline-flex items-center px-4 py-2 border border-gray-300 text-sm leading-5 font-medium rounded-md text-gray-700 bg-white hover:text-gray-500 focus:outline-none focus:shadow-outline-blue focus:border-blue-300 active:text-gray-800 active:bg-gray-50 transition duration-150 ease-in-out">
+                class="inline-flex items-center px-4 py-2 border border-gray-300 text-sm leading-5 font-medium rounded-md text-gray-700 bg-white hover:text-gray-500 focus:outline-none focus:ring-blue focus:border-blue-300 active:text-gray-800 active:bg-gray-50 transition duration-150 ease-in-out">
                 <i class="fa fa-cog mr-2"></i>
                 Django admin
               </a>

@@ -1,10 +1,13 @@
-import {mount} from "@vue/test-utils";
+import { shallowMount, mount } from "@vue/test-utils";
 import TicketOverview from "../components/inbox/TicketOverview";
 import SearchBar from "../components/elements/SearchBar";
 import LabelDropdown from "../components/elements/dropdown/LabelDropdown";
 import SubmitButton from "../components/elements/buttons/SubmitButton";
 import TicketColumn from "../components/inbox/TicketColumn";
-import TicketList from "../components/inbox/TicketList";
+
+shallowMount(TicketColumn, {
+    stubs: ['router-link', 'router-view']
+})
 
 const colorData = ["#e76f51", "#e9c46a", "#2a9d8f", "#264653"];
 const inboxLabelsData = [{"name": "Assignment", "color": "#00ffcd", "id": 9}, {
@@ -166,33 +169,7 @@ it("Listview change", async () => {
     });
 
     let buttons = wrapper.findAll("button");
-    let listButtonMobile = buttons.at(1);
-    let myTicketsButton = buttons.at(3);
-    let ListButton = buttons.at(4);
+    let myTicketsButton = buttons.at(1);
 
     expect(myTicketsButton.html()).toContain("My Tickets");
-
-    expect(wrapper.vm.list).toBeFalsy();
-    await ListButton.trigger("click");
-    await wrapper.vm.$nextTick();
-    expect(wrapper.vm.list).toBeTruthy();
-
-    await ListButton.trigger("click");
-    await wrapper.vm.$nextTick();
-    expect(wrapper.vm.list).toBeFalsy();
-
-    expect(wrapper.vm.list).toBeFalsy();
-    await listButtonMobile.trigger("click");
-    await wrapper.vm.$nextTick();
-    expect(wrapper.vm.list).toBeTruthy();
-
-    let columns = wrapper.findAllComponents(TicketColumn);
-    expect(columns.length).toBe(0);
-
-    let lists = wrapper.findAllComponents(TicketList);
-    expect(lists.length).toBe(ticketsData.length);
-
-    await listButtonMobile.trigger("click");
-    await wrapper.vm.$nextTick();
-    expect(wrapper.vm.list).toBeFalsy();
 });

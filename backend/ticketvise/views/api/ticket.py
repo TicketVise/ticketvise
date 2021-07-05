@@ -29,7 +29,7 @@ from ticketvise.models.comment import Comment
 from ticketvise.models.inbox import Inbox, SchedulingAlgorithm
 from ticketvise.models.label import Label
 from ticketvise.models.ticket import Ticket, TicketAttachment, TicketEvent, Status, TicketStatusEvent, \
-    TicketAssigneeEvent, TicketLabelEvent, TicketLabel, TicketSharedUser
+    TicketAssigneeEvent, TicketLabelEvent, TicketLabel, TicketSharedUser, TicketTitleEvent
 from ticketvise.models.user import User, UserInbox, Role
 from ticketvise.notifications import unread_related_ticket_notifications
 from ticketvise.views.api import DynamicFieldsModelSerializer
@@ -100,6 +100,12 @@ class AssigneeUpdateSerializer(ModelSerializer):
         elif not assignee.is_assistant_or_coordinator(inbox):
             raise ValidationError("User doesn't have the right permissions to be assigned to this ticket")
         return assignee
+
+
+class TicketTitleUpdateSerializer(ModelSerializer):
+    class Meta:
+        model = Ticket
+        fields = ["title"]
 
 
 class TicketSerializer(DynamicFieldsModelSerializer):
@@ -279,7 +285,7 @@ class InboxTicketsApiView(ListAPIView):
                 "label": status.label,
                 "tickets": TicketSerializer(
                     query_set.filter(status=status)[:self.page_size], many=True, fields=(
-                        "id", "title", "name", "assignee", "ticket_inbox_id", "date_created", "labels")).data
+                        "id", "title", "name", "assignee", "author", "ticket_inbox_id", "date_created", "labels")).data
             } for status in Status if status != Status.PENDING
                                       or (inbox.scheduling_algorithm == SchedulingAlgorithm.FIXED
                                           and inbox.fixed_scheduling_assignee is None)
@@ -362,6 +368,40 @@ class TicketApiView(RetrieveAPIView):
                 response["comments"] = comments_data
 
         return Response(response)
+
+
+class UserTicketsApiView(ListAPIView):
+    """
+    Retrieve every ticket from a user in an inbox.
+    """
+    serializer_class = TicketSerializer
+    permission_classes = [UserIsInboxStaffPermission]
+
+    def get_queryset(self):
+        author = get_object_or_404(User, pk=self.kwargs["user_id"])
+        inbox = get_object_or_404(Inbox, pk=self.kwargs["inbox_id"])
+
+        return Ticket.objects.filter(author=author, inbox=inbox).order_by("-date_created")
+
+
+class UserAverageApiView(RetrieveAPIView):
+    """
+    Return the number of average tickets per inbox for a given user.
+    """
+    permission_classes = [UserIsInboxStaffPermission]
+
+    def retrieve(self, request, *args, **kwargs):
+        author = get_object_or_404(User, pk=kwargs["user_id"])
+
+        total = []
+        inboxes = UserInbox.objects.filter(user=author)
+        for inb in inboxes:
+            total.append(Ticket.objects.filter(author=author, inbox=inb.inbox).count())
+
+        if len(total) == 0:
+            return Response({ "average": 0 })
+
+        return Response({ "average": sum(total) / len(total) })
 
 
 class RecentTicketApiView(ListAPIView):
@@ -526,6 +566,14 @@ class TicketLabelEventSerializer(ModelSerializer):
         fields = ["id", "ticket", "initiator", "date_created", "label", "is_added"]
 
 
+class TicketTitleEventSerializer(ModelSerializer):
+    initiator = UserSerializer(read_only=True, fields=(["first_name", "last_name", "username", "avatar_url", "id"]))
+
+    class Meta:
+        model = TicketTitleEvent
+        fields = ["id", "ticket", "initiator", "date_created", "old_title", "new_title"]
+
+
 class TicketEventSerializer(ModelSerializer):
     initiator = UserSerializer(read_only=True, fields=(["first_name", "last_name", "username", "avatar_url", "id"]))
 
@@ -536,6 +584,8 @@ class TicketEventSerializer(ModelSerializer):
             return TicketAssigneeEventSerializer(instance=instance).data
         elif isinstance(instance, TicketLabelEvent):
             return TicketLabelEventSerializer(instance=instance).data
+        elif isinstance(instance, TicketTitleEvent):
+            return TicketTitleEventSerializer(instance=instance).data
 
         return super().to_representation(instance)
 
@@ -547,6 +597,16 @@ class TicketEventSerializer(ModelSerializer):
 class TicketSharedAPIView(UpdateAPIView):
     permission_classes = [UserIsTicketAuthorOrInboxStaffPermission]
     serializer_class = TicketSharedWithUpdateSerializer
+
+    def get_object(self):
+        inbox = get_object_or_404(Inbox, pk=self.kwargs["inbox_id"])
+
+        return Ticket.objects.get(inbox=inbox, ticket_inbox_id=self.kwargs["ticket_inbox_id"])
+
+
+class TicketTitleAPIView(UpdateAPIView):
+    permission_classes = [UserIsTicketAuthorOrInboxStaffPermission]
+    serializer_class = TicketTitleUpdateSerializer
 
     def get_object(self):
         inbox = get_object_or_404(Inbox, pk=self.kwargs["inbox_id"])

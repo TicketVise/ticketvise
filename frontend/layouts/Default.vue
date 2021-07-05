@@ -1,5 +1,5 @@
 <template>
-  <div class="flex flex-col h-screen">
+  <div class="flex flex-col min-h-screen">
     <nav class="bg-gray-800 sticky top-0 z-20">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex items-center justify-between h-16">
@@ -7,13 +7,13 @@
             <div class="flex-shrink-0">
               <router-link to="/" class="flex items-center">
                 <img class="h-8 w-8" src="/static/img/logo/logo.svg" alt="Logo">
-                <span class="text-2xl ml-2 text-white">Ticket</span><span
-                  class="text-2xl text-primary font-bold">Vise</span>
+                <span class="text-2xl ml-2 text-white">Ticket</span>
+                <span class="text-2xl text-primary font-bold">Vise</span>
               </router-link>
             </div>
             <div class="hidden md:block">
               <div class="ml-10 flex items-baseline space-x-4">
-                <router-link to="/inboxes"
+                <router-link to="/inboxes" exact
                              class="px-3 py-2 rounded-md text-sm font-medium text-gray-300 hover:text-white hover:bg-gray-700
                  focus:outline-none focus:text-white focus:bg-gray-700"
                              active-class="text-white bg-gray-900">Inboxes
@@ -46,9 +46,9 @@
                   </button>
                   <div class="origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg"
                        v-show="openSupport" @click="toggleSupport()">
-                    <div class="py-1 rounded-md bg-white shadow-xs" role="menu" aria-orientation="vertical"
+                    <div class="py-1 rounded-md bg-white ring-1 ring-black ring-opacity-5" role="menu" aria-orientation="vertical"
                          aria-labelledby="user-menu">
-                      <a href="https://ticketvise.com/getting-started/" target="_blank"
+                      <a href="https://ticketvise.com/getting-started/" target="_blank" rel="noopener"
                                    class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                                    role="menuitem">Getting started
                       </a>
@@ -96,7 +96,7 @@
                 </div>
                 <div class="origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg"
                      v-show="openProfile" @click="toggleProfile()">
-                  <div class="py-1 rounded-md bg-white shadow-xs" role="menu" aria-orientation="vertical"
+                  <div class="py-1 rounded-md bg-white ring-1 ring-black ring-opacity-5" role="menu" aria-orientation="vertical"
                        aria-labelledby="user-menu">
                     <router-link to="/account" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                                  role="menuitem">Account
@@ -187,7 +187,7 @@
     </nav>
 
     <div class="h-full overflow-y-auto">
-      <slot></slot>
+      <slot />
     </div>
   </div>
 </template>
@@ -250,7 +250,3 @@ export default {
   }
 }
 </script>
-
-<style scoped>
-
-</style>

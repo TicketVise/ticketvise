@@ -6,7 +6,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     {% load static %}
     <link rel="shortcut icon" type="image/png" href="{% static 'favicon.png' %}"/>
-    <link rel="stylesheet" type="text/css" href="{% static 'styles.css' %}">
     <script type="text/javascript" src="{% static 'bundle.js' %}" async></script>
     <noscript>
         <style>
@@ -15,8 +14,9 @@
             }
         </style>
     </noscript>
+    <title>TicketVise</title>
 </head>
-<body class="overflow-y-hidden">
+<body>
 
 <noscript>
     <div class="bg-gray-100">
@@ -27,7 +27,7 @@
                     enable JavaScript in your browser.
                 </p>
                 <a href="https://enablejavascript.co/" target="_blank"
-                   class="inline-flex items-center px-4 py-2 border border-transparent leading-5 font-medium rounded-md text-white bg-primary hover:bg-orange-500 focus:outline-none focus:shadow-outline-orange focus:border-orange-700 active:bg-orange-700 transition duration-150 ease-in-out">
+                   class="inline-flex items-center px-4 py-2 border border-transparent leading-5 font-medium rounded-md text-white bg-primary hover:bg-orange-500 focus:outline-none focus:ring-orange focus:border-orange-700 active:bg-orange-700 transition duration-150 ease-in-out">
                     Enable JavaScript
                 </a>
             </div>

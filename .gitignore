@@ -267,9 +267,6 @@ styles.css
 bundle.js.map
 styles.css.map
 
-# Ignore generated emails
-backend/ticketvise/templates/email/*.html
-
 # Ignoring static content
 backend/ticketvise/static/admin
 backend/ticketvise/static/rest_framework
@@ -278,6 +275,3 @@ backend/ticketvise/static/bundle.js.LICENSE.txt
 backend/ticketvise/static/bundle.js.map
 backend/ticketvise/static/node_modules
 backend/static
-
-
-

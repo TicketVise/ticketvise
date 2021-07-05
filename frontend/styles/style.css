@@ -32,11 +32,6 @@
     -webkit-box-orient: vertical;
 }
 
-
-.ticket-column {
-    min-width: 340px !important;
-}
-
 .tickets-container {
     border-style: solid;
     border-color: #c9c9c9;

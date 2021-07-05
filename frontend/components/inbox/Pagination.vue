@@ -14,7 +14,7 @@
     <div v-if="page.previous || page.next">
       <nav class="relative z-0 inline-flex shadow-sm">
         <button type="button" v-if="page.previous" @click="$emit('go', 1)"
-                class="-ml-px relative inline-flex items-center rounded-l-md px-4 py-2 border border-gray-300 bg-white text-sm leading-5 font-medium text-gray-700 hover:text-gray-500 focus:z-10 focus:outline-none focus:border-blue-300 focus:shadow-outline-blue active:bg-gray-100 active:text-gray-700 transition ease-in-out duration-150">
+                class="-ml-px relative inline-flex items-center rounded-l-md px-4 py-2 border border-gray-300 bg-white text-sm leading-5 font-medium text-gray-700 hover:text-gray-500 focus:z-10 focus:outline-none focus:border-blue-300 focus:ring-blue active:bg-gray-100 active:text-gray-700 transition ease-in-out duration-150">
           1
         </button>
         <span v-if="page.previous"
@@ -22,7 +22,7 @@
           ...
         </span>
         <button type="button" v-if="page.previous" @click="$emit('go', page.page_number - 1)"
-                class="-ml-px relative inline-flex items-center px-2 py-2 border border-gray-300 bg-white text-sm leading-5 font-medium text-gray-500 hover:text-gray-400 focus:z-10 focus:outline-none focus:border-blue-300 focus:shadow-outline-blue active:bg-gray-100 active:text-gray-500 transition ease-in-out duration-150"
+                class="-ml-px relative inline-flex items-center px-2 py-2 border border-gray-300 bg-white text-sm leading-5 font-medium text-gray-500 hover:text-gray-400 focus:z-10 focus:outline-none focus:border-blue-300 focus:ring-blue active:bg-gray-100 active:text-gray-500 transition ease-in-out duration-150"
                 aria-label="Previous" v-bind:class="{'rounded-l-md' : !page.hasOwnProperty('previous')}">
           <svg class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
             <path fill-rule="evenodd"
@@ -36,7 +36,7 @@
           {{ page.page_number }}
         </span>
         <button type="button" v-if="page.next" @click="$emit('go', page.page_number + 1)"
-                class="-ml-px relative inline-flex items-center px-2 py-2 border border-gray-300 bg-white text-sm leading-5 font-medium text-gray-500 hover:text-gray-400 focus:z-10 focus:outline-none focus:border-blue-300 focus:shadow-outline-blue active:bg-gray-100 active:text-gray-500 transition ease-in-out duration-150"
+                class="-ml-px relative inline-flex items-center px-2 py-2 border border-gray-300 bg-white text-sm leading-5 font-medium text-gray-500 hover:text-gray-400 focus:z-10 focus:outline-none focus:border-blue-300 focus:ring-blue active:bg-gray-100 active:text-gray-500 transition ease-in-out duration-150"
                 aria-label="Next" v-bind:class="{'rounded-r-md' : !page.hasOwnProperty('next')}">
           <svg class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
             <path fill-rule="evenodd"
@@ -49,7 +49,7 @@
           ...
         </span>
         <button type="button" v-if="page.next" @click="$emit('go', page.total_pages)"
-                class="-ml-px relative inline-flex items-center rounded-r-md px-4 py-2 border border-gray-300 bg-white text-sm leading-5 font-medium text-gray-700 hover:text-gray-500 focus:z-10 focus:outline-none focus:border-blue-300 focus:shadow-outline-blue active:bg-gray-100 active:text-gray-700 transition ease-in-out duration-150">
+                class="-ml-px relative inline-flex items-center rounded-r-md px-4 py-2 border border-gray-300 bg-white text-sm leading-5 font-medium text-gray-700 hover:text-gray-500 focus:z-10 focus:outline-none focus:border-blue-300 focus:ring-blue active:bg-gray-100 active:text-gray-700 transition ease-in-out duration-150">
           {{ page.total_pages }}
         </button>
       </nav>
