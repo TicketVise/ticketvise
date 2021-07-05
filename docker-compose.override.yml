@@ -20,6 +20,7 @@ services:
       SQL_PASSWORD: Welkom01
       LTI_KEY: LtiKey01
       LTI_SECRET: LtiSecret01
+      HOST: localhost:8000
 
   proxy:
     image: ticketvise/proxy
@@ -53,7 +54,7 @@ services:
 
   s3:
     environment:
-      MINIO_ACCESS_KEY: minio
-      MINIO_SECRET_KEY: Welkom01
-      MINIO_ENDPOINT_URL: http://s3:9000
-      AWS_STORAGE_BUCKET_NAME: dev
+      S3_ACCESS_KEY: minio
+      S3_SECRET_KEY: Welkom01
+      S3_ENDPOINT_URL: s3:9000
+      S3_USE_HTTPS: False

@@ -60,7 +60,7 @@ server {
     }
 
     location /media/ {
-        alias /home/media/;
+        proxy_pass http://s3:9000/;
     }
 
     client_max_body_size 25M;
