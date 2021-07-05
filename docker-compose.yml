@@ -21,8 +21,8 @@ services:
       - "465:465"
       - "587:587"
     environment:
-      HOST: mail.ticketvise.com
-      DOMAIN: ticketvise.com
+      HOST: mail.local.ticketvise.com
+      DOMAIN: local.ticketvise.com
 
 volumes:
   static:
