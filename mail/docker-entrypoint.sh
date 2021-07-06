@@ -1,6 +1,6 @@
 #!/bin/sh
 
-set -e
+set -ex
 
 postconf -e "myhostname = ${HOST}"
 postconf -e "myorigin = ${DOMAIN}"

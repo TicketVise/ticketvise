@@ -44,7 +44,7 @@ class SmtpServer:
     @sync_to_async
     def handle_RCPT(self, server, session, envelope, address, rcpt_options):
         if not Inbox.objects.filter(email=address).exists():
-            return '550 not relaying to that domain'
+            return f'550 not relaying to that domain: {address}'
 
         envelope.rcpt_tos.append(address)
 

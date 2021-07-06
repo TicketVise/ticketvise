@@ -1,0 +1,10 @@
+version: "3.7"
+
+services:
+  web:
+    command: >
+      sh -c "python manage.py collectstatic --no-input --clear &&
+             python manage.py wait_for_database &&
+             python manage.py migrate --no-input &&
+             python manage.py insert_demo_data &&
+             python manage.py test ticketvise.tests.test_postfix.PostfixTestCase --no-input"

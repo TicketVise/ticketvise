@@ -7,6 +7,9 @@ COPY docker-entrypoint.sh /
 RUN apk update && apk upgrade
 RUN apk add --no-cache bash postfix
 
+# Allow receiving emails from subnet
+RUN postconf -e "mynetworks_style = subnet"
+
 # Log to stdout to show up in docker logs
 RUN postconf -e "maillog_file = /dev/stdout"
 
@@ -16,9 +19,12 @@ RUN postconf -e "local_recipient_maps ="
 RUN postconf -e "local_transport = error:local mail delivery is disabled"
 
 # Relay all incomming mail to web container (only allowing $relay_domains, set in start up script)
-RUN echo "* smtp:[web]:2525" > /etc/postfix/transport
-RUN postconf -e "transport_maps = lmdb:/etc/postfix/transport"
-RUN postmap lmdb:/etc/postfix/transport
+RUN postconf -e "relayhost = [web]:2525"
+
+#RUN echo -e "* smtp:[web]:2525\n" > /etc/postfix/transport
+#RUN postconf -e "transport_maps = lmdb:/etc/postfix/transport"
+#RUN postconf -e "relay_recipient_maps ="
+#RUN postmap lmdb:/etc/postfix/transport
 
 # Required SMTP client to start with HELO command and comply with the restrictions.
 RUN postconf -e "smtpd_helo_required = yes"
