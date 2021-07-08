@@ -42,6 +42,9 @@ def retrieve_pop3_emails(host, port, username, password, require_tls, ssl_contex
         server.pass_(password)
 
         _, messages = server.list()
+        for i in range(len(messages)):
+            for data in server.retr(i + 1)[1]:
+                yield email.message_from_bytes(data[0][1], policy=email.policy.default)
 
 
 def retrieve_imap_emails(host, port, username, password, require_tls, ssl_context):
