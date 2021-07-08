@@ -148,9 +148,8 @@ AWS_SECRET_ACCESS_KEY = os.environ.get("S3_SECRET_KEY", "Welkom01")
 AWS_S3_ENDPOINT_URL = os.environ.get("S3_ENDPOINT_URL", "http://s3:9000")
 AWS_S3_CUSTOM_DOMAIN = f"{HOST}/s3/{AWS_STORAGE_BUCKET_NAME}"
 
-AWS_S3_SECURE_URLS = os.environ.get("S3_USE_HTTPS", True)
+AWS_S3_SECURE_URLS = int(os.environ.get("S3_USE_HTTPS", True))
 AWS_QUERYSTRING_AUTH = False
-
 
 #: Password validation
 #: ~~~~~~~~~~~~~~~~~~~
