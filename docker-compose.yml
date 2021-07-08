@@ -15,15 +15,6 @@ services:
       SQL_DATABASE: ticketvise
       SQL_HOST: database
 
-  mail:
-    ports:
-      - "25:25"
-      - "465:465"
-      - "587:587"
-    environment:
-      HOST: mail.local.ticketvise.com
-      DOMAIN: local.ticketvise.com
-
 volumes:
   static:
   media:

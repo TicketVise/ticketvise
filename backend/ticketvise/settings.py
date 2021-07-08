@@ -104,6 +104,14 @@ LTI_SECRET = os.environ.get("LTI_SECRET", "<LTI_SECRET_DEFAULT>")
 LTI_HOST = os.environ.get("LTI_HOST", "https://" + DOMAIN)
 LTI_XML_CONFIG_URL = LTI_HOST + "/lti/config.xml"
 
+# Inbound email settings
+INBOUND_EMAIL_PROTOCOL = os.getenv("INBOUND_EMAIL_PROTOCOL", "IMAP")
+INBOUND_EMAIL_REQUIRE_TLS = bool(os.getenv("INBOUND_EMAIL_REQUIRE_TLS", True))
+INBOUND_EMAIL_SERVER = os.getenv("INBOUND_EMAIL_SERVER")
+INBOUND_EMAIL_PORT = int(os.getenv("INBOUND_EMAIL_PORT"), 993)  # Default IMAP SSL port
+INBOUND_EMAIL_USERNAME = os.getenv("INBOUND_EMAIL_USERNAME")
+INBOUND_EMAIL_PASSWORD = os.getenv("INBOUND_EMAIL_PASSWORD")
+
 #: Database to use.
 DATABASES = {
     "default": {
@@ -172,9 +180,6 @@ STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.ManifestStaticFilesSto
 
 #: Email settings
 #: ~~~~~~~~~~~~~~~~~~~
-
-SMTP_INBOUND_PORT = os.getenv("SMTP_INBOUND_PORT", 2525)
-
 if SEND_MAIL:
     EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 else:
