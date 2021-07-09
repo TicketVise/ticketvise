@@ -132,7 +132,7 @@ DEFAULT_AVATAR_PATH = "/static/img/avatars/default-avatar.png"
 AVATAR_DIRECTORY = "media/img/avatars"
 #: Path to the default inbox image.
 DEFAULT_INBOX_IMAGE_PATH = "/static/img/inboxes/default-inbox.png"
-#: Directory for uploaded inbox images.~
+#: Directory for uploaded inbox images.
 INBOX_IMAGE_DIRECTORY = "media/img/inboxes"
 
 # S3 config
