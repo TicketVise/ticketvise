@@ -53,5 +53,6 @@ services:
 
 volumes:
   static:
+  media:
   postgres_data:
   minio_data:
