@@ -134,22 +134,22 @@ AVATAR_DIRECTORY = "media/img/avatars"
 DEFAULT_INBOX_IMAGE_PATH = "/static/img/inboxes/default-inbox.png"
 #: Directory for uploaded inbox images.~
 INBOX_IMAGE_DIRECTORY = "media/img/inboxes"
+
+# S3 config
 #: Set max upload size for files
 AWS_S3_MAX_MEMORY_SIZE = 314572800
 AWS_S3_FILE_OVERWRITE = False
-
-# S3 config
 DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
-
-AWS_STORAGE_BUCKET_NAME = os.environ.get("S3_BUCKET_NAME", "ticketvise")
+AWS_S3_SECURE_URLS = int(os.environ.get("S3_USE_HTTPS", True))
+AWS_QUERYSTRING_AUTH = False
 
 AWS_ACCESS_KEY_ID = os.environ.get("S3_ACCESS_KEY", "minio")
 AWS_SECRET_ACCESS_KEY = os.environ.get("S3_SECRET_KEY", "Welkom01")
+
+AWS_STORAGE_BUCKET_NAME = os.environ.get("S3_BUCKET_NAME", "ticketvise")
 AWS_S3_ENDPOINT_URL = os.environ.get("S3_ENDPOINT_URL", "http://s3:9000")
 AWS_S3_CUSTOM_DOMAIN = f"{HOST}/s3/{AWS_STORAGE_BUCKET_NAME}"
 
-AWS_S3_SECURE_URLS = int(os.environ.get("S3_USE_HTTPS", True))
-AWS_QUERYSTRING_AUTH = False
 
 #: Password validation
 #: ~~~~~~~~~~~~~~~~~~~
