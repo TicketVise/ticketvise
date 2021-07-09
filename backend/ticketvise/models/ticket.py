@@ -203,10 +203,6 @@ class TicketAttachment(models.Model):
 
         super().save(force_insert, force_update, using, update_fields)
 
-    def delete(self, *args, **kwargs):
-        os.remove(os.path.join(settings.MEDIA_ROOT, self.file.name))
-        super(TicketAttachment, self).delete()
-
 
 class TicketEvent(models.Model):
     objects = InheritanceManager()
