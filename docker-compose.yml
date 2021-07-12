@@ -33,22 +33,11 @@ services:
   s3:
     image: minio/minio
     volumes:
-      - minio_data:/export
+      - minio_data:/data
     ports:
       - 9000:9000
-    command: server /export
-
-  s3_createbuckets:
-    image: minio/mc
-    depends_on:
-      - s3
-    entrypoint: >
-      /bin/sh -c "
-      /usr/bin/mc alias set myminio http://s3:9000 minio Welkom01;
-      /usr/bin/mc mb myminio/ticketvise;
-      /usr/bin/mc policy set download myminio/ticketvise;
-      exit 0;
-      "
+    entrypoint: sh
+    command: -c 'mkdir -p /data/$$S3_BUCKET_NAME && minio server /data'
 
 
 volumes:

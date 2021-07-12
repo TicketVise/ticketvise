@@ -104,7 +104,7 @@ services:
       MINIO_ACCESS_KEY: ${MINIO_ACCESS_KEY}
       MINIO_SECRET_KEY: ${MINIO_SECRET_KEY}
       S3_ENDPOINT_URL: ${MINIO_ENDPOINT_URL}
-      S3_BUCKET_NAME: ${AWS_STORAGE_BUCKET_NAME}
+      S3_BUCKET_NAME: ${S3_BUCKET_NAME}
     healthcheck:
       test: [ "CMD", "curl", "-f", ${MINIO_ENDPOINT_URL}"/minio/health/live" ]
       interval: 30s
