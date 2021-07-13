@@ -23,6 +23,7 @@ from ticketvise.models.label import Label
 from ticketvise.models.notification.assigned import TicketAssignedNotification
 from ticketvise.models.notification.new import NewTicketNotification
 from ticketvise.scheduling import schedule_ticket
+from private_storage.fields import PrivateFileField
 
 
 class Status(models.TextChoices):
@@ -192,7 +193,7 @@ def labels_changed_handler(sender, action, instance, model, **kwargs):
 
 class TicketAttachment(models.Model):
     ticket = models.ForeignKey(Ticket, on_delete=models.CASCADE, related_name="attachments")
-    file = models.FileField(upload_to="media/tickets")
+    file = PrivateFileField(upload_to="media/tickets")
     uploader = models.ForeignKey("User", on_delete=models.CASCADE, null=True)
     date_edited = models.DateTimeField(auto_now=True)
     date_created = models.DateTimeField(auto_now_add=True)

@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     "django.contrib.humanize",
     "rest_framework",
     'rest_framework.authtoken',
+    "private_storage",
 ]
 
 #: Middleware used for Django.
@@ -137,19 +138,23 @@ INBOX_IMAGE_DIRECTORY = "media/img/inboxes"
 
 # S3 config
 #: Set max upload size for files
-AWS_S3_MAX_MEMORY_SIZE = 314572800
-AWS_S3_FILE_OVERWRITE = False
-DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
-AWS_S3_SECURE_URLS = int(os.environ.get("S3_USE_HTTPS", True))
-AWS_QUERYSTRING_AUTH = False
+AWS_PRIVATE_S3_MAX_MEMORY_SIZE = 314572800
+AWS_PRIVATE_S3_FILE_OVERWRITE = False
+# DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
+AWS_PRIVATE_S3_SECURE_URLS = int(os.environ.get("S3_USE_HTTPS", True))
+AWS_PRIVATE_QUERYSTRING_AUTH = False
 
 AWS_ACCESS_KEY_ID = os.environ.get("S3_ACCESS_KEY", "minio")
 AWS_SECRET_ACCESS_KEY = os.environ.get("S3_SECRET_KEY", "Welkom01")
 
-AWS_STORAGE_BUCKET_NAME = os.environ.get("S3_BUCKET_NAME", "ticketvise")
-AWS_S3_ENDPOINT_URL = os.environ.get("S3_ENDPOINT_URL", "http://s3:9000")
-AWS_S3_CUSTOM_DOMAIN = f"{HOST}/s3/{AWS_STORAGE_BUCKET_NAME}"
+AWS_PRIVATE_STORAGE_BUCKET_NAME = os.environ.get("S3_BUCKET_NAME", "ticketvise")
+AWS_PRIVATE_S3_ENDPOINT_URL = os.environ.get("S3_ENDPOINT_URL", "http://s3:9000")
+AWS_PRIVATE_S3_CUSTOM_DOMAIN = f"{HOST}/s3/{AWS_PRIVATE_STORAGE_BUCKET_NAME}"
 
+
+# Private storage config
+PRIVATE_STORAGE_CLASS = "private_storage.storage.s3boto3.PrivateS3BotoStorage"
+PRIVATE_STORAGE_AUTH_FUNCTION = "private_storage.permissions.allow_authenticated"
 
 #: Password validation
 #: ~~~~~~~~~~~~~~~~~~~

@@ -14,3 +14,4 @@ email_reply_parser==0.5.12
 sentry-sdk==0.19.5
 boto3==1.17.102
 django-storages==1.11.1
+django_private_storage==2.3.0
