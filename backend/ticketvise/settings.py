@@ -5,6 +5,8 @@ Django settings for TicketVise. Contains various settings for the project,
 some custom.
 """
 import os
+import ticketvise.views.storage
+
 
 #: Project base directory.
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -154,7 +156,7 @@ AWS_PRIVATE_S3_CUSTOM_DOMAIN = f"{HOST}/s3/{AWS_PRIVATE_STORAGE_BUCKET_NAME}"
 
 # Private storage config
 PRIVATE_STORAGE_CLASS = "private_storage.storage.s3boto3.PrivateS3BotoStorage"
-PRIVATE_STORAGE_AUTH_FUNCTION = "private_storage.permissions.allow_authenticated"
+PRIVATE_STORAGE_AUTH_FUNCTION = "ticketvise.views.storage.allow_attachment_uploader_or_inbox_staff"
 
 #: Password validation
 #: ~~~~~~~~~~~~~~~~~~~

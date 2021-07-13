@@ -3,7 +3,7 @@ Urls
 -------------------------------
 TicketVise URL configuration, which configures the URL paths for the website.
 """
-import private_storage.urls
+import private_storage.urls, private_storage.views
 from django.conf import settings
 from django.conf.urls import include
 from django.conf.urls.static import static
@@ -26,7 +26,7 @@ urlpatterns = [
                   path("lti/config.xml", LtiConfigView.as_view()),
                   path("", IndexView.as_view(), name="home"),
                   path("error/<int:error_code>", ErrorHandler.as_view(), name="error"),
-                  path('^private-media/', include(private_storage.urls)),
+                  path("^private-media/", include(private_storage.urls)),
                   re_path(r"^api/", include("ticketvise.views.api.urls"))
               ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
