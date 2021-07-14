@@ -12,9 +12,9 @@ from ticketvise.views.api.statistics import InboxTicketsPerDateTypeStatisticsApi
     InboxAverageAgentResponseTimeStatisticsApiView, InboxAverageTimeToCloseStatisticsApiView, \
     LabelsCountStatisticsApiView, InboxStatisticsApiView
 from ticketvise.views.api.ticket import TicketApiView, TicketUpdateAssignee, \
-    TicketAttachmentsApiView, AttachmentViewApiView, UserTicketsApiView, UserAverageApiView, \
+    TicketAttachmentsApiView, UserTicketsApiView, UserAverageApiView, \
     RecentTicketApiView, InboxTicketsApiView, TicketLabelApiView, TicketCreateApiView, TicketSharedAPIView, \
-    TicketsApiView, OpenTicketApiView, CloseTicketApiView, TicketTitleAPIView
+    TicketsApiView, OpenTicketApiView, CloseTicketApiView, TicketTitleAPIView, AttachmentViewApiView
 from ticketvise.views.api.user import UserRoleApiView, CurrentUserApiView, NotificationsSettingsAPIView, \
     UsersApiView, IntroductionAPIView
 
@@ -64,5 +64,4 @@ urlpatterns = [
     path("me/inboxes", CurrentUserInboxesApiView.as_view(), name="api_me_inboxes"),
     path("me/inboxes/<int:inbox_id>", CurrentUserInboxApiView.as_view(), name="api_me_inbox"),
     path("me/introduction", IntroductionAPIView.as_view(), name="api_me_information"),
-
 ]

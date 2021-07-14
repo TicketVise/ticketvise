@@ -18,6 +18,7 @@ from django.core.paginator import Paginator
 from django.db.models import Exists, OuterRef, Q
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
+from private_storage.views import PrivateStorageDetailView
 from rest_framework import serializers
 from rest_framework.generics import UpdateAPIView, ListAPIView, RetrieveAPIView, CreateAPIView, DestroyAPIView
 from rest_framework.response import Response
@@ -458,6 +459,15 @@ class TicketAttachmentsApiView(CreateAPIView):
 
         return Response()
 
+
+class TicketAttachmentDownloadView(PrivateStorageDetailView):
+    model = TicketAttachment
+    model_file_field = "file"
+
+    def can_access_file(self, private_file):
+        # When the object can be accessed, the file may be downloaded.
+        # This overrides PRIVATE_STORAGE_AUTH_FUNCTION
+        return True
 
 class AttachmentViewApiView(DestroyAPIView):
     permission_classes = [UserIsAttachmentUploaderOrInboxStaffPermission]
