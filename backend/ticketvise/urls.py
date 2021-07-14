@@ -3,8 +3,7 @@ Urls
 -------------------------------
 TicketVise URL configuration, which configures the URL paths for the website.
 """
-import private_storage.urls
-from private_storage.views import PrivateStorageView
+
 from django.conf import settings
 from django.conf.urls import include, url
 from django.conf.urls.static import static
