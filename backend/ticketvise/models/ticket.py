@@ -9,6 +9,7 @@ Contains all entity sets for the ticket database and TicketStatusChangedNotifica
 """
 import os
 import uuid
+from secrets import token_urlsafe
 
 from django.db import models, transaction
 from django.db.models import Max
@@ -187,12 +188,15 @@ def labels_changed_handler(sender, action, instance, model, **kwargs):
     elif action == "post_remove":
         for label in labels:
             TicketLabelEvent.objects.create(ticket=ticket, label=label, is_added=False,
+
                                             initiator=CurrentUserMiddleware.get_current_user())
 
+def ticket_directory_path(instance, filename):
+    return f"inboxes/{instance.ticket.inbox.id}/tickets/{instance.ticket.ticket_inbox_id}/attachments/{token_urlsafe(64)}/{filename}"
 
 class TicketAttachment(models.Model):
     ticket = models.ForeignKey(Ticket, on_delete=models.CASCADE, related_name="attachments")
-    file = models.FileField(upload_to="media/tickets")
+    file = models.FileField(upload_to=ticket_directory_path, max_length=1000)
     uploader = models.ForeignKey("User", on_delete=models.CASCADE, null=True)
     date_edited = models.DateTimeField(auto_now=True)
     date_created = models.DateTimeField(auto_now_add=True)
@@ -207,6 +211,7 @@ class TicketAttachment(models.Model):
         # Set save to false to remove file from s3 storage
         self.file.delete(save=False)
         super().delete()
+
 
 class TicketEvent(models.Model):
     objects = InheritanceManager()
