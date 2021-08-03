@@ -1,7 +1,8 @@
 from django.core.management.base import BaseCommand
 
 from ticketvise import settings
-from ticketvise.mail import retrieve_emails, submit_email_ticket
+from ticketvise.mail import submit_email_ticket
+from ticketvise.mail import retrieve_emails
 
 
 class Command(BaseCommand):

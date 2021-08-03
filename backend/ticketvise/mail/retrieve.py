@@ -14,60 +14,7 @@ from ticketvise.models.inbox import Inbox
 from ticketvise.models.ticket import Ticket
 from ticketvise.models.user import User, UserInbox
 
-
-def retrieve_emails(protocol, host, port, username, password, require_tls, ssl_context=None):
-    if not ssl_context:
-        ssl_context = ssl.create_default_context()
-
-    if protocol.upper() == "IMAP":
-        retrieve_imap_emails(host, port, username, password, require_tls, ssl_context)
-    elif protocol.upper == "POP3":
-        retrieve_pop3_emails(host, port, username, password, require_tls, ssl_context)
-    else:
-        raise Exception("Unsupported email protocol, expected IMAP or POP3")
-
-
-def retrieve_pop3_emails(host, port, username, password, require_tls, ssl_context):
-    pop3 = poplib.POP3_SSL(host=host, port=port, context=ssl_context) \
-        if require_tls else poplib.POP3(host=host, port=port)
-
-    with pop3 as server:
-        if not require_tls:
-            try:
-                server.stls(context=ssl_context)
-            except Exception as err:
-                logging.warning(f"Failed to use STLS, error: {err}")
-
-        server.user(username)
-        server.pass_(password)
-
-        _, messages = server.list()
-        for i in range(len(messages)):
-            for data in server.retr(i + 1)[1]:
-                yield email.message_from_bytes(data[0][1], policy=email.policy.default)
-
-
-def retrieve_imap_emails(host, port, username, password, require_tls, ssl_context):
-    imap = imaplib.IMAP4_SSL(host=host, port=port, ssl_context=ssl_context) \
-        if require_tls else imaplib.IMAP4(host=host, port=port)
-
-    with imap as server:
-        if not require_tls:
-            try:
-                server.starttls(ssl_context=ssl_context)
-            except Exception as err:
-                logging.warning(f"Failed to use STARTTLS, error: {err}")
-
-        server.login(username, password)
-        server.select()
-
-        status, data = server.search(None, "ALL")
-        if status != "OK":
-            raise Exception(f"SEARCH returned status code: {status}")
-
-        for msg_uid in data[0].split():
-            typ, data = server.fetch(msg_uid, "(RFC822)")
-            yield email.message_from_bytes(data[0][1], policy=email.policy.default)
+from retrieve import *
 
 
 def parse_message_id(raw_message_id):
@@ -131,3 +78,57 @@ def submit_email_ticket(message: email.message.EmailMessage):
 
         Ticket.objects.create(author=author, inbox=inbox, title=subject, content=reply)
         UserInbox.objects.get_or_create(user=author, inbox=inbox)
+
+
+def retrieve_emails(protocol, host, port, username, password, require_tls, ssl_context=None):
+    if not ssl_context:
+        ssl_context = ssl.create_default_context()
+
+    if protocol.upper() == "IMAP":
+        retrieve_imap_emails(host, port, username, password, require_tls, ssl_context)
+    elif protocol.upper == "POP3":
+        retrieve_pop3_emails(host, port, username, password, require_tls, ssl_context)
+    else:
+        raise Exception("Unsupported email protocol, expected IMAP or POP3")
+
+def retrieve_pop3_emails(host, port, username, password, require_tls, ssl_context):
+    pop3 = poplib.POP3_SSL(host=host, port=port, context=ssl_context) \
+        if require_tls else poplib.POP3(host=host, port=port)
+
+    with pop3 as server:
+        if not require_tls:
+            try:
+                server.stls(context=ssl_context)
+            except Exception as err:
+                logging.warning(f"Failed to use STLS, error: {err}")
+
+        server.user(username)
+        server.pass_(password)
+
+        _, messages = server.list()
+        for i in range(len(messages)):
+            for data in server.retr(i + 1)[1]:
+                yield email.message_from_bytes(data[0][1], policy=email.policy.default)
+
+
+def retrieve_imap_emails(host, port, username, password, require_tls, ssl_context):
+    imap = imaplib.IMAP4_SSL(host=host, port=port, ssl_context=ssl_context) \
+        if require_tls else imaplib.IMAP4(host=host, port=port)
+
+    with imap as server:
+        if not require_tls:
+            try:
+                server.starttls(ssl_context=ssl_context)
+            except Exception as err:
+                logging.warning(f"Failed to use STARTTLS, error: {err}")
+
+        server.login(username, password)
+        server.select()
+
+        status, data = server.search(None, "ALL")
+        if status != "OK":
+            raise Exception(f"SEARCH returned status code: {status}")
+
+        for msg_uid in data[0].split():
+            typ, data = server.fetch(msg_uid, "(RFC822)")
+            yield email.message_from_bytes(data[0][1], policy=email.policy.default)

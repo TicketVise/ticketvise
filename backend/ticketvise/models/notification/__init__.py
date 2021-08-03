@@ -1,9 +1,8 @@
 from django.db import models
-from django.urls import reverse
 from model_utils.managers import InheritanceManager
 
 from ticketvise import settings
-from ticketvise.email import send_mail_template
+from ticketvise.mail.send import send_mail_template
 
 
 class Notification(models.Model):
