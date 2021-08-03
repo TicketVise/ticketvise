@@ -24,6 +24,8 @@ ALLOWED_HOSTS = ["*"]
 #: Application definition
 #: ~~~~~~~~~~~~~~~~~~~~~~
 
+DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
 #: User model to use for authentication.
 AUTH_USER_MODEL = "ticketvise.User"
 
