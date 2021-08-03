@@ -55,6 +55,10 @@ def submit_email_ticket(message: email.message.EmailMessage):
 
     # If the ticket already exists, then the email message is a reply/comment to the ticket.
     if ticket:
+        if not ticket.inbox.email_enabled:
+            logging.warning(f"Email is disabled for the inbox: {ticket.inbox.name} ({ticket.inbox.id})")
+            return
+
         if not ticket.inbox.enable_reply_by_email:
             logging.warning(f"Reply by email is disabled for the inbox: {ticket.inbox.name} ({ticket.inbox.id})")
             return
@@ -65,9 +69,13 @@ def submit_email_ticket(message: email.message.EmailMessage):
 
     # Ticket does not exist, threat email as a new ticket.
     else:
-        inbox = Inbox.objects.filter(email__in=email_tos).first()
+        inbox = Inbox.objects.filter(inbound_email_username__in=email_tos).first()
         if not inbox:
             logging.warning(f"Could not find inbox with email(s): {email_tos}")
+            return
+
+        if not inbox.email_enabled:
+            logging.warning(f"Email is disabled for the inbox: {inbox.name} ({inbox.id})")
             return
 
         if not inbox.enable_create_new_ticket_by_email:

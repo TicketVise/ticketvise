@@ -9,11 +9,13 @@ from ticketvise.models.ticket import Ticket
 from ticketvise.models.user import User, Role
 
 
-class SmtpServerTestCase(TestCase):
+class EmailTestCase(TestCase):
 
     def setUp(self):
         # setup test data
-        self.inbox = Inbox.objects.create(code="test", name="test-inbox", email="ticket@" + settings.DOMAIN,
+        self.inbox = Inbox.objects.create(code="test", name="test-inbox",
+                                          email_enabled=True,
+                                          inbound_email_username="ticket@" + settings.DOMAIN,
                                           enable_create_new_ticket_by_email=True)
         self.student = User.objects.create(username="student", email="student@" + settings.DOMAIN)
         self.assistant = User.objects.create(username="assistant", email="assistant@" + settings.DOMAIN)
@@ -29,7 +31,7 @@ class SmtpServerTestCase(TestCase):
         msg.set_content(content)
         msg['Subject'] = "This must be the title2343!!?"
         msg['From'] = self.student.email
-        msg['To'] = self.inbox.email
+        msg['To'] = self.inbox.inbound_email_username
 
         submit_email_ticket(msg)
         self.assertTrue(Ticket.objects.filter(title=msg['Subject'], content=content).exists())
@@ -40,7 +42,7 @@ class SmtpServerTestCase(TestCase):
         msg.set_content(content)
         msg['Subject'] = "This must be the title2343!!?"
         msg['From'] = "tom.wassing@" + settings.DOMAIN
-        msg['To'] = self.inbox.email
+        msg['To'] = self.inbox.inbound_email_username
 
         submit_email_ticket(msg)
         self.assertTrue(Ticket.objects.filter(title=msg['Subject'], content=content).exists())
@@ -52,7 +54,7 @@ class SmtpServerTestCase(TestCase):
         msg.set_content(content)
         msg['Subject'] = "This must be the title2343!!?"
         msg['From'] = self.student.email
-        msg['To'] = self.inbox.email
+        msg['To'] = self.inbox.inbound_email_username
         msg['Message-ID'] = f"<{self.ticket.reply_message_id}@{settings.DOMAIN}>"
 
         submit_email_ticket(msg)
@@ -64,7 +66,7 @@ class SmtpServerTestCase(TestCase):
         msg.set_content(content)
         msg['Subject'] = "This must be the title2343!!?"
         msg['From'] = "tom.wassing@" + settings.DOMAIN
-        msg['To'] = self.inbox.email
+        msg['To'] = self.inbox.inbound_email_username
         msg['Message-ID'] = f"<{self.ticket.reply_message_id}@{settings.DOMAIN}>"
 
         submit_email_ticket(msg)
@@ -76,7 +78,7 @@ class SmtpServerTestCase(TestCase):
         msg.set_content(content)
         msg['Subject'] = "This must be the title2343!!?"
         msg['From'] = self.student.email
-        msg['To'] = self.inbox.email
+        msg['To'] = self.inbox.inbound_email_username
         msg['Message-ID'] = f"<{self.ticket.reply_message_id}@{settings.DOMAIN}>"
 
         submit_email_ticket(msg)
@@ -88,7 +90,7 @@ class SmtpServerTestCase(TestCase):
         msg.set_content(content)
         msg['Subject'] = "This must be the title2343!!?"
         msg['From'] = "tom.wassing@" + settings.DOMAIN
-        msg['To'] = self.inbox.email
+        msg['To'] = self.inbox.inbound_email_username
         msg['Message-ID'] = f"<{self.ticket.reply_message_id}@{settings.DOMAIN}>"
 
         submit_email_ticket(msg)

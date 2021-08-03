@@ -6,11 +6,12 @@ Contains all entity sets for the inbox database.
 **Table of contents**
 * :class:`Inbox`
 """
+from django.core.validators import MinValueValidator, MaxValueValidator
 from django.db import models
 
 from ticketvise.models.user import User, Role
 from ticketvise.models.validators import validate_hex_color
-from ticketvise.settings import INBOX_IMAGE_DIRECTORY, DEFAULT_INBOX_IMAGE_PATH
+from ticketvise.settings import DEFAULT_INBOX_IMAGE_PATH
 from ticketvise.utils import random_preselected_color
 
 
@@ -28,6 +29,17 @@ class SchedulingAlgorithm(models.TextChoices):
     SECTIONS = ("sections", "Workgroup")
     # Schedule all to one assistant
     FIXED = ("fixed", "Fixed")
+
+
+class MailSecurity(models.TextChoices):
+    NONE = ('NONE', 'None')
+    STARTTLS = ('STARTTLS', 'STARTTLS')
+    TLS = ('TLS', 'TLS')
+
+
+class InboundMailProtocol(models.TextChoices):
+    POP3 = ('POP3', 'POP3')
+    IMAP = ('IMAP', 'IMAP')
 
 
 class Inbox(models.Model):
@@ -53,12 +65,25 @@ class Inbox(models.Model):
     show_assignee_to_guest = models.BooleanField(default=False)
     close_answered_weeks = models.PositiveIntegerField(default=0)
     alert_coordinator_unanswered_days = models.PositiveIntegerField(default=0)
-    email = models.EmailField(null=True, unique=True)
     enable_create_new_ticket_by_email = models.BooleanField(default=False)
     enable_reply_by_email = models.BooleanField(default=True)
     is_active = models.BooleanField(default=True)
     date_edited = models.DateTimeField(auto_now=True)
     date_created = models.DateTimeField(auto_now_add=True)
+
+    email_enabled = models.BooleanField(default=False)
+    smtp_server = models.CharField(null=True, max_length=100)
+    smtp_port = models.IntegerField(null=True, validators=[MinValueValidator(1), MaxValueValidator(65535)])
+    smtp_security = models.CharField(choices=MailSecurity.choices, default=MailSecurity.TLS, max_length=8)
+    smtp_username = models.EmailField(null=True, unique=True)
+    smtp_password = models.CharField(null=True, max_length=100)
+    inbound_email_protocol = models.CharField(choices=InboundMailProtocol.choices, default=InboundMailProtocol.IMAP,
+                                              max_length=4)
+    inbound_email_server = models.CharField(null=True, max_length=100)
+    inbound_email_port = models.IntegerField(null=True, validators=[MinValueValidator(1), MaxValueValidator(65535)])
+    inbound_email_security = models.CharField(choices=MailSecurity.choices, default=MailSecurity.TLS, max_length=8)
+    inbound_email_username = models.EmailField(null=True, unique=True)
+    inbound_email_password = models.CharField(null=True, max_length=100)
 
     def round_robin_parameter_increase(self):
         """
