@@ -1,6 +1,5 @@
-Django==3.2.4
+Django==3.2.6
 gunicorn==20.1.0
-Pillow==8.2.0
 django-model-utils==4.1.1
 djangorestframework==3.12.4
 Markdown==3.3.4
