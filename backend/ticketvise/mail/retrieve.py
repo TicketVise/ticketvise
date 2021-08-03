@@ -14,8 +14,6 @@ from ticketvise.models.inbox import Inbox
 from ticketvise.models.ticket import Ticket
 from ticketvise.models.user import User, UserInbox
 
-from retrieve import *
-
 
 def parse_message_id(raw_message_id):
     parts = raw_message_id.split("@")
@@ -90,6 +88,7 @@ def retrieve_emails(protocol, host, port, username, password, require_tls, ssl_c
         retrieve_pop3_emails(host, port, username, password, require_tls, ssl_context)
     else:
         raise Exception("Unsupported email protocol, expected IMAP or POP3")
+
 
 def retrieve_pop3_emails(host, port, username, password, require_tls, ssl_context):
     pop3 = poplib.POP3_SSL(host=host, port=port, context=ssl_context) \
