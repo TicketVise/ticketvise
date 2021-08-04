@@ -137,5 +137,5 @@ def retrieve_imap_emails(host, port, username, password, require_tls, ssl_contex
             raise Exception(f"SEARCH returned status code: {status}")
 
         for msg_uid in data[0].split():
-            typ, data = server.fetch(msg_uid, "(RFC822)")
+            _, data = server.fetch(msg_uid, "(RFC822)")
             yield email.message_from_bytes(data[0][1], policy=email.policy.default)
