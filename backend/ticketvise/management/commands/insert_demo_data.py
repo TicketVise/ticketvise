@@ -103,7 +103,7 @@ class Command(BaseCommand):
 
         # Creating Courses
         inbox_pse = Inbox.objects.create(
-            code="5062STRE6Y", name="Project Software Engineering", round_robin_parameter=4, email="pse@ticketvise.com",
+            code="5062STRE6Y", name="Project Software Engineering", round_robin_parameter=4, inbound_email_username="pse@ticketvise.com",
             enable_create_new_ticket_by_email=True, enable_reply_by_email=True
         )
         inbox_ip = Inbox.objects.create(code="5062BEST6Y", name="Inleiding Programmeren")
