@@ -1,3 +1,5 @@
+from ticketvise.models.inbox import MailSecurity
+from django.core.mail import get_connection
 from django.db import models
 from model_utils.managers import InheritanceManager
 
@@ -7,7 +9,8 @@ from ticketvise.mail.send import send_mail_template
 
 class Notification(models.Model):
     objects = InheritanceManager()
-    receiver = models.ForeignKey("User", on_delete=models.CASCADE, related_name="notifications")
+    receiver = models.ForeignKey(
+        "User", on_delete=models.CASCADE, related_name="notifications")
     is_read = models.BooleanField(default=False)
     date_edited = models.DateTimeField(auto_now=True)
     date_created = models.DateTimeField(auto_now_add=True)
@@ -34,8 +37,10 @@ class Notification(models.Model):
         return self.ticket.reply_message_id
 
     def send_mail(self):
+        print("send to", self.receiver.email)
         send_mail_template(
             self.get_email_subject(),
+            self.ticket.inbox.smtp_username if self.ticket.inbox.email_enabled else settings.EMAIL_FROM,
             self.receiver.email,
             "comments",
             {
@@ -45,5 +50,10 @@ class Notification(models.Model):
                 "title": self.content,
                 "ticket": self.ticket,
                 "comments": self.get_email_comments(),
-            }
+            },
+            self.ticket.inbox.smtp_server if self.ticket.inbox.email_enabled else None,
+            self.ticket.inbox.smtp_port if self.ticket.inbox.email_enabled else None,
+            self.ticket.inbox.smtp_username if self.ticket.inbox.email_enabled else None,
+            self.ticket.inbox.smtp_password if self.ticket.inbox.email_enabled else None,
+            self.ticket.inbox.smtp_security if self.ticket.inbox.email_enabled else None
         )

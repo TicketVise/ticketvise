@@ -1,23 +1,31 @@
+from ticketvise.models.inbox import MailSecurity
 import threading
 
-from django.core.mail import EmailMultiAlternatives
+from django.core.mail import EmailMultiAlternatives, get_connection
 from django.template.loader import render_to_string
 from django.utils.html import strip_tags
 
-from ticketvise import settings
-
-
 class EmailThread(threading.Thread):
 
-    def __init__(self, message):
+    def __init__(self, message, smtp_host, smtp_port, smtp_username, smtp_password, smtp_security):
         self.message = message
+        self.smtp_host = smtp_host
+        self.smtp_port = smtp_port
+        self.smtp_username = smtp_username
+        self.smtp_password = smtp_password
+        self.smtp_security = smtp_security
+
         threading.Thread.__init__(self)
 
     def run(self):
-        self.message.send()
+        with get_connection(host=self.smtp_host, port=self.smtp_port, username=self.smtp_username,
+                            password=self.smtp_password, use_tls=self.smtp_security == MailSecurity.TLS,
+                            use_ssl=self.smtp_security == MailSecurity.STARTTLS) as connection:
+            self.message.connection = connection
+            self.message.send()
 
 
-def send_mail_template(subject, to, template, headers, context):
+def send_mail_template(subject, sender, to, template, headers, context, smtp_host, smtp_port, smtp_username, smtp_password, smtp_security):
     """
     This function sends an email to a user using a specified template.
 
@@ -31,8 +39,9 @@ def send_mail_template(subject, to, template, headers, context):
     """
     html_message = render_to_string(f"email/{template}.html", context)
     plain_message = strip_tags(html_message)
-    from_email = settings.EMAIL_FROM
 
-    email = EmailMultiAlternatives(subject=subject, body=plain_message, from_email=from_email, to=[to], headers=headers)
+    email = EmailMultiAlternatives(
+        subject=subject, body=plain_message, from_email=sender, to=[to], headers=headers)
     email.attach_alternative(html_message, "text/html")
-    EmailThread(email).start()
+    EmailThread(email, smtp_host, smtp_port, smtp_username,
+                smtp_password, smtp_security).start()

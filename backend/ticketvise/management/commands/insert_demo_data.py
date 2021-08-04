@@ -9,7 +9,7 @@ from ticketvise.models.inbox import Inbox
 from ticketvise.models.label import Label
 from ticketvise.models.ticket import Ticket, Status
 from ticketvise.models.user import User, UserInbox, Role
-
+from ticketvise import settings
 
 class Command(BaseCommand):
     """Django command that insert demo data into the database."""
@@ -24,6 +24,8 @@ class Command(BaseCommand):
 
     @transaction.atomic
     def insert_data(self):
+        settings.SEND_EMAIL = 0
+
         password = "pbkdf2_sha256$180000$6zy2oz9vnxsr$eTQBZxgVxG7ldORL63+OcqJbzLcUhbdCkAW7NdqsOxE="
         user_admin = User.objects.create(
             username="admin",

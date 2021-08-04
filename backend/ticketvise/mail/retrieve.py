@@ -4,6 +4,7 @@ import logging
 import poplib
 import ssl
 from uuid import UUID
+from django.core.mail import send_mail
 
 from django.db import transaction
 from django.db.models import Q
@@ -50,7 +51,22 @@ def submit_email_ticket(message: email.message.EmailMessage):
 
     content = body.get_content()
     reply = EmailReplyParser.parse_reply(content)
-    author, _ = User.objects.get_or_create(email=email_from)
+
+    realname, address = email.utils.parseaddr(email_from)
+    if not address:
+        logging.warning(f"Unable to parse RFC288 FROM header in email")
+        return
+
+    author = User.objects.filter(email=address).first()
+    if not author:
+        realname_split = realname.split(" ", 1)
+        first_name, last_name = "", ""
+        if len(realname_split) > 1:
+            first_name, last_name = realname_split
+
+        username = address.split("@", 1)[0]
+        author = User.objects.create(username=username, email=address, first_name=first_name, last_name=last_name)
+
     ticket, message_id = get_ticket_by_email_message_id(message)
 
     # If the ticket already exists, then the email message is a reply/comment to the ticket.
