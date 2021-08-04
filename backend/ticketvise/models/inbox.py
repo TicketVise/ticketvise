@@ -72,18 +72,18 @@ class Inbox(models.Model):
     date_created = models.DateTimeField(auto_now_add=True)
 
     email_enabled = models.BooleanField(default=False)
-    smtp_server = models.CharField(null=True, max_length=100)
-    smtp_port = models.IntegerField(null=True, validators=[MinValueValidator(1), MaxValueValidator(65535)])
+    smtp_server = models.CharField(blank=True, max_length=100)
+    smtp_port = models.IntegerField(validators=[MinValueValidator(1), MaxValueValidator(65535)], default=465)
     smtp_security = models.CharField(choices=MailSecurity.choices, default=MailSecurity.TLS, max_length=8)
-    smtp_username = models.EmailField(null=True, unique=True)
-    smtp_password = models.CharField(null=True, max_length=100)
+    smtp_username = models.EmailField(blank=True)
+    smtp_password = models.CharField(blank=True, max_length=100)
     inbound_email_protocol = models.CharField(choices=InboundMailProtocol.choices, default=InboundMailProtocol.IMAP,
                                               max_length=4)
-    inbound_email_server = models.CharField(null=True, max_length=100)
-    inbound_email_port = models.IntegerField(null=True, validators=[MinValueValidator(1), MaxValueValidator(65535)])
+    inbound_email_server = models.CharField(blank=True, max_length=100)
+    inbound_email_port = models.IntegerField(validators=[MinValueValidator(1), MaxValueValidator(65535)], default=993)
     inbound_email_security = models.CharField(choices=MailSecurity.choices, default=MailSecurity.TLS, max_length=8)
-    inbound_email_username = models.EmailField(null=True, unique=True)
-    inbound_email_password = models.CharField(null=True, max_length=100)
+    inbound_email_username = models.EmailField(blank=True)
+    inbound_email_password = models.CharField(blank=True, max_length=100)
 
     def round_robin_parameter_increase(self):
         """

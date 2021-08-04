@@ -91,9 +91,9 @@ def retrieve_emails(protocol, host, port, username, password, require_tls, ssl_c
         ssl_context = ssl.create_default_context()
 
     if protocol.upper() == "IMAP":
-        retrieve_imap_emails(host, port, username, password, require_tls, ssl_context)
+        return retrieve_imap_emails(host, port, username, password, require_tls, ssl_context)
     elif protocol.upper == "POP3":
-        retrieve_pop3_emails(host, port, username, password, require_tls, ssl_context)
+        return retrieve_pop3_emails(host, port, username, password, require_tls, ssl_context)
     else:
         raise Exception("Unsupported email protocol, expected IMAP or POP3")
 
@@ -139,3 +139,5 @@ def retrieve_imap_emails(host, port, username, password, require_tls, ssl_contex
         for msg_uid in data[0].split():
             _, data = server.fetch(msg_uid, "(RFC822)")
             yield email.message_from_bytes(data[0][1], policy=email.policy.default)
+            imap.store(msg_uid, '+FLAGS', '\\Deleted')
+        imap.expunge()
