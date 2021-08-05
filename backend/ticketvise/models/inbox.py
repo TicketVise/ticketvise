@@ -38,8 +38,8 @@ class MailSecurity(models.TextChoices):
 
 
 class InboundMailProtocol(models.TextChoices):
-    POP3 = ('POP3', 'POP3')
-    IMAP = ('IMAP', 'IMAP')
+    POP3 = 'POP3'
+    IMAP = 'IMAP'
 
 
 class Inbox(models.Model):
