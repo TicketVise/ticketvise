@@ -1,4 +1,4 @@
-version: '3.7'
+version: "3.7"
 
 services:
   database:
@@ -9,26 +9,11 @@ services:
 
   web:
     ports:
-      - 6000:6000
+      - "6000:6000"
     environment:
       SQL_ENGINE: django.db.backends.postgresql_psycopg2
       SQL_DATABASE: ticketvise
       SQL_HOST: database
-
-  mail:
-    ports:
-      - target: 25
-        published: 25
-        protocol: tcp
-        mode: host
-      - target: 465
-        published: 465
-        protocol: tcp
-        mode: host
-      - target: 587
-        published: 587
-        protocol: tcp
-        mode: host
 
 volumes:
   static:

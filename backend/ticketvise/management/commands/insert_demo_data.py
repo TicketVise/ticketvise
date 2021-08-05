@@ -9,7 +9,7 @@ from ticketvise.models.inbox import Inbox
 from ticketvise.models.label import Label
 from ticketvise.models.ticket import Ticket, Status
 from ticketvise.models.user import User, UserInbox, Role
-
+from ticketvise import settings
 
 class Command(BaseCommand):
     """Django command that insert demo data into the database."""
@@ -66,7 +66,7 @@ class Command(BaseCommand):
             first_name="Ana",
             last_name="Coordinator",
             password=password,
-            email="info@ticketvise.com",
+            email="ana@ticketvise.com",
             is_staff=False,
             is_superuser=False,
         )
@@ -103,7 +103,7 @@ class Command(BaseCommand):
 
         # Creating Courses
         inbox_pse = Inbox.objects.create(
-            code="5062STRE6Y", name="Project Software Engineering", round_robin_parameter=4, email="pse@ticketvise.com",
+            code="5062STRE6Y", name="Project Software Engineering", round_robin_parameter=4, inbound_email_username="pse@ticketvise.com",
             enable_create_new_ticket_by_email=True, enable_reply_by_email=True
         )
         inbox_ip = Inbox.objects.create(code="5062BEST6Y", name="Inleiding Programmeren")

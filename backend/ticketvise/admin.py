@@ -36,10 +36,12 @@ class CustomUserAdmin(UserAdmin):
     Custom User interface for the admin panel. Inherits the built-in ``UserAdmin``.
     Used to display the many-to-many relationship between ``User`` and ``Inbox``.
     """
-
-    #: Inline through tables to display on the admin panel.
+    list_display = ('id', 'username', 'email', 'first_name', 'last_name', 'is_staff')
     inlines = (InboxInlineAdmin,)
 
+
+class NotificationAdmin(admin.ModelAdmin):
+    list_display = ('id', 'receiver', 'is_read', 'email_message_id', 'date_edited', 'date_created')
 
 # Register all models in the admin panel.
 admin.site.register(User, CustomUserAdmin)
@@ -55,7 +57,7 @@ admin.site.register(TicketStatusEvent)
 admin.site.register(TicketAssigneeEvent)
 admin.site.register(TicketLabelEvent)
 admin.site.register(Comment)
-admin.site.register(Notification)
+admin.site.register(Notification, NotificationAdmin)
 admin.site.register(TicketAssignedNotification)
 admin.site.register(CommentNotification)
 admin.site.register(MentionNotification)

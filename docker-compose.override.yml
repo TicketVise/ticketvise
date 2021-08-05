@@ -1,4 +1,4 @@
-version: '3.7'
+version: "3.7"
 
 services:
   web:
@@ -11,6 +11,7 @@ services:
              python manage.py migrate --no-input &&
              python manage.py insert_demo_data &&
              python manage.py runserver 0.0.0.0:6000"
+
     volumes:
       - ./backend:/backend
     environment:
@@ -20,12 +21,13 @@ services:
       SQL_PASSWORD: Welkom01
       LTI_KEY: LtiKey01
       LTI_SECRET: LtiSecret01
+      DOMAIN: local.ticketvise.com
 
   proxy:
     image: ticketvise/proxy
     build: ./nginx
     ports:
-      - 8000:8000
+      - "8000:8000"
     entrypoint: ""
     volumes:
       - ./nginx/nginx.dev.conf:/etc/nginx/conf.d/nginx.conf
@@ -38,15 +40,4 @@ services:
       POSTGRES_USER: ticketvise
       POSTGRES_PASSWORD: Welkom01
     ports:
-      - 5432:5432
-
-  mail:
-    image: ticketvise/mail
-    build: ./postfix
-    environment:
-      DOMAIN: ticketvise.com
-
-#  cronjob:
-#    image: ticketvise/cronjob
-#    build: ./cronjob
-#    command: sh -c "env > /etc/environment && cron -f"
+      - "5432:5432"
