@@ -31,13 +31,14 @@ services:
         mode: host
 
   s3:
-    image: minio/minio
+    image: minio/minio:latest
     volumes:
       - minio_data:/data
     ports:
       - 9000:9000
+      - 9001:9001
     entrypoint: sh
-    command: -c 'mkdir -p /data/$$S3_BUCKET_NAME && minio server /data'
+    command: -c 'mkdir -p /data/$$S3_BUCKET_NAME && minio server /data --console-address ":9001"'
 
 
 volumes:
