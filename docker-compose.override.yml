@@ -22,7 +22,6 @@ services:
       LTI_KEY: LtiKey01
       LTI_SECRET: LtiSecret01
       DOMAIN: local.ticketvise.com
-      SEND_MAIL: 1
 
   proxy:
     image: ticketvise/proxy
