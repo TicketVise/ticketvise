@@ -19,13 +19,10 @@ class EmailThread(threading.Thread):
         threading.Thread.__init__(self)
 
     def run(self):
-        print("smtp", self.smtp_host, self.smtp_port, self.smtp_username, self.smtp_password, self.smtp_security)
-
         with get_connection(host=self.smtp_host, port=self.smtp_port, username=self.smtp_username,
                             password=self.smtp_password, use_tls=self.smtp_security == MailSecurity.TLS,
                             use_ssl=self.smtp_security == MailSecurity.STARTTLS) as connection:
             self.message.connection = connection
-            print(self.smtp_host, self.smtp_port, self.smtp_username, self.smtp_password, self.smtp_security)
             self.message.send()
 
 

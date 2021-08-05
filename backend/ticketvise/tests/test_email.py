@@ -1,3 +1,4 @@
+from ticketvise.models.notification.assigned import TicketAssignedNotification
 from email.message import EmailMessage
 
 from django.test import TestCase
@@ -21,6 +22,7 @@ class EmailTestCase(TestCase):
         self.assistant = User.objects.create(username="assistant", email="assistant@" + settings.DOMAIN)
         self.ticket = Ticket.objects.create(inbox=self.inbox, author=self.student, assignee=self.assistant,
                                             title="help", content="pls")
+        self.notification = TicketAssignedNotification.objects.get(ticket=self.ticket)
 
         self.student.add_inbox(inbox=self.inbox, role=Role.GUEST)
         self.assistant.add_inbox(inbox=self.inbox, role=Role.AGENT)
@@ -55,7 +57,7 @@ class EmailTestCase(TestCase):
         msg['Subject'] = "This must be the title2343!!?"
         msg['From'] = self.student.email
         msg['To'] = self.inbox.inbound_email_username
-        msg['Message-ID'] = f"<{self.ticket.reply_message_id}@{settings.DOMAIN}>"
+        msg['References'] = f"<{self.notification.email_message_id}@{settings.DOMAIN}>"
 
         submit_email_ticket(msg)
         self.assertTrue(Comment.objects.filter(ticket=self.ticket, content=content, is_reply=True).exists())
@@ -67,7 +69,7 @@ class EmailTestCase(TestCase):
         msg['Subject'] = "This must be the title2343!!?"
         msg['From'] = "tom.wassing@" + settings.DOMAIN
         msg['To'] = self.inbox.inbound_email_username
-        msg['Message-ID'] = f"<{self.ticket.reply_message_id}@{settings.DOMAIN}>"
+        msg['References'] = f"<{self.notification.email_message_id}@{settings.DOMAIN}>"
 
         submit_email_ticket(msg)
         self.assertTrue(Comment.objects.filter(ticket=self.ticket, content=content, is_reply=True).exists())
@@ -79,7 +81,7 @@ class EmailTestCase(TestCase):
         msg['Subject'] = "This must be the title2343!!?"
         msg['From'] = self.student.email
         msg['To'] = self.inbox.inbound_email_username
-        msg['Message-ID'] = f"<{self.ticket.reply_message_id}@{settings.DOMAIN}>"
+        msg['References'] = f"<{self.notification.email_message_id}@{settings.DOMAIN}>"
 
         submit_email_ticket(msg)
         self.assertTrue(Comment.objects.filter(ticket=self.ticket, content=content, is_reply=True).exists())
@@ -91,7 +93,7 @@ class EmailTestCase(TestCase):
         msg['Subject'] = "This must be the title2343!!?"
         msg['From'] = "tom.wassing@" + settings.DOMAIN
         msg['To'] = self.inbox.inbound_email_username
-        msg['Message-ID'] = f"<{self.ticket.reply_message_id}@{settings.DOMAIN}>"
+        msg['References'] = f"<{self.notification.email_message_id}@{settings.DOMAIN}>"
 
         submit_email_ticket(msg)
         self.assertTrue(Comment.objects.filter(ticket=self.ticket, content=content, is_reply=True).exists())
