@@ -1,3 +1,4 @@
+import logging
 from ticketvise.models.inbox import MailSecurity
 import threading
 
@@ -40,6 +41,8 @@ def send_mail_template(subject, sender, to, template, headers, context, smtp_hos
     :return: True if the mail Celery task has been started, false otherwise.
     :rtype: bool
     """
+    logging.info(f"Sending email from '{sender}' to '{to}'")
+    
     html_message = render_to_string(f"email/{template}.html", context)
     plain_message = strip_tags(html_message)
 

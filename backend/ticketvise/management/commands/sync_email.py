@@ -9,9 +9,10 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         start_time = datetime.now()
-        print(f"Started retrieving email at {start_time}")
+        logging.info(f"Started retrieving email at {start_time}")
+
         for inbox in Inbox.objects.filter(email_enabled=True):
-            print(f"Retrieving email for inbox: {inbox.name} ({inbox.id})")
+            logging.info(f"Retrieving email for inbox: {inbox.name} ({inbox.id})")
             for message in retrieve_emails(inbox.inbound_email_protocol,
                                            inbox.inbound_email_server,
                                            inbox.inbound_email_port,
@@ -20,4 +21,5 @@ class Command(BaseCommand):
                                            inbox.inbound_email_security == MailSecurity.TLS):
                 submit_email_ticket(message)
 
-        print(f"Finished retrieving email, took: {datetime.now() - start_time}")
+        end_time = datetime.now()
+        logging.info(f"Finished retrieving email at {end_time}, took: {end_time - start_time}")

@@ -16,7 +16,7 @@ SECRET_KEY = os.environ.get("DJANGO_SECRET", "<SECRET_KEY_DEFAULT>")
 DEBUG = int(os.environ.get("DEBUG", True))
 
 #: If ``True``, mails are sent when calling :func:`email.send_email`.
-SEND_MAIL = int(os.environ.get("SEND_MAIL", True))
+SEND_MAIL = int(os.environ.get("SEND_MAIL", False))
 
 DOMAIN = os.environ.get("DOMAIN", "uva.ticketvise.com")
 ALLOWED_HOSTS = ["*"]
@@ -185,8 +185,8 @@ EMAIL_HOST_USER = os.getenv("SMTP_OUTBOUND_USER", "apikey")
 EMAIL_HOST_PASSWORD = os.getenv("SMTP_OUTBOUND_PASSWORD", "Welkom01")
 EMAIL_USE_TLS = os.getenv("SMTP_TLS", True)
 EMAIL_USE_SSL = os.getenv("SMTP_SSL", False)
-EMAIL_FROM = os.getenv("SMTP_OUTBOUND_FROM", "TicketVise <ticket@{}>".format(DOMAIN))
-
+DEFAULT_FROM_EMAIL = os.getenv("SMTP_OUTBOUND_FROM", "TicketVise <ticket@{}>".format(DOMAIN))
+ 
 PAGE_SIZE = 25
 
 ROLE_GUEST_DISPLAY_NAME = os.getenv("ROLE_GUEST_DISPLAY_NAME", "Student")
@@ -203,7 +203,7 @@ LOGGING = {
     },
     'root': {
         'handlers': ['console'],
-        'level': 'WARNING',
+        'level': 'INFO',
     },
 }
 

@@ -73,7 +73,7 @@ class Inbox(models.Model):
 
     email_enabled = models.BooleanField(default=False)
     smtp_server = models.CharField(blank=True, max_length=100)
-    smtp_port = models.IntegerField(validators=[MinValueValidator(1), MaxValueValidator(65535)], default=465)
+    smtp_port = models.IntegerField(validators=[MinValueValidator(1), MaxValueValidator(65535)], default=587)
     smtp_security = models.CharField(choices=MailSecurity.choices, default=MailSecurity.TLS, max_length=8)
     smtp_username = models.EmailField(blank=True)
     smtp_password = models.CharField(blank=True, max_length=100)

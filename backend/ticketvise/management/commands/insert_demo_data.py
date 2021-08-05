@@ -24,8 +24,6 @@ class Command(BaseCommand):
 
     @transaction.atomic
     def insert_data(self):
-        settings.SEND_EMAIL = 0
-
         password = "pbkdf2_sha256$180000$6zy2oz9vnxsr$eTQBZxgVxG7ldORL63+OcqJbzLcUhbdCkAW7NdqsOxE="
         user_admin = User.objects.create(
             username="admin",
@@ -68,7 +66,7 @@ class Command(BaseCommand):
             first_name="Ana",
             last_name="Coordinator",
             password=password,
-            email="info@ticketvise.com",
+            email="ana@ticketvise.com",
             is_staff=False,
             is_superuser=False,
         )
