@@ -82,7 +82,7 @@ class LtiTestCase(TestCase):
         """
 
         signed_data = self.sign_data("POST", "/lti", self.data)
-        response = self.client.post("/lti", signed_data, follow=True,
+        response = self.client.post("/lti", signed_data,
                                     content_type="application/x-www-form-urlencoded")
         self.assertEqual(response.status_code, 302)
 
@@ -138,7 +138,7 @@ class LtiTestCase(TestCase):
         signed_data = self.sign_data("POST", "/lti", self.data)
 
         # Create inbox.
-        response1 = self.client.post("/lti", signed_data, follow=True,
+        response1 = self.client.post("/lti", signed_data,
                                      content_type="application/x-www-form-urlencoded")
 
         self.assertEqual(response1.status_code, 302)
@@ -148,7 +148,7 @@ class LtiTestCase(TestCase):
 
         signed_data = self.sign_data("POST", "/lti", self.data)
 
-        response2 = self.client.post("/lti", signed_data, follow=True,
+        response2 = self.client.post("/lti", signed_data,
                                      content_type="application/x-www-form-urlencoded")
         self.assertEqual(response2.status_code, 302)
 
@@ -162,7 +162,7 @@ class LtiTestCase(TestCase):
         self.data["roles"] = "instructor"
         signed_data = self.sign_data("POST", "/lti", self.data)
 
-        response1 = self.client.post("/lti", signed_data, follow=True,
+        response1 = self.client.post("/lti", signed_data,
                                      content_type="application/x-www-form-urlencoded")
         self.assertEqual(response1.status_code, 302)
 
@@ -170,12 +170,12 @@ class LtiTestCase(TestCase):
         self.data["roles"] = "learner"
         signed_data = self.sign_data("POST", "/lti", self.data)
 
-        response2 = self.client.post("/lti", signed_data, follow=True,
+        response2 = self.client.post("/lti", signed_data,
                                      content_type="application/x-www-form-urlencoded")
         self.assertEqual(response2.status_code, 302)
 
         # Let us check if we login and go to the ticket view.
-        response3 = self.client.post("/lti", signed_data, follow=True,
+        response3 = self.client.post("/lti", signed_data,
                                      content_type="application/x-www-form-urlencoded")
         self.assertEqual(response3.status_code, 302)
 
@@ -190,7 +190,7 @@ class LtiTestCase(TestCase):
         self.data["roles"] = "instructor"
         signed_data = self.sign_data("POST", "/lti", self.data)
 
-        response1 = self.client.post("/lti", signed_data, follow=True,
+        response1 = self.client.post("/lti", signed_data,
                                      content_type="application/x-www-form-urlencoded")
         self.assertEqual(response1.status_code, 302)
 
@@ -206,7 +206,7 @@ class LtiTestCase(TestCase):
         self.data["custom_section_ids"] = "1234,4567,9876"
         signed_data = self.sign_data("POST", "/lti", self.data)
 
-        response2 = self.client.post("/lti", signed_data, follow=True,
+        response2 = self.client.post("/lti", signed_data,
                                      content_type="application/x-www-form-urlencoded")
         self.assertEqual(response2.status_code, 302)
 
