@@ -84,7 +84,7 @@ class LtiTestCase(TestCase):
         signed_data = self.sign_data("POST", "/lti", self.data)
         response = self.client.post("/lti", signed_data, follow=True,
                                     content_type="application/x-www-form-urlencoded")
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, 302)
 
     def test_lti_invalid_key(self):
         """
@@ -141,7 +141,7 @@ class LtiTestCase(TestCase):
         response1 = self.client.post("/lti", signed_data, follow=True,
                                      content_type="application/x-www-form-urlencoded")
 
-        self.assertEqual(response1.status_code, 200)
+        self.assertEqual(response1.status_code, 302)
 
         # Login as assistant.
         self.data["roles"] = "teachingassistant"
@@ -150,7 +150,7 @@ class LtiTestCase(TestCase):
 
         response2 = self.client.post("/lti", signed_data, follow=True,
                                      content_type="application/x-www-form-urlencoded")
-        self.assertEqual(response2.status_code, 200)
+        self.assertEqual(response2.status_code, 302)
 
     def test_lti_ticket_view(self):
         """
@@ -164,7 +164,7 @@ class LtiTestCase(TestCase):
 
         response1 = self.client.post("/lti", signed_data, follow=True,
                                      content_type="application/x-www-form-urlencoded")
-        self.assertEqual(response1.status_code, 200)
+        self.assertEqual(response1.status_code, 302)
 
         # Create student account.
         self.data["roles"] = "learner"
@@ -172,12 +172,12 @@ class LtiTestCase(TestCase):
 
         response2 = self.client.post("/lti", signed_data, follow=True,
                                      content_type="application/x-www-form-urlencoded")
-        self.assertEqual(response2.status_code, 200)
+        self.assertEqual(response2.status_code, 302)
 
         # Let us check if we login and go to the ticket view.
         response3 = self.client.post("/lti", signed_data, follow=True,
                                      content_type="application/x-www-form-urlencoded")
-        self.assertEqual(response3.status_code, 200)
+        self.assertEqual(response3.status_code, 302)
 
     def test_lti_sections(self):
         """
@@ -192,7 +192,7 @@ class LtiTestCase(TestCase):
 
         response1 = self.client.post("/lti", signed_data, follow=True,
                                      content_type="application/x-www-form-urlencoded")
-        self.assertEqual(response1.status_code, 200)
+        self.assertEqual(response1.status_code, 302)
 
         inbox = Inbox.objects.get(code=self.data["context_label"])
         user = User.objects.get(lti_id=self.data["user_id"])
@@ -208,7 +208,7 @@ class LtiTestCase(TestCase):
 
         response2 = self.client.post("/lti", signed_data, follow=True,
                                      content_type="application/x-www-form-urlencoded")
-        self.assertEqual(response2.status_code, 200)
+        self.assertEqual(response2.status_code, 302)
 
         section = InboxSection.objects.get(code="1234", inbox=inbox)
         self.assertIsNotNone(section)
