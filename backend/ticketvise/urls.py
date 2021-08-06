@@ -15,15 +15,11 @@ from ticketvise.views.lti.config import LtiConfigView
 from ticketvise.views.lti.lti import LtiView
 
 
-class IndexView(TemplateView):
-    template_name = "index.html"
-
 
 urlpatterns = [
                   path("admin/django", admin.site.urls),
                   path("lti", LtiView.as_view()),
                   path("lti/config.xml", LtiConfigView.as_view()),
-                  path("", IndexView.as_view(), name="home"),
                   path("error/<int:error_code>", ErrorHandler.as_view(), name="error"),
                   re_path(r"^api/", include("ticketvise.views.api.urls"))
               ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

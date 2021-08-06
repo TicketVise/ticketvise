@@ -7,9 +7,8 @@ RUN apt update && apt upgrade -y
 
 # Copy project
 RUN mkdir /backend
-COPY ./backend /backend
-COPY ./requirements.txt /backend/requirements.txt
 WORKDIR /backend
+COPY . .
 
 # Install dependecies and collect static files
 RUN python3 -m pip install -r requirements.txt
