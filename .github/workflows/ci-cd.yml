@@ -22,7 +22,7 @@ jobs:
       - name: Test backend
         run: docker-compose exec -T web sh -c "python manage.py wait_for_database && python manage.py test --parallel --failfast --no-input --timing"
 
-      - name: Build and push proxy Docker image to Docker Hub
+      - name: Build and push frontend Docker image to Docker Hub
         uses: docker/build-push-action@v1
         with:
           username: ${{ secrets.DOCKER_USERNAME }}
