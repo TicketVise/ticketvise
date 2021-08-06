@@ -3,8 +3,7 @@ version: "3.7"
 services:
   web:
     image: ticketvise/backend
-    build:
-      context: .
+    build: ./backend
     command: >
       sh -c "python manage.py collectstatic --no-input --clear &&
              python manage.py wait_for_database &&
