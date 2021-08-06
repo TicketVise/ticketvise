@@ -8,22 +8,14 @@ from django.conf.urls import include
 from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import path, re_path
-from django.views.generic import TemplateView
 
-from ticketvise.views.error import ErrorHandler
 from ticketvise.views.lti.config import LtiConfigView
 from ticketvise.views.lti.lti import LtiView
 
 
-
 urlpatterns = [
-                  path("admin/django", admin.site.urls),
-                  path("lti", LtiView.as_view()),
-                  path("lti/config.xml", LtiConfigView.as_view()),
-                  path("error/<int:error_code>", ErrorHandler.as_view(), name="error"),
-                  re_path(r"^api/", include("ticketvise.views.api.urls"))
-              ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
-
-# Handle all the error pages.
-for code in [400, 403, 404]:
-    vars()[f"handler{code}"] = ErrorHandler.as_view(error_code=code)
+    path("admin/django", admin.site.urls),
+    path("lti", LtiView.as_view()),
+    path("lti/config.xml", LtiConfigView.as_view()),
+    re_path(r"^api/", include("ticketvise.views.api.urls"))
+]
