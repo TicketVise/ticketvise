@@ -16,39 +16,29 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Set up Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v1
-        with:
-          node-version: ${{ matrix.node-version }}
-
-      # - name: Test and build frontend
-      #   run: |
-      #     npm ci
-      #     npm run build
-      #     npm test
-
       - name: Setup test environment
         run: docker-compose up -d --build
 
       - name: Test backend
         run: docker-compose exec -T web sh -c "python manage.py wait_for_database && python manage.py test --parallel --failfast --no-input --timing"
 
-      # - name: Build and push proxy Docker image to Docker Hub
-      #   uses: docker/build-push-action@v1
-      #   with:
-      #     username: ${{ secrets.DOCKER_USERNAME }}
-      #     password: ${{ secrets.DOCKER_PASSWORD }}
-      #     path: nginx
-      #     repository: ticketvise/proxy
-      #     add_git_labels: true
-      #     tag_with_ref: true
-      #     tag_with_sha: true
+      - name: Build and push proxy Docker image to Docker Hub
+        uses: docker/build-push-action@v1
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+          path: frontend
+          repository: ticketvise/frontend
+          add_git_labels: true
+          tag_with_ref: true
+          tag_with_sha: true
 
       - name: Build and push backend Docker image to Docker Hub
         uses: docker/build-push-action@v1
         with:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
+          path: backend
           repository: ticketvise/backend
           add_git_labels: true
           tag_with_ref: true
@@ -70,7 +60,6 @@ jobs:
           GIT_DIGEST: ${{ steps.git-sha7.outputs.sha7 }}
           EMAIL_PASSWORD: ${{ secrets.EMAIL_PASSWORD }}
           DOMAIN: dev.ticketvise.com
-          SENTRY_DSN: ${{ secrets.SENTRY_DSN_BACKEND }}
         with:
           remote_host: ${{ secrets.DOCKER_SSH_HOST_DEV }}
           ssh_private_key: ${{ secrets.DOCKER_SSH_PRIVATE_KEY_DEV }}
@@ -89,7 +78,6 @@ jobs:
           GIT_DIGEST: ${{ steps.git-sha7.outputs.sha7 }}
           EMAIL_PASSWORD: ${{ secrets.EMAIL_PASSWORD }}
           DOMAIN: uva.ticketvise.com
-          SENTRY_DSN: ${{ secrets.SENTRY_DSN_BACKEND }}
         with:
           remote_host: ${{ secrets.DOCKER_SSH_HOST }}
           ssh_private_key: ${{ secrets.DOCKER_SSH_PRIVATE_KEY }}
