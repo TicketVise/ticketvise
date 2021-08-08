@@ -1,0 +1,339 @@
+<template>
+  <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:max-w-7xl lg:px-8">
+    <h1 class="sr-only">Profile</h1>
+    <!-- Main 3 column grid -->
+    <div class="grid grid-cols-1 gap-4 items-start">
+      <h2 class="text-lg leading-6 font-medium text-gray-100">Your account</h2>
+      <div class="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
+        <div v-for="stat in stats" :key="stat.label" class="bg-white overflow-hidden shadow rounded">
+          <div class="p-5">
+            <div class="flex items-center">
+              <div class="flex-shrink-0">
+                <component :is="stat.icon" class="h-6 w-6 text-gray-400" aria-hidden="true" />
+              </div>
+              <div class="ml-5 w-0 flex-1">
+                <dl>
+                  <dt class="text-sm font-medium text-gray-500 truncate">
+                    {{ stat.label }}
+                  </dt>
+                  <dd>
+                    <div class="text-lg font-medium text-gray-900">
+                      {{ stat.value }}
+                    </div>
+                  </dd>
+                </dl>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="grid md:grid-cols-2 gap-4">
+        <!-- Basic information section -->
+        <section aria-labelledby="payment-details-heading">
+          <form @submit.prevent="">
+            <div class="shadow rounded sm:overflow-hidden">
+              <div class="bg-white py-6 px-4 sm:p-6">
+                <div>
+                  <h2 id="payment-details-heading" class="text-lg leading-6 font-medium text-gray-900">General information</h2>
+                  <p class="mt-1 text-sm text-gray-500">Change your basic information here, we won't ask you for more personal information.</p>
+                </div>
+                <div class="mt-6 flex flex-col lg:flex-row">
+                  <div class="flex-grow space-y-4">
+                    <div>
+                      <label for="last_name" class="block text-sm font-medium text-gray-700">
+                        <span class="mr-1">Username</span>
+                        <span class="inline-flex items-center px-2.5 rounded-md text-sm font-medium bg-gray-100 text-primary">
+                          LTI
+                        </span>
+                      </label>
+                      <div class="mt-1 rounded-md flex">
+                        <input disabled type="text" name="last_name" id="last_name" autocomplete="last_name" class="focus:ring-sky-500 focus:border-sky-500 flex-grow block w-full min-w-0 rounded-md sm:text-sm border-gray-300" :value="user.username" />
+                      </div>
+                    </div>
+
+                    <div>
+                      <label for="first_name" class="block text-sm font-medium text-gray-700">
+                        <span class="mr-1">First Name</span>
+                        <span class="inline-flex items-center px-2.5 rounded-md text-sm font-medium bg-gray-100 text-primary">
+                          LTI
+                        </span>
+                      </label>
+                      <div class="mt-1 rounded-md flex">
+                        <input disabled type="text" name="first_name" id="first_name" autocomplete="first_name" class="focus:ring-sky-500 focus:border-sky-500 flex-grow block w-full min-w-0 rounded-md sm:text-sm border-gray-300" :value="user.first_name" />
+                      </div>
+                    </div>
+
+                    <div>
+                      <label for="last_name" class="block text-sm font-medium text-gray-700">
+                        <span class="mr-1">Last Name</span>
+                        <span class="inline-flex items-center px-2.5 rounded-md text-sm font-medium bg-gray-100 text-primary">
+                          LTI
+                        </span>
+                      </label>
+                      <div class="mt-1 rounded-md flex">
+                        <input disabled type="text" name="last_name" id="last_name" autocomplete="last_name" class="focus:ring-sky-500 focus:border-sky-500 flex-grow block w-full min-w-0 rounded-md sm:text-sm border-gray-300" :value="user.last_name" />
+                      </div>
+                    </div>
+
+                    <div>
+                      <label for="last_name" class="block text-sm font-medium text-gray-700">
+                        <span class="mr-1">Email</span>
+                        <span class="inline-flex items-center px-2.5 rounded-md text-sm font-medium bg-gray-100 text-primary">
+                          LTI
+                        </span>
+                      </label>
+                      <div class="mt-1 rounded-md flex">
+                        <input disabled type="text" name="last_name" id="last_name" autocomplete="last_name" class="focus:ring-sky-500 focus:border-sky-500 flex-grow block w-full min-w-0 rounded-md sm:text-sm border-gray-300" :value="user.email" />
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="mt-6 flex-grow lg:mt-0 lg:ml-6 lg:flex-grow-0 lg:flex-shrink-0">
+                    <p class="text-sm font-medium text-gray-700 mb-1" aria-hidden="true">
+                      <span class="mr-1">Photo</span>
+                      <span class="inline-flex items-center px-2.5 rounded-md text-sm font-medium bg-gray-100 text-primary">
+                        LTI
+                      </span>
+                    </p>
+                    <div class="mt-1 lg:hidden">
+                      <div class="flex items-center">
+                        <div class="flex-shrink-0 inline-block rounded-full overflow-hidden h-12 w-12" aria-hidden="true">
+                          <img class="rounded-full h-full w-full" :src="user.avatar_url" alt="" />
+                        </div>
+                        <div class="ml-5 rounded-md">
+                          <div class="group relative border border-gray-300 rounded-md py-2 px-3 flex items-center justify-center hover:bg-gray-50 focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-sky-500">
+                            <label for="user-photo" class="relative text-sm leading-4 font-medium text-gray-700 pointer-events-none">
+                              <span>Change</span>
+                              <span class="sr-only"> user photo</span>
+                            </label>
+                            <input id="user-photo" name="user-photo" type="file" class="absolute w-full h-full opacity-0 cursor-pointer border-gray-300 rounded-md" />
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="hidden relative rounded-full overflow-hidden lg:block">
+                      <img class="relative rounded-full w-40 h-40" :src="user.avatar_url" alt="" />
+                      <label for="user-photo" class="absolute inset-0 w-full h-full bg-black bg-opacity-75 flex items-center justify-center text-sm font-medium text-white opacity-0 hover:opacity-100 focus-within:opacity-100">
+                        <span>Change</span>
+                        <span class="sr-only"> user photo</span>
+                        <input type="file" id="user-photo" name="user-photo" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer border-gray-300 rounded-md" />
+                      </label>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="rounded-md bg-blue-50 p-4">
+                <div class="flex">
+                  <div class="flex-shrink-0">
+                    <InformationCircleIcon class="h-5 w-5 text-blue-400" aria-hidden="true" />
+                  </div>
+                  <div class="ml-3 flex-1 md:flex md:justify-between">
+                    <p class="text-sm text-blue-700">
+                      Your account details are given to us by the LTI provider, so you can't change them here.
+                    </p>
+                  </div>
+                </div>
+              </div>
+              <div class="px-4 py-3 bg-gray-50 text-right sm:px-6">
+                <button disabled type="submit" class="bg-primary-100 border border-transparent rounded-md py-2 px-4 inline-flex justify-center text-sm font-medium text-primary-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-900">
+                  Save
+                </button>
+                <!-- <button type="submit" class="bg-gray-800 border border-transparent rounded-md py-2 px-4 inline-flex justify-center text-sm font-medium text-white hover:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-900">
+                  Save
+                </button> -->
+              </div>
+            </div>
+          </form>
+        </section>
+
+        <!-- Notification settings section -->
+        <section aria-labelledby="payment-details-heading">
+          <form @submit.prevent="">
+            <div class="shadow rounded sm:overflow-hidden">
+              <div class="bg-white py-6 px-4 sm:p-6">
+                <div>
+                  <h2 id="payment-details-heading" class="text-lg leading-6 font-medium text-gray-900">Notification preferences</h2>
+                  <p class="mt-1 text-sm text-gray-500">Here you can let us know how to notify you on certain events.</p>
+                </div>
+
+                <!-- Student notification settings -->
+                <div class="mt-6">
+                  <div class="grid grid-cols-6 sm:grid-cols-8 items-center justify-between">
+                    <h3 class="col-span-6 sm:col-span-8 leading-5 font-medium text-gray-800">Student notifications</h3>
+
+                    <!-- Headers -->
+                    <span class="col-span-4 sm:col-span-6">{{ ' ' }}</span>
+                    <span class="text-center text-sm text-gray-700 uppercase">In app</span>
+                    <span class="text-center text-sm text-gray-700 uppercase">Email</span>
+
+                    <div v-for="(setting, i) in settings.students" :key="setting.id" class="col-span-6 sm:col-span-8 grid grid-cols-6 sm:grid-cols-8 items-center justify-between">
+                      <span class="flex-grow flex flex-col col-span-4 sm:col-span-6">
+                        <span class="text-sm font-medium text-gray-900" passive>{{ setting.title }}</span>
+                        <span class="text-sm text-gray-500">{{ setting.description }}</span>
+                      </span>
+                      <Switch v-model="settings.students[i].app" :class="[settings.students[i].app ? 'bg-primary' : 'bg-gray-200', 'relative mx-auto inline-flex flex-shrink-0 h-6 w-11 border-2 border-transparent rounded-full cursor-pointer transition-colors ease-in-out duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary']">
+                        <span aria-hidden="true" :class="[settings.students[i].app ? 'translate-x-5' : 'translate-x-0', 'pointer-events-none inline-block h-5 w-5 rounded-full bg-white shadow transform ring-0 transition ease-in-out duration-200']" />
+                      </Switch>
+                      <Switch v-model="settings.students[i].email" :class="[settings.students[i].email ? 'bg-primary' : 'bg-gray-200', 'relative mx-auto inline-flex flex-shrink-0 h-6 w-11 border-2 border-transparent rounded-full cursor-pointer transition-colors ease-in-out duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary']">
+                        <span aria-hidden="true" :class="[settings.students[i].email ? 'translate-x-5' : 'translate-x-0', 'pointer-events-none inline-block h-5 w-5 rounded-full bg-white shadow transform ring-0 transition ease-in-out duration-200']" />
+                      </Switch>
+                    </div>
+                  </div>
+                </div>
+
+                <hr class="mt-4" />
+
+                <!-- Teacher/assistant notification settings -->
+                <div class="mt-4">
+                  <div class="grid grid-cols-6 sm:grid-cols-8 items-center justify-between">
+                    <h3 class="col-span-4 sm:col-span-8 leading-5 font-medium text-gray-800">Teacher/Assistant notifications</h3>
+
+                    <!-- Headers -->
+                    <span class="col-span-4 sm:col-span-6">{{ ' ' }}</span>
+                    <span class="text-center text-sm text-gray-700 uppercase">In app</span>
+                    <span class="text-center text-sm text-gray-700 uppercase">Email</span>
+
+                    <div v-for="setting in settings.teachers" :key="setting.id" class="col-span-6 sm:col-span-8 grid grid-cols-6 sm:grid-cols-8 items-center justify-between">
+                      <span class="flex-grow flex flex-col col-span-4 sm:col-span-6">
+                        <span class="text-sm font-medium text-gray-900" passive>{{ setting.title }}</span>
+                        <span class="text-sm text-gray-500">{{ setting.description }}</span>
+                      </span>
+                      <Switch v-model="setting.app" :class="[setting.app ? 'bg-primary' : 'bg-gray-200', 'relative mx-auto inline-flex flex-shrink-0 h-6 w-11 border-2 border-transparent rounded-full cursor-pointer transition-colors ease-in-out duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary']">
+                        <span aria-hidden="true" :class="[setting.app ? 'translate-x-5' : 'translate-x-0', 'pointer-events-none inline-block h-5 w-5 rounded-full bg-white shadow transform ring-0 transition ease-in-out duration-200']" />
+                      </Switch>
+                      <Switch v-model="setting.email" :class="[setting.email ? 'bg-primary' : 'bg-gray-200', 'relative mx-auto inline-flex flex-shrink-0 h-6 w-11 border-2 border-transparent rounded-full cursor-pointer transition-colors ease-in-out duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary']">
+                        <span aria-hidden="true" :class="[setting.email ? 'translate-x-5' : 'translate-x-0', 'pointer-events-none inline-block h-5 w-5 rounded-full bg-white shadow transform ring-0 transition ease-in-out duration-200']" />
+                      </Switch>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="px-4 py-3 bg-gray-50 text-right sm:px-6">
+                <button type="submit" class="bg-primary border border-transparent rounded-md py-2 px-4 inline-flex justify-center text-sm font-medium text-white hover:bg-primary-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary">
+                  Save
+                </button>
+              </div>
+            </div>
+          </form>
+        </section>
+      </div>
+    </div>
+  </div>
+</template>
+
+<script>
+import axios from 'axios'
+import store from '@/store'
+
+import { Switch, SwitchDescription, SwitchGroup, SwitchLabel } from '@headlessui/vue'
+import {
+  CollectionIcon,
+  EyeIcon,
+  InboxIcon
+} from '@heroicons/vue/outline'
+import { InformationCircleIcon } from '@heroicons/vue/solid'
+
+const settings = {
+  students: [
+    {
+      id: 0,
+      key: 'new_public_ticket',
+      title: 'New public ticket',
+      description: 'Know when a public ticket is created',
+      app: false,
+      email: false
+    },
+    {
+      id: 1,
+      key: 'sharing',
+      title: 'Sharing',
+      description: 'When a fellow students shares a ticket with you',
+      app: false,
+      email: false
+    },
+    {
+      id: 2,
+      key: 'comment',
+      title: 'Comment',
+      description: 'A comment on either your ticket or a public ticket',
+      app: false,
+      email: false
+    }
+  ],
+  teachers: [
+    {
+      id: 0,
+      key: 'new_ticket',
+      title: 'New ticket',
+      description: 'Know when a ticket is created',
+      app: false,
+      email: false
+    },
+    {
+      id: 1,
+      key: 'new_public_ticket',
+      title: 'New public ticket',
+      description: 'Know when a public ticket is created',
+      app: false,
+      email: false
+    },
+    {
+      id: 2,
+      key: 'assigned',
+      title: 'Assigned',
+      description: 'When you are assigned to a ticket',
+      app: false,
+      email: false
+    },
+    {
+      id: 3,
+      key: 'comment',
+      title: 'Comment',
+      description: 'A comment on either an assigned ticket or a public ticket',
+      app: false,
+      email: false
+    },
+    {
+      id: 4,
+      key: 'mentioned',
+      title: 'Mentioned',
+      description: 'If a fellow teacher mentions you in a ticket',
+      app: false,
+      email: false
+    }
+  ]
+}
+
+export default {
+  name: 'Dashboard',
+  components: {
+    InformationCircleIcon,
+    Switch,
+    SwitchDescription,
+    SwitchGroup,
+    SwitchLabel
+  },
+  data: () => ({
+    enabled: false,
+    user: store.state.user,
+    stats: [
+      { label: 'Inboxes', value: '#', icon: InboxIcon },
+      { label: 'Tickets', value: '#', icon: CollectionIcon },
+      { label: 'Public tickets', value: '#', icon: EyeIcon }
+    ]
+  }),
+  setup () {
+    return { settings }
+  },
+  mounted () {
+    axios.get('/api/me/statistics').then(response => {
+      this.stats.find(s => s.label === 'Inboxes').value = response.data.inboxes || 0
+      this.stats.find(s => s.label === 'Tickets').value = response.data.tickets || 0
+      // Add public tickets to the stats
+      this.stats.find(s => s.label === 'Public tickets').value = response.data.public_tickets || 0
+    })
+  }
+}
+</script>

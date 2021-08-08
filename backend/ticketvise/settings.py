@@ -127,11 +127,11 @@ MEDIA_URL = "/"
 #: Media root path.
 MEDIA_ROOT = os.path.join(BASE_DIR, "ticketvise/")
 #: Path to the default user avatar image.
-DEFAULT_AVATAR_PATH = "/static/img/avatars/default-avatar.png"
+DEFAULT_AVATAR_PATH = "/img/default-avatar.png"
 #: Directory for uploaded avatar pictures.
 AVATAR_DIRECTORY = "media/img/avatars"
 #: Path to the default inbox image.
-DEFAULT_INBOX_IMAGE_PATH = "/static/img/inboxes/default-inbox.png"
+DEFAULT_INBOX_IMAGE_PATH = "/img/default-inbox.png"
 #: Directory for uploaded inbox images.
 INBOX_IMAGE_DIRECTORY = "media/img/inboxes"
 #: Set max upload size for files
@@ -170,7 +170,6 @@ DATE_FORMAT = "j N, Y"
 #: ~~~~~~~~~~~~~~~~~~~
 STATIC_URL = "/static/"
 STATIC_ROOT = os.path.join(BASE_DIR, "static")
-STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.ManifestStaticFilesStorage'
 
 #: Email settings
 #: ~~~~~~~~~~~~~~~~~~~

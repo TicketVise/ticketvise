@@ -3,8 +3,7 @@ version: "3.7"
 services:
   web:
     image: ticketvise/backend
-    build:
-      context: .
+    build: ./backend
     command: >
       sh -c "python manage.py collectstatic --no-input --clear &&
              python manage.py wait_for_database &&
@@ -23,16 +22,16 @@ services:
       LTI_SECRET: LtiSecret01
       DOMAIN: local.ticketvise.com
 
-  proxy:
-    image: ticketvise/proxy
-    build: ./nginx
-    ports:
-      - "8000:8000"
-    entrypoint: ""
-    volumes:
-      - ./nginx/nginx.dev.conf:/etc/nginx/conf.d/nginx.conf
-      - ./backend/ticketvise/media:/home/media:ro
-      - ./backend/ticketvise/static:/home/static:ro
+  # proxy:
+  #   image: ticketvise/proxy
+  #   build: ./nginx
+  #   ports:
+  #     - "8000:8000"
+  #   entrypoint: ""
+  #   volumes:
+  #     - ./nginx/nginx.dev.conf:/etc/nginx/conf.d/nginx.conf
+  #     - ./backend/ticketvise/media:/home/media:ro
+  #     - ./backend/ticketvise/static:/home/static:ro
 
   database:
     environment:

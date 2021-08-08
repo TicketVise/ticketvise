@@ -57,7 +57,7 @@ class Inbox(models.Model):
     code = models.CharField(max_length=50, unique=True)
     name = models.CharField(max_length=100)
     color = models.CharField(max_length=7, validators=[validate_hex_color], default=random_preselected_color)
-    image = models.URLField(default=DEFAULT_INBOX_IMAGE_PATH)
+    image = models.URLField(default=DEFAULT_INBOX_IMAGE_PATH, max_length=255)
     scheduling_algorithm = models.CharField(choices=SchedulingAlgorithm.choices, max_length=255,
                                             default=SchedulingAlgorithm.LEAST_ASSIGNED_FIRST)
     round_robin_parameter = models.PositiveIntegerField(default=0)
@@ -163,20 +163,6 @@ class Inbox(models.Model):
 
     def __str__(self):
         return self.name
-
-    # def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
-    #     p = ''
-    #     if not path.exists(f"ticketvise/{self.image}") or self.image == DEFAULT_INBOX_IMAGE_PATH:
-    #         p = self.image
-    #         self.image = Image.open(f"ticketvise{DEFAULT_INBOX_IMAGE_PATH}")
-    #     else:
-    #         p = self.image
-    #         self.image = Image.open(f"ticketvise/{self.image}")
-    #
-    #     self.image = crop_image(self.image)
-    #     self.image.save(f"ticketvise/{p}", quality=60)
-    #
-    #     super().save(force_insert, force_update, using, update_fields)
 
 
 class InboxSection(models.Model):
