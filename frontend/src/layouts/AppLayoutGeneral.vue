@@ -104,13 +104,12 @@ import {
 import { BellIcon } from '@heroicons/vue/outline'
 
 import DevelopPanel from '@/components/devpanel/DevelopPanel.vue'
-import store from '@/store'
+import { mapState } from 'vuex'
 
 const logo = require('@/assets/logo/logo.svg')
 
 const userNavigation = [
-  { name: 'Your Profile', href: '#' },
-  { name: 'Settings', href: '#' },
+  { name: 'Your Profile', href: '/account' },
   { name: 'Sign out', href: '#' }
 ]
 
@@ -131,10 +130,10 @@ export default {
       logo
     }
   },
-  data: () => ({
-    user: store.state.user
-  }),
   computed: {
+    ...mapState({
+      user: state => state.user
+    }),
     development: () => process.env.NODE_ENV !== 'production'
   }
 }
