@@ -1,10 +1,9 @@
-version: '3.7'
+version: "3.7"
 
 services:
   web:
     image: ticketvise/backend
-    build:
-      context: .
+    build: ./backend
     command: >
       sh -c "python manage.py collectstatic --no-input --clear &&
              python manage.py wait_for_database &&
@@ -12,6 +11,7 @@ services:
              python manage.py migrate --no-input &&
              python manage.py insert_demo_data &&
              python manage.py runserver 0.0.0.0:6000"
+
     volumes:
       - ./backend:/backend
     environment:
@@ -25,6 +25,7 @@ services:
       S3_USE_HTTPS: 0
       S3_ACCESS_KEY: minio
       S3_SECRET_KEY: Welkom01
+      DOMAIN: local.ticketvise.com
 
   proxy:
     image: ticketvise/proxy
@@ -43,18 +44,7 @@ services:
       POSTGRES_USER: ticketvise
       POSTGRES_PASSWORD: Welkom01
     ports:
-      - 5432:5432
-
-  mail:
-    image: ticketvise/mail
-    build: ./postfix
-    environment:
-      DOMAIN: ticketvise.com
-
-#  cronjob:
-#    image: ticketvise/cronjob
-#    build: ./cronjob
-#    command: sh -c "env > /etc/environment && cron -f"
+      - "5432:5432"
 
   s3:
     environment:

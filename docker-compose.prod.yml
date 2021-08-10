@@ -1,4 +1,4 @@
-version: '3.7'
+version: "3.7"
 
 services:
   database:
@@ -48,27 +48,6 @@ services:
       DOMAIN: ${DOMAIN}
       SENTRY_DSN: ${SENTRY_DSN}
 
-#  cronjob:
-#    image: "ticketvise/cronjob:sha-${GIT_DIGEST}"
-#    command: sh -c "env > /etc/environment && cron -f"
-#    deploy:
-#      restart_policy:
-#        condition: on-failure
-#        delay: 5s
-#        max_attempts: 5
-#        window: 10s
-#    environment:
-#      DEBUG: 0
-#      SEND_MAIL: 1
-#      DJANGO_SECRET: ${DJANGO_SECRET}
-#      SMTP_OUTBOUND_PASSWORD: ${EMAIL_PASSWORD}
-#      SQL_USER: ${SQL_USER}
-#      SQL_PASSWORD: ${SQL_PASSWORD}
-#      LTI_KEY: ${LTI_KEY}
-#      LTI_SECRET: ${LTI_SECRET}
-#      DOMAIN: ${DOMAIN}
-#      SENTRY_DSN: ${SENTRY_DSN}
-
   proxy:
     image: "ticketvise/proxy:sha-${GIT_DIGEST}"
     deploy:
@@ -86,8 +65,8 @@ services:
     environment:
       NGINX_DOMAIN: ${DOMAIN}
     ports:
-      - 80:8080
-      - 443:8443
+      - "80:8080"
+      - "443:8443"
     volumes:
       - media:/home/media:ro
       - static:/home/static
@@ -125,13 +104,6 @@ services:
       - cert_conf:/etc/letsencrypt
       - cert_www:/var/www/certbot
     entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done;'"
-
-  mail:
-    image: "ticketvise/mail:sha-${GIT_DIGEST}"
-    environment:
-      DOMAIN: ${DOMAIN}
-    volumes:
-      - cert_conf:/etc/letsencrypt
 
 volumes:
   cert_conf:

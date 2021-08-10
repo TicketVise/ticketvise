@@ -27,19 +27,21 @@ class Command(BaseCommand):
         password = "pbkdf2_sha256$180000$6zy2oz9vnxsr$eTQBZxgVxG7ldORL63+OcqJbzLcUhbdCkAW7NdqsOxE="
         user_admin = User.objects.create(
             username="admin",
-            first_name="admin",
-            last_name="admin",
+            first_name="Alan",
+            last_name="Turing",
+            avatar_url="https://upload.wikimedia.org/wikipedia/commons/a/a1/Alan_Turing_Aged_16.jpg",
             password=password,
             email="admin@ticketvise.com",
             is_staff=True,
             is_superuser=True,
         )
         user_ivan = User.objects.create(
-            username="ivanstudent",
-            first_name="Ivan",
-            last_name="Student",
+            username="e.dijkstra",
+            first_name="Edsger",
+            last_name="W. Dijkstra",
+            avatar_url="https://upload.wikimedia.org/wikipedia/commons/thumb/d/d9/Edsger_Wybe_Dijkstra.jpg/800px-Edsger_Wybe_Dijkstra.jpg",
             password=password,
-            email="ivanstudent@ticketvise.com",
+            email="Edsger@ticketvise.com",
             is_staff=False,
             is_superuser=False,
         )
@@ -62,11 +64,12 @@ class Command(BaseCommand):
             is_superuser=False,
         )
         user_ana = User.objects.create(
-            username="anacoordinator",
-            first_name="Ana",
-            last_name="Coordinator",
+            username="c.mcauliffe",
+            first_name="Christa",
+            last_name="McAuliffe",
+            avatar_url="https://www.biography.com/.image/t_share/MTc1NDAwODQ5MjM1NzgxMjI2/the-challenger-christa-mcauliffe-16492799851_nasa.jpg",
             password=password,
-            email="info@ticketvise.com",
+            email="christa@ticketvise.com",
             is_staff=False,
             is_superuser=False,
         )
@@ -103,16 +106,20 @@ class Command(BaseCommand):
 
         # Creating Courses
         inbox_pse = Inbox.objects.create(
-            code="5062STRE6Y", name="Project Software Engineering", round_robin_parameter=4, email="pse@ticketvise.com",
-            enable_create_new_ticket_by_email=True, enable_reply_by_email=True
+            code="5062STRE6Y", name="Project Software Engineering", round_robin_parameter=4, inbound_email_username="pse@ticketvise.com",
+            enable_create_new_ticket_by_email=True, enable_reply_by_email=True,
+            image="https://images.unsplash.com/photo-1524995997946-a1c2e315a42f?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=1050&q=80"
         )
         inbox_ip = Inbox.objects.create(code="5062BEST6Y", name="Inleiding Programmeren")
-        inbox_ds = Inbox.objects.create(code="2020DS1864", name="Datastructuren")
+        inbox_ds = Inbox.objects.create(code="2020DS1864", name="Datastructuren",
+            image="https://images.unsplash.com/photo-1503676260728-1c00da094a0b?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=1009&q=80")
 
-        inbox_pt = Inbox.objects.create(code="5061DAVI5Y", name="Programmeertalen")
-        inbox_mp = Inbox.objects.create(code="5061GAVI5Y", name="Master's Project ")
+        inbox_pt = Inbox.objects.create(code="5061DAVI5Y", name="Programmeertalen",
+            image="https://images.unsplash.com/photo-1581078426770-6d336e5de7bf?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=1050&q=80")
+        inbox_mp = Inbox.objects.create(code="5061GAVI5Y", name="Master's Project",
+            image="https://images.unsplash.com/photo-1580582932707-520aed937b7b?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=1489&q=80")
         inbox_pmpse = Inbox.objects.create(
-            code="5061VEVI5Y", name="Preparation Master's Project Software Engineering "
+            code="5061VEVI5Y", name="Preparation Master's Project Software Engineering"
         )
 
         # Creating Labels

@@ -6,11 +6,12 @@ Contains all entity sets for the inbox database.
 **Table of contents**
 * :class:`Inbox`
 """
+from django.core.validators import MinValueValidator, MaxValueValidator
 from django.db import models
 
 from ticketvise.models.user import User, Role
 from ticketvise.models.validators import validate_hex_color
-from ticketvise.settings import INBOX_IMAGE_DIRECTORY, DEFAULT_INBOX_IMAGE_PATH
+from ticketvise.settings import DEFAULT_INBOX_IMAGE_PATH
 from ticketvise.utils import random_preselected_color
 
 
@@ -30,6 +31,17 @@ class SchedulingAlgorithm(models.TextChoices):
     FIXED = ("fixed", "Fixed")
 
 
+class MailSecurity(models.TextChoices):
+    NONE = ('NONE', 'None')
+    STARTTLS = ('STARTTLS', 'STARTTLS')
+    TLS = ('TLS', 'TLS')
+
+
+class InboundMailProtocol(models.TextChoices):
+    POP3 = 'POP3'
+    IMAP = 'IMAP'
+
+
 class Inbox(models.Model):
     """
     This model represents a ticket inbox. Different users can be part of the same inbox,
@@ -45,7 +57,7 @@ class Inbox(models.Model):
     code = models.CharField(max_length=50, unique=True)
     name = models.CharField(max_length=100)
     color = models.CharField(max_length=7, validators=[validate_hex_color], default=random_preselected_color)
-    image = models.URLField(default=DEFAULT_INBOX_IMAGE_PATH)
+    image = models.URLField(default=DEFAULT_INBOX_IMAGE_PATH, max_length=255)
     scheduling_algorithm = models.CharField(choices=SchedulingAlgorithm.choices, max_length=255,
                                             default=SchedulingAlgorithm.LEAST_ASSIGNED_FIRST)
     round_robin_parameter = models.PositiveIntegerField(default=0)
@@ -53,12 +65,25 @@ class Inbox(models.Model):
     show_assignee_to_guest = models.BooleanField(default=False)
     close_answered_weeks = models.PositiveIntegerField(default=0)
     alert_coordinator_unanswered_days = models.PositiveIntegerField(default=0)
-    email = models.EmailField(null=True, unique=True)
     enable_create_new_ticket_by_email = models.BooleanField(default=False)
     enable_reply_by_email = models.BooleanField(default=True)
     is_active = models.BooleanField(default=True)
     date_edited = models.DateTimeField(auto_now=True)
     date_created = models.DateTimeField(auto_now_add=True)
+
+    email_enabled = models.BooleanField(default=False)
+    smtp_server = models.CharField(blank=True, max_length=100)
+    smtp_port = models.IntegerField(validators=[MinValueValidator(1), MaxValueValidator(65535)], default=587)
+    smtp_security = models.CharField(choices=MailSecurity.choices, default=MailSecurity.TLS, max_length=8)
+    smtp_username = models.EmailField(blank=True)
+    smtp_password = models.CharField(blank=True, max_length=100)
+    inbound_email_protocol = models.CharField(choices=InboundMailProtocol.choices, default=InboundMailProtocol.IMAP,
+                                              max_length=4)
+    inbound_email_server = models.CharField(blank=True, max_length=100)
+    inbound_email_port = models.IntegerField(validators=[MinValueValidator(1), MaxValueValidator(65535)], default=993)
+    inbound_email_security = models.CharField(choices=MailSecurity.choices, default=MailSecurity.TLS, max_length=8)
+    inbound_email_username = models.EmailField(blank=True)
+    inbound_email_password = models.CharField(blank=True, max_length=100)
 
     def round_robin_parameter_increase(self):
         """
@@ -138,20 +163,6 @@ class Inbox(models.Model):
 
     def __str__(self):
         return self.name
-
-    # def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
-    #     p = ''
-    #     if not path.exists(f"ticketvise/{self.image}") or self.image == DEFAULT_INBOX_IMAGE_PATH:
-    #         p = self.image
-    #         self.image = Image.open(f"ticketvise{DEFAULT_INBOX_IMAGE_PATH}")
-    #     else:
-    #         p = self.image
-    #         self.image = Image.open(f"ticketvise/{self.image}")
-    #
-    #     self.image = crop_image(self.image)
-    #     self.image.save(f"ticketvise/{p}", quality=60)
-    #
-    #     super().save(force_insert, force_update, using, update_fields)
 
 
 class InboxSection(models.Model):
