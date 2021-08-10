@@ -37,17 +37,14 @@ urlpatterns = [
     path("inboxes/<int:inbox_id>/tickets/<int:ticket_inbox_id>/replies/post", CreateReplyApiView.as_view()),
     path("inboxes/<int:inbox_id>/tickets/<int:ticket_inbox_id>/shared", TicketSharedAPIView.as_view()),
     path("inboxes/<int:inbox_id>/tickets/<int:ticket_inbox_id>/title", TicketTitleAPIView.as_view()),
-<<<<<<< HEAD
     path("inboxes/<int:inbox_id>/users/<int:user_id>/tickets", UserTicketsApiView.as_view()),
     path("inboxes/<int:inbox_id>/users/<int:user_id>/tickets/average", UserAverageApiView.as_view()),
-=======
     path("inboxes/<int:inbox_id>/tickets/<int:ticket_inbox_id>/request-publish", TicketRequestPublishAPIView.as_view()),
     path("inboxes/<int:inbox_id>/tickets/<int:ticket_inbox_id>/publish", TicketPublishAPIView.as_view()),
     path("inboxes/<int:inbox_id>/tickets/<int:ticket_inbox_id>/pin", PinUnpinTicketAPIView.as_view()),
     path("inboxes/<int:inbox_id>/tickets/<int:ticket_inbox_id>/subscribe", SubscribeToTicketAPIView.as_view()),
     path("inboxes/<int:inbox_id>/tickets/<int:ticket_inbox_id>/unsubscribe", UnsubscribeFromTicketAPIView.as_view()),
     path("inboxes/<int:inbox_id>/public/<int:ticket_inbox_id>", PublicTicketAPIView.as_view(), name="api_inbox_public_ticket"),
->>>>>>> 5cb6a65d0bb4a0281e8359f50987c74ea464b5af
     path("inboxes/<int:inbox_id>/users/<int:user_id>/tickets/recent", RecentTicketApiView.as_view()),
     path("inboxes/<int:inbox_id>/role", UserRoleApiView.as_view()),
     path("inboxes/<int:inbox_id>/guests", InboxGuestsAPIView.as_view()),

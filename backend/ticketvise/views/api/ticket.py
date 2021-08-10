@@ -203,12 +203,8 @@ class InboxTicketsApiView(ListAPIView):
                 "label": status.label,
                 "tickets": TicketSerializer(
                     query_set.filter(status=status)[:self.page_size], many=True, fields=(
-<<<<<<< HEAD
-                        "id", "title", "name", "assignee", "author", "ticket_inbox_id", "date_created", "labels")).data
-=======
                         "id", "title", "name", "assignee", "ticket_inbox_id", "date_created", "labels",
                         "date_latest_update")).data
->>>>>>> 5cb6a65d0bb4a0281e8359f50987c74ea464b5af
             } for status in Status if status != Status.PENDING
                                       or (inbox.scheduling_algorithm == SchedulingAlgorithm.FIXED
                                           and inbox.fixed_scheduling_assignee is None)
@@ -319,7 +315,6 @@ class TicketApiView(RetrieveAPIView):
         return Response(response)
 
 
-<<<<<<< HEAD
 class UserTicketsApiView(ListAPIView):
     """
     Retrieve every ticket from a user in an inbox.
@@ -352,7 +347,8 @@ class UserAverageApiView(RetrieveAPIView):
             return Response({ "average": 0 })
 
         return Response({ "average": sum(total) / len(total) })
-=======
+
+
 class PublicTicketAPIView(RetrieveAPIView):
     permission_classes = [UserIsInInboxPermission]
 
@@ -374,7 +370,6 @@ class PublicTicketAPIView(RetrieveAPIView):
                 "participants", "attachments", "author_role", "is_pinned", "pin_initiator")).data
 
         return Response(response)
->>>>>>> 5cb6a65d0bb4a0281e8359f50987c74ea464b5af
 
 
 class RecentTicketApiView(ListAPIView):
