@@ -1,5 +1,6 @@
 <template>
   <div class="flex-1 relative overflow-y-auto focus:outline-none">
+    <publish-confirmation @click="requestPublish" @cancel="publishConfirmationModal = false" v-if="publishConfirmationModal" />
     <div class="py-4">
       <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 xl:max-w-5xl xl:grid xl:grid-cols-3">
         <div class="xl:col-span-2 xl:pr-8 xl:border-r xl:border-gray-200">
@@ -254,6 +255,7 @@ import ActivityFeed from '@/components/tickets/ActivityFeed.vue'
 import StaffDiscussion from '@/components/tickets/StaffDiscussion.vue'
 import Attachments from '@/components/tickets/Attachments.vue'
 import Chip from '@/components/chip/Chip'
+import PublishConfirmation from '@/components/tickets/PublishConfirmation.vue'
 
 import { ref } from 'vue'
 import {
@@ -307,6 +309,7 @@ export default {
     ListboxOptions,
     PencilIcon,
     PlusIconSolid,
+    PublishConfirmation,
     StaffDiscussion
   },
   data: () => ({

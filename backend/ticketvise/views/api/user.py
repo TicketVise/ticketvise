@@ -1,23 +1,17 @@
-from django.http import JsonResponse, Http404
+from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
-from rest_framework.response import Response
 from rest_framework import serializers
 from rest_framework.generics import RetrieveUpdateAPIView, RetrieveAPIView, UpdateAPIView
+from rest_framework.response import Response
 from rest_framework.serializers import ModelSerializer
 from rest_framework.views import APIView
 
 from ticketvise.models.inbox import Inbox
 from ticketvise.models.notification import Notification
-from ticketvise.models.user import User, Role, UserInbox
-from ticketvise.views.api import DynamicFieldsModelSerializer
+from ticketvise.models.user import User, Role, UserInbox, UserTicket
+from ticketvise.views.api import TicketSerializer, RoleSerializer
+from ticketvise.views.api import UserSerializer
 from ticketvise.views.api.security import UserIsInInboxPermission, UserIsSuperUserPermission
-
-
-class UserSerializer(DynamicFieldsModelSerializer):
-    class Meta:
-        model = User
-        fields = ["first_name", "last_name", "email", "username", "avatar_url", "id", "is_superuser", "is_active",
-                  "give_introduction"]
 
 
 class UserInboxSerializer(ModelSerializer):
@@ -31,6 +25,16 @@ class UserInboxSerializer(ModelSerializer):
     class Meta:
         model = UserInbox
         fields = ["id", "role", "role_label", "user", "is_bookmarked", "is_assignable"]
+
+
+class UserTicketSerializer(ModelSerializer):
+    user = UserSerializer(
+        fields=("first_name", "last_name", "email", "username", "avatar_url", "id", "is_superuser", "is_active"))
+    ticket = TicketSerializer(fields=("id", "title", "date_created", "labels", "date_latest_update"))
+
+    class Meta:
+        model = UserTicket
+        fields = ["user", "ticket", "date_created", "date_removed"]
 
 
 class UserNotificationSettingsSerializer(ModelSerializer):
@@ -83,14 +87,6 @@ class CurrentUserApiView(RetrieveAPIView):
 
     def get_object(self):
         return self.request.user
-
-
-class RoleSerializer(serializers.BaseSerializer):
-    def to_representation(self, instance):
-        return {
-            'key': instance,
-            'label': Role[instance].label
-        }
 
 
 class NotificationsSettingsAPIView(RetrieveUpdateAPIView):

@@ -14,7 +14,7 @@ def set_initial_message_id(apps, schema_editor):
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('ticketvise', '0015_auto_20210805_1013'),
+        ('ticketvise', '0016_auto_20210805_1013'),
     ]
 
     operations = [

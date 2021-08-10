@@ -47,7 +47,8 @@ class Ticket(models.Model):
     """
 
     author = models.ForeignKey("User", on_delete=models.CASCADE, related_name="tickets")
-    shared_with = models.ManyToManyField("User", blank=True, through="TicketSharedUser", through_fields=("ticket", "user"))
+    shared_with = models.ManyToManyField("User", blank=True, through="TicketSharedUser",
+                                         through_fields=("ticket", "user"))
     assignee = models.ForeignKey("User", on_delete=models.CASCADE, blank=True, null=True,
                                  related_name="assigned_tickets")
     inbox = models.ForeignKey("Inbox", on_delete=models.CASCADE, related_name="tickets")
@@ -56,6 +57,16 @@ class Ticket(models.Model):
     status = models.CharField(max_length=8, choices=Status.choices, default=Status.PENDING)
     content = models.TextField()
     labels = models.ManyToManyField("Label", blank=True, related_name="tickets", through="TicketLabel")
+    is_public = models.DateTimeField(auto_now_add=False, null=True, default=None)
+    is_anonymous = models.BooleanField(default=False)
+    publish_request_initiator = models.ForeignKey("User", on_delete=models.CASCADE, blank=True, null=True,
+                                                  related_name="publish_request_initiator")
+    publish_request_created = models.DateTimeField(auto_now_add=False, null=True, default=None)
+    is_pinned = models.DateTimeField(auto_now_add=False, null=True, default=None)
+    pin_initiator = models.ForeignKey("User", on_delete=models.CASCADE, blank=True, null=True,
+                                      related_name="pin_initiator")
+    reply_message_id = models.UUIDField(default=uuid.uuid4, editable=False, unique=True, null=False)
+    comment_message_id = models.UUIDField(default=uuid.uuid4, editable=False, unique=True, null=False)
     date_edited = models.DateTimeField(auto_now=True)
     date_created = models.DateTimeField(auto_now_add=True)
 
@@ -123,7 +134,6 @@ class Ticket(models.Model):
                 schedule_ticket(self)
 
         super().save(force_insert, force_update, using, update_fields)
-
 
         if old_ticket and old_ticket.status != self.status:
             TicketStatusEvent.objects.create(ticket=self, initiator=CurrentUserMiddleware.get_current_user(),

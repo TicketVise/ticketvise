@@ -20,6 +20,10 @@ class InboxTestCase(TransactionTestCase):
 
         self.student2 = User.objects.create(username="student2", password="test12345", email="student@ticketvise.com")
 
+        self.student3 = User.objects.create(username="student3", password="test12345", email="student3@ticketvise.com")
+        self.student3.add_inbox(self.inbox)
+        self.student3.set_role_for_inbox(self.inbox, Role.GUEST)
+
         self.assistant = User.objects.create(username="assistant", password="test67891",
                                              email="assistant@ticketvise.com")
         self.assistant.add_inbox(self.inbox)
