@@ -8,6 +8,7 @@ services:
     command: >
       sh -c "python manage.py collectstatic --no-input --clear &&
              python manage.py wait_for_database &&
+             python manage.py configure_s3 &&
              python manage.py migrate --no-input &&
              python manage.py insert_demo_data &&
              python manage.py runserver 0.0.0.0:6000"
@@ -59,5 +60,5 @@ services:
     environment:
       MINIO_ROOT_USER: minio
       MINIO_ROOT_PASSWORD: Welkom01
-      S3_ENDPOINT_URL: s3:9000
+      S3_ENDPOINT_URL: http://localhost:9000
       S3_BUCKET_NAME: ticketvise
