@@ -179,7 +179,7 @@ class InboxTicketsApiView(ListAPIView):
                 "id", "title", "date_created", "labels", "date_latest_update")).data
         else:
             results = TicketSerializer(page.object_list, many=True, fields=(
-                "id", "title", "name", "assignee", "ticket_inbox_id", "date_created", "labels",
+                "id", "title", "name", "author", "assignee", "ticket_inbox_id", "date_created", "labels",
                 "date_latest_update")).data
 
         return Response({
@@ -203,8 +203,8 @@ class InboxTicketsApiView(ListAPIView):
                 "label": status.label,
                 "tickets": TicketSerializer(
                     query_set.filter(status=status)[:self.page_size], many=True, fields=(
-                        "id", "title", "name", "assignee", "ticket_inbox_id", "date_created", "labels",
-                        "date_latest_update")).data
+                        "id", "title", "name", "author", "assignee", "ticket_inbox_id", "date_created", "labels",
+                        "date_latest_update", "is_pinned")).data
             } for status in Status if status != Status.PENDING
                                       or (inbox.scheduling_algorithm == SchedulingAlgorithm.FIXED
                                           and inbox.fixed_scheduling_assignee is None)

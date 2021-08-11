@@ -180,8 +180,7 @@ export default {
     labels: [],
     label: null,
     inbox_labels: [],
-    is_staff: false,
-    list: false
+    is_staff: false
   }),
   setup () {
     return { moment }
@@ -219,9 +218,6 @@ export default {
       this.labels = items
 
       this.get_tickets()
-    },
-    toggleView () {
-      this.list = !this.list
     },
     togglePersonal () {
       this.showPersonal = !this.showPersonal
@@ -272,10 +268,7 @@ export default {
     axios
       .get(`/api/inboxes/${this.$route.params.inboxId}/role`)
       .then((response) => {
-        this.is_staff =
-          response.data &&
-          (response.data.key === 'AGENT' || response.data.key === 'MANAGER')
-        this.list = !this.is_staff
+        this.is_staff = (response.data.key === 'AGENT' || response.data.key === 'MANAGER')
       })
 
     this.get_tickets()

@@ -18,7 +18,7 @@
 
     <div class="flex justify-between items-center">
       <h3 v-if="!small" class="text-xs text-gray-500 dark:text-gray-400">
-        <span class="font-medium">{{ ticket.author.first_name }} {{ ticket.author.last_name }}</span>・{{ date(ticket.date_created) }}
+        <span class="font-medium">{{ ticket.author?.first_name }} {{ ticket.author?.last_name }}</span>・{{ date(ticket.date_created) }}
       </h3>
       <div v-if="ticket.labels.length == 0 && avatar" class="flex-shrink-0">
         <img class="h-5 w-5 rounded-full" :src="avatar" alt="" :title="assignee.first_name + ' ' + assignee.last_name" />
