@@ -4,11 +4,9 @@ import uuid
 
 from django.db import migrations, models
 
-from ticketvise.models.ticket import Ticket
-
 
 def set_initial_message_id(apps, schema_editor):
-    for device in Ticket.objects.only('reply_message_id', 'comment_message_id').all():
+    for device in apps.get_model('ticketvise', 'Ticket').objects.all():
         device.reply_message_id = uuid.uuid4()
         device.comment_message_id = uuid.uuid4()
         device.save(update_fields=['reply_message_id', 'comment_message_id'])
