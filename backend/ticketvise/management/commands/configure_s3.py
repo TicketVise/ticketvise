@@ -39,12 +39,13 @@ class Command(BaseCommand):
             try:
                 s3 = boto3.client('s3', aws_access_key_id=settings.AWS_ACCESS_KEY_ID,
                                   aws_secret_access_key=settings.AWS_SECRET_ACCESS_KEY,
-                                  endpoint_url=settings.AWS_S3_ENDPOINT_URL,
-                                  config=Config(signature_version='s3v4'))
+                                  endpoint_url=settings.AWS_S3_ENDPOINT_URL)
                 s3.put_bucket_policy(Bucket=settings.AWS_STORAGE_BUCKET_NAME, Policy=download_only_policy)
             except EndpointConnectionError:
+                tries_left -= 1
                 print(f"Could not connect to the bucket '{settings.AWS_STORAGE_BUCKET_NAME}' on endpoint URL: '{settings.AWS_S3_ENDPOINT_URL}', retrying {tries_left} more times")
-            tries_left -= 1
+                continue
+            break
 
         if tries_left > 0:
             print(f"Succesfully set policy for Bucket '{settings.AWS_STORAGE_BUCKET_NAME}'!")
