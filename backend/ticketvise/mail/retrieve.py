@@ -154,6 +154,10 @@ def submit_email_ticket(message: email.message.EmailMessage):
                               title=subject, content=reply)
         UserInbox.objects.get_or_create(user=author, inbox=inbox)
 
+    for attachment in message.iter_attachments():
+        print(attachment)
+
+
 
 def retrieve_emails(protocol, host, port, username, password, require_tls, ssl_context=None):
     if not ssl_context:

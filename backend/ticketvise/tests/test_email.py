@@ -1,3 +1,5 @@
+from ticketvise.models.ticket import TicketAttachment
+from email import message
 from ticketvise.models.notification.assigned import TicketAssignedNotification
 from email.message import EmailMessage
 
@@ -49,6 +51,26 @@ class EmailTestCase(TestCase):
         submit_email_ticket(msg)
         self.assertTrue(Ticket.objects.filter(title=msg['Subject'], content=content).exists())
         self.assertTrue(User.objects.filter(email=msg['From']).exists())
+
+    def test_send_new_email_with_attachments(self):
+        msg = EmailMessage()
+        content = "This is the content!!??"
+        msg.set_content(content)
+        msg['Subject'] = "This must be the title2343!!?"
+        msg['From'] = "tom.wassing@" + settings.DOMAIN
+        msg['To'] = self.inbox.inbound_email_username
+
+        msg.add_attachment(b"Hello World!", maintype='text', subtype='plain', filename="hello.txt")
+        msg.add_attachment(b"import numpy as np\nx = np.array([42, 69])", maintype='text', subtype='plain', filename="test.py")
+
+        submit_email_ticket(msg)
+        self.assertTrue(Ticket.objects.filter(title=msg['Subject'], content=content).exists())
+        self.assertTrue(User.objects.filter(email=msg['From']).exists())
+
+        ticket = Ticket.objects.filter(title=msg['Subject'], content=content).first()
+        self.assertTrue(TicketAttachment.objects.filter(ticket=ticket).count() == 2)
+
+
 
     def test_send_reply_email_with_known_user(self):
         msg = EmailMessage()
