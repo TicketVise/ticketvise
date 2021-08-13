@@ -59,8 +59,8 @@ jobs:
           LTI_SECRET: ${{ secrets.LTI_SECRET_DEV }}
           GIT_DIGEST: ${{ steps.git-sha7.outputs.sha7 }}
           EMAIL_PASSWORD: ${{ secrets.EMAIL_PASSWORD }}
-          S3_ACCESS_KEY: ${{ secret.S3_ACCESS_KEY_DEV }}
-          S3_SECRET_KEY: ${{ secret.S3_SECRET_KEY_DEV }}
+          S3_ACCESS_KEY: ${{ secrets.S3_ACCESS_KEY_DEV }}
+          S3_SECRET_KEY: ${{ secrets.S3_SECRET_KEY_DEV }}
           DOMAIN: dev.ticketvise.com
         with:
           remote_host: ${{ secrets.DOCKER_SSH_HOST_DEV }}
