@@ -1,6 +1,4 @@
-from django.utils.translation import override
 from ticketvise.models.ticket import TicketAttachment
-from email import message
 from ticketvise.models.notification.assigned import TicketAssignedNotification
 from email.message import EmailMessage
 from itertools import product
@@ -11,6 +9,7 @@ from ticketvise.models.comment import Comment
 from ticketvise.models.inbox import Inbox
 from ticketvise.models.ticket import Ticket
 from ticketvise.models.user import User, Role
+import tempfile
 
 
 class EmailTestCase(TestCase):
@@ -100,7 +99,8 @@ class EmailTestCase(TestCase):
             title=msg['Subject'], content=content).exists())
         self.assertTrue(User.objects.filter(email=msg['From']).exists())
 
-    @override_settings(DEFAULT_FILE_STORAGE="django.core.files.storage.FileSystemStorage")
+    @override_settings(DEFAULT_FILE_STORAGE="django.core.files.storage.FileSystemStorage",
+                       MEDIA_ROOT=tempfile.TemporaryDirectory(prefix='ticketvise_test_media_').name)
     def test_send_new_email_with_attachments(self):
         msg = EmailMessage()
         content = "This is the content!!??"
