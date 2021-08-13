@@ -38,8 +38,8 @@ class EmailTestCase(TestCase):
                         if x != True or y != True]
 
         for email_enabled, new_ticket_by_email in combinations:
-            self.inbox.email_enabled=email_enabled
-            self.inbox.enable_create_new_ticket_by_email=new_ticket_by_email
+            self.inbox.email_enabled = email_enabled
+            self.inbox.enable_create_new_ticket_by_email = new_ticket_by_email
             self.inbox.save()
 
             msg = EmailMessage()
@@ -56,10 +56,10 @@ class EmailTestCase(TestCase):
     def test_send_reply_email_with_reply_disabled(self):
         combinations = [(x, y) for x, y in product([True, False], repeat=2)
                         if x != True or y != True]
-        
+
         for email_enabled, reply_by_email in combinations:
-            self.inbox.email_enabled=email_enabled
-            self.inbox.enable_reply_by_email=reply_by_email
+            self.inbox.email_enabled = email_enabled
+            self.inbox.enable_reply_by_email = reply_by_email
             self.inbox.save()
 
             msg = EmailMessage()
