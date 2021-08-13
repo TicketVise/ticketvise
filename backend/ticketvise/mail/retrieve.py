@@ -1,3 +1,4 @@
+from ticketvise.models.ticket import TicketAttachment
 from ticketvise.models.notification import Notification
 import email
 import imaplib
@@ -7,6 +8,7 @@ import re
 import ssl
 from uuid import UUID
 from django.core.mail import send_mail
+from django.core.files.base import ContentFile
 
 from django.db import transaction
 from django.db.models import Q
@@ -150,13 +152,15 @@ def submit_email_ticket(message: email.message.EmailMessage):
                 f"Creation of ticket by email is disabled for the inbox: {inbox.name} ({inbox.id})")
             return
 
-        Ticket.objects.create(author=author, inbox=inbox,
-                              title=subject, content=reply)
+        ticket = Ticket.objects.create(author=author, inbox=inbox,
+                                       title=subject, content=reply)
         UserInbox.objects.get_or_create(user=author, inbox=inbox)
 
     for attachment in message.iter_attachments():
-        print(attachment)
-
+        file = ContentFile(attachment.get_payload(decode=True), 
+                           name=attachment.get_filename())
+        TicketAttachment.objects.create(ticket=ticket, file=file,
+                                        uploader=author)
 
 
 def retrieve_emails(protocol, host, port, username, password, require_tls, ssl_context=None):
