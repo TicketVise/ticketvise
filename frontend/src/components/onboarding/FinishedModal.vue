@@ -7,7 +7,7 @@
         </h3>
         <div class="mt-2">
           <p class="text-sm text-gray-500">
-            <img src="/static/img/svg/undraw_celebration_0jvk.svg" alt="Options" class="w-2/3 md:w-1/2 mx-auto py-8">
+            <img :src="image" alt="Options" class="w-2/3 md:w-1/2 mx-auto py-8">
             The inbox is now ready for use. Students will be able to create tickets to ask their questions. Assistants
             will be able to help these students once they have connected to the course by visiting TicketVise from
             canvas.
@@ -29,7 +29,12 @@
 </template>
 
 <script>
-  export default {
-    name: 'FinishedModal'
+const image = require('@/assets/img/svg/celebration.svg')
+
+export default {
+  name: 'FinishedModal',
+  setup () {
+    return { image }
   }
+}
 </script>

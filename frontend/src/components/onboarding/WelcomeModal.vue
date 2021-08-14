@@ -6,7 +6,7 @@
           Welcome!
         </h3>
         <div class="mt-2">
-          <img src="/static/img/svg/undraw_Options_re_9vxh.svg" alt="Options" class="w-2/3 md:w-1/2 mx-auto py-8">
+          <img :src="image" alt="Options" class="w-2/3 md:w-1/2 mx-auto py-8">
 
           <p class="text-sm text-gray-500">
             Connected users can now access this inbox and create tickets. To get to know TicketVise and to personalize
@@ -30,7 +30,12 @@
 </template>
 
 <script>
-  export default {
-    name: 'WelcomeModal'
+const image = require('@/assets/img/svg/options.svg')
+
+export default {
+  name: 'WelcomeModal',
+  setup () {
+    return { image }
   }
+}
 </script>

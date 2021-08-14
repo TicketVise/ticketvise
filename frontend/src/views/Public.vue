@@ -11,7 +11,7 @@
             </router-link>
             <p class="text-gray-500">{{ ticket.totalResponses }} Responses</p>
           </div>
-          <Menu as="div" class="flex-shrink-0 pr-2">
+          <Menu v-if="is_staff" as="div" class="flex-shrink-0 pr-2">
             <MenuButton class="w-8 h-8 bg-white dark:bg-transparent inline-flex items-center justify-center text-gray-400 dark:text-gray-300 rounded-full hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary">
               <span class="sr-only">Open options</span>
               <DotsVerticalIcon class="w-5 h-5" aria-hidden="true" />
@@ -77,7 +77,7 @@
             <th class="hidden md:table-cell px-6 py-3 border-b border-gray-200 bg-gray-50 dark:bg-gray-800 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider truncate">
               Last updated
             </th>
-            <th class="pr-6 py-3 border-b border-gray-200 bg-gray-50 dark:bg-gray-800 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider" />
+            <th v-if="is_staff" class="pr-6 py-3 border-b border-gray-200 bg-gray-50 dark:bg-gray-800 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider" />
           </tr>
         </thead>
         <tbody class="bg-white dark:bg-transparent divide-y divide-gray-100">
@@ -102,7 +102,7 @@
             <td class="hidden md:table-cell px-6 py-3 whitespace-nowrap text-sm text-gray-500 text-right">
               {{ date(ticket.date_latest_update) }}
             </td>
-            <td class="pr-6">
+            <td v-if="is_staff" class="pr-6">
               <Menu as="div" class="relative flex justify-end items-center">
                 <MenuButton class="w-8 h-8 bg-white dark:bg-transparent inline-flex items-center justify-center text-gray-400 dark:text-gray-300 rounded-full hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary">
                   <span class="sr-only">Open options</span>
@@ -173,7 +173,15 @@ export default {
     PinnedIcon,
     NotPinnedIcon
   },
+  data: () => ({
+    is_staff: false
+  }),
   created () {
+    axios.get(`/api/inboxes/${this.$route.params.inboxId}/role`)
+      .then((response) => {
+        this.is_staff = (response.data.key === 'AGENT' || response.data.key === 'MANAGER')
+      })
+
     this.getTickets()
   },
   methods: {
