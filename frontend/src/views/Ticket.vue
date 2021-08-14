@@ -1,6 +1,6 @@
 <template>
   <div class="flex-1 relative overflow-y-auto focus:outline-none">
-    <publish-confirmation @click="requestPublish" @cancel="publishConfirmationModal = false" v-if="publishConfirmationModal" />
+    <PublishConfirmation @click="requestPublish" @cancel="publishConfirmationModal = false" v-if="publishConfirmationModal" />
     <div class="py-4">
       <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 xl:max-w-5xl xl:grid xl:grid-cols-3">
         <div class="xl:col-span-2 xl:pr-8 xl:border-r xl:border-gray-200">
@@ -19,9 +19,9 @@
                   </p>
                 </div>
                 <div class="mt-4 flex space-x-3 md:mt-0">
-                  <button type="button" class="inline-flex justify-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-900">
-                    <PencilIcon class="-ml-1 mr-2 h-5 w-5 text-gray-400" aria-hidden="true" />
-                    <span>Edit</span>
+                  <button @click="publishConfirmationModal = true" v-if="isStaff(role, user) && !ticket.publish_request_created && !ticket.is_public" type="button" class="inline-flex justify-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-900">
+                    <CloudIcon class="-ml-1 mr-2 h-5 w-5 text-primary-400" aria-hidden="true" />
+                    <span>Publish</span>
                   </button>
                   <!-- Future feature of subscribing to a ticket to get notifications. -->
                   <!-- <button type="button" class="inline-flex justify-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-900">
@@ -32,13 +32,65 @@
                   </button> -->
                 </div>
               </div>
+
+              <!-- Pending publish request -->
+              <div v-if="!ticket?.is_public && ticket?.publish_request_created && isStaff(role, user)" class="rounded-md bg-blue-50 p-4 mt-4">
+                <div class="flex">
+                  <div class="flex-shrink-0">
+                    <InformationCircleIcon class="h-5 w-5 text-blue-400" aria-hidden="true" />
+                  </div>
+                  <div class="ml-3">
+                    <h3 class="text-sm font-medium text-blue-800">
+                      Request pending
+                    </h3>
+                    <div class="mt-2 text-sm text-blue-700">
+                      <p>
+                        The request to publish this ticket is currently pending. Once the author of the ticket has accepted the request, this ticket will be public.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Accept publish request as student -->
+              <div v-if="!ticket?.is_public && ticket?.publish_request_initiator && ticket?.author.id == user.id" class="rounded-md bg-green-50 p-4 mt-4">
+                <div class="flex">
+                  <div class="">
+                    <h3 class="text-sm font-medium text-green-800">
+                      Sharing is caring
+                    </h3>
+                    <div class="mt-2 text-sm text-green-700">
+                      <p class="mb-2">
+                        {{ ticket.publish_request_initiator.first_name }} {{ticket.publish_request_initiator.last_name}} has requested that this ticket is made public. Public tickets are visible to everyone in this inbox, helping them with questions before they need to ask them.
+                      </p>
+                      <div class="relative flex items-start">
+                        <div class="flex items-center h-5">
+                          <input v-model="ticket.is_anonymous" id="anonymize" aria-describedby="anonymize-description" name="anonymize" type="checkbox" class="focus:ring-green-500 h-4 w-4 text-green-600 border-gray-300 rounded" />
+                        </div>
+                        <div class="ml-2 text-sm">
+                          <label for="anonymize" class="font-medium text-green-700">Anonymize before publish</label>
+                          <p id="comments-description" class="text-green-700">An anonymous ticket does not show the author or its role, but does show the conversation and attachments.</p>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="mt-4">
+                      <div class="-mx-2 -my-1.5 flex">
+                        <button @click="publishTicket" type="button" class="bg-green-50 px-2 py-1.5 rounded-md text-sm font-medium text-green-800 hover:bg-green-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-green-50 focus:ring-green-600">
+                          Publish ticket
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
               <aside class="mt-8 xl:hidden">
                 <h2 class="sr-only">Details</h2>
                 <div class="space-y-5">
                   <div class="flex items-center space-x-2">
                     <LockOpenIcon class="h-5 w-5 text-green-500" aria-hidden="true" />
                     <span class="text-green-700 text-sm font-medium">
-                      {{ ticketStatus(ticket?.status) === 'open' ? 'Open' : 'Closed' }}
+                      {{ ticketStatus(ticket?.is_public) === 'open' ? 'Public' : 'Private' }}
                       Ticket
                     </span>
                   </div>
@@ -125,7 +177,7 @@
                 <div class="hidden sm:block">
                   <div class="border-b border-gray-200">
                     <nav class="-mb-px flex space-x-8" aria-label="Tabs">
-                      <a @click="tabs.forEach(t => t.current = false); tabs.find(t => t.name === tab.name).current = true" v-for="tab in tabs" :key="tab.name" href="#" :class="[tab.current ? 'border-primary text-primary-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-200', 'whitespace-nowrap flex py-4 px-1 border-b-2 font-medium text-sm']" :aria-current="tab.current ? 'page' : undefined">
+                      <a v-show="tab.cond ? isStaff(role, user) : true" @click="tabs.forEach(t => t.current = false); tabs.find(t => t.name === tab.name).current = true" v-for="tab in tabs" :key="tab.name" href="#" :class="[tab.current ? 'border-primary text-primary-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-200', 'whitespace-nowrap flex py-4 px-1 border-b-2 font-medium text-sm']" :aria-current="tab.current ? 'page' : undefined">
                         {{ tab.name }}
                         <span v-if="tab.count !== 0" :class="[tab.current ? 'bg-primary-100 text-primary-600' : 'bg-gray-100 text-gray-900', 'hidden ml-3 py-0.5 px-2.5 rounded-full text-xs font-medium md:inline-block']">{{ tab.count }}</span>
                       </a>
@@ -148,10 +200,10 @@
           <h2 class="sr-only">Details</h2>
           <div class="space-y-5">
             <div class="flex items-center space-x-2">
-              <LockOpenIcon v-if="ticketStatus(ticket?.status) === 'open'" class="h-5 w-5 text-green-500" aria-hidden="true" />
+              <LockOpenIcon v-if="ticket?.is_public" class="h-5 w-5 text-green-500" aria-hidden="true" />
               <LockClosedIcon v-else class="h-5 w-5 text-red-500" aria-hidden="true" />
-              <span :class="[ticketStatus(ticket?.status) === 'open' ? 'text-green-700' : 'text-red-700', 'text-sm font-medium']">
-                {{ ticketStatus(ticket?.status) === 'open' ? 'Open' : 'Closed' }}
+              <span :class="[ticket?.is_public ? 'text-green-700' : 'text-red-700', 'text-sm font-medium']">
+                {{ ticket?.is_public ? 'Public' : 'Private' }}
                 Ticket
               </span>
             </div>
@@ -249,6 +301,7 @@
 
 <script>
 import axios from 'axios'
+import { mapState } from 'vuex'
 import moment from 'moment'
 
 import ActivityFeed from '@/components/tickets/ActivityFeed.vue'
@@ -268,11 +321,15 @@ import {
   CalendarIcon,
   ChatAltIcon,
   CheckIcon,
+  InformationCircleIcon,
   LockOpenIcon,
   LockClosedIcon,
-  PencilIcon,
   PlusIcon as PlusIconSolid
 } from '@heroicons/vue/solid'
+
+import {
+  CloudIcon
+} from '@heroicons/vue/outline'
 
 const statusses = {
   PNDG: {
@@ -301,25 +358,28 @@ export default {
     ChatAltIcon,
     CheckIcon,
     Chip,
+    CloudIcon,
+    InformationCircleIcon,
     LockOpenIcon,
     LockClosedIcon,
     Listbox,
     ListboxButton,
     ListboxOption,
     ListboxOptions,
-    PencilIcon,
     PlusIconSolid,
     PublishConfirmation,
     StaffDiscussion
   },
   data: () => ({
+    publishConfirmationModal: false,
     ticket: null,
     staff: [],
     tabs: [
       { name: 'Activity', href: '#', count: 0, current: true },
-      { name: 'Staff discussion', href: '#', count: 0, current: false },
+      { name: 'Staff discussion', href: '#', count: 0, current: false, cond: 'staff' },
       { name: 'Attachments', href: '#', count: 0, current: false }
-    ]
+    ],
+    role: ''
   }),
   setup () {
     const sidebarOpen = ref(false)
@@ -348,19 +408,26 @@ export default {
       /* Get every event from this ticket. */
       axios.get(`/api/inboxes/${this.$route.params.inboxId}/tickets/${this.$route.params.ticketInboxId}`, { params: formData })
         .then(response => {
+          console.log(response.data)
+          this.role = response.data.role
           this.ticket = response.data.ticket
           this.ticket.inbox = response.data.inbox
           this.ticket.replies = response.data.replies
-          this.ticket.comments = response.data.comments.map(c => {
-            return {
-              id: c.id,
-              date: this.date(c.date_created),
-              person: c.author ? { name: c.author.first_name + ' ' + c.author.last_name, href: '#' } : null,
-              imageUrl: c.author.avatar_url,
-              comment: c.content
-            }
-          })
-          this.inbox = response.data.staff || []
+          this.ticket.comments = []
+          this.staff = []
+
+          if (this.isStaff(this.role, this.user)) {
+            this.ticket.comments = response.data.comments.map(c => {
+              return {
+                id: c.id,
+                date: this.date(c.date_created),
+                person: c.author ? { name: c.author.first_name + ' ' + c.author.last_name, href: '#' } : null,
+                imageUrl: c.author.avatar_url,
+                comment: c.content
+              }
+            })
+            this.staff = response.data.staff
+          }
 
           /* Setup the activities timeline. */
           this.ticket.activity = response.data.events.map(event => {
@@ -417,7 +484,6 @@ export default {
             else l.selected = false
             return l
           })
-          console.log(this.ticket.inbox.labels)
         })
     },
     combineActivities (activities, time) {
@@ -425,11 +491,15 @@ export default {
       let lastActivity = null
 
       activities.forEach(activity => {
-        if (lastActivity && lastActivity.type === activity.type && moment(lastActivity.datetime).diff(moment(activity.datetime)) < time) {
-          if (lastActivity.type === 'tags') lastActivity.tags.push(activity.tags[0])
-        } else if (lastActivity && lastActivity.type !== activity.type) {
+        if (lastActivity && lastActivity.type !== activity.type) {
           newActivities.push(lastActivity)
           lastActivity = activity
+        } else if (lastActivity && moment(lastActivity.datetime).diff(moment(activity.datetime)) < time) {
+          if (lastActivity.type === 'tags') lastActivity.tags.push(activity.tags[0])
+          else {
+            newActivities.push(lastActivity)
+            lastActivity = activity
+          }
         } else {
           lastActivity = activity
         }
@@ -454,12 +524,30 @@ export default {
     },
     ticketStatus (status) {
       return (status === 'ASGD' || status === 'CLSD') ? 'closed' : 'open'
+    },
+    requestPublish () {
+      this.publishConfirmationModal = false
+      axios.put(`/api/inboxes/${this.$route.params.inboxId}/tickets/${this.$route.params.ticketInboxId}/request-publish`, {
+        publish_request_initiator: this.user.id
+      }).then(response => {
+        this.ticket.publish_request_initiator = response.data.publish_request_initiator
+        this.ticket.publish_request_created = response.data.publish_request_created
+      })
+    },
+    publishTicket () {
+      axios.put(`/api/inboxes/${this.$route.params.inboxId}/tickets/${this.$route.params.ticketInboxId}/publish`, {
+        is_public: moment().format(),
+        is_anonymous: this.ticket.is_anonymous
+      }).then(response => {
+        this.ticket.is_public = response.data.is_public
+        this.ticket.is_anonymous = response.data.is_anonymous
+      })
     }
   },
   computed: {
-    user () {
-      return this.$store.state.user
-    }
+    ...mapState({
+      user: state => state.user
+    })
   }
 }
 </script>
