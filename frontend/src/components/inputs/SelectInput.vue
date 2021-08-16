@@ -1,6 +1,6 @@
 <!-- This example requires Tailwind CSS v2.0+ -->
 <template>
-  <Listbox as="div" v-if="selected" v-model="selected">
+  <Listbox as="div" v-model="selected">
     <ListboxLabel class="block text-sm font-medium text-gray-700">
       {{ label }}
     </ListboxLabel>
@@ -10,12 +10,12 @@
       >
         <span class="flex items-center">
           <img
-            v-if="selected.avatar"
+            v-if="selected?.avatar"
             :src="selected.avatar"
             alt=""
             class="flex-shrink-0 h-5 w-5 rounded-full"
           />
-          <span :class="[selected.avatar ? 'ml-3' : '', 'block truncate']">{{ selected.name }}</span>
+          <span :class="[selected?.avatar ? 'ml-3' : '', 'block truncate']">{{ selected?.name }}</span>
         </span>
         <span
           class="ml-3 absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none"
