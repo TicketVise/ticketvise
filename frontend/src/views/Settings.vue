@@ -26,20 +26,16 @@
                   </div>
                 </div>
 
-                <div class="grid gap-4 grid-cols-2">
-                  <div>
-                    <label for="code" class="block text-sm font-medium text-gray-700">
-                      <span class="mr-1">Code</span>
-                      <span class="inline-flex items-center px-2.5 rounded-md text-sm font-medium bg-gray-100 text-primary">
-                        LTI
-                      </span>
-                    </label>
-                    <div class="mt-1 flex">
-                      <input disabled v-model="inbox.code" type="text" name="code" id="code" autocomplete="name" class="cursor-not-allowed border rounded-md focus:ring-primary focus:border-primary flex-grow block w-full min-w-0 sm:text-sm border-gray-300" />
-                    </div>
+                <div>
+                  <label for="code" class="block text-sm font-medium text-gray-700">
+                    <span class="mr-1">Code</span>
+                    <span class="inline-flex items-center px-2.5 rounded-md text-sm font-medium bg-gray-100 text-primary">
+                      LTI
+                    </span>
+                  </label>
+                  <div class="mt-1 flex">
+                    <input disabled v-model="inbox.code" type="text" name="code" id="code" autocomplete="name" class="cursor-not-allowed border rounded-md focus:ring-primary focus:border-primary flex-grow block w-full min-w-0 sm:text-sm border-gray-300" />
                   </div>
-
-                  <select-input v-if="coordinators.length > 0 && inbox.coordinator" label="Displayed Coordinator" :data="coordinators" :init="coordinators.filter(x => x.id === inbox.coordinator.id)[0]" />
                 </div>
               </div>
 
@@ -184,7 +180,6 @@ export default {
       inbox: {},
       im_url: '',
       staff: [],
-      coordinators: [],
       scheduling_options: [],
       errors: [],
       saved: false,
@@ -206,11 +201,6 @@ export default {
       .then(response => {
         this.inbox = response.data.inbox
         this.staff = response.data.staff
-        this.coordinators = response.data.coordinators
-        this.coordinators.forEach(c => {
-          c.name = c.first_name + ' ' + c.last_name
-          c.avatar = c.avatar_url
-        })
         this.scheduling_options = response.data.scheduling_options
         this.im_url = this.inbox.image
       })

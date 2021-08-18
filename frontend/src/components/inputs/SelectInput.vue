@@ -6,16 +6,17 @@
     </ListboxLabel>
     <div class="mt-1 relative">
       <ListboxButton
-        class="relative w-full bg-white border border-gray-300 rounded-md pl-3 pr-10 py-2 text-left cursor-default focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary sm:text-sm"
+        class="relative w-full bg-white border border-gray-300 rounded-md pl-3 pr-10 py-2 text-left cursor-pointer focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary sm:text-sm"
       >
         <span class="flex items-center">
+          <span v-if="selected?.color" class="flex-shrink-0 inline-block h-2 w-2 rounded-full mr-3" :style="`background-color: ${selected?.color}`" />
           <img
             v-if="selected?.avatar"
             :src="selected.avatar"
             alt=""
             class="flex-shrink-0 h-5 w-5 rounded-full"
           />
-          <span :class="[selected?.avatar ? 'ml-3' : '', 'block truncate']">{{ selected?.name }}</span>
+          <span :class="[selected?.avatar ? 'ml-3' : '', 'block truncate']">{{ selected?.name || emptyLabel }}</span>
         </span>
         <span
           class="ml-3 absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none"
@@ -30,7 +31,7 @@
         leave-to-class="opacity-0"
       >
         <ListboxOptions
-          class="absolute z-10 mt-1 bg-white shadow-lg max-h-56 rounded-md py-1 text-base ring-1 ring-black ring-opacity-5 overflow-auto focus:outline-none sm:text-sm"
+          class="absolute z-20 mt-1 bg-white shadow-lg max-h-56 rounded-md py-1 text-base ring-1 ring-black ring-opacity-5 overflow-auto focus:outline-none sm:text-sm "
         >
           <ListboxOption
             as="template"
@@ -42,10 +43,11 @@
             <li
               :class="[
                 active ? 'text-white bg-primary-600' : 'text-gray-900',
-                'cursor-default select-none relative py-2 pl-3 pr-9'
+                'cursor-pointer select-none relative py-2 pl-3 pr-9'
               ]"
             >
               <div class="flex items-center">
+                <span v-if="element.color" class="flex-shrink-0 inline-block h-2 w-2 rounded-full mr-3" :style="`background-color: ${element.color}`" />
                 <img
                   v-if="element.avatar"
                   :src="element.avatar"
@@ -81,7 +83,6 @@
 </template>
 
 <script>
-import { ref } from 'vue'
 import {
   Listbox,
   ListboxButton,
@@ -111,19 +112,31 @@ export default {
       type: Array
     },
     init: {
-      required: true,
+      required: false,
       type: Object
+    },
+    multiple: {
+      required: false,
+      type: Boolean
+    },
+    emptyLabel: {
+      required: false,
+      type: String
+    },
+    value: {
+      required: false,
+      type: Array
     }
   },
-  data () {
-    return {
-      selected: null
+  computed: {
+    selected: {
+      get () {
+        return this.value
+      },
+      set (value) {
+        this.$emit('input', value)
+      }
     }
-  },
-  mounted () {
-    const selected = ref(this.init)
-
-    this.selected = selected
   }
 }
 </script>
