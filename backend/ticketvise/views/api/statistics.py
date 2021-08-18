@@ -189,5 +189,5 @@ class UserStatisticsApiView(APIView):
         return JsonResponse({
             "inboxes": UserInbox.objects.filter(user=request.user).count(),
             "tickets": Ticket.objects.filter(author=request.user).count(),
-            # TODO: Add public tickets
+            "public_tickets": Ticket.objects.filter(author=request.user, is_public__isnull=False).count()
         })

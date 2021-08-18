@@ -12,10 +12,11 @@
                   <p class="mt-2 text-sm text-gray-500">
                     #{{ ticket?.ticket_inbox_id }} opened by
                     {{ ' ' }}
-                    <a href="#" class="font-medium text-gray-900">
+                    <a v-if="ticket?.author" href="#" class="font-medium text-gray-900">
                       {{ ticket?.author?.first_name }}
                       {{ ticket?.author?.last_name }}
                     </a>
+                    <span v-else class="font-medium text-gray-900">Someone in this inbox</span>
                   </p>
                 </div>
                 <div class="mt-4 flex space-x-3 md:mt-0">
@@ -171,7 +172,7 @@
                 <div class="sm:hidden">
                   <label for="tabs" class="sr-only">Select a tab</label>
                   <select id="tabs" name="tabs" class="block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-primary focus:border-primary sm:text-sm rounded-md">
-                    <option v-for="tab in tabs" :key="tab.name" :selected="tab.current">{{ tab.name }}</option>
+                    <option v-show="tab.cond ? isStaff(role, user) : true" @select="tabs.forEach(t => t.current = false); tabs.find(t => t.name === tab.name).current = true" v-for="tab in tabs" :key="tab.name" :selected="tab.current">{{ tab.name }}</option>
                   </select>
                 </div>
                 <div class="hidden sm:block">

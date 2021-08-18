@@ -1,6 +1,6 @@
 <template>
   <!-- Pinned tickets -->
-  <div class="px-4 mt-6 sm:px-6 lg:px-8">
+  <div v-if="pinnedTickets?.length > 0" class="px-4 mt-6 sm:px-6 lg:px-8">
     <h2 class="text-gray-500 dark:text-gray-300 text-xs font-medium uppercase tracking-wide">Pinned Tickets</h2>
     <ul class="grid grid-cols-1 gap-4 sm:gap-6 sm:grid-cols-2 xl:grid-cols-4 mt-3">
       <li v-for="ticket in pinnedTickets" :key="ticket.id" class="relative col-span-1 flex shadow-sm rounded-md">
@@ -44,15 +44,15 @@
   </div>
 
   <!-- Tickets list (only on smallest breakpoint) -->
-  <div class="mt-10 sm:hidden h-full overflow-y-auto">
+  <div class="mt-3 sm:hidden h-full overflow-y-auto">
     <div class="px-4 sm:px-6">
       <h2 class="text-gray-500 text-xs font-medium uppercase tracking-wide">Tickets</h2>
     </div>
     <ul class="mt-3 border-t border-gray-200 divide-y divide-gray-100">
       <li v-for="ticket in ticketsFlattened" :key="ticket.id">
-        <router-link :to="`/inboxes/${$route.params.inboxId}/tickets/${ticket.ticket_inbox_id}`" class="group flex items-center justify-between px-4 py-4 hover:bg-gray-50 sm:px-6">
+        <router-link :to="`/inboxes/${$route.params.inboxId}/tickets/${ticket.ticket_inbox_id}`" class="group flex items-center justify-between px-4 py-3 hover:bg-gray-50 sm:px-6">
           <span class="flex items-center truncate space-x-3">
-            <span class="font-medium truncate text-sm leading-6">
+            <span class="font-medium truncate text-sm leading-4">
               {{ ticket.title }}
             </span>
           </span>

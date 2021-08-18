@@ -230,7 +230,7 @@ import store from '@/store'
 import { Switch, SwitchDescription, SwitchGroup, SwitchLabel } from '@headlessui/vue'
 import {
   CollectionIcon,
-  EyeIcon,
+  GlobeIcon,
   InboxIcon
 } from '@heroicons/vue/outline'
 import { InformationCircleIcon } from '@heroicons/vue/solid'
@@ -321,7 +321,7 @@ export default {
     stats: [
       { label: 'Inboxes', value: '#', icon: InboxIcon },
       { label: 'Tickets', value: '#', icon: CollectionIcon },
-      { label: 'Public tickets', value: '#', icon: EyeIcon }
+      { label: 'Public tickets', value: '#', icon: GlobeIcon }
     ]
   }),
   setup () {
@@ -331,7 +331,6 @@ export default {
     axios.get('/api/me/statistics').then(response => {
       this.stats.find(s => s.label === 'Inboxes').value = response.data.inboxes || 0
       this.stats.find(s => s.label === 'Tickets').value = response.data.tickets || 0
-      // Add public tickets to the stats
       this.stats.find(s => s.label === 'Public tickets').value = response.data.public_tickets || 0
     })
   }

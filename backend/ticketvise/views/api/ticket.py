@@ -273,6 +273,10 @@ class TicketApiView(RetrieveAPIView):
                 "pin_initiator", "shared_with", "is_public", "publish_request_initiator",
                 "publish_request_created", "date_latest_update")).data
 
+            # If the ticket is tagged anonymous, remove the author from the data.
+            if ticket.is_anonymous:
+                response["ticket"]["author"] = None
+
         if json.loads(request.GET.get("me", "false")):
             user_data = UserSerializer(request.user,
                                        fields=(["first_name", "last_name", "username", "avatar_url", "id",
