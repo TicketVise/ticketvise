@@ -414,7 +414,6 @@ export default {
       /* Get every event from this ticket. */
       axios.get(`/api/inboxes/${this.$route.params.inboxId}/tickets/${this.$route.params.ticketInboxId}`, { params: formData })
         .then(response => {
-          console.log(response.data)
           this.role = response.data.role
           this.ticket = response.data.ticket
           this.ticket.inbox = response.data.inbox
