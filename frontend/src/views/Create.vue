@@ -113,6 +113,7 @@
 import axios from 'axios'
 import router from '@/router'
 import { mapState } from 'vuex'
+import moment from 'moment'
 
 import FileUpload from '@/components/inputs/FileInput'
 import SelectInput from '@/components/inputs/SelectInput'
@@ -188,9 +189,12 @@ export default {
       formData.append('content', this.content)
       formData.append('title', this.title)
 
-      this.labels.forEach(label => formData.append('labels', label.id))
+      // this.labels.forEach(label => formData.append('labels', label.id))
+      formData.append('labels', [this.label.id])
       this.files.forEach(file => formData.append('files', file))
-      this.sharedWith.forEach(sharedWith => formData.append('sharedWith', sharedWith.id))
+      this.sharedWith.forEach(sharedWith => formData.append('shared_with', sharedWith.id))
+      formData.append('is_public', this.privacy.key === 'public' || this.privacy.key === 'anonymous' ? moment().format() : null)
+      formData.append('is_anonymous', this.privacy.key === 'anonymous')
 
       axios.post(`/api/inboxes/${this.$route.params.inboxId}/tickets/new`, formData, {
         headers: {

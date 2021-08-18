@@ -59,7 +59,7 @@ class CreateTicketSerializer(ModelSerializer):
         #: Tells the serializer to use the :class:`Ticket` model.
         model = Ticket
         #: Tells the serializer to use these fields from the :class:`Ticket` model.
-        fields = ["ticket_inbox_id", "title", "content", "labels", "shared_with"]
+        fields = ["ticket_inbox_id", "title", "content", "labels", "shared_with", "is_public", "is_anonymous"]
 
     def validate_shared_with(self, shared_with):
         inbox = self.context["inbox"]

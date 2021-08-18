@@ -275,20 +275,21 @@
               <ul class="mt-2 leading-8 divide-y divide-gray-200">
                 <li v-for="person in ticket?.shared_with" :key="person.id" class="py-2 flex justify-between items-center">
                   <div class="flex items-center">
-                    <img :src="person.imageUrl" alt="" class="w-6 h-6 rounded-full" />
-                    <p class="ml-3 text-sm font-medium text-gray-900">{{ person.name }}</p>
+                    <img :src="person.avatar_url || person.avatar" alt="" class="w-6 h-6 rounded-full" />
+                    <p class="ml-3 text-sm font-medium text-gray-900">{{ person.first_name }} {{ person.last_name }} {{ !person.first_name ? person.name : '' }}</p>
                   </div>
-                  <button type="button" class="ml-6 bg-white rounded-md text-sm font-medium text-primary-600 hover:text-primary focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary">
+                  <button @click="ticket.shared_with.splice(ticket.shared_with.map(s => s.id).indexOf(person.id), 1); updateSharedWith()" type="button" class="ml-6 bg-white rounded-md text-sm font-medium text-primary-600 hover:text-primary focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary">
                     Remove<span class="sr-only"> {{ person.name }}</span>
                   </button>
                 </li>
                 <li :class="[ticket?.shared_with.length > 0 ? 'py-2' : '', 'flex justify-between items-center']">
-                  <button type="button" class="group -ml-1 bg-white p-1 rounded-md flex items-center focus:outline-none focus:ring-2 focus:ring-primary">
+                  <button v-show="!addShare" @click="addShare = true" type="button" class="group -ml-1 bg-white p-1 rounded-md flex items-center focus:outline-none focus:ring-2 focus:ring-primary">
                     <span class="w-6 h-6 rounded-full border-2 border-dashed border-gray-300 flex items-center justify-center text-gray-400">
                       <PlusIconSolid class="h-5 w-5" aria-hidden="true" />
                     </span>
                     <span class="ml-3 text-sm font-medium text-primary-600 group-hover:text-primary">Share</span>
                   </button>
+                  <FormTextFieldWithSuggestions v-show="addShare" @add="data => { ticket.shared_with.push(data); updateSharedWith(); addShare = false }" :data="guestsFiltered || []" emptyLabel="John Doe" />
                 </li>
               </ul>
             </div>
@@ -309,6 +310,7 @@ import StaffDiscussion from '@/components/tickets/StaffDiscussion.vue'
 import Attachments from '@/components/tickets/Attachments.vue'
 import Chip from '@/components/chip/Chip'
 import PublishConfirmation from '@/components/tickets/PublishConfirmation.vue'
+import FormTextFieldWithSuggestions from '@/components/form/FormTextFieldWithSuggestions'
 
 import { ref } from 'vue'
 import {
@@ -359,6 +361,7 @@ export default {
     CheckIcon,
     Chip,
     CloudIcon,
+    FormTextFieldWithSuggestions,
     InformationCircleIcon,
     LockOpenIcon,
     LockClosedIcon,
@@ -379,7 +382,8 @@ export default {
       { name: 'Staff discussion', href: '#', count: 0, current: false, cond: 'staff' },
       { name: 'Attachments', href: '#', count: 0, current: false }
     ],
-    role: ''
+    role: '',
+    addShare: false
   }),
   setup () {
     const sidebarOpen = ref(false)
@@ -415,6 +419,16 @@ export default {
           this.ticket.replies = response.data.replies
           this.ticket.comments = []
           this.staff = []
+
+          /* Get the guests for this inbox. */
+          axios.get(`/api/inboxes/${this.$route.params.inboxId}/guests`)
+            .then((response) => {
+              this.ticket.inbox.guests = response.data.map(g => ({
+                id: g.id,
+                name: g.first_name + ' ' + g.last_name,
+                avatar: g.avatar_url
+              }))
+            })
 
           if (this.isStaff(this.role, this.user)) {
             this.ticket.comments = response.data.comments.map(c => {
@@ -542,12 +556,24 @@ export default {
         this.ticket.is_public = response.data.is_public
         this.ticket.is_anonymous = response.data.is_anonymous
       })
+    },
+    async updateSharedWith () {
+      const formData = new FormData()
+      this.ticket.shared_with.forEach(user => formData.append('shared_with', user.id))
+
+      await axios.put(`/api/inboxes/${this.$route.params.inboxId}/tickets/${this.$route.params.ticketInboxId}/shared`, formData)
+
+      this.loadTicketData()
     }
   },
   computed: {
     ...mapState({
       user: state => state.user
-    })
+    }),
+    guestsFiltered () {
+      return this.ticket?.inbox?.guests?.filter(g => g.id !== this.user?.id)
+        .filter(g => this.ticket?.shared_with.map(s => s.id).indexOf(g.id) === -1)
+    }
   }
 }
 </script>
