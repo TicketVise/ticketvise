@@ -119,7 +119,7 @@ class InboxTicketsApiView(ListAPIView):
         if q:
             tickets = self.search_tickets(q, inbox)
 
-        tickets = tickets.filter(is_public__isnull=not public).order_by("-date_created")
+        tickets = tickets.order_by("-date_created")
 
         if not self.request.user.is_assistant_or_coordinator(inbox) and \
                 not self.request.user.is_superuser and not public:
@@ -204,7 +204,7 @@ class InboxTicketsApiView(ListAPIView):
                 "tickets": TicketSerializer(
                     query_set.filter(status=status)[:self.page_size], many=True, fields=(
                         "id", "title", "name", "author", "assignee", "ticket_inbox_id", "date_created", "labels",
-                        "date_latest_update", "is_pinned")).data
+                        "date_latest_update", "is_pinned", "is_public")).data
             } for status in Status if status != Status.PENDING
                                       or (inbox.scheduling_algorithm == SchedulingAlgorithm.FIXED
                                           and inbox.fixed_scheduling_assignee is None)

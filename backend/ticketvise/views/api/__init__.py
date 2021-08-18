@@ -140,7 +140,7 @@ class TicketSerializer(DynamicFieldsModelSerializer):
         #: Tells the serializer to use these fields from the :class:`Ticket` model.
         fields = ["id", "inbox", "title", "ticket_inbox_id", "author", "content", "date_created", "status", "labels",
                   "assignee", "shared_with", "participants", "author_role", "attachments", "shared_with_by",
-                  "is_pinned", "pin_initiator", "attachments", "is_public", "publish_request_initiator",
+                  "is_pinned", "pin_initiator", "is_public", "publish_request_initiator",
                   "publish_request_created", "is_anonymous", "date_latest_update"]
 
 
@@ -163,7 +163,7 @@ class LabelSerializer(ModelSerializer):
         fields = ["name", "color", "id", "is_active", "is_visible_to_guest"]
 
 
-class TicketAttachmentSerializer(ModelSerializer):
+class TicketAttachmentSerializer(DynamicFieldsModelSerializer):
     uploader = UserSerializer(read_only=True, fields=(["first_name", "last_name", "username", "avatar_url", "id"]))
 
     class Meta:

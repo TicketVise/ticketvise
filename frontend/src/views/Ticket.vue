@@ -106,7 +106,7 @@
                   </div>
                 </div>
                 <div class="mt-6 border-t border-b border-gray-200 py-6 space-y-8">
-                  <div>
+                  <div v-if="ticket?.assignee">
                     <h2 class="text-sm font-medium text-gray-500">Assignees</h2>
                     <ul class="mt-3 space-y-3">
                       <li class="flex justify-start">
@@ -219,7 +219,7 @@
             </div>
           </div>
           <div class="mt-6 border-t border-gray-200 py-6 space-y-8">
-            <div>
+            <div v-if="ticket?.assignee">
               <h2 class="text-sm font-medium text-gray-500">Assignees</h2>
               <ul class="mt-3 space-y-3">
                 <li class="flex justify-start">
@@ -235,17 +235,16 @@
               </ul>
             </div>
             <div>
-              <h2 class="text-sm font-medium text-gray-500">Tags</h2>
+              <h2 class="text-sm font-medium text-gray-500">Labels</h2>
               <div class="flex flex-wrap mt-2 leading-8 space-x-1 items-center">
                 <chip :background="label.color" :key="label.id" v-for="label in ticket?.labels">
                   {{ label.name }}
                 </chip>
                 <span class="relative z-0 inline-flex">
                   <Listbox as="span" class="-ml-px relative block">
-                    <ListboxButton class="relative inline-flex items-center px-2 py-2 text-sm font-medium focus:outline-none">
-                      <span class="sr-only">Open options</span>
+                    <ListboxButton class="relative flex items-center text-sm font-medium focus:outline-none ml-1">
                       <span class="w-5 h-5 rounded-md border border-dashed border-primary-400 flex items-center justify-center text-primary-400">
-                        <PlusIconSolid class="h-5 w-5" aria-hidden="true" />
+                        <PencilIcon class="h-5 w-5" aria-hidden="true" />
                       </span>
                     </ListboxButton>
                     <transition leave-active-class="transition ease-in duration-100" leave-from-class="opacity-100" leave-to-class="opacity-0">
@@ -326,7 +325,8 @@ import {
   InformationCircleIcon,
   LockOpenIcon,
   LockClosedIcon,
-  PlusIcon as PlusIconSolid
+  PlusIcon as PlusIconSolid,
+  PencilIcon
 } from '@heroicons/vue/solid'
 
 import {
@@ -369,6 +369,7 @@ export default {
     ListboxButton,
     ListboxOption,
     ListboxOptions,
+    PencilIcon,
     PlusIconSolid,
     PublishConfirmation,
     StaffDiscussion
