@@ -18,7 +18,9 @@ class TicketFormTestAPI(APITestCase, TicketTestCase):
             "title": "TestTicket",
             "content": "TestTicket",
             "labels": [self.label.id],
-            "shared_with": []
+            "shared_with": [],
+            "is_anonymous": False,
+            "is_public": None
         }
 
         response = self.client.post(url, data)
