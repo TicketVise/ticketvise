@@ -14,7 +14,7 @@
       <span v-if="!ticket.is_public" class="text-xs text-gray-500 dark:text-gray-400 float-right">
         #{{ ticket.ticket_inbox_id }}
       </span>
-      <GlobeIcon v-else class="h-5 w-5 text-gray-500 dark:text-gray-400" />
+      <GlobeIcon v-else class="h-4 w-4 text-gray-500 dark:text-gray-400" />
     </div>
 
     <div class="flex justify-between items-center">
