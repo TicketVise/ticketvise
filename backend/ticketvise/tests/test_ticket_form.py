@@ -23,7 +23,7 @@ class TicketFormTestAPI(APITestCase, TicketTestCase):
             "is_public": None
         }
 
-        response = self.client.post(url, data)
+        response = self.client.post(url, data, content_type="application/json")
         self.assertEqual(response.status_code, 201)
         data["ticket_inbox_id"] = response.data["ticket_inbox_id"]
         self.assertDictEqual(response.data, data)
@@ -38,10 +38,12 @@ class TicketFormTestAPI(APITestCase, TicketTestCase):
             "title": "TestTicket",
             "content": "TestTicket",
             "inbox": self.inbox.id,
-            "attachments": file
+            "attachments": file,
+            "is_anonymous": False,
+            "is_public": None
         }
 
-        response = self.client.post(url, data)
+        response = self.client.post(url, data, content_type="application/json")
         self.assertEqual(response.status_code, 201)
 
     def test_create_ticket_shared(self):
@@ -52,10 +54,12 @@ class TicketFormTestAPI(APITestCase, TicketTestCase):
             "title": "TestTicket",
             "content": "TestTicket",
             "labels": [self.label.id],
-            "shared_with": [self.student2.id]
+            "shared_with": [self.student2.id],
+            "is_anonymous": False,
+            "is_public": None
         }
 
-        response = self.client.post(url, data)
+        response = self.client.post(url, data, content_type="application/json")
         self.assertEqual(response.status_code, 201)
         data["ticket_inbox_id"] = response.data["ticket_inbox_id"]
         self.assertDictEqual(response.data, data)
@@ -69,9 +73,11 @@ class TicketFormTestAPI(APITestCase, TicketTestCase):
             "content": "TestTicket",
             "inbox": self.inbox.id,
             "labels": [self.label.id],
-            "shared_with": [self.assistant.id]
+            "shared_with": [self.assistant.id],
+            "is_anonymous": False,
+            "is_public": None
         }
 
-        response = self.client.post(url, data)
+        response = self.client.post(url, data, content_type="application/json")
         self.assertEqual(response.status_code, 400)
         self.assertEqual(response.data, {"shared_with": ["This ticket cannot be shared with one of these users"]})
