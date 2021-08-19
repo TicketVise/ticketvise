@@ -10,6 +10,7 @@ Contains classes for the API interface to dynamically load models using AJAX.
 * :class:`InboxUsersView`
 * :class:`InboxTicketView`
 """
+from datetime import datetime
 import json
 
 from django.contrib.postgres.search import SearchVector, SearchQuery
@@ -47,6 +48,7 @@ class CreateTicketSerializer(ModelSerializer):
     labels = serializers.PrimaryKeyRelatedField(many=True, queryset=Label.objects.all())
     shared_with = serializers.PrimaryKeyRelatedField(many=True, queryset=User.objects.all())
     ticket_inbox_id = serializers.IntegerField(read_only=True)
+    make_public = serializers.BooleanField(write_only=True, default=False)
 
     class Meta:
         """
@@ -59,7 +61,13 @@ class CreateTicketSerializer(ModelSerializer):
         #: Tells the serializer to use the :class:`Ticket` model.
         model = Ticket
         #: Tells the serializer to use these fields from the :class:`Ticket` model.
-        fields = ["ticket_inbox_id", "title", "content", "labels", "shared_with", "is_public", "is_anonymous"]
+        fields = ["ticket_inbox_id", "title", "content", "labels", "shared_with", "make_public", "is_anonymous"]
+        read_only_fields = ["is_public"]
+
+    def validate(self, attrs):
+        if not attrs.get("make_public") and attrs.get("is_anonymous"):
+            raise ValidationError("An anonymous ticket also needs to be public")
+        return attrs
 
     def validate_shared_with(self, shared_with):
         inbox = self.context["inbox"]
@@ -68,6 +76,12 @@ class CreateTicketSerializer(ModelSerializer):
                 raise ValidationError("This ticket cannot be shared with one of these users")
         return shared_with
 
+    def create(self, validated_data):
+        if validated_data.pop("make_public"):
+            validated_data["is_public"] = datetime.now()
+
+        return super().create(validated_data)
+        
 
 class AssigneeUpdateSerializer(ModelSerializer):
     class Meta:

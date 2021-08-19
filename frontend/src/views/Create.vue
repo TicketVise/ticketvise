@@ -193,7 +193,7 @@ export default {
       formData.append('labels', [this.label.id])
       this.files.forEach(file => formData.append('files', file))
       this.sharedWith.forEach(sharedWith => formData.append('shared_with', sharedWith.id))
-      formData.append('is_public', this.privacy.key === 'public' || this.privacy.key === 'anonymous' ? moment().format() : null)
+      formData.append('make_public', this.privacy.key === 'public' || this.privacy.key === 'anonymous')
       formData.append('is_anonymous', this.privacy.key === 'anonymous')
 
       axios.post(`/api/inboxes/${this.$route.params.inboxId}/tickets/new`, formData, {
