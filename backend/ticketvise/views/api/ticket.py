@@ -125,13 +125,12 @@ class InboxTicketsApiView(ListAPIView):
         q = self.request.GET.get("q", "")
         public = json.loads(self.request.GET.get("public", "false"))
 
-        if public:
-            tickets = Ticket.objects.filter(inbox=inbox, is_public__isnull=not public)
-        else:
-            tickets = Ticket.objects.filter(inbox=inbox)
-
+        tickets = Ticket.objects.filter(inbox=inbox)
         if q:
             tickets = self.search_tickets(q, inbox)
+
+        if public:
+            tickets = tickets.filter(inbox=inbox, is_public__isnull=not public)
 
         tickets = tickets.order_by("-date_created")
 

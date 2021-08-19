@@ -6,7 +6,7 @@
     <div class="flex justify-between items-start pb-1 space-x-1">
       <router-link
         :to="link"
-        class="font-medium leading-4 text-gray-900 dark:text-gray-200 hover:underline truncate"
+        class="font-medium leading-5 text-gray-900 dark:text-gray-200 hover:underline truncate"
       >
         {{ ticket.title }}
       </router-link>

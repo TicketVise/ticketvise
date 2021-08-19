@@ -70,14 +70,6 @@ class TicketTestCase(TransactionTestCase):
         self.ticket3.add_label(self.label)
         self.ticket2.add_label(self.label2)
 
-        self.ticket3 = Ticket.objects.create(author=self.student, assignee=self.assistant, title="Ticket3",
-                                             content="TestContent", inbox=self.inbox, is_public=timezone.now(),
-                                             is_anonymous=False)
-
-        self.ticket4 = Ticket.objects.create(author=self.student, assignee=self.assistant, title="Ticket3",
-                                             content="TestContent", inbox=self.inbox, is_public=timezone.now(),
-                                             is_anonymous=True)
-
 
 class TicketTestBackendCase(TicketTestCase):
     def test_ticket_page_200(self):
@@ -993,71 +985,71 @@ class TicketTestBackendCase(TicketTestCase):
     def test_add_subscription_student(self):
         self.client.force_authenticate(self.student)
 
-        response = self.client.post(f"/api/inboxes/{self.inbox.id}/tickets/{self.ticket.id}/subscribe")
+        response = self.client.post(f"/api/inboxes/{self.inbox.id}/tickets/{self.ticket.ticket_inbox_id}/subscribe")
         self.assertEqual(response.status_code, 201)
 
     def test_add_subscription_assistant(self):
         self.client.force_authenticate(self.assistant)
 
-        response = self.client.post(f"/api/inboxes/{self.inbox.id}/tickets/{self.ticket.id}/subscribe")
+        response = self.client.post(f"/api/inboxes/{self.inbox.id}/tickets/{self.ticket.ticket_inbox_id}/subscribe")
         self.assertEqual(response.status_code, 201)
 
     def test_add_subscription_manager(self):
         self.client.force_authenticate(self.manager)
 
-        response = self.client.post(f"/api/inboxes/{self.inbox.id}/tickets/{self.ticket.id}/subscribe")
+        response = self.client.post(f"/api/inboxes/{self.inbox.id}/tickets/{self.ticket.ticket_inbox_id}/subscribe")
         self.assertEqual(response.status_code, 201)
 
     def test_add_existing_subscription(self):
         self.client.force_authenticate(self.student)
 
-        response = self.client.post(f"/api/inboxes/{self.inbox.id}/tickets/{self.ticket.id}/subscribe")
+        response = self.client.post(f"/api/inboxes/{self.inbox.id}/tickets/{self.ticket.ticket_inbox_id}/subscribe")
         self.assertEqual(response.status_code, 201)
 
-        response = self.client.post(f"/api/inboxes/{self.inbox.id}/tickets/{self.ticket.id}/subscribe")
+        response = self.client.post(f"/api/inboxes/{self.inbox.id}/tickets/{self.ticket.ticket_inbox_id}/subscribe")
         self.assertEqual(response.status_code, 403)
 
     def test_unsubscribe_student(self):
         self.client.force_authenticate(self.student)
 
-        response = self.client.post(f"/api/inboxes/{self.inbox.id}/tickets/{self.ticket.id}/subscribe")
+        response = self.client.post(f"/api/inboxes/{self.inbox.id}/tickets/{self.ticket.ticket_inbox_id}/subscribe")
         self.assertEqual(response.status_code, 201)
 
-        response = self.client.put(f"/api/inboxes/{self.inbox.id}/tickets/{self.ticket.id}/unsubscribe")
+        response = self.client.put(f"/api/inboxes/{self.inbox.id}/tickets/{self.ticket.ticket_inbox_id}/unsubscribe")
         self.assertEqual(response.status_code, 200)
 
     def test_unsubscribe_assistant(self):
         self.client.force_authenticate(self.assistant)
 
-        response = self.client.post(f"/api/inboxes/{self.inbox.id}/tickets/{self.ticket.id}/subscribe")
+        response = self.client.post(f"/api/inboxes/{self.inbox.id}/tickets/{self.ticket.ticket_inbox_id}/subscribe")
         self.assertEqual(response.status_code, 201)
 
-        response = self.client.put(f"/api/inboxes/{self.inbox.id}/tickets/{self.ticket.id}/unsubscribe")
+        response = self.client.put(f"/api/inboxes/{self.inbox.id}/tickets/{self.ticket.ticket_inbox_id}/unsubscribe")
         self.assertEqual(response.status_code, 200)
 
     def test_unsubscribe_manager(self):
         self.client.force_authenticate(self.manager)
 
-        response = self.client.post(f"/api/inboxes/{self.inbox.id}/tickets/{self.ticket.id}/subscribe")
+        response = self.client.post(f"/api/inboxes/{self.inbox.id}/tickets/{self.ticket.ticket_inbox_id}/subscribe")
         self.assertEqual(response.status_code, 201)
 
-        response = self.client.put(f"/api/inboxes/{self.inbox.id}/tickets/{self.ticket.id}/unsubscribe")
+        response = self.client.put(f"/api/inboxes/{self.inbox.id}/tickets/{self.ticket.ticket_inbox_id}/unsubscribe")
         self.assertEqual(response.status_code, 200)
 
     def test_resubscribe(self):
         self.client.force_authenticate(self.manager)
 
-        response = self.client.post(f"/api/inboxes/{self.inbox.id}/tickets/{self.ticket.id}/subscribe")
+        response = self.client.post(f"/api/inboxes/{self.inbox.id}/tickets/{self.ticket.ticket_inbox_id}/subscribe")
         self.assertEqual(response.status_code, 201)
 
-        response = self.client.put(f"/api/inboxes/{self.inbox.id}/tickets/{self.ticket.id}/unsubscribe")
+        response = self.client.put(f"/api/inboxes/{self.inbox.id}/tickets/{self.ticket.ticket_inbox_id}/unsubscribe")
         self.assertEqual(response.status_code, 200)
 
-        response = self.client.post(f"/api/inboxes/{self.inbox.id}/tickets/{self.ticket.id}/subscribe")
+        response = self.client.post(f"/api/inboxes/{self.inbox.id}/tickets/{self.ticket.ticket_inbox_id}/subscribe")
         self.assertEqual(response.status_code, 200)
 
     def test_unsubscribe_nonoexisting(self):
         self.client.force_authenticate(self.student)
 
-        response = self.client.put(f"/api/inboxes/{self.inbox.id}/tickets/{self.ticket.id}/unsubscribe")
+        response = self.client.put(f"/api/inboxes/{self.inbox.id}/tickets/{self.ticket.ticket_inbox_id}/unsubscribe")
         self.assertEqual(response.status_code, 404)

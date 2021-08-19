@@ -113,7 +113,6 @@
 import axios from 'axios'
 import router from '@/router'
 import { mapState } from 'vuex'
-import moment from 'moment'
 
 import FileUpload from '@/components/inputs/FileInput'
 import SelectInput from '@/components/inputs/SelectInput'

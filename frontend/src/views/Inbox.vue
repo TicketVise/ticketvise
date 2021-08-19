@@ -229,8 +229,9 @@ export default {
       this.get_tickets()
     },
     togglePersonal () {
-      this.showPersonal = !this.showPersonal
-      this.get_tickets()
+      axios.post('/api/inboxes/1/tickets/1/subscribe')
+      // this.showPersonal = !this.showPersonal
+      // this.get_tickets()
     },
     loadStatus (status) {
       const labelsIds = []
