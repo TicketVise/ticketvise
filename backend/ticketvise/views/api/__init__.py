@@ -110,7 +110,7 @@ class TicketSerializer(DynamicFieldsModelSerializer):
 
     def get_date_latest_update(self, obj):
         user = CurrentUserMiddleware.get_current_user()
-        latest_dates = []
+        latest_dates = [obj.date_edited, obj.date_created]
 
         events = TicketEvent.objects.filter(ticket=obj).values_list("date_edited", flat=True)
         if events:
