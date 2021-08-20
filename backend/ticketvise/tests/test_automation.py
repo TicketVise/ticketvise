@@ -8,7 +8,6 @@ class AutomationTestCase(TicketTestCase):
 
     def setUp(self):
         self.inbox = Inbox.objects.create(name="TestInbox", code="TestCode", color="#FF6600")
-        self.automation = Automation.objects.create(name="Test1", inbox=self.inbox)
 
         self.student = User.objects.create(username="student", password="test12345", email="student@ticketvise.com")
         self.student.add_inbox(self.inbox)
@@ -19,6 +18,7 @@ class AutomationTestCase(TicketTestCase):
         self.assistant.add_inbox(self.inbox)
         self.assistant.set_role_for_inbox(self.inbox, Role.AGENT)
 
+        self.automation = Automation.objects.create(name="Test1", inbox=self.inbox, assignable_to=self.assistant)
         self.ticket = Ticket.objects.create(author=self.student,
             assignee=self.assistant, title="hetwerkt", content="lol",
             inbox=self.inbox, status=Status.ASSIGNED)
@@ -29,6 +29,6 @@ class AutomationTestCase(TicketTestCase):
             index=0,
             field_name="title",
             evaluation_func="equals",
-            value="hetwerkt")
+            evaluation_value="hetwerkt")
         result = auto_rule_1(self.ticket)
         self.assertTrue(result)
