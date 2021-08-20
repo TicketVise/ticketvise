@@ -191,9 +191,6 @@ export default {
       axios
         .get(`/api/inboxes/${inboxId}/tickets`, {
           params: {
-            // q: this.search,
-            // show_personal: this.showPersonal,
-            // labels: labelsIds
             public: true
           }
         })
