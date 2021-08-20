@@ -6,19 +6,20 @@
     <div class="flex justify-between items-start pb-1 space-x-1">
       <router-link
         :to="link"
-        class="font-medium leading-4 text-gray-900 dark:text-gray-200 hover:underline"
+        class="font-medium leading-5 text-gray-900 dark:text-gray-200 hover:underline truncate"
       >
         {{ ticket.title }}
       </router-link>
 
-      <span class="text-xs text-gray-500 dark:text-gray-400 float-right">
+      <span v-if="!ticket.is_public" class="text-xs text-gray-500 dark:text-gray-400 float-right">
         #{{ ticket.ticket_inbox_id }}
       </span>
+      <GlobeIcon v-else class="h-4 w-4 text-gray-500 dark:text-gray-400" />
     </div>
 
     <div class="flex justify-between items-center">
       <h3 v-if="!small" class="text-xs text-gray-500 dark:text-gray-400">
-        <span class="font-medium">{{ ticket.author.first_name }} {{ ticket.author.last_name }}</span>・{{ date(ticket.date_created) }}
+        <span class="font-medium">{{ ticket.author?.first_name }} {{ ticket.author?.last_name }}</span>・{{ date(ticket.date_created) }}
       </h3>
       <div v-if="ticket.labels.length == 0 && avatar" class="flex-shrink-0">
         <img class="h-5 w-5 rounded-full" :src="avatar" alt="" :title="assignee.first_name + ' ' + assignee.last_name" />
@@ -44,10 +45,11 @@
         <chip
           :background="label.color"
           :key="label.id"
-          v-for="label in ticket.labels"
+          v-for="label in ticket.labels.slice(0, 1)"
         >
           {{ label.name }}
         </chip>
+        <span v-if="ticket.labels.length > 1" class="text-gray-600 text-xs">+{{ ticket.labels.length - 1 }}</span>
       </div>
       <div v-if="ticket.labels.length > 0 && avatar" class="flex-shrink-0">
         <img class="h-5 w-5 rounded-full" :src="avatar" alt="" :title="assignee.first_name + ' ' + assignee.last_name" />
@@ -57,8 +59,11 @@
 </template>
 
 <script>
+import { mapState } from 'vuex'
 import moment from 'moment'
 import Chip from '@/components/chip/Chip'
+
+import { GlobeIcon } from '@heroicons/vue/outline'
 
 moment.locale(navigator.language)
 
@@ -80,7 +85,8 @@ export default {
     }
   },
   components: {
-    Chip
+    Chip,
+    GlobeIcon
   },
   methods: {
     date (date) {
@@ -95,11 +101,11 @@ export default {
     }
   },
   computed: {
+    ...mapState({
+      user: state => state.user
+    }),
     link () {
       return `/inboxes/${this.$route.params?.inboxId}/tickets/${this.ticket?.ticket_inbox_id}`
-    },
-    user () {
-      return this.$store?.state?.user
     },
     assignee () {
       return this.ticket?.assignee

@@ -216,6 +216,10 @@ class CommentTestCase(TicketTestCase):
             f"/api/inboxes/{self.inbox.id}/tickets/{self.ticket2.ticket_inbox_id}/replies/post", data)
         self.assertEqual(response.status_code, 201)
         self.assertNotEqual(Comment.objects.count(), count)
+
+        comment = Comment.objects.get(id=response.data["id"])
+        self.assertFalse(comment.is_approved)
+
         self.assertEqual(Ticket.objects.get(pk=self.ticket2.id).status, Status.ASSIGNED)
 
     def test_post_replies_as_author(self):
@@ -234,6 +238,10 @@ class CommentTestCase(TicketTestCase):
         response = self.client.post(
             f"/api/inboxes/{self.inbox.id}/tickets/{self.ticket.ticket_inbox_id}/replies/post", data)
         self.assertEqual(response.status_code, 201)
+
+        comment = Comment.objects.get(id=response.data["id"])
+        self.assertFalse(comment.is_approved)
+
         self.assertNotEqual(Comment.objects.count(), count)
         self.assertEqual(Ticket.objects.get(pk=self.ticket.id).status, Status.ASSIGNED)
 
@@ -255,6 +263,10 @@ class CommentTestCase(TicketTestCase):
             f"/api/inboxes/{self.inbox.id}/tickets/{self.ticket.ticket_inbox_id}/replies/post", data)
         self.assertEqual(response.status_code, 201)
         self.assertNotEqual(Comment.objects.count(), count)
+
+        comment = Comment.objects.get(id=response.data["id"])
+        self.assertTrue(comment.is_approved)
+
         self.assertEqual(Ticket.objects.get(pk=self.ticket.id).status, Status.ANSWERED)
         self.assertEqual(Ticket.objects.get(pk=self.ticket.id).assignee, self.assistant3)
 
@@ -276,6 +288,10 @@ class CommentTestCase(TicketTestCase):
             f"/api/inboxes/{self.inbox.id}/tickets/{self.ticket.ticket_inbox_id}/replies/post", data)
         self.assertEqual(response.status_code, 201)
         self.assertNotEqual(Comment.objects.count(), count)
+
+        comment = Comment.objects.get(id=response.data["id"])
+        self.assertTrue(comment.is_approved)
+
         self.assertTrue(Ticket.objects.get(pk=self.ticket.id).assignee, self.assistant)
         self.assertTrue(Ticket.objects.get(pk=self.ticket.id).status, Status.ANSWERED)
 
@@ -355,3 +371,33 @@ class CommentTestCase(TicketTestCase):
 
         comment = Comment.objects.create(content=content, author=self.student, ticket=self.ticket)
         self.assertEqual(content[:MAX_COMMENT_CHAR_LENGTH] + "...", str(comment))
+
+    def test_approve_reply_as_staff(self):
+        self.client.force_authenticate(self.assistant)
+        reply = Comment.objects.create(content="question", author=self.student, ticket=self.ticket, is_reply=True)
+
+        self.assertFalse(reply.is_approved)
+
+        response = self.client.put(f"/api/inboxes/{self.ticket.inbox.id}/comments/{reply.id}/approve")
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue(Comment.objects.get(id=reply.id).is_approved)
+
+    def test_approve_reply_as_author(self):
+        self.client.force_authenticate(self.student)
+        reply = Comment.objects.create(content="question", author=self.student, ticket=self.ticket, is_reply=True)
+
+        self.assertFalse(reply.is_approved)
+
+        response = self.client.put(f"/api/inboxes/{self.ticket.inbox.id}/comments/{reply.id}/approve")
+        self.assertEqual(response.status_code, 403)
+        self.assertFalse(Comment.objects.get(id=reply.id).is_approved)
+
+    def test_approve_reply_as_student(self):
+        self.client.force_authenticate(self.student2)
+        reply = Comment.objects.create(content="question", author=self.student, ticket=self.ticket, is_reply=True)
+
+        self.assertFalse(reply.is_approved)
+
+        response = self.client.put(f"/api/inboxes/{self.ticket.inbox.id}/comments/{reply.id}/approve")
+        self.assertEqual(response.status_code, 403)
+        self.assertFalse(Comment.objects.get(id=reply.id).is_approved)

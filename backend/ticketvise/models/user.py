@@ -61,6 +61,7 @@ class User(AbstractUser):
     objects = CustomUserManager()
     lti_id = models.CharField(max_length=150, null=True)
     inboxes = models.ManyToManyField("Inbox", through="UserInbox", related_name="users")
+    subscribed_tickets = models.ManyToManyField("Ticket", through="UserTicket", related_name="users")
     avatar_url = models.URLField(default=DEFAULT_AVATAR_PATH)
     give_introduction = models.BooleanField(default=True)
 
@@ -244,3 +245,13 @@ class UserInbox(models.Model):
 
     class Meta:
         unique_together = ("user", "inbox")
+
+
+class UserTicket(models.Model):
+    user = models.ForeignKey(User, related_name="ticket_relationship", on_delete=models.CASCADE)
+    ticket = models.ForeignKey("Ticket", related_name="user_relationship", on_delete=models.CASCADE)
+    date_removed = models.DateTimeField(auto_now_add=False, null=True, default=None)
+    date_created = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ("user", "ticket")
