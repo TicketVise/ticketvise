@@ -96,7 +96,7 @@
                 Open
               </span>
               <span v-else class="inline-flex items-center px-2.5 py-0.5 rounded-md text-sm font-medium bg-red-100 text-red-800">
-                closed
+                Closed
               </span>
             </td>
             <td class="hidden md:table-cell px-6 py-3 whitespace-nowrap text-sm text-gray-500 text-right">
