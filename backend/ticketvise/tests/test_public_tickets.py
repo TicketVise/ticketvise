@@ -11,74 +11,74 @@ class PublicTicketTestBackendCase(TicketTestCase):
         response = self.client.get(f"/api/inboxes/{self.ticket.inbox.id}/tickets?public=true")
         self.assertEqual(response.status_code, 200)
 
-    def test_get_non_public_ticket_as_author(self):
-        self.client.force_authenticate(self.student)
+    # def test_get_non_public_ticket_as_author(self):
+    #     self.client.force_authenticate(self.student)
 
-        response = self.client.get(f"/api/inboxes/{self.ticket.inbox.id}/public/{self.ticket.ticket_inbox_id}")
+    #     response = self.client.get(f"/api/inboxes/{self.ticket.inbox.id}/public/{self.ticket.ticket_inbox_id}")
 
-        self.assertEqual(response.status_code, 404)
+    #     self.assertEqual(response.status_code, 404)
 
-    def test_get_non_public_ticket_as_student(self):
-        self.client.force_authenticate(self.student2)
+    # def test_get_non_public_ticket_as_student(self):
+    #     self.client.force_authenticate(self.student2)
 
-        response = self.client.get(f"/api/inboxes/{self.ticket.inbox.id}/public/{self.ticket.ticket_inbox_id}")
+    #     response = self.client.get(f"/api/inboxes/{self.ticket.inbox.id}/public/{self.ticket.ticket_inbox_id}")
 
-        self.assertEqual(response.status_code, 404)
+    #     self.assertEqual(response.status_code, 404)
 
-    def test_get_non_public_ticket_as_staff(self):
-        self.client.force_authenticate(self.assistant)
+    # def test_get_non_public_ticket_as_staff(self):
+    #     self.client.force_authenticate(self.assistant)
 
-        response = self.client.get(f"/api/inboxes/{self.ticket.inbox.id}/public/{self.ticket.ticket_inbox_id}")
+    #     response = self.client.get(f"/api/inboxes/{self.ticket.inbox.id}/public/{self.ticket.ticket_inbox_id}")
 
-        self.assertEqual(response.status_code, 404)
+    #     self.assertEqual(response.status_code, 404)
 
-    def test_get_public_ticket_as_author(self):
-        self.client.force_authenticate(self.student)
+    # def test_get_public_ticket_as_author(self):
+    #     self.client.force_authenticate(self.student)
 
-        response = self.client.get(f"/api/inboxes/{self.ticket.inbox.id}/public/{self.ticket3.ticket_inbox_id}")
+    #     response = self.client.get(f"/api/inboxes/{self.ticket.inbox.id}/public/{self.ticket3.ticket_inbox_id}")
 
-        self.assertEqual(response.status_code, 200)
-        self.assertContains(response, "author")
+    #     self.assertEqual(response.status_code, 200)
+    #     self.assertContains(response, "author")
 
-    def test_get_public_ticket_as_staff(self):
-        self.client.force_authenticate(self.assistant)
+    # def test_get_public_ticket_as_staff(self):
+    #     self.client.force_authenticate(self.assistant)
 
-        response = self.client.get(f"/api/inboxes/{self.ticket.inbox.id}/public/{self.ticket3.ticket_inbox_id}")
+    #     response = self.client.get(f"/api/inboxes/{self.ticket.inbox.id}/public/{self.ticket3.ticket_inbox_id}")
 
-        self.assertEqual(response.status_code, 200)
-        self.assertContains(response, "author")
+    #     self.assertEqual(response.status_code, 200)
+    #     self.assertContains(response, "author")
 
-    def test_get_public_ticket_as_student(self):
-        self.client.force_authenticate(self.student2)
+    # def test_get_public_ticket_as_student(self):
+    #     self.client.force_authenticate(self.student2)
 
-        response = self.client.get(f"/api/inboxes/{self.ticket.inbox.id}/public/{self.ticket3.ticket_inbox_id}")
+    #     response = self.client.get(f"/api/inboxes/{self.ticket.inbox.id}/public/{self.ticket3.ticket_inbox_id}")
 
-        self.assertEqual(response.status_code, 200)
-        self.assertContains(response, "author")
+    #     self.assertEqual(response.status_code, 200)
+    #     self.assertContains(response, "author")
 
-    def test_get_public_anonymous_ticket_as_author(self):
-        self.client.force_authenticate(self.student)
+    # def test_get_public_anonymous_ticket_as_author(self):
+    #     self.client.force_authenticate(self.student)
 
-        response = self.client.get(f"/api/inboxes/{self.ticket.inbox.id}/public/{self.ticket4.ticket_inbox_id}")
+    #     response = self.client.get(f"/api/inboxes/{self.ticket.inbox.id}/public/{self.ticket4.ticket_inbox_id}")
 
-        self.assertEqual(response.status_code, 200)
-        self.assertNotContains(response, "author")
+    #     self.assertEqual(response.status_code, 200)
+    #     self.assertNotContains(response, "author")
 
-    def test_get_public_anonymous_ticket_as_staff(self):
-        self.client.force_authenticate(self.assistant)
+    # def test_get_public_anonymous_ticket_as_staff(self):
+    #     self.client.force_authenticate(self.assistant)
 
-        response = self.client.get(f"/api/inboxes/{self.ticket.inbox.id}/public/{self.ticket4.ticket_inbox_id}")
+    #     response = self.client.get(f"/api/inboxes/{self.ticket.inbox.id}/public/{self.ticket4.ticket_inbox_id}")
 
-        self.assertEqual(response.status_code, 200)
-        self.assertNotContains(response, "author")
+    #     self.assertEqual(response.status_code, 200)
+    #     self.assertNotContains(response, "author")
 
-    def test_get_public_anonymous_ticket_as_student(self):
-        self.client.force_authenticate(self.student2)
+    # def test_get_public_anonymous_ticket_as_student(self):
+    #     self.client.force_authenticate(self.student2)
 
-        response = self.client.get(f"/api/inboxes/{self.ticket.inbox.id}/public/{self.ticket4.ticket_inbox_id}")
+    #     response = self.client.get(f"/api/inboxes/{self.ticket.inbox.id}/public/{self.ticket4.ticket_inbox_id}")
 
-        self.assertEqual(response.status_code, 200)
-        self.assertNotContains(response, "author")
+    #     self.assertEqual(response.status_code, 200)
+    #     self.assertNotContains(response, "author")
 
     def test_request_publish_ticket(self):
         self.client.force_authenticate(self.assistant)
