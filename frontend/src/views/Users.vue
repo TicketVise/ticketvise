@@ -219,7 +219,7 @@
             Search users of {{ users ? users.length : "" }} total
           </p>
           <div class="mt-6 flex space-x-4 items-center">
-            <search-bar small v-model="query" v-on:input="search" class="flex-grow my-2"/>
+            <search-bar small v-on:input="search($event)" class="flex-grow my-2"/>
 
             <Menu as="div" class="relative inline-block text-left">
               <div>
@@ -397,7 +397,8 @@ export default {
           this.sorted = sorted
         })
     },
-    search: debounce(function () {
+    search: debounce(function (query) {
+      this.query = query
       this.performSearch()
     }, 250),
     getInboxUserUrl (inboxUser) {
