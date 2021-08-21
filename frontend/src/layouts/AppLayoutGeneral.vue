@@ -134,7 +134,7 @@ export default {
     ...mapState({
       user: state => state.user
     }),
-    development: () => process.env.NODE_ENV !== 'production',
+    development: () => process.env.NODE_ENV !== 'production'
   },
   methods: {
     logout () {
