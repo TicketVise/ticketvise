@@ -102,9 +102,9 @@ class TicketSerializer(DynamicFieldsModelSerializer):
                 (user.is_assistant_or_coordinator(obj.inbox) or
                  user.id == obj.author.id or
                  obj.shared_with.filter(id=user.id).exists()):
-            return TicketAttachmentSerializer(many=True, read_only=True).data
+            return TicketAttachmentSerializer(obj.attachments, many=True, read_only=True).data
         elif obj.is_public:
-            return TicketAttachmentSerializer(fields=["id", "file", "date_created"], many=True, read_only=True).data
+            return TicketAttachmentSerializer(obj.attachments, fields=["id", "file", "date_created"], many=True, read_only=True).data
 
         return None
 

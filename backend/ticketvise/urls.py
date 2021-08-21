@@ -12,7 +12,7 @@ from ticketvise.views.lti.lti import LtiView
 
 
 urlpatterns = [
-    path("admin/django", admin.site.urls),
+    path("api/admin/django", admin.site.urls),
     path("lti", LtiView.as_view()),
     path("lti/config.xml", LtiConfigView.as_view()),
     re_path(r"^api/", include("ticketvise.views.api.urls"))
