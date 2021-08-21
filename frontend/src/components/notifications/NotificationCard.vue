@@ -16,7 +16,7 @@
     <div class="text-sm">#{{ notification.ticket.ticket_inbox_id }} - {{ notification.ticket.title }}</div>
     <div class="text-sm">
       <i class="fa fa-calendar text-xs"></i>
-      {{ date(this.notification.date_created) }}
+      {{ date(notification.date_created) }}
     </div>
   </div>
 </template>

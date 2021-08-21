@@ -33,7 +33,7 @@
 
     <div class="container mx-auto p-4 flex flex-col space-y-2">
       <div v-if="notifications.results && notifications.results.length == 0" class="text-center py-8">
-        <img src="/static/img/svg/undraw_complete_task_u2c3.svg" alt="Nothing here" class="w-1/2 md:w-1/4 mx-auto mb-8">
+        <img :src="completeTask" alt="Nothing here" class="w-1/2 md:w-1/4 mx-auto mb-8">
         <span class="text-gray-600 text-lg md:text-xl">You have no notifications</span>
       </div>
 
@@ -61,11 +61,14 @@ import axios from 'axios'
 import NotificationCard from '@/components/notifications/NotificationCard'
 import Tab from '@/components/tabs/Tab'
 
+const CompleteTask = require('@/assets/img/svg/completeTask.svg')
+
 export default {
   name: 'Notifications',
   components: { NotificationCard, Tab },
   data () {
     return {
+      completeTask: CompleteTask,
       notifications: [],
       is_read: 'False',
       pageNumber: 1,
