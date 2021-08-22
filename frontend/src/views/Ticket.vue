@@ -188,7 +188,7 @@
               </div>
               <div>
                 <!-- Activity feed -->
-                <activity-feed :ticket="ticket" v-if="tabs.find(t => t.current).name === 'Activity'" v-on:post="loadTicketData" />
+                <activity-feed :ticket="ticket" v-if="tabs.find(t => t.current).name === 'Activity' && ticket" v-on:post="loadTicketData" />
                 <!-- Staff discussion -->
                 <staff-discussion :ticket="ticket" v-if="tabs.find(t => t.current).name === 'Staff discussion'" v-on:post="loadTicketData" />
                 <!-- Attachments -->
