@@ -22,9 +22,7 @@ class OAuthCompatibleEmailBackend(EmailBackend):
 
     def open(self):
         """
-        Ensure an open connection to the email server. Return whether or not a
-        new connection was required (True or False) or None if an exception
-        passed silently.
+        Extension of django.core.mail.backends.smtp.EmailBackend.open
         """
         if self.connection:
             # Nothing to do if the connection is already open.

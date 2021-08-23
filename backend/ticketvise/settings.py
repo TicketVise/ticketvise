@@ -190,7 +190,7 @@ STATIC_ROOT = os.path.join(BASE_DIR, "static")
 #: Email settings
 #: ~~~~~~~~~~~~~~~~~~~
 if SEND_MAIL:
-    EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+    EMAIL_BACKEND = 'application.backend.ticketvise.mail.OAuthCompatibleEmailBackend'
 else:
     EMAIL_BACKEND = 'django.core.mail.backends.locmem.EmailBackend'
 
