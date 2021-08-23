@@ -18,7 +18,8 @@ class Command(BaseCommand):
                                            inbox.inbound_email_port,
                                            inbox.inbound_email_username,
                                            inbox.inbound_email_password,
-                                           inbox.inbound_email_security == MailSecurity.TLS):
+                                           inbox.inbound_email_security == MailSecurity.TLS,
+                                           inbox.inbound_email_use_oauth2):
                 submit_email_ticket(message)
 
         end_time = datetime.now()

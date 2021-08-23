@@ -77,6 +77,8 @@ class Inbox(models.Model):
     smtp_security = models.CharField(choices=MailSecurity.choices, default=MailSecurity.TLS, max_length=8)
     smtp_username = models.EmailField(blank=True)
     smtp_password = models.CharField(blank=True, max_length=100)
+    smtp_use_oauth2 = models.BooleanField(default=False)
+
     inbound_email_protocol = models.CharField(choices=InboundMailProtocol.choices, default=InboundMailProtocol.IMAP,
                                               max_length=4)
     inbound_email_server = models.CharField(blank=True, max_length=100)
@@ -84,6 +86,7 @@ class Inbox(models.Model):
     inbound_email_security = models.CharField(choices=MailSecurity.choices, default=MailSecurity.TLS, max_length=8)
     inbound_email_username = models.EmailField(blank=True)
     inbound_email_password = models.CharField(blank=True, max_length=100)
+    inbound_email_use_oauth2 = models.BooleanField(default=False)
 
     def round_robin_parameter_increase(self):
         """

@@ -54,5 +54,6 @@ class Notification(models.Model):
             self.ticket.inbox.smtp_port if self.ticket.inbox.email_enabled else None,
             self.ticket.inbox.smtp_username if self.ticket.inbox.email_enabled else None,
             self.ticket.inbox.smtp_password if self.ticket.inbox.email_enabled else None,
-            self.ticket.inbox.smtp_security if self.ticket.inbox.email_enabled else None
+            self.ticket.inbox.smtp_security if self.ticket.inbox.email_enabled else None,
+            self.ticket.inbox.smtp_use_oauth2 if self.ticket.inbox.smtp_use_oauth2 else None
         )
