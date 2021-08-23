@@ -3,8 +3,6 @@ import logging
 from ticketvise.models.inbox import MailSecurity
 import threading
 
-import smtplib
-
 from django.core.mail.backends.smtp import EmailBackend
 from django.core.mail.utils import DNS_NAME
 from django.core.mail import EmailMultiAlternatives, get_connection

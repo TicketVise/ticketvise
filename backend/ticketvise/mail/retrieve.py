@@ -1,4 +1,4 @@
-from application.backend.ticketvise.mail import oauth_2_auth_base64
+from ticketvise.mail import oauth_2_auth_base64
 from ticketvise.models.ticket import TicketAttachment
 from ticketvise.models.notification import Notification
 import email
