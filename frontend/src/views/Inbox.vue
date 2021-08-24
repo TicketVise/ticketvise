@@ -228,7 +228,7 @@ export default {
     },
     togglePersonal () {
       this.showPersonal = !this.showPersonal
-      this.callDebounceGetTickets()
+      this.get_tickets()
     },
     loadStatus (status) {
       const labelsIds = []
