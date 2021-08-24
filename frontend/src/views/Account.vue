@@ -284,94 +284,6 @@
           </tr>
           </tbody>
         </table>
-
-        <!--        &lt;!&ndash; Notification settings section &ndash;&gt;-->
-        <!--        <section aria-labelledby="payment-details-heading">-->
-        <!--          <form @submit.prevent="">-->
-        <!--            <div class="shadow rounded sm:overflow-hidden">-->
-        <!--              <div class="bg-white py-6 px-4 sm:p-6">-->
-        <!--                <div>-->
-        <!--                  <h2 id="payment-details-heading" class="text-lg leading-6 font-medium text-gray-900">Notification-->
-        <!--                    preferences</h2>-->
-        <!--                  <p class="mt-1 text-sm text-gray-500">Here you can let us know how to notify you on certain-->
-        <!--                    events.</p>-->
-        <!--                </div>-->
-
-        <!--                &lt;!&ndash; Student notification settings &ndash;&gt;-->
-        <!--                <div class="mt-6">-->
-        <!--                  <div class="grid grid-cols-6 sm:grid-cols-8 items-center justify-between">-->
-        <!--                    <h3 class="col-span-6 sm:col-span-8 leading-5 font-medium text-gray-800">Student notifications</h3>-->
-
-        <!--                    &lt;!&ndash; Headers &ndash;&gt;-->
-        <!--                    <span class="col-span-4 sm:col-span-6">{{ ' ' }}</span>-->
-        <!--                    <span class="text-center text-sm text-gray-700 uppercase">In app</span>-->
-        <!--                    <span class="text-center text-sm text-gray-700 uppercase">Email</span>-->
-
-        <!--                    <div v-for="(setting, i) in settings.students" :key="setting.id"-->
-        <!--                         class="col-span-6 sm:col-span-8 grid grid-cols-6 sm:grid-cols-8 items-center justify-between">-->
-        <!--                      <span class="flex-grow flex flex-col col-span-4 sm:col-span-6">-->
-        <!--                        <span class="text-sm font-medium text-gray-900" passive>{{ setting.title }}</span>-->
-        <!--                        <span class="text-sm text-gray-500">{{ setting.description }}</span>-->
-        <!--                      </span>-->
-        <!--                      <Switch v-model="settings.students[i].app"-->
-        <!--                              :class="[settings.students[i].app ? 'bg-primary' : 'bg-gray-200', 'relative mx-auto inline-flex flex-shrink-0 h-6 w-11 border-2 border-transparent rounded-full cursor-pointer transition-colors ease-in-out duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary']">-->
-        <!--                        <span aria-hidden="true"-->
-        <!--                              :class="[settings.students[i].app ? 'translate-x-5' : 'translate-x-0', 'pointer-events-none inline-block h-5 w-5 rounded-full bg-white shadow transform ring-0 transition ease-in-out duration-200']"/>-->
-        <!--                      </Switch>-->
-        <!--                      <Switch v-model="settings.students[i].email"-->
-        <!--                              :class="[settings.students[i].email ? 'bg-primary' : 'bg-gray-200', 'relative mx-auto inline-flex flex-shrink-0 h-6 w-11 border-2 border-transparent rounded-full cursor-pointer transition-colors ease-in-out duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary']">-->
-        <!--                        <span aria-hidden="true"-->
-        <!--                              :class="[settings.students[i].email ? 'translate-x-5' : 'translate-x-0', 'pointer-events-none inline-block h-5 w-5 rounded-full bg-white shadow transform ring-0 transition ease-in-out duration-200']"/>-->
-        <!--                      </Switch>-->
-        <!--                    </div>-->
-        <!--                  </div>-->
-        <!--                </div>-->
-
-        <!--                <hr class="mt-4"/>-->
-
-        <!--                &lt;!&ndash; Teacher/assistant notification settings &ndash;&gt;-->
-        <!--                <div class="mt-4">-->
-        <!--                  <div class="grid grid-cols-6 sm:grid-cols-8 items-center justify-between">-->
-        <!--                    <h3 class="col-span-4 sm:col-span-8 leading-5 font-medium text-gray-800">Teacher/Assistant-->
-        <!--                      notifications</h3>-->
-
-        <!--                    &lt;!&ndash; Headers &ndash;&gt;-->
-        <!--                    <span class="col-span-4 sm:col-span-6">{{ ' ' }}</span>-->
-        <!--                    <span class="text-center text-sm text-gray-700 uppercase">In app</span>-->
-        <!--                    <span class="text-center text-sm text-gray-700 uppercase">Email</span>-->
-
-        <!--                    <SwitchGroup as="div" v-for="setting in settings.teachers" :key="setting.id"-->
-        <!--                                 class="col-span-6 sm:col-span-8 grid grid-cols-6 sm:grid-cols-8 items-center justify-between">-->
-        <!--                      <div class="flex flex-col col-span-6">-->
-        <!--                        <SwitchLabel as="p" class="text-sm font-medium text-gray-900" passive>{{-->
-        <!--                            setting.title-->
-        <!--                          }}-->
-        <!--                        </SwitchLabel>-->
-        <!--                        <SwitchDescription class="text-sm text-gray-500">{{ setting.description }}</SwitchDescription>-->
-        <!--                      </div>-->
-        <!--                      <Switch v-model="setting.app"-->
-        <!--                              :class="[setting.app ? 'bg-primary' : 'bg-gray-200', 'relative mx-auto inline-flex flex-shrink-0 h-6 w-11 border-2 border-transparent rounded-full cursor-pointer transition-colors ease-in-out duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary']">-->
-        <!--                          <span aria-hidden="true"-->
-        <!--                                :class="[setting.app ? 'translate-x-5' : 'translate-x-0', 'pointer-events-none inline-block h-5 w-5 rounded-full bg-white shadow transform ring-0 transition ease-in-out duration-200']"/>-->
-        <!--                      </Switch>-->
-        <!--                      <Switch v-model="setting.email"-->
-        <!--                              :class="[setting.email ? 'bg-primary' : 'bg-gray-200', 'relative mx-auto inline-flex flex-shrink-0 h-6 w-11 border-2 border-transparent rounded-full cursor-pointer transition-colors ease-in-out duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary']">-->
-        <!--                          <span aria-hidden="true"-->
-        <!--                                :class="[setting.email ? 'translate-x-5' : 'translate-x-0', 'pointer-events-none inline-block h-5 w-5 rounded-full bg-white shadow transform ring-0 transition ease-in-out duration-200']"/>-->
-        <!--                      </Switch>-->
-        <!--                    </SwitchGroup>-->
-        <!--                  </div>-->
-        <!--                </div>-->
-        <!--              </div>-->
-        <!--              <div class="px-4 py-3 bg-gray-50 text-right sm:px-6">-->
-        <!--                <button type="submit"-->
-        <!--                        class="bg-primary border border-transparent rounded-md py-2 px-4 inline-flex justify-center text-sm font-medium text-white hover:bg-primary-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary">-->
-        <!--                  Save-->
-        <!--                </button>-->
-        <!--              </div>-->
-        <!--            </div>-->
-        <!--          </form>-->
-        <!--        </section>-->
       </div>
     </div>
   </div>
@@ -381,7 +293,6 @@
 import axios from 'axios'
 import store from '@/store'
 
-import { Switch, SwitchDescription, SwitchGroup, SwitchLabel } from '@headlessui/vue'
 import {
   CollectionIcon,
   GlobeIcon,
@@ -389,98 +300,21 @@ import {
 } from '@heroicons/vue/outline'
 import { InformationCircleIcon } from '@heroicons/vue/solid'
 
-const settings = {
-  students: [
-    {
-      id: 0,
-      key: 'new_public_ticket',
-      title: 'New public ticket',
-      description: 'Know when a public ticket is created',
-      app: false,
-      email: false
-    },
-    {
-      id: 1,
-      key: 'sharing',
-      title: 'Sharing',
-      description: 'When a fellow students shares a ticket with you',
-      app: false,
-      email: false
-    },
-    {
-      id: 2,
-      key: 'comment',
-      title: 'Comment',
-      description: 'A comment on either your ticket or a public ticket',
-      app: false,
-      email: false
-    }
-  ],
-  teachers: [
-    {
-      id: 0,
-      key: 'new_ticket',
-      title: 'New ticket',
-      description: 'Know when a ticket is created',
-      app: false,
-      email: false
-    },
-    {
-      id: 1,
-      key: 'new_public_ticket',
-      title: 'New public ticket',
-      description: 'Know when a public ticket is created',
-      app: false,
-      email: false
-    },
-    {
-      id: 2,
-      key: 'assigned',
-      title: 'Assigned',
-      description: 'When you are assigned to a ticket',
-      app: false,
-      email: false
-    },
-    {
-      id: 3,
-      key: 'comment',
-      title: 'Comment',
-      description: 'A comment on either an assigned ticket or a public ticket',
-      app: false,
-      email: false
-    },
-    {
-      id: 4,
-      key: 'mentioned',
-      title: 'Mentioned',
-      description: 'If a fellow teacher mentions you in a ticket',
-      app: false,
-      email: false
-    }
-  ]
-}
-
 export default {
   name: 'Dashboard',
   components: {
-    InformationCircleIcon,
-    Switch,
-    SwitchDescription,
-    SwitchGroup,
-    SwitchLabel
+    InformationCircleIcon
   },
   data: () => ({
     enabled: false,
     user: store.state.user,
+    settings: [],
     stats: [
       { label: 'Inboxes', value: '#', icon: InboxIcon },
       { label: 'Tickets', value: '#', icon: CollectionIcon },
       { label: 'Public tickets', value: '#', icon: GlobeIcon }
     ]
   }),
-  setup () {
-    return { settings }
-  },
   mounted () {
     axios.get('/api/me/statistics').then(response => {
       this.stats.find(s => s.label === 'Inboxes').value = response.data.inboxes || 0
