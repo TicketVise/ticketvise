@@ -8,7 +8,7 @@
             <!-- Logo -->
             <div class="left-0 py-4 flex-shrink-0">
               <router-link to="/" class="flex items-center">
-                <img class="h-8 w-auto" :src="logo" alt="TicketVise" />
+                <img class="h-8 w-auto" :src="logo" alt="TicketVise"/>
                 <span class="text-2xl ml-2 text-white">Ticket</span>
                 <span class="text-2xl text-primary font-bold">Vise</span>
               </router-link>
@@ -34,7 +34,7 @@
               class="flex-shrink-0 p-1 text-gray-200 rounded-full hover:text-white hover:bg-white hover:bg-opacity-10 focus:outline-none focus:ring-2 focus:ring-white"
             >
               <span class="sr-only">View notifications</span>
-              <BellIcon class="h-6 w-6" aria-hidden="true" />
+              <BellIcon class="h-6 w-6" aria-hidden="true"/>
             </router-link>
 
             <!-- Profile dropdown -->
@@ -59,19 +59,15 @@
                 <MenuItems
                   class="origin-top-right z-40 absolute -right-2 mt-2 w-48 rounded-md shadow-lg py-1 bg-white ring-1 ring-black ring-opacity-5 focus:outline-none"
                 >
-                  <MenuItem
-                    v-for="item in userNavigation"
-                    :key="item.name"
-                    v-slot="{ active }"
-                  >
-                    <a
-                      :href="item.href"
-                      :class="[
-                        active ? 'bg-gray-100' : '',
-                        'block px-4 py-2 text-sm text-gray-700'
-                      ]"
-                      >{{ item.name }}</a
-                    >
+                  <MenuItem v-slot="{ active }">
+                    <router-link to="/account"
+                                 :class="[active ? 'bg-gray-100' : '', 'block px-4 py-2 text-sm text-gray-700']">Your
+                      profile
+                    </router-link>
+                  </MenuItem>
+                  <MenuItem v-slot="{ active }">
+                    <a href="#" @click="logout()"
+                       :class="[active ? 'bg-gray-100' : '', 'block px-4 py-2 text-sm text-gray-700']">Sign out</a>
                   </MenuItem>
                 </MenuItems>
               </transition>
@@ -124,8 +120,10 @@
                   title="Public questions"
                 >
                   <!-- Heroicon name: outline/globe -->
-                  <svg class="text-gray-400 h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  <svg class="text-gray-400 h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                       stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                          d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
                   </svg>
                 </router-link>
 
@@ -299,7 +297,7 @@
                           {{ inbox.inbox.coordinator.first_name }}
                           {{ inbox.inbox.coordinator.last_name }}
                         </span>
-                        <div v-else class="h-5 w-24 bg-gray-200 rounded" />
+                        <div v-else class="h-5 w-24 bg-gray-200 rounded"/>
                       </div>
                       <div class="flex items-center text-xs text-gray-500 dark:text-gray-200">
                         <!-- Heroicon name: code -->
@@ -318,7 +316,7 @@
                           ></path>
                         </svg>
                         <span v-if="inbox">{{ inbox.inbox.code }}</span>
-                        <div v-else class="h-5 w-24 bg-gray-200 rounded" />
+                        <div v-else class="h-5 w-24 bg-gray-200 rounded"/>
                       </div>
                       <div class="pt-2 w-full">
                         <router-link
@@ -387,8 +385,10 @@
                       active-class="bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-white"
                     >
                       <!-- Heroicon name: outline/globe -->
-                      <svg class="text-gray-400 group-hover:text-gray-500 dark:group-hover:text-gray-400 mr-3 h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                      <svg class="text-gray-400 group-hover:text-gray-500 dark:group-hover:text-gray-400 mr-3 h-6 w-6"
+                           xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                              d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
                       </svg>
                       Public tickets
                     </router-link>
@@ -592,7 +592,7 @@
                 ></path>
               </svg>
               <span v-if="inbox">{{ inbox.inbox.code }}</span>
-              <div v-else class="h-5 w-24 bg-gray-200 rounded" />
+              <div v-else class="h-5 w-24 bg-gray-200 rounded"/>
             </div>
             <div class="flex items-center text-xs text-gray-500">
               <!-- Heroicon name: user -->
@@ -611,10 +611,10 @@
                 ></path>
               </svg>
               <span class="w-full truncate" v-if="inbox"
-                >{{ inbox.inbox.coordinator.first_name }}
+              >{{ inbox.inbox.coordinator.first_name }}
                 {{ inbox.inbox.coordinator.last_name }}</span
               >
-              <div v-else class="h-5 w-24 bg-gray-200 rounded" />
+              <div v-else class="h-5 w-24 bg-gray-200 rounded"/>
             </div>
           </div>
         </div>
@@ -627,7 +627,7 @@
         <main
           class="flex-1 relative overflow-hidden focus:outline-none flex flex-col"
         >
-          <slot />
+          <slot/>
         </main>
       </div>
     </div>
@@ -637,7 +637,7 @@
     @update="user.give_introduction = false"
     v-if="is_staff && user && user.give_introduction"
   />
-  <develop-panel v-if="development" />
+  <develop-panel v-if="development"/>
 </template>
 
 <script>
@@ -656,12 +656,6 @@ import {
   BellIcon
 } from '@heroicons/vue/outline'
 
-const userNavigation = [
-  { name: 'Your Profile', href: '#' },
-  { name: 'Settings', href: '#' },
-  { name: 'Sign out', href: '#' }
-]
-
 const logo = require('@/assets/logo/logo.svg')
 
 export default {
@@ -676,7 +670,6 @@ export default {
   },
   setup () {
     return {
-      userNavigation,
       logo
     }
   },
@@ -687,7 +680,7 @@ export default {
   }),
   async mounted () {
     const response = await axios.get(
-      `/api/me/inboxes/${this.$route.params.inboxId}`
+      `/api/me/inboxes/${ this.$route.params.inboxId }`
     )
     this.inbox = response.data
   },
@@ -695,9 +688,12 @@ export default {
     async goto (index) {
       this.$router.push('/inboxes/' + index + '/tickets')
       const response = await axios.get(
-        `/api/me/inboxes/${this.$route.params.inboxId}`
+        `/api/me/inboxes/${ this.$route.params.inboxId }`
       )
       this.inbox = response.data
+    },
+    logout () {
+      this.$store.dispatch('logout')
     }
   },
   computed: {
