@@ -108,11 +108,6 @@ import { mapState } from 'vuex'
 
 const logo = require('@/assets/logo/logo.svg')
 
-const userNavigation = [
-  { name: 'Your Profile', href: '/account' },
-  { name: 'Sign out', href: '#' }
-]
-
 export default {
   name: 'AppLayoutGeneral',
   components: {
@@ -125,8 +120,6 @@ export default {
   },
   setup () {
     return {
-      // inboxes,
-      userNavigation,
       logo
     }
   },
