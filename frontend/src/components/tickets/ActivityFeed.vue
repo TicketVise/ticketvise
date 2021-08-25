@@ -39,11 +39,11 @@
               </div>
               <div class="min-w-0 flex-1 py-1.5">
                 <div class="text-sm text-gray-500">
-                  <a :href="item?.person?.href" class="font-medium text-gray-900">{{ item?.person?.name }}</a>
+                  <span class="font-medium text-gray-900">{{ item?.person?.name }}</span>
                   {{ ' ' }}
                   {{ item?.person ? 'assigned' : 'Ticket has been assigned to' }}
                   {{ ' ' }}
-                  <a :href="item?.assigned?.href" class="font-medium text-gray-900">{{ item?.assigned?.name }}</a>
+                  <span class="font-medium text-gray-900">{{ item?.assigned?.name }}</span>
                   {{ ' ' }}
                   <span class="whitespace-nowrap">{{ item?.date }}</span>
                 </div>
@@ -62,7 +62,7 @@
                   <span class="mr-0.5">
                     <a :href="item?.person?.href" class="font-medium text-gray-900">{{ item?.person?.name }}</a>
                     {{ ' ' }}
-                    {{ item?.person ? 'added tags' : 'Ticket got tags' }}
+                    {{ item?.person ? 'added labels' : 'Ticket got labels' }}
                   </span>
                   {{ ' ' }}
                   <span class="mr-0.5">
