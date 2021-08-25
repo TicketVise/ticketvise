@@ -332,7 +332,7 @@
                     Remove<span class="sr-only"> {{ person.name }}</span>
                   </button>
                 </li>
-                <li v-if="canShare"> :class="[ticket?.shared_with.length > 0 ? 'py-2' : '', 'flex justify-between items-center']">
+                <li v-if="canShare" :class="[ticket?.shared_with.length > 0 ? 'py-2' : '', 'flex justify-between items-center']">
                   <button v-show="!addShare" @click="addShare = true" type="button"
                           class="group -ml-1 bg-white p-1 rounded-md flex items-center focus:outline-none focus:ring-2 focus:ring-primary">
                     <span
