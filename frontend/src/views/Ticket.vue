@@ -292,12 +292,12 @@
                             <div class="flex items-center space-x-3">
                               <div :style="`background-color: ${label.color};`" class="w-2 h-2 rounded-full"></div>
                               <span
-                                :class="[containsObject(labels, label.id) ? 'font-semibold' : 'font-normal', 'block truncate']">
+                                :class="[containsObject(ticket?.labels, label.id) ? 'font-semibold' : 'font-normal', 'block truncate']">
                                 {{ label.name }}
                               </span>
                             </div>
 
-                            <span v-if="containsObject(labels, label.id)"
+                            <span v-if="containsObject(ticket?.labels, label.id)"
                                   :class="[active ? 'text-white' : 'text-primary-600', 'absolute inset-y-0 right-0 flex items-center pr-4']">
                               <CheckIcon class="h-5 w-5" aria-hidden="true"/>
                             </span>
@@ -308,8 +308,8 @@
                   </Listbox>
                 </div>
               </div>
-              <div class="flex flex-wrap mb-2" v-if="labels?.length > 0">
-                <chip :background="label.color" :key="label.id" class="mr-1 mb-1" v-for="label in labels">
+              <div class="flex flex-wrap mb-2" v-if="ticket?.labels.length > 0">
+                <chip :background="label.color" :key="label.id" class="mr-1 mb-1" v-for="label in ticket?.labels">
                   {{ label.name }}
                 </chip>
               </div>
@@ -441,7 +441,6 @@ export default {
     ],
     role: '',
     addShare: false,
-    labels: [],
     errors: null
   }),
   setup () {
@@ -635,7 +634,7 @@ export default {
       }
       axios.put(`/api/inboxes/${ this.$route.params.inboxId }/tickets/${ this.$route.params.ticketInboxId }/labels`,
         {
-          labels: this.labels.map(label => label.id)
+          labels: this.ticket.labels.map(label => label.id)
         }).then(_ => {
         return axios.get(`/api/inboxes/${ this.$route.params.inboxId }/tickets/${ this.$route.params.ticketInboxId }`, { params: data })
       }).then(response => {
@@ -649,9 +648,9 @@ export default {
     },
     switchItem (value) {
       if (this.containsObject(this.labels, value.id)) {
-        this.labels.splice(this.labels.findIndex(e => e.id === value.id), 1)
+        this.ticket.labels.splice(this.labels.findIndex(e => e.id === value.id), 1)
       } else {
-        this.labels.push(value)
+        this.ticket.labels.push(value)
       }
 
       this.updateLabels()
