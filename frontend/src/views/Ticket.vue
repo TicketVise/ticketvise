@@ -4,127 +4,7 @@
                          v-if="publishConfirmationModal"/>
     <div class="py-4">
       <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 xl:max-w-5xl xl:grid xl:grid-cols-3">
-        <div class="xl:pl-8 xl:order-last">
-          <h2 class="sr-only">Details</h2>
-          <div class="space-y-5">
-            <div class="flex items-center space-x-2">
-              <LockOpenIcon v-if="ticket?.is_public" class="h-5 w-5 text-green-500" aria-hidden="true"/>
-              <LockClosedIcon v-else class="h-5 w-5 text-red-500" aria-hidden="true"/>
-              <span :class="[ticket?.is_public ? 'text-green-700' : 'text-red-700', 'text-sm font-medium']">
-                {{ ticket?.is_public ? 'Public' : 'Private' }}
-                Ticket
-              </span>
-            </div>
-            <div class="flex items-center space-x-2">
-              <ChatAltIcon class="h-5 w-5 text-gray-400" aria-hidden="true"/>
-              <span class="text-gray-900 text-sm font-medium">
-                {{ ticket?.replies?.length || 0 }} comment{{ ticket?.replies?.length === 1 ? '' : 's' }}
-              </span>
-            </div>
-            <div class="flex items-center space-x-2">
-              <CalendarIcon class="h-5 w-5 text-gray-400" aria-hidden="true"/>
-              <span class="text-gray-900 text-sm font-medium">Created <time
-                :datetime="ticket?.date_created"> {{ date(ticket?.date_created) }}</time></span>
-            </div>
-          </div>
-          <div class="mt-6 border-t border-gray-200 py-6 space-y-8">
-            <div v-if="ticket?.assignee">
-              <h2 class="text-sm font-medium text-gray-500">Assignees</h2>
-              <ul class="mt-3 space-y-3">
-                <li class="flex justify-start">
-                  <span class="flex items-center space-x-3">
-                    <div class="flex-shrink-0">
-                      <img class="h-5 w-5 rounded-full" :src="ticket?.assignee?.avatar_url" alt=""/>
-                    </div>
-                    <div class="text-sm font-medium text-gray-900">
-                      {{ ticket?.assignee?.first_name }} {{ ticket?.assignee?.last_name }}
-                    </div>
-                  </span>
-                </li>
-              </ul>
-            </div>
 
-            <!--Labels-->
-            <div>
-              <div class="relative inline-flex pb-2">
-                <h2 class="text-sm font-medium text-gray-500 pr-2">Labels</h2>
-                <div v-if="canShare">
-                  <Listbox as="span" class="-ml-px relative block">
-                    <ListboxButton class="relative flex items-center text-sm font-medium focus:outline-none ml-1">
-                      <span
-                        class="w-5 h-5 rounded-md border border-dashed border-primary-400 flex items-center justify-center text-primary-400">
-                        <PencilIcon class="h-5 w-5" aria-hidden="true"/>
-                      </span>
-                    </ListboxButton>
-                    <transition leave-active-class="transition ease-in duration-100" leave-from-class="opacity-100"
-                                leave-to-class="opacity-0">
-                      <ListboxOptions
-                        class="absolute z-10 mt-1 bg-white shadow-lg max-h-56 rounded-md py-1 text-base ring-1 ring-black ring-opacity-5 overflow-auto focus:outline-none sm:text-sm">
-                        <ListboxOption as="template" v-for="label in ticket?.inbox.labels" :key="label.id"
-                                       :value="label" v-slot="{ active }">
-                          <li @click="switchItem(label)"
-                              :class="[active ? 'text-white bg-primary' : 'text-gray-900', 'cursor-pointer select-none relative py-2 pl-3 pr-9']">
-                            <div class="flex items-center space-x-3">
-                              <div :style="`background-color: ${label.color};`" class="w-2 h-2 rounded-full"></div>
-                              <span
-                                :class="[containsObject(ticket?.labels, label.id) ? 'font-semibold' : 'font-normal', 'block truncate']">
-                                {{ label.name }}
-                              </span>
-                            </div>
-
-                            <span v-if="containsObject(ticket?.labels, label.id)"
-                                  :class="[active ? 'text-white' : 'text-primary-600', 'absolute inset-y-0 right-0 flex items-center pr-4']">
-                              <CheckIcon class="h-5 w-5" aria-hidden="true"/>
-                            </span>
-                          </li>
-                        </ListboxOption>
-                      </ListboxOptions>
-                    </transition>
-                  </Listbox>
-                </div>
-              </div>
-              <div class="flex flex-wrap mb-2" v-if="ticket?.labels.length > 0">
-                <chip :background="label.color" :key="label.id" class="mr-1 mb-1" v-for="label in ticket?.labels">
-                  {{ label.name }}
-                </chip>
-              </div>
-            </div>
-            <div>
-              <h2 class="text-sm font-medium text-gray-500">Shared with</h2>
-              <ul class="mt-2 leading-8 divide-y divide-gray-200">
-                <li v-for="person in ticket?.shared_with" :key="person.id"
-                    class="py-2 flex justify-between items-center">
-                  <div class="flex items-center">
-                    <img :src="person.avatar_url || person.avatar" alt="" class="w-6 h-6 rounded-full"/>
-                    <p class="ml-3 text-sm font-medium text-gray-900">{{ person.first_name }} {{ person.last_name }}
-                      {{ !person.first_name ? person.name : '' }}</p>
-                  </div>
-                  <button
-                    @click="ticket.shared_with.splice(ticket.shared_with.map(s => s.id).indexOf(person.id), 1); updateSharedWith()"
-                    type="button"
-                    class="ml-6 bg-white rounded-md text-sm font-medium text-primary-600 hover:text-primary focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary"
-                    v-if="canShare">>
-                    Remove<span class="sr-only"> {{ person.name }}</span>
-                  </button>
-                </li>
-                <li v-if="canShare"
-                    :class="[ticket?.shared_with.length > 0 ? 'py-2' : '', 'flex justify-between items-center']">
-                  <button v-show="!addShare" @click="addShare = true" type="button"
-                          class="group -ml-1 bg-white p-1 rounded-md flex items-center focus:outline-none focus:ring-2 focus:ring-primary">
-                    <span
-                      class="w-6 h-6 rounded-full border-2 border-dashed border-gray-300 flex items-center justify-center text-gray-400">
-                      <PlusIconSolid class="h-5 w-5" aria-hidden="true"/>
-                    </span>
-                    <span class="ml-3 text-sm font-medium text-primary-600 group-hover:text-primary">Share</span>
-                  </button>
-                  <FormTextFieldWithSuggestions v-show="addShare"
-                                                @add="data => { ticket.shared_with.push(data); updateSharedWith(); addShare = false }"
-                                                :data="guestsFiltered || []" emptyLabel="John Doe"/>
-                </li>
-              </ul>
-            </div>
-          </div>
-        </div>
         <div class="xl:col-span-2 xl:pr-8 xl:border-r xl:border-gray-200">
           <div>
             <div>
@@ -236,7 +116,7 @@
                   <select id="tabs" name="tabs"
                           class="block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-primary focus:border-primary sm:text-sm rounded-md">
                     <option v-show="tab.cond ? isStaff(role, user) : true"
-                            @select="tabs.forEach(t => t.current = false); tabs.find(t => t.name === tab.name).current = true"
+                            @select="switchTab"
                             v-for="tab in tabs" :key="tab.name" :selected="tab.current">{{ tab.name }}
                     </option>
                   </select>
@@ -245,7 +125,7 @@
                   <div class="border-b border-gray-200">
                     <nav class="-mb-px flex space-x-8" aria-label="Tabs">
                       <a v-show="tab.cond ? isStaff(role, user) : true"
-                         @click="tabs.forEach(t => t.current = false); tabs.find(t => t.name === tab.name).current = true"
+                         @click="switchTab"
                          v-for="tab in tabs" :key="tab.name" href="#"
                          :class="[tab.current ? 'border-primary text-primary-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-200', 'whitespace-nowrap flex py-4 px-1 border-b-2 font-medium text-sm']"
                          :aria-current="tab.current ? 'page' : undefined">
@@ -272,6 +152,127 @@
               </div>
             </div>
           </section>
+        </div>
+                <div class="xl:pl-8">
+          <h2 class="sr-only">Details</h2>
+          <div class="space-y-5">
+            <div class="flex items-center space-x-2">
+              <LockOpenIcon v-if="ticket?.is_public" class="h-5 w-5 text-green-500" aria-hidden="true"/>
+              <LockClosedIcon v-else class="h-5 w-5 text-red-500" aria-hidden="true"/>
+              <span :class="[ticket?.is_public ? 'text-green-700' : 'text-red-700', 'text-sm font-medium']">
+                {{ ticket?.is_public ? 'Public' : 'Private' }}
+                Ticket
+              </span>
+            </div>
+            <div class="flex items-center space-x-2">
+              <ChatAltIcon class="h-5 w-5 text-gray-400" aria-hidden="true"/>
+              <span class="text-gray-900 text-sm font-medium">
+                {{ ticket?.replies?.length || 0 }} comment{{ ticket?.replies?.length === 1 ? '' : 's' }}
+              </span>
+            </div>
+            <div class="flex items-center space-x-2">
+              <CalendarIcon class="h-5 w-5 text-gray-400" aria-hidden="true"/>
+              <span class="text-gray-900 text-sm font-medium">Created <time
+                :datetime="ticket?.date_created"> {{ date(ticket?.date_created) }}</time></span>
+            </div>
+          </div>
+          <div class="mt-6 border-t border-gray-200 py-6 space-y-8">
+            <div v-if="ticket?.assignee">
+              <h2 class="text-sm font-medium text-gray-500">Assignees</h2>
+              <ul class="mt-3 space-y-3">
+                <li class="flex justify-start">
+                  <span class="flex items-center space-x-3">
+                    <div class="flex-shrink-0">
+                      <img class="h-5 w-5 rounded-full" :src="ticket?.assignee?.avatar_url" alt=""/>
+                    </div>
+                    <div class="text-sm font-medium text-gray-900">
+                      {{ ticket?.assignee?.first_name }} {{ ticket?.assignee?.last_name }}
+                    </div>
+                  </span>
+                </li>
+              </ul>
+            </div>
+
+            <!--Labels-->
+            <div>
+              <div class="relative inline-flex pb-2">
+                <h2 class="text-sm font-medium text-gray-500 pr-2">Labels</h2>
+                <div v-if="isStaffOrAuthor">
+                  <Listbox as="span" class="-ml-px relative block">
+                    <ListboxButton class="relative flex items-center text-sm font-medium focus:outline-none ml-1">
+                      <span
+                        class="w-5 h-5 rounded-md border border-dashed border-primary-400 flex items-center justify-center text-primary-400">
+                        <PencilIcon class="h-5 w-5" aria-hidden="true"/>
+                      </span>
+                    </ListboxButton>
+                    <transition leave-active-class="transition ease-in duration-100" leave-from-class="opacity-100"
+                                leave-to-class="opacity-0">
+                      <ListboxOptions
+                        class="absolute z-10 mt-1 bg-white shadow-lg max-h-56 rounded-md py-1 text-base ring-1 ring-black ring-opacity-5 overflow-auto focus:outline-none sm:text-sm">
+                        <ListboxOption as="template" v-for="label in ticket?.inbox.labels" :key="label.id"
+                                       :value="label" v-slot="{ active }">
+                          <li @click="toggleLabel(label)"
+                              :class="[active ? 'text-white bg-primary' : 'text-gray-900', 'cursor-pointer select-none relative py-2 pl-3 pr-9']">
+                            <div class="flex items-center space-x-3">
+                              <div :style="`background-color: ${label.color};`" class="w-2 h-2 rounded-full"></div>
+                              <span
+                                :class="[containsObject(ticket?.labels, label.id) ? 'font-semibold' : 'font-normal', 'block truncate']">
+                                {{ label.name }}
+                              </span>
+                            </div>
+
+                            <span v-if="containsObject(ticket?.labels, label.id)"
+                                  :class="[active ? 'text-white' : 'text-primary-600', 'absolute inset-y-0 right-0 flex items-center pr-4']">
+                              <CheckIcon class="h-5 w-5" aria-hidden="true"/>
+                            </span>
+                          </li>
+                        </ListboxOption>
+                      </ListboxOptions>
+                    </transition>
+                  </Listbox>
+                </div>
+              </div>
+              <div class="flex flex-wrap mb-2" v-if="ticket?.labels.length > 0">
+                <chip :background="label.color" :key="label.id" class="mr-1 mb-1" v-for="label in ticket?.labels">
+                  {{ label.name }}
+                </chip>
+              </div>
+            </div>
+            <div>
+              <h2 class="text-sm font-medium text-gray-500">Shared with</h2>
+              <ul class="mt-2 leading-8 divide-y divide-gray-200">
+                <li v-for="person in ticket?.shared_with" :key="person.id"
+                    class="py-2 flex justify-between items-center">
+                  <div class="flex items-center">
+                    <img :src="person.avatar_url || person.avatar" alt="" class="w-6 h-6 rounded-full"/>
+                    <p class="ml-3 text-sm font-medium text-gray-900">{{ person.first_name }} {{ person.last_name }}
+                      {{ !person.first_name ? person.name : '' }}</p>
+                  </div>
+                  <button
+                    @click="ticket.shared_with.splice(ticket.shared_with.map(s => s.id).indexOf(person.id), 1); updateSharedWith()"
+                    type="button"
+                    class="ml-6 bg-white rounded-md text-sm font-medium text-primary-600 hover:text-primary focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary"
+                    v-if="isStaffOrAuthor">>
+                    Remove<span class="sr-only"> {{ person.name }}</span>
+                  </button>
+                </li>
+                <li v-if="isStaffOrAuthor"
+                    :class="[ticket?.shared_with.length > 0 ? 'py-2' : '', 'flex justify-between items-center']">
+                  <button v-show="!addShare" @click="addShare = true" type="button"
+                          class="group -ml-1 bg-white p-1 rounded-md flex items-center focus:outline-none focus:ring-2 focus:ring-primary">
+                    <span
+                      class="w-6 h-6 rounded-full border-2 border-dashed border-gray-300 flex items-center justify-center text-gray-400">
+                      <PlusIconSolid class="h-5 w-5" aria-hidden="true"/>
+                    </span>
+                    <span class="ml-3 text-sm font-medium text-primary-600 group-hover:text-primary">Share</span>
+                  </button>
+                  <FormTextFieldWithSuggestions v-show="addShare"
+                                                @add="data => { ticket.shared_with.push(data); updateSharedWith(); addShare = false }"
+                                                :data="guestsFiltered || []" emptyLabel="John Doe"/>
+                </li>
+              </ul>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -364,8 +365,7 @@ export default {
       { name: 'Attachments', href: '#', count: 0, current: false }
     ],
     role: '',
-    addShare: false,
-    errors: null
+    addShare: false
   }),
   setup () {
     const sidebarOpen = ref(false)
@@ -563,21 +563,23 @@ export default {
         return axios.get(`/api/inboxes/${ this.$route.params.inboxId }/tickets/${ this.$route.params.ticketInboxId }`, { params: data })
       }).then(response => {
         this.events = response.data.events
-      }).catch(error => {
-        this.errors = error?.response.data
       })
     },
     containsObject (list, id) {
       return list && list.some(e => e.id === id)
     },
-    switchItem (value) {
-      if (this.containsObject(this.labels, value.id)) {
-        this.ticket.labels.splice(this.labels.findIndex(e => e.id === value.id), 1)
+    toggleLabel (value) {
+      if (this.containsObject(this.ticket.labels, value.id)) {
+        this.ticket.labels.splice(this.ticket.labels.findIndex(e => e.id === value.id), 1)
       } else {
         this.ticket.labels.push(value)
       }
 
       this.updateLabels()
+    },
+    switchTab () {
+      this.tabs.forEach(t => (t.current = false))
+      this.tabs.find(t => t.name === this.tab.name).current = true
     }
   },
   computed: {
@@ -588,7 +590,7 @@ export default {
       return this.ticket?.inbox?.guests?.filter(g => g.id !== this.user?.id)
         .filter(g => this.ticket?.shared_with.map(s => s.id).indexOf(g.id) === -1)
     },
-    canShare () {
+    isStaffOrAuthor () {
       return this.isStaff(this.role, this.user) || (this.user && this.ticket?.author.id === this.user.id)
     }
   }
