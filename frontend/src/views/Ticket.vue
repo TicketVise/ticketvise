@@ -32,14 +32,14 @@
               <h2 class="text-sm font-medium text-gray-500">Assignees</h2>
               <ul class="mt-3 space-y-3">
                 <li class="flex justify-start">
-                  <a href="#" class="flex items-center space-x-3">
+                  <span class="flex items-center space-x-3">
                     <div class="flex-shrink-0">
                       <img class="h-5 w-5 rounded-full" :src="ticket?.assignee?.avatar_url" alt=""/>
                     </div>
                     <div class="text-sm font-medium text-gray-900">
                       {{ ticket?.assignee?.first_name }} {{ ticket?.assignee?.last_name }}
                     </div>
-                  </a>
+                  </span>
                 </li>
               </ul>
             </div>
