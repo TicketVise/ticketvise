@@ -179,7 +179,6 @@
           <div class="mt-6 border-t border-gray-200 py-6 space-y-8">
             <div>
               <h2 class="text-sm font-medium text-gray-500">Assignee</h2>
-              <!--              <UserDropdown :assignee="ticket.assignee" :staff="staff" v-if="staff" v-on:input="loadTicketData"/>-->
               <Listbox as="span" class="-ml-px relative block">
                 <ListboxButton class="relative flex items-center text-sm font-medium focus:outline-none ml-1">
                   <div class="flex items-center space-x-3 m-2" v-if="ticket?.assignee && ticket?.assignee.id">
@@ -621,7 +620,7 @@ export default {
       formData.append('assignee', id)
       axios.patch(`/api/inboxes/${ this.$route.params.inboxId }/tickets/${ this.$route.params.ticketInboxId }/assignee`, formData)
         .then(_ => {
-          this.ticket.assignee = this.ticket?.assignee && this.ticket?.assignee.id === user.id ? undefined : user
+          this.ticket.assignee = id === user.id ? user : undefined
           this.loadTicketData()
         })
     }
