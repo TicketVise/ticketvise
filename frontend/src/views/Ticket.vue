@@ -153,7 +153,7 @@
             </div>
           </section>
         </div>
-                <div class="xl:pl-8">
+        <div class="xl:pl-8">
           <h2 class="sr-only">Details</h2>
           <div class="space-y-5">
             <div class="flex items-center space-x-2">
@@ -177,22 +177,55 @@
             </div>
           </div>
           <div class="mt-6 border-t border-gray-200 py-6 space-y-8">
-            <div v-if="ticket?.assignee">
-              <h2 class="text-sm font-medium text-gray-500">Assignees</h2>
-              <ul class="mt-3 space-y-3">
-                <li class="flex justify-start">
-                  <span class="flex items-center space-x-3">
+            <div>
+              <h2 class="text-sm font-medium text-gray-500">Assignee</h2>
+              <Listbox as="span" class="-ml-px relative block">
+                <ListboxButton class="relative flex items-center text-sm font-medium focus:outline-none ml-1">
+                  <div class="flex items-center space-x-3 m-2" v-if="ticket?.assignee && ticket?.assignee.id">
                     <div class="flex-shrink-0">
-                      <img class="h-5 w-5 rounded-full" :src="ticket?.assignee?.avatar_url" alt=""/>
+                      <img
+                        class="h-8 w-8 rounded-full"
+                        :src="ticket?.assignee.avatar_url"
+                        alt=""
+                      />
                     </div>
-                    <div class="text-sm font-medium text-gray-900">
-                      {{ ticket?.assignee?.first_name }} {{ ticket?.assignee?.last_name }}
-                    </div>
-                  </span>
-                </li>
-              </ul>
-            </div>
+                    <span class="block truncate">{{ ticket?.assignee.first_name }} {{
+                        ticket?.assignee.last_name
+                      }}</span>
+                  </div>
+                  <div class="flex items-center m-2" v-else>
+                    No one - assign to
+                  </div>
+                </ListboxButton>
+                <transition leave-active-class="transition ease-in duration-100" leave-from-class="opacity-100"
+                            leave-to-class="opacity-0">
+                  <ListboxOptions
+                    class="absolute z-10 mt-1 bg-white shadow-lg max-h-56 rounded-md py-1 text-base ring-1 ring-black ring-opacity-5 overflow-auto focus:outline-none sm:text-sm">
+                    <ListboxOption as="template" v-for="assignee in staff" :key="assignee.id"
+                                   :value="assignee" v-slot="{ active }">
+                      <li @click="updateAssignee(assignee)"
+                          :class="[active ? 'text-white bg-primary' : 'text-gray-900', 'cursor-pointer select-none relative py-2 pl-3 pr-9']">
+                        <div class="flex items-center space-x-3">
+                          <div class="flex-shrink-0">
+                            <img
+                              class="h-8 w-8 rounded-full"
+                              :src="assignee.avatar_url"
+                              alt=""
+                            />
+                          </div>
+                          <span class="block truncate">{{ assignee.first_name }} {{ assignee.last_name }}</span>
+                        </div>
 
+                        <span v-if="assignee.id === ticket?.assignee.id"
+                              :class="[active ? 'text-white' : 'text-primary-600', 'absolute inset-y-0 right-0 flex items-center pr-4']">
+                              <CheckIcon class="h-5 w-5" aria-hidden="true"/>
+                            </span>
+                      </li>
+                    </ListboxOption>
+                  </ListboxOptions>
+                </transition>
+              </Listbox>
+            </div>
             <!--Labels-->
             <div>
               <div class="relative inline-flex pb-2">
@@ -580,6 +613,16 @@ export default {
     switchTab () {
       this.tabs.forEach(t => (t.current = false))
       this.tabs.find(t => t.name === this.tab.name).current = true
+    },
+    updateAssignee (user) {
+      const id = this.ticket?.assignee && this.ticket?.assignee.id === user.id ? [] : user.id
+      const formData = new FormData()
+      formData.append('assignee', id)
+      axios.patch(`/api/inboxes/${ this.$route.params.inboxId }/tickets/${ this.$route.params.ticketInboxId }/assignee`, formData)
+        .then(_ => {
+          this.ticket.assignee = id === user.id ? user : undefined
+          this.loadTicketData()
+        })
     }
   },
   computed: {
