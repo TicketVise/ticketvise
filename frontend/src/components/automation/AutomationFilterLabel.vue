@@ -11,7 +11,7 @@ import axios from 'axios'
 import SelectInput from '@/components/inputs/SelectInput'
 
 const types = [
-  { name: 'Label' },
+  { name: 'Labels' },
   { name: 'Title' },
   { name: 'Time' }
 ]

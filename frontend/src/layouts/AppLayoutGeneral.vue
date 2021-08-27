@@ -64,7 +64,7 @@
                     <router-link to="/account" :class="[active ? 'bg-gray-100' : '', 'block px-4 py-2 text-sm text-gray-700']">Your profile</router-link>
                   </MenuItem>
                   <MenuItem v-slot="{ active }">
-                    <button @click="logout" :class="[active ? 'bg-gray-100' : '', 'block px-4 py-2 text-sm text-gray-700']">Sign out</button>
+                    <a href="#" @click="logout()" :class="[active ? 'bg-gray-100' : '', 'block px-4 py-2 text-sm text-gray-700']">Sign out</a>
                   </MenuItem>
                 </MenuItems>
               </transition>
@@ -108,11 +108,6 @@ import { mapState } from 'vuex'
 
 const logo = require('@/assets/logo/logo.svg')
 
-const userNavigation = [
-  { name: 'Your Profile', href: '/account' },
-  { name: 'Sign out', href: '#' }
-]
-
 export default {
   name: 'AppLayoutGeneral',
   components: {
@@ -125,8 +120,6 @@ export default {
   },
   setup () {
     return {
-      // inboxes,
-      userNavigation,
       logo
     }
   },
@@ -135,6 +128,11 @@ export default {
       user: state => state.user
     }),
     development: () => process.env.NODE_ENV !== 'production'
+  },
+  methods: {
+    logout () {
+      this.$store.dispatch('logout')
+    }
   }
 }
 </script>

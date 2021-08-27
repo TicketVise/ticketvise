@@ -11,8 +11,7 @@ from ticketvise.models.inbox import Inbox, SchedulingAlgorithm
 from ticketvise.models.label import Label
 from ticketvise.models.user import User, Role, UserInbox
 from ticketvise.utils import StandardResultsSetPagination
-from ticketvise.views.api import DynamicFieldsModelSerializer
-from ticketvise.views.api.labels import LabelSerializer
+from ticketvise.views.api import DynamicFieldsModelSerializer, LabelSerializer
 from ticketvise.views.api.security import UserIsInInboxPermission, UserIsInboxStaffPermission, \
     UserIsSuperUserPermission
 from ticketvise.views.api.user import UserSerializer, UserInboxSerializer
@@ -241,4 +240,3 @@ class CurrentUserInboxApiView(RetrieveAPIView):
             return UserInbox(user=self.request.user, inbox=inbox, role=Role.MANAGER)
 
         return get_object_or_404(UserInbox, inbox=inbox, user=self.request.user)
-

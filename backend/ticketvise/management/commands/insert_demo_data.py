@@ -751,6 +751,20 @@ class Command(BaseCommand):
         ticket_42.add_label(label_ds_heaps)
         ticket_42.save()
 
+        ticket_43 = Ticket.objects.create(
+            author=user_student,
+            assignee=user_assistant,
+            inbox=inbox_pse,
+            title="This ticket should be public",
+            content="Everybody should be able to see this",
+            is_public=timezone.now(),
+        )
+        ticket_43.date_created = timezone.now() - datetime.timedelta(days=2, hours=16)
+        ticket_43.date_edited = timezone.now() - datetime.timedelta(days=2, hours=16)
+        ticket_43.status = Status.CLOSED
+        ticket_43.add_label(label_pse_assignment)
+        ticket_43.save()
+
         # Create Comments
         def add_date_to_comment(comment: Comment, timedelta):
             """
@@ -848,25 +862,29 @@ class Command(BaseCommand):
                                             content="Only the papers!", )
         add_date_to_comment(comment_36, datetime.timedelta(days=2, hours=14))
 
-        comment_36 = Comment.objects.create(author=assistant_tbijker, ticket=ticket_38, is_reply=True,
+        comment_37 = Comment.objects.create(author=assistant_tbijker, ticket=ticket_38, is_reply=True,
                                             content="You need to create a struct object to store the data and point to "
                                                     "the next object in the list. The point of a linked list is that "
                                                     "you have multiple objects pointing to the next, you need to see "
                                                     "all nodes in this list separately.", )
-        add_date_to_comment(comment_36, datetime.timedelta(days=1, hours=0))
+        add_date_to_comment(comment_37, datetime.timedelta(days=1, hours=0))
 
-        comment_36 = Comment.objects.create(author=student_gmandemaker, ticket=ticket_38, is_reply=True,
+        comment_38 = Comment.objects.create(author=student_gmandemaker, ticket=ticket_38, is_reply=True,
                                             content="How does this look? I did some research and there seems "
                                                     "to be nothing wrong with this.\n"
                                                     "``` c \nclass Node {\n    public:\n    int data;\n"
                                                     "    Node* next;\n};\n ```", )
-        add_date_to_comment(comment_36, datetime.timedelta(days=0, hours=22))
+        add_date_to_comment(comment_38, datetime.timedelta(days=0, hours=22))
 
-        comment_36 = Comment.objects.create(author=assistant_tbijker, ticket=ticket_38, is_reply=True,
+        comment_39 = Comment.objects.create(author=assistant_tbijker, ticket=ticket_38, is_reply=True,
                                             content="It seems you are right, are you sure you declare the `Node*` "
                                                     "before you use it?", )
-        add_date_to_comment(comment_36, datetime.timedelta(days=0, hours=22))
+        add_date_to_comment(comment_39, datetime.timedelta(days=0, hours=22))
 
-        comment_36 = Comment.objects.create(author=student_gmandemaker, ticket=ticket_38, is_reply=True,
+        comment_40 = Comment.objects.create(author=student_gmandemaker, ticket=ticket_38, is_reply=True,
                                             content="This was indeed the problem, Thanks for helping me", )
-        add_date_to_comment(comment_36, datetime.timedelta(days=0, hours=22))
+        add_date_to_comment(comment_40, datetime.timedelta(days=0, hours=22))
+
+        comment_41 = Comment.objects.create(author=user_coordinator, ticket=ticket_43, is_reply=True,
+                                            content="This ticket is indeed public, and all replies can be seen too")
+        add_date_to_comment(comment_41, datetime.timedelta(days=0, hours=22))

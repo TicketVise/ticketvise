@@ -3,7 +3,7 @@
   <section v-if="is_staff" class="flex flex-col h-full flex-grow justify-start dark:bg-gray-800">
     <div class="flex flex-col md:grid md:grid-cols-5 md:gap-2 p-4 space-y-2 md:space-y-0">
       <div class="flex space-x-2 md:col-span-2 xl:col-span-3 items-center">
-        <search-bar v-model="search" v-on:input="callDebounceSearch"></search-bar>
+        <search-bar v-model="search" v-on:input="callDebounceGetTickets"></search-bar>
       </div>
 
       <div class="flex space-x-2 md:col-span-3 xl:col-span-2 items-center">
@@ -12,14 +12,14 @@
           <label-dropdown :selected="labels" :values="inbox_labels" v-model="labels" v-on:input="updateLabels" />
         </div>
 
-        <submit-button
-          :class="showPersonal ? `bg-primary-500 text-white` : `bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-300` "
+        <button
+          :class="showPersonal ? `bg-primary-500 text-white px-4 py-2 border border-gray-300 text-sm leading-5 font-medium rounded-md focus:outline-none transition duration-150 ease-in-out` : `bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-300 px-4 py-2 border border-gray-300 text-sm leading-5 font-medium rounded-md focus:outline-none transition duration-150 ease-in-out` "
           @click="togglePersonal"
           class="px-4 md:m-0 h-10"
           v-if="is_staff"
         >
           My Tickets
-        </submit-button>
+        </button>
       </div>
     </div>
 
@@ -97,8 +97,10 @@
         <table class="min-w-full">
           <thead>
             <tr class="border-t border-gray-200">
-              <th class="px-6 py-3 border-b border-gray-200 bg-gray-50 dark:bg-gray-800 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                <span class="lg:pl-2">Ticket</span>
+              <th class="px-3 py-3 border-b border-gray-200 bg-gray-50 dark:bg-gray-800 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+              </th>
+              <th class="pl-3 pr-6 py-3 border-b border-gray-200 bg-gray-50 dark:bg-gray-800 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                <span class="lg:pl-2">Tickets</span>
               </th>
               <th class="px-6 py-3 border-b border-gray-200 bg-gray-50 dark:bg-gray-800 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                 Status
@@ -111,7 +113,10 @@
           </thead>
           <tbody class="bg-white dark:bg-transparent divide-y divide-gray-100">
             <tr v-for="ticket in ticketsFlattened" :key="ticket.id">
-              <td class="px-6 py-3 max-w-0 w-full whitespace-nowrap text-sm font-medium text-gray-900 dark:text-gray-200">
+              <td class="px-3 py-3 max-w-0 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-gray-200">
+                <GlobeIcon v-if="ticket.is_public" class="h-5 w-5 text-gray-700" />
+              </td>
+              <td class="pl-3 pr-6 py-3 max-w-0 w-full whitespace-nowrap text-sm font-medium text-gray-900 dark:text-gray-200">
                 <div class="flex items-center space-x-3 lg:pl-2">
                   <router-link :to="`/inboxes/${$route.params.inboxId}/tickets/${ticket.ticket_inbox_id}`" class="truncate hover:text-gray-600 dark:hover:text-gray-300">
                     <span>{{ ticket.title }}</span>
@@ -145,13 +150,15 @@ import _ from 'lodash'
 import moment from 'moment'
 
 import SearchBar from '@/components/searchbar/SearchBar'
-import SubmitButton from '@/components/button/SubmitButton'
 import TicketColumn from '@/components/tickets/TicketColumn'
 import LabelDropdown from '@/components/dropdown/LabelDropdown'
 
 import {
   ChevronRightIcon
 } from '@heroicons/vue/solid'
+import {
+  GlobeIcon
+} from '@heroicons/vue/outline'
 
 const UNLABELLED_LABEL = {
   id: 0,
@@ -163,9 +170,9 @@ export default {
   name: 'Inbox',
   components: {
     ChevronRightIcon,
+    GlobeIcon,
     TicketColumn,
     LabelDropdown,
-    SubmitButton,
     SearchBar
   },
   data: () => ({
@@ -180,15 +187,14 @@ export default {
     labels: [],
     label: null,
     inbox_labels: [],
-    is_staff: false,
-    list: false
+    is_staff: false
   }),
   setup () {
     return { moment }
   },
   methods: {
     get_tickets () {
-      // Call this function by using callDebounceSearch
+      // Call this function by using callDebounceGetTickets
       const labelsIds = []
       this.labels.forEach((label) => labelsIds.push(label.id))
       const inboxId = this.$route.params.inboxId
@@ -207,7 +213,7 @@ export default {
           store.commit('update_tickets', { inbox: inboxId, tickets: response.data })
         })
     },
-    callDebounceSearch: _.debounce(function () {
+    callDebounceGetTickets: _.debounce(function () {
       this.get_tickets()
     }, 300),
     deleteEvent (index) {
@@ -219,9 +225,6 @@ export default {
       this.labels = items
 
       this.get_tickets()
-    },
-    toggleView () {
-      this.list = !this.list
     },
     togglePersonal () {
       this.showPersonal = !this.showPersonal
@@ -272,10 +275,7 @@ export default {
     axios
       .get(`/api/inboxes/${this.$route.params.inboxId}/role`)
       .then((response) => {
-        this.is_staff =
-          response.data &&
-          (response.data.key === 'AGENT' || response.data.key === 'MANAGER')
-        this.list = !this.is_staff
+        this.is_staff = (response.data.key === 'AGENT' || response.data.key === 'MANAGER')
       })
 
     this.get_tickets()

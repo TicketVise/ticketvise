@@ -32,6 +32,7 @@ class Comment(models.Model):
     author = models.ForeignKey("User", on_delete=models.CASCADE, related_name="comments")
     content = models.TextField()
     is_reply = models.BooleanField(default=False)
+    is_approved = models.DateTimeField(auto_now=False, null=True, default=None)
     date_edited = models.DateTimeField(auto_now=True)
     date_created = models.DateTimeField(auto_now_add=True)
 

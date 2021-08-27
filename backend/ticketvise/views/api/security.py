@@ -90,7 +90,8 @@ class UserHasAccessToTicketPermission(IsAuthenticated):
         ticket = get_object_or_404(Ticket, inbox_id=inbox_id, ticket_inbox_id=ticket_inbox_id)
         return request.user.id == ticket.author.id \
                or request.user.is_assistant_or_coordinator(ticket.inbox) \
-               or ticket.shared_with.filter(pk=request.user.id).exists()
+               or ticket.shared_with.filter(pk=request.user.id).exists() \
+               or ticket.is_public
 
 
 class UserIsSuperUserPermission(IsAuthenticated):

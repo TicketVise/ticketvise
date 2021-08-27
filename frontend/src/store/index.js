@@ -51,6 +51,9 @@ const store = createStore({
     },
     update_tickets (state, payload) {
       state.inboxes.find(i => i.id === parseInt(payload.inbox)).tickets = payload.tickets
+    },
+    update_public_tickets (state, payload) {
+      state.inboxes.find(i => i.id === parseInt(payload.inbox)).public_tickets = payload.public_tickets
     }
   },
   actions: {

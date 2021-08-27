@@ -21,7 +21,7 @@
           <!-- Name -->
           <div class="w-full">
             <label class="block text-xs leading-5 font-medium text-primary">
-              Filter title:
+              Action title:
             </label>
             <input
               v-model="title"
@@ -73,13 +73,21 @@
           <span class="leading-5 font-medium text-primary">Actions</span>
           <div class="h-1 border-b w-1/2"></div>
         </div>
-        <div v-if="thens.length" class="grid grid-cols-2 gap-2">
-          <!-- Place for the thens actions -->
+        <!-- Place for the thens actions -->
+        <div v-for="(filter, index) in thens" :key="index" class="flex space-x-2">
+          <component :is="filter" />
+
+          <button
+            @click="remove(index)"
+            class="flex items-center px-2 focus:outline-none"
+          >
+            <trash-icon class="h-6 w-6 text-red-600" />
+          </button>
         </div>
         <div class="flex space-x-2">
           <div class="relative inline-block w-min-content">
             <button
-              @click="addThen = !addThen"
+              @click="thens.push('automationAction')"
               class="flex justify-center items-center rounded px-4 py-2 space-x-1 text-blue-500 bg-blue-100 focus:outline-none hover:bg-blue-200"
             >
               <plus-icon class="h6 w-6" />
@@ -120,6 +128,7 @@
 <script>
 import AutomationFilterLabel from '@/components/automation/AutomationFilterLabel'
 import AutomationFilterText from '@/components/automation/AutomationFilterText'
+import AutomationAction from '@/components/automation/AutomationAction'
 import Chip from '@/components/chip/Chip'
 
 import {
@@ -139,11 +148,12 @@ export default {
     SelectorIcon,
     AutomationFilterLabel,
     AutomationFilterText,
+    AutomationAction,
     Chip
   },
   data: () => ({
-    open: false,
-    title: 'Important ticket to teacher',
+    open: true,
+    title: 'Lecture tickets to teacher',
     addIf: false,
     addThen: false,
     ifs: [],
@@ -152,12 +162,6 @@ export default {
   methods: {
     cancel () {
       this.open = false
-    },
-    awayAddIf () {
-      this.addIf = false
-    },
-    awayAddThen () {
-      this.addThen = false
     },
     remove (index) {
       this.ifs.splice(index, 1)

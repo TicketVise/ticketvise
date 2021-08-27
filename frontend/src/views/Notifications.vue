@@ -1,13 +1,137 @@
 <template>
-  <h1>Hello World!</h1>
+  <div>
+    <!-- Header -->
+    <header class="bg-white shadow">
+      <div class="max-w-7xl mx-auto p-4 py-2 sm:flex sm:items-center sm:justify-between">
+        <div class="flex-1 min-w-0">
+          <router-link to="/inboxes" class="text-xs text-gray-700 hover:underline cursor-pointer">
+            <i class="fa fa-arrow-left mr-2"></i>
+            Dashboard
+          </router-link>
+          <h2 class="text-2xl font-bold leading-7 text-gray-900 sm:text-3xl sm:leading-9 sm:truncate">
+            Notifications
+          </h2>
+        </div>
+        <div class="mt-2 flex xl:mt-0 xl:ml-4 space-x-4">
+          <span class="shadow-sm rounded-md">
+            <button v-on:click="markAllAsRead"
+                    class="inline-flex items-center px-4 py-2 border border-transparent text-sm leading-5 font-medium rounded-md text-white bg-primary hover:bg-orange-500 focus:outline-none focus:shadow-outline-orange focus:border-orange-700 active:bg-orange-700 transition duration-150 ease-in-out">
+              Mark all as read
+            </button>
+          </span>
+        </div>
+      </div>
+      <div class="container max-w-7xl mx-auto overflow-x-auto xl:px-4">
+        <ul class="flex" v-if="notifications.results">
+          <Tab :active="is_read == 'False'" @click="is_read = 'False'" title="Unread"
+               :badge="count"/>
+          <Tab :active="is_read == 'True'" @click="is_read = 'True'" title="Read"/>
+          <Tab :active="is_read == ''" @click="is_read = ''" title="All"/>
+        </ul>
+      </div>
+    </header>
+
+    <div class="container mx-auto p-4 flex flex-col space-y-2">
+      <div v-if="notifications.results && notifications.results.length == 0" class="text-center py-8">
+        <img :src="completeTask" alt="Nothing here" class="w-1/2 md:w-1/4 mx-auto mb-8">
+        <span class="text-gray-600 text-lg md:text-xl">You have no notifications</span>
+      </div>
+
+      <NotificationCard v-for="notification in notifications.results" :key="notification.id"
+                        :notification="notification" v-on:input="getNotificationCount"></NotificationCard>
+
+      <div class="flex justify-center w-full">
+
+        <button v-on:click=prevPage() v-if="notifications.previous"
+                class="inline-flex items-center px-4 py-2 border border-transparent text-sm leading-5 font-medium rounded-md text-white bg-primary hover:bg-orange-500 focus:outline-none focus:shadow-outline-orange focus:border-orange-700 active:bg-orange-700 transition duration-150 ease-in-out">
+          Prev
+        </button>
+        <span v-if="notifications.next || notifications.previous" class="m-3">{{ pageNumber }}</span>
+        <button v-on:click=nextPage() v-if="notifications.next"
+                class="inline-flex items-center px-4 py-2 border border-transparent text-sm leading-5 font-medium rounded-md text-white bg-primary hover:bg-orange-500 focus:outline-none focus:shadow-outline-orange focus:border-orange-700 active:bg-orange-700 transition duration-150 ease-in-out">
+          Prev
+        </button>
+      </div>
+    </div>
+  </div>
 </template>
 
 <script>
-export default {
+import axios from 'axios'
+import NotificationCard from '@/components/notifications/NotificationCard'
+import Tab from '@/components/tabs/Tab'
 
+const CompleteTask = require('@/assets/img/svg/completeTask.svg')
+
+export default {
+  name: 'Notifications',
+  components: { NotificationCard, Tab },
+  data () {
+    return {
+      completeTask: CompleteTask,
+      notifications: [],
+      is_read: 'False',
+      pageNumber: 1,
+      count: 0
+    }
+  },
+  watch: {
+    is_read: function () {
+      this.getNotifications()
+    }
+  },
+  created () {
+    axios.get('/api/notifications', {
+      params: {
+        is_read: this.is_read
+      }
+    }).then(response => {
+      this.notifications = response.data
+      this.getNotificationCount()
+    })
+  },
+  methods: {
+    nextPage () {
+      if (this.notifications.next) {
+        axios.get(this.notifications.next.substr(this.notifications.next.indexOf('/', 7))).then(response => {
+          this.notifications = response.data
+          this.pageNumber += 1
+        })
+      }
+    },
+    prevPage () {
+      if (this.notifications.previous) {
+        if (this.pageNumber === 2) {
+          this.pageNumber = 1
+          this.getNotifications()
+        } else if (this.pageNumber > 2) {
+          axios.get(this.notifications.previous.substr(this.notifications.previous.indexOf('/', 7))).then(response => {
+            this.notifications = response.data
+            this.pageNumber -= 1
+          })
+        }
+      }
+    },
+    getNotifications () {
+      axios.get('/api/notifications', {
+        params: {
+          is_read: this.is_read
+        }
+      }).then(response => {
+        this.notifications = response.data
+        this.getNotificationCount()
+      })
+    },
+    getNotificationCount () {
+      axios.get('/api/notifications/unread').then(response => {
+        this.count = response.data
+      })
+    },
+    markAllAsRead () {
+      axios.put('/api/notifications/read/all').then(_ => {
+        this.getNotifications()
+      })
+    }
+  }
 }
 </script>
-
-<style>
-
-</style>

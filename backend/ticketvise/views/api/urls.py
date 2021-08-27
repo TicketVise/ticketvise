@@ -1,7 +1,7 @@
 from django.urls import path
 
 from ticketvise.views.api.auth import LoginApiView
-from ticketvise.views.api.comment import CreateCommentApiView, CreateReplyApiView
+from ticketvise.views.api.comment import CreateCommentApiView, CreateReplyApiView, ApproveCommentAPIView
 from ticketvise.views.api.inbox import InboxLabelsApiView, InboxesApiView, InboxGuestsAPIView, InboxUsersApiView, \
     UserInboxApiView, InboxSettingsApiView, CurrentUserInboxesApiView
 from ticketvise.views.api.inbox import InboxStaffApiView, InboxLabelApiView, AllInboxLabelsApiView, \
@@ -14,7 +14,9 @@ from ticketvise.views.api.statistics import InboxTicketsPerDateTypeStatisticsApi
 from ticketvise.views.api.ticket import TicketApiView, TicketUpdateAssignee, \
     TicketAttachmentsApiView, AttachmentViewApiView, UserTicketsApiView, UserAverageApiView, \
     RecentTicketApiView, InboxTicketsApiView, TicketLabelApiView, TicketCreateApiView, TicketSharedAPIView, \
-    TicketsApiView, OpenTicketApiView, CloseTicketApiView, TicketTitleAPIView
+    TicketsApiView, OpenTicketApiView, CloseTicketApiView, TicketTitleAPIView, TicketRequestPublishAPIView, \
+    TicketPublishAPIView, PublicTicketAPIView, PinUnpinTicketAPIView, SubscribeToTicketAPIView, \
+    UnsubscribeFromTicketAPIView
 from ticketvise.views.api.user import UserRoleApiView, CurrentUserApiView, NotificationsSettingsAPIView, \
     UsersApiView, IntroductionAPIView
 
@@ -37,6 +39,11 @@ urlpatterns = [
     path("inboxes/<int:inbox_id>/tickets/<int:ticket_inbox_id>/title", TicketTitleAPIView.as_view()),
     path("inboxes/<int:inbox_id>/users/<int:user_id>/tickets", UserTicketsApiView.as_view()),
     path("inboxes/<int:inbox_id>/users/<int:user_id>/tickets/average", UserAverageApiView.as_view()),
+    path("inboxes/<int:inbox_id>/tickets/<int:ticket_inbox_id>/request-publish", TicketRequestPublishAPIView.as_view()),
+    path("inboxes/<int:inbox_id>/tickets/<int:ticket_inbox_id>/publish", TicketPublishAPIView.as_view()),
+    path("inboxes/<int:inbox_id>/tickets/<int:ticket_inbox_id>/pin", PinUnpinTicketAPIView.as_view()),
+    path("inboxes/<int:inbox_id>/tickets/<int:ticket_inbox_id>/subscribe", SubscribeToTicketAPIView.as_view()),
+    path("inboxes/<int:inbox_id>/tickets/<int:ticket_inbox_id>/unsubscribe", UnsubscribeFromTicketAPIView.as_view()),
     path("inboxes/<int:inbox_id>/users/<int:user_id>/tickets/recent", RecentTicketApiView.as_view()),
     path("inboxes/<int:inbox_id>/role", UserRoleApiView.as_view()),
     path("inboxes/<int:inbox_id>/guests", InboxGuestsAPIView.as_view()),
@@ -53,6 +60,7 @@ urlpatterns = [
          InboxAverageAgentResponseTimeStatisticsApiView.as_view()),
     path("inboxes/<int:inbox_id>/statistics/close/avg", InboxAverageTimeToCloseStatisticsApiView.as_view()),
     path("inboxes/<int:inbox_id>/statistics/labels/count", LabelsCountStatisticsApiView.as_view()),
+    path("inboxes/<int:inbox_id>/comments/<int:comment_id>/approve", ApproveCommentAPIView.as_view()),
     path("admin/statistics/users/count", UsersApiView.as_view()),
     path("admin/statistics/tickets/count", TicketsApiView.as_view()),
     path("notifications", NotificationsAPIView.as_view()),

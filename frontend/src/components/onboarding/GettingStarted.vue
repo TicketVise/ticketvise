@@ -11,14 +11,14 @@
       <div class="inline-block align-bottom bg-white rounded-lg px-4 pt-5 pb-4 text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full sm:p-6"
            role="dialog" aria-modal="true" aria-labelledby="modal-headline">
 
-        <welcome-modal @click="modalNumber += 1" @cancel="finishIntroduction" v-if="modalNumber === 1"></welcome-modal>
-        <overview-modal @click="modalNumber += 1" @cancel="modalNumber -= 1" v-if="modalNumber === 2"></overview-modal>
-        <scheduling-modal @click="modalNumber += 1" @cancel="modalNumber -= 1"
+        <welcome-modal @next="modalNumber = 2" @cancel="finishIntroduction" v-if="modalNumber === 1"></welcome-modal>
+        <overview-modal @next="modalNumber = 3" @cancel="modalNumber = 1" v-if="modalNumber === 2"></overview-modal>
+        <scheduling-modal @next="modalNumber = 4" @cancel="modalNumber = 2"
                           v-if="modalNumber === 3"></scheduling-modal>
-        <labels-modal @click="modalNumber += 1" @cancel="modalNumber -= 1" v-if="modalNumber === 4"></labels-modal>
-        <statistics-modal @click="modalNumber += 1" @cancel="modalNumber -= 1"
+        <labels-modal @next="modalNumber = 5" @cancel="modalNumber = 3" v-if="modalNumber === 4"></labels-modal>
+        <statistics-modal @next="modalNumber = 6" @cancel="modalNumber = 4"
                           v-if="modalNumber === 5"></statistics-modal>
-        <finished-modal @click="finishIntroduction" @cancel="modalNumber -= 1"
+        <finished-modal @next="finishIntroduction" @cancel="modalNumber = 5"
                         v-if="modalNumber === maxModal"></finished-modal>
         <div class="flex items-center justify-center py-4" aria-label="Progress">
           <p class="text-sm font-medium">Step {{modalNumber}} of {{maxModal}}</p>
@@ -26,7 +26,7 @@
           <ol class="ml-8 flex items-center space-x-5">
             <li v-for="thisModal in maxModal" :key="thisModal">
               <button @click="modalNumber = thisModal"
-                      class="block w-2.5 h-2.5 bg-orange-600 rounded-full hover:bg-orange-900"
+                      class="block w-2.5 h-2.5 bg-primary-600 rounded-full hover:bg-primary-900"
                       v-if="thisModal < modalNumber">
                 <span class="sr-only">Step {{thisModal}}</span>
               </button>
@@ -34,9 +34,9 @@
               <button class="relative flex items-center justify-center" aria-current="step"
                       v-if="thisModal === modalNumber">
               <span class="absolute w-5 h-5 p-px flex" aria-hidden="true">
-                <span class="w-full h-full rounded-full bg-orange-200"></span>
+                <span class="w-full h-full rounded-full bg-primary-200"></span>
               </span>
-                <span class="relative block w-2.5 h-2.5 bg-orange-600 rounded-full" aria-hidden="true"></span>
+                <span class="relative block w-2.5 h-2.5 bg-primary-600 rounded-full" aria-hidden="true"></span>
                 <span class="sr-only">Step {{thisModal}}</span>
               </button>
 
