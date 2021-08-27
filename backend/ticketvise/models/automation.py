@@ -3,7 +3,7 @@ from django.db import models
 class Automation(models.Model):
     name = models.CharField(max_length=255)
     inbox = models.ForeignKey("Inbox", on_delete=models.CASCADE, related_name="automation_condition")
-    assign_to = models.ForeignKey("User", on_delete=models.CASCADE)
+    # assign_to = models.ForeignKey("User", on_delete=models.CASCADE)
 
     def get_condtions(self):
         return AutomationCondition.objects.filter(automation=self)\
@@ -26,8 +26,26 @@ class AutomationCondition(models.Model):
         unique_together = ["automation", "index"]
 
     def __call__(self, ticket):
-        return getattr(self, self.evaluation_func)()
+        # field_type = type(ticket._meta.get_field(self.field_name))
+        # parsed_evaluation_value = field_type(self.evaluation_value)
+        return getattr(self, self.evaluation_func)(ticket, self.field_name, self.evaluation_value)
 
-    def equals(self):
-        print(self.__dict__.values())
+    def equals(self, ticket, field_name, value):
+        test = str(getattr(ticket, field_name))
+        return str(getattr(ticket, field_name)) == value
+
+    def contains(self, ticket, field_name, value):
         pass
+
+    def gt(self, ticket, field_name, value):
+        return str(getattr(ticket, field_name)) > value
+
+    def gte(self, ticket, field_name, value):
+        pass
+
+    def lt(self, ticket, field_name, value):
+        pass
+
+    def lte(self, ticket, field_name, value):
+        pass
+
