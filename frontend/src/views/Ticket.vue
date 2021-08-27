@@ -165,6 +165,14 @@
               </span>
             </div>
             <div class="flex items-center space-x-2">
+              <ClipboardCheckIcon v-if="ticket?.status === 'CLSD'" class="h-5 w-5 text-gray-400" aria-hidden="true"/>
+              <ClipboardListIcon v-else class="h-5 w-5 text-gray-400" aria-hidden="true"/>
+              <span v-if="ticket?.status === 'ASGD'" class="text-gray-900 text-sm font-medium">Assigned</span>
+              <span v-if="ticket?.status === 'ANSD'" class="text-gray-900 text-sm font-medium">Awaiting response</span>
+              <span v-if="ticket?.status === 'CLSD'" class="text-gray-900 text-sm font-medium">Closed</span>
+              <span v-if="ticket?.status === 'PNDG' || !ticket" class="text-gray-900 text-sm font-medium">Pending</span>
+            </div>
+            <div class="flex items-center space-x-2">
               <ChatAltIcon class="h-5 w-5 text-gray-400" aria-hidden="true"/>
               <span class="text-gray-900 text-sm font-medium">
                 {{ ticket?.replies?.length || 0 }} comment{{ ticket?.replies?.length === 1 ? '' : 's' }}
@@ -340,31 +348,14 @@ import {
   LockOpenIcon,
   LockClosedIcon,
   PlusIcon as PlusIconSolid,
-  PencilIcon
+  PencilIcon,
+  ClipboardListIcon,
+  ClipboardCheckIcon
 } from '@heroicons/vue/solid'
 
 import {
   CloudIcon
 } from '@heroicons/vue/outline'
-
-const statusses = {
-  PNDG: {
-    name: 'Pending',
-    color: '#e76f51'
-  },
-  ASGD: {
-    name: 'Assigned',
-    color: '#e9c46a'
-  },
-  ANSD: {
-    name: 'Awaiting response',
-    color: '#2a9d8f'
-  },
-  CLSD: {
-    name: 'Closed',
-    color: '#264653'
-  }
-}
 
 export default {
   components: {
@@ -386,7 +377,9 @@ export default {
     PencilIcon,
     PlusIconSolid,
     PublishConfirmation,
-    StaffDiscussion
+    StaffDiscussion,
+    ClipboardListIcon,
+    ClipboardCheckIcon
   },
   data: () => ({
     publishConfirmationModal: false,
@@ -404,8 +397,7 @@ export default {
     const sidebarOpen = ref(false)
 
     return {
-      sidebarOpen,
-      statusses
+      sidebarOpen
     }
   },
   mounted () {
