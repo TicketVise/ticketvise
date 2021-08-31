@@ -107,7 +107,7 @@ export default {
     is_read: 'False',
     pageNumber: 1,
     tabs: [
-      { name: 'Unread', is_read: 'False', current: true, count: 1 },
+      { name: 'Unread', is_read: 'False', current: true, count: 0 },
       { name: 'Read', is_read: 'True', current: false },
       { name: 'All', is_read: '', current: false }
     ]
@@ -182,8 +182,7 @@ export default {
   },
   computed: {
     ...mapState({
-      user: state => state.user,
-      inboxes: state => state.inboxes
+      user: state => state.user
     })
   }
 }
