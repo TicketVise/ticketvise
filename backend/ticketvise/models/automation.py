@@ -26,26 +26,31 @@ class AutomationCondition(models.Model):
         unique_together = ["automation", "index"]
 
     def __call__(self, ticket):
-        # field_type = type(ticket._meta.get_field(self.field_name))
-        # parsed_evaluation_value = field_type(self.evaluation_value)
-        return getattr(self, self.evaluation_func)(ticket, self.field_name, self.evaluation_value)
+        field = getattr(ticket, self.field_name)
+        value = self.evaluation_value
+        if isinstance(field, models.Model):
+            value = type(field).objects.get(pk=value)
+        else:
+            field = str(field)
+            value = str(value)
 
-    def equals(self, ticket, field_name, value):
-        test = str(getattr(ticket, field_name))
-        return str(getattr(ticket, field_name)) == value
+        return getattr(self, self.evaluation_func)(field, value)
 
-    def contains(self, ticket, field_name, value):
-        pass
+    def eq(self, field, value):
+        return field == value
 
-    def gt(self, ticket, field_name, value):
-        return str(getattr(ticket, field_name)) > value
+    def contains(self, field, value):
+        return value in field
 
-    def gte(self, ticket, field_name, value):
-        pass
+    def gt(self, field, value):
+        return field > value
 
-    def lt(self, ticket, field_name, value):
-        pass
+    def ge(self, field, value):
+        return field >= value
 
-    def lte(self, ticket, field_name, value):
-        pass
+    def lt(self, field, value):
+        return field < value
+
+    def le(self, field, value):
+        return field <= value
 

@@ -28,7 +28,7 @@ class AutomationTestCase(TicketTestCase):
             automation=self.automation,
             index=0,
             field_name="title",
-            evaluation_func="equals",
+            evaluation_func="eq",
             evaluation_value="hetwerkt")
         result = automation_condition(self.ticket)
         self.assertTrue(result)
@@ -38,8 +38,8 @@ class AutomationTestCase(TicketTestCase):
             automation=self.automation,
             index=0,
             field_name="author",
-            evaluation_func="equals",
-            evaluation_value=str(self.ticket.author.username))
+            evaluation_func="in",
+            evaluation_value=str(self.ticket.author.id))
         result = automation_condition(self.ticket)
         self.assertTrue(result)
 
@@ -48,7 +48,7 @@ class AutomationTestCase(TicketTestCase):
             automation=self.automation,
             index=0,
             field_name="title",
-            evaluation_func="equals",
+            evaluation_func="eq",
             evaluation_value="hetwerktniet")
         result = automation_condition(self.ticket)
         self.assertFalse(result)
