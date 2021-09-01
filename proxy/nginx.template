@@ -52,16 +52,20 @@ server {
     proxy_set_header X-Forwarded-Proto https;
 
     location / {
+        proxy_pass http://frontend:8000;
+    }
+
+    location /api {
         proxy_pass http://web:6000;
     }
 
-    location /static/ {
-        alias /home/static/;
+    location /admin/django {
+        proxy_pass http://web:6000;
     }
 
-    location /media/ {
+    location /s3/ {
         proxy_pass http://s3:9000/;
     }
-
+    
     client_max_body_size 25M;
 }
