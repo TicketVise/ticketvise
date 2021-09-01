@@ -35,7 +35,7 @@ services:
       - "8080:8080"
     entrypoint: ""
     volumes:
-      - ./nginx/nginx.dev.conf:/etc/nginx/conf.d/nginx.conf
+      - ./proxy/nginx.dev.conf:/etc/nginx/conf.d/nginx.conf
 
   database:
     hostname: database
@@ -52,8 +52,6 @@ services:
   frontend:
     image: ticketvise/frontend
     build: ./frontend
-    environment:
-      NGINX_DOMAIN: ${DOMAIN}
     ports:
       - "8000:80"
 
