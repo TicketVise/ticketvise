@@ -18,6 +18,7 @@ services:
     environment:
       DJANGO_SECRET: Welkom01
       EMAIL_PASSWORD: Welkom01
+      SQL_HOST: database
       SQL_ENGINE: django.db.backends.postgresql_psycopg2
       SQL_USER: ticketvise
       SQL_PASSWORD: Welkom01
