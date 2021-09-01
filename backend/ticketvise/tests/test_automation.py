@@ -216,5 +216,52 @@ class AutomationTestCase(TicketTestCase):
         result = automation_condition(self.ticket)
         self.assertFalse(result)
 
-    #TODO: test many to many
-    #TODO: test contains
+    def test_contains_charfield_valid(self):
+        automation_condition = AutomationCondition.objects.create(
+            automation=self.automation,
+            index=0,
+            field_name="title",
+            evaluation_func="contains",
+            evaluation_value="werkt")
+        result = automation_condition(self.ticket)
+        self.assertTrue(result)
+
+    def test_contains_charfield_invalid(self):
+        automation_condition = AutomationCondition.objects.create(
+            automation=self.automation,
+            index=0,
+            field_name="title",
+            evaluation_func="contains",
+            evaluation_value="olifant")
+        result = automation_condition(self.ticket)
+        self.assertFalse(result)
+        self.assertFalse(result)
+
+    def test_contains_many_to_many_valid(self):
+        ticket = self.ticket
+        label1 = Label.objects.create(inbox=self.ticket.inbox, name="first label")
+        label2 = Label.objects.create(inbox=self.ticket.inbox, name="second label")
+        ticket.add_label(label1)
+        ticket.add_label(label2)
+        automation_condition = AutomationCondition.objects.create(
+            automation=self.automation,
+            index=0,
+            field_name="labels",
+            evaluation_func="contains",
+            evaluation_value=label1)
+        result = automation_condition(self.ticket)
+        self.assertTrue(result)
+
+    def test_contains_many_to_many_invalid(self):
+        ticket = self.ticket
+        label1 = Label.objects.create(inbox=self.ticket.inbox, name="first label")
+        label2 = Label.objects.create(inbox=self.ticket.inbox, name="second label")
+        ticket.add_label(label1)
+        automation_condition = AutomationCondition.objects.create(
+            automation=self.automation,
+            index=0,
+            field_name="labels",
+            evaluation_func="contains",
+            evaluation_value=label2)
+        result = automation_condition(self.ticket)
+        self.assertFalse(result)
