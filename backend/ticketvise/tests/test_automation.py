@@ -1,8 +1,10 @@
-from ticketvise.tests.test_ticket import TicketTestCase
-from ticketvise.models.inbox import Inbox
 from ticketvise.models.automation import Automation, AutomationCondition
+from ticketvise.models.inbox import Inbox
 from ticketvise.models.ticket import Status, Ticket
 from ticketvise.models.user import Role, User
+from ticketvise.models.label import Label
+from ticketvise.tests.test_ticket import TicketTestCase
+
 
 class AutomationTestCase(TicketTestCase):
 
@@ -38,10 +40,55 @@ class AutomationTestCase(TicketTestCase):
             automation=self.automation,
             index=0,
             field_name="author",
-            evaluation_func="in",
+            evaluation_func="eq",
             evaluation_value=str(self.ticket.author.id))
         result = automation_condition(self.ticket)
         self.assertTrue(result)
+
+    def test_equals_datetime_valid(self):
+        automation_condition = AutomationCondition.objects.create(
+            automation=self.automation,
+            index=0,
+            field_name="is_public",
+            evaluation_func="eq",
+            evaluation_value=str(self.ticket.is_public))
+        result = automation_condition(self.ticket)
+        self.assertTrue(result)
+
+    def test_equals_boolean_valid(self):
+        automation_condition = AutomationCondition.objects.create(
+            automation=self.automation,
+            index=0,
+            field_name="is_anonymous",
+            evaluation_func="eq",
+            evaluation_value="False")
+        result = automation_condition(self.ticket)
+        self.assertTrue(result)
+
+    def test_equals_many_to_many_empty_valid(self):
+        automation_condition = AutomationCondition.objects.create(
+            automation=self.automation,
+            index=0,
+            field_name="labels",
+            evaluation_func="eq",
+            evaluation_value=self.ticket.labels)
+        result = automation_condition(self.ticket)
+        self.assertTrue(result)
+        self.assertEqual(self.ticket.labels.count(), 0)
+
+    def test_equals_many_to_many_valid(self):
+        ticket = self.ticket
+        label = Label.objects.create(inbox=self.ticket.inbox, name="first label")
+        ticket.add_label(label)
+        automation_condition = AutomationCondition.objects.create(
+            automation=self.automation,
+            index=0,
+            field_name="labels",
+            evaluation_func="eq",
+            evaluation_value=ticket.labels)
+        result = automation_condition(ticket)
+        self.assertTrue(result)
+        self.assertNotEqual(ticket.labels.count(), 0)
 
     def test_equals_invalid(self):
         automation_condition = AutomationCondition.objects.create(
@@ -63,12 +110,111 @@ class AutomationTestCase(TicketTestCase):
         result = automation_condition(self.ticket)
         self.assertTrue(result)
 
-    # def test_gt_invalid(self):
-    #     automation_condition = AutomationCondition.objects.create(
-    #         automation=self.automation,
-    #         index=0,
-    #         field_name="title",
-    #         evaluation_func="equals",
-    #         evaluation_value="hetwerktniet")
-    #     result = automation_condition(self.ticket)
-    #     self.assertFalse(result)
+    def test_gt_invalid(self):
+        automation_condition = AutomationCondition.objects.create(
+            automation=self.automation,
+            index=0,
+            field_name="date_created",
+            evaluation_func="gt",
+            evaluation_value="3000-08-27T09:32:21+02:00")
+        result = automation_condition(self.ticket)
+        self.assertFalse(result)
+
+        automation_condition = AutomationCondition.objects.create(
+            automation=self.automation,
+            index=1,
+            field_name="date_created",
+            evaluation_func="gt",
+            evaluation_value=str(self.ticket.date_created))
+        result = automation_condition(self.ticket)
+        self.assertFalse(result)
+
+    def test_ge_valid(self):
+        automation_condition = AutomationCondition.objects.create(
+            automation=self.automation,
+            index=0,
+            field_name="date_created",
+            evaluation_func="ge",
+            evaluation_value="2000-08-27T09:32:21+02:00")
+        result = automation_condition(self.ticket)
+        self.assertTrue(result)
+
+        automation_condition = AutomationCondition.objects.create(
+            automation=self.automation,
+            index=1,
+            field_name="date_created",
+            evaluation_func="ge",
+            evaluation_value=str(self.ticket.date_created))
+        result = automation_condition(self.ticket)
+        self.assertTrue(result)
+
+    def test_ge_invalid(self):
+        automation_condition = AutomationCondition.objects.create(
+            automation=self.automation,
+            index=0,
+            field_name="date_created",
+            evaluation_func="ge",
+            evaluation_value="3000-08-27T09:32:21+02:00")
+        result = automation_condition(self.ticket)
+        self.assertFalse(result)
+
+    def test_lt_valid(self):
+        automation_condition = AutomationCondition.objects.create(
+            automation=self.automation,
+            index=0,
+            field_name="date_created",
+            evaluation_func="lt",
+            evaluation_value="3000-08-27T09:32:21+02:00")
+        result = automation_condition(self.ticket)
+        self.assertTrue(result)
+
+    def test_lt_invalid(self):
+        automation_condition = AutomationCondition.objects.create(
+            automation=self.automation,
+            index=0,
+            field_name="date_created",
+            evaluation_func="lt",
+            evaluation_value="2000-08-27T09:32:21+02:00")
+        result = automation_condition(self.ticket)
+        self.assertFalse(result)
+
+        automation_condition = AutomationCondition.objects.create(
+            automation=self.automation,
+            index=1,
+            field_name="date_created",
+            evaluation_func="lt",
+            evaluation_value=str(self.ticket.date_created))
+        result = automation_condition(self.ticket)
+        self.assertFalse(result)
+
+    def test_le_valid(self):
+        automation_condition = AutomationCondition.objects.create(
+            automation=self.automation,
+            index=0,
+            field_name="date_created",
+            evaluation_func="le",
+            evaluation_value="3000-08-27T09:32:21+02:00")
+        result = automation_condition(self.ticket)
+        self.assertTrue(result)
+
+        automation_condition = AutomationCondition.objects.create(
+            automation=self.automation,
+            index=1,
+            field_name="date_created",
+            evaluation_func="le",
+            evaluation_value=str(self.ticket.date_created))
+        result = automation_condition(self.ticket)
+        self.assertTrue(result)
+
+    def test_le_invalid(self):
+        automation_condition = AutomationCondition.objects.create(
+            automation=self.automation,
+            index=0,
+            field_name="date_created",
+            evaluation_func="le",
+            evaluation_value="2000-08-27T09:32:21+02:00")
+        result = automation_condition(self.ticket)
+        self.assertFalse(result)
+
+    #TODO: test many to many
+    #TODO: test contains

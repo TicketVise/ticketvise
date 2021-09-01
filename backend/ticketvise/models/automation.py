@@ -16,7 +16,7 @@ class Automation(models.Model):
 
 class AutomationCondition(models.Model):
     automation = models.ForeignKey("Automation", on_delete=models.CASCADE)
-    index = models.IntegerField()
+    index = models.IntegerField() #TODO: auto increment this value?
     field_name = models.CharField(max_length=50)
     evaluation_func = models.CharField(max_length=50)
     evaluation_value = models.CharField(max_length=50)
@@ -53,4 +53,3 @@ class AutomationCondition(models.Model):
 
     def le(self, field, value):
         return field <= value
-
