@@ -71,7 +71,7 @@ class AutomationTestCase(TicketTestCase):
             index=0,
             field_name="labels",
             evaluation_func="eq",
-            evaluation_value=self.ticket.labels)
+            evaluation_value=self.ticket.labels) #TODO: only pass ids?
         result = automation_condition(self.ticket)
         self.assertTrue(result)
         self.assertEqual(self.ticket.labels.count(), 0)
@@ -248,8 +248,8 @@ class AutomationTestCase(TicketTestCase):
             index=0,
             field_name="labels",
             evaluation_func="contains",
-            evaluation_value=label1)
-        result = automation_condition(self.ticket)
+            evaluation_value=label1.id)
+        result = automation_condition(ticket)
         self.assertTrue(result)
 
     def test_contains_many_to_many_invalid(self):
@@ -263,5 +263,5 @@ class AutomationTestCase(TicketTestCase):
             field_name="labels",
             evaluation_func="contains",
             evaluation_value=label2)
-        result = automation_condition(self.ticket)
+        result = automation_condition(ticket)
         self.assertFalse(result)

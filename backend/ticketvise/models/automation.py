@@ -1,4 +1,5 @@
 from django.db import models
+from django.db.models.fields.related_descriptors import ManyRelatedManager
 
 class Automation(models.Model):
     name = models.CharField(max_length=255)
@@ -30,6 +31,9 @@ class AutomationCondition(models.Model):
         value = self.evaluation_value
         if isinstance(field, models.Model):
             value = type(field).objects.get(pk=value)
+        # elif isinstance(field, ManyRelatedManager):
+        #     value = type(field).objects.get(pk=value)
+        #     field = field.all()
         else:
             field = str(field)
             value = str(value)
