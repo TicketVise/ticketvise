@@ -33,6 +33,9 @@ services:
     build: ./proxy
     ports:
       - "8080:8080"
+    entrypoint: ""
+    volumes:
+      - ./nginx/nginx.dev.conf:/etc/nginx/conf.d/nginx.conf
 
   database:
     hostname: database
