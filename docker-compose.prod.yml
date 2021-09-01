@@ -39,9 +39,6 @@ services:
         delay: 5s
         max_attempts: 5
         window: 10s
-    volumes:
-      - media:/backend/ticketvise/media
-      - static:/backend/static
     environment:
       DEBUG: 0
       SEND_MAIL: 1
@@ -137,7 +134,5 @@ services:
 volumes:
   cert_conf:
   cert_www:
-  static:
-  media:
   postgres_data:
   minio_data:

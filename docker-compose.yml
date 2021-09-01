@@ -1,19 +1,58 @@
 version: "3.7"
 
 services:
+  web:
+    image: ticketvise/backend
+    build: ./backend
+    command: >
+      sh -c "python manage.py collectstatic --no-input --clear &&
+             python manage.py wait_for_database &&
+             python manage.py configure_s3 &&
+             python manage.py migrate --no-input &&
+             python manage.py insert_demo_data &&
+             python manage.py runserver 0.0.0.0:6000"
+    ports:
+      - "6000:6000"
+    volumes:
+      - ./backend:/backend
+    environment:
+      DJANGO_SECRET: Welkom01
+      EMAIL_PASSWORD: Welikom01
+      SQL_USER: ticketvise
+      SQL_PASSWORD: Welkom01
+      LTI_KEY: LtiKey01
+      LTI_SECRET: LtiSecret01
+      HOST: localhost:8000
+      S3_USE_HTTPS: 0
+      S3_ACCESS_KEY: minio
+      S3_SECRET_KEY: Welkom01
+      DOMAIN: local.ticketvise.com
+
+  proxy:
+    image: ticketvise/proxy
+    build: ./proxy
+    ports:
+      - "8080:8080"
+
   database:
     hostname: database
     image: postgres:12-alpine
     volumes:
       - postgres_data:/var/lib/postgresql/data/
-
-  web:
-    ports:
-      - "6000:6000"
     environment:
-      SQL_ENGINE: django.db.backends.postgresql_psycopg2
-      SQL_DATABASE: ticketvise
-      SQL_HOST: database
+      POSTGRES_DB: ticketvise
+      POSTGRES_USER: ticketvise
+      POSTGRES_PASSWORD: Welkom01
+    ports:
+      - "5432:5432"
+
+  frontend:
+    image: ticketvise/frontend
+    build: ./frontend
+    environment:
+      NGINX_DOMAIN: ${DOMAIN}
+    ports:
+      - "8000:80"
 
   s3:
     image: minio/minio:latest
@@ -24,10 +63,12 @@ services:
       - 9001:9001
     entrypoint: sh
     command: -c 'mkdir -p /data/$$S3_BUCKET_NAME && minio server /data --console-address ":9001"'
-
+    environment:
+      MINIO_ROOT_USER: minio
+      MINIO_ROOT_PASSWORD: Welkom01
+      S3_ENDPOINT_URL: http://localhost:9000
+      S3_BUCKET_NAME: ticketvise
 
 volumes:
-  static:
-  media:
   postgres_data:
   minio_data:
