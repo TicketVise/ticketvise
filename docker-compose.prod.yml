@@ -44,11 +44,18 @@ services:
       SEND_MAIL: 1
       DJANGO_SECRET: ${DJANGO_SECRET}
       SMTP_OUTBOUND_PASSWORD: ${EMAIL_PASSWORD}
+      SQL_HOST: database
+      SQL_DATABASE: ticketvise
+      SQL_ENGINE: django.db.backends.postgresql_psycopg2
       SQL_USER: ${SQL_USER}
       SQL_PASSWORD: ${SQL_PASSWORD}
       LTI_KEY: ${LTI_KEY}
       LTI_SECRET: ${LTI_SECRET}
       DOMAIN: ${DOMAIN}
+      HOST: ${DOMAIN}
+      S3_USE_HTTPS: 0
+      S3_ACCESS_KEY: ${S3_ACCESS_KEY}
+      S3_SECRET_KEY: ${S3_SECRET_KEY}
 
   frontend:
     image: "ticketvise/frontend:sha-${GIT_DIGEST}"
