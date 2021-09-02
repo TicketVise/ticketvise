@@ -16,6 +16,8 @@ services:
       POSTGRES_DB: ticketvise
       POSTGRES_USER: ${SQL_USER}
       POSTGRES_PASSWORD: ${SQL_PASSWORD}
+    ports:
+      - "5432:5432"
 
   web:
     image: "ticketvise/backend:sha-${GIT_DIGEST}"

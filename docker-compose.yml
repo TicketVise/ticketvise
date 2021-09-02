@@ -25,7 +25,7 @@ services:
       SQL_PASSWORD: Welkom01
       LTI_KEY: LtiKey01
       LTI_SECRET: LtiSecret01
-      HOST: localhost:8000
+      HOST: localhost:8080
       S3_USE_HTTPS: 0
       S3_ACCESS_KEY: minio
       S3_SECRET_KEY: Welkom01
@@ -56,15 +56,15 @@ services:
     image: ticketvise/frontend
     build: ./frontend
     ports:
-      - "8000:80"
+      - "80:80" 
 
   s3:
     image: minio/minio:latest
     volumes:
       - minio_data:/data
     ports:
-      - 9000:9000
-      - 9001:9001
+      - "9000:9000"
+      - "9001:9001"
     entrypoint: sh
     command: -c 'mkdir -p /data/$$S3_BUCKET_NAME && minio server /data --console-address ":9001"'
     environment:
