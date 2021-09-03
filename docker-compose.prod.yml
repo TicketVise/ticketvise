@@ -87,11 +87,12 @@ services:
     environment:
       NGINX_DOMAIN: ${DOMAIN}
     ports:
-      - "80:8080"
-      - "443:8443"
+      - "80:80"
+      - "443:443"
     volumes:
       - cert_conf:/etc/letsencrypt
       - cert_www:/var/www/certbot
+    command: "/bin/sh -c 'while :; do sleep 6h & wait $${!}; nginx -s reload; done & nginx -g \"daemon off;\"'"
 
   s3:
     image: minio/minio:latest
