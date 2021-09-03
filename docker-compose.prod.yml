@@ -23,7 +23,7 @@ services:
     image: "ticketvise/backend:sha-${GIT_DIGEST}"
     command: >
       sh -c "python manage.py wait_for_database &&
-            "python manage.py configure_s3 &&
+             python manage.py configure_s3 &&
              python manage.py migrate --no-input &&
              python manage.py collectstatic --no-input --clear &&
              gunicorn ticketvise.wsgi:application --bind 0.0.0.0:6000"
