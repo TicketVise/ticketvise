@@ -73,8 +73,6 @@ services:
         delay: 5s
         max_attempts: 5
         window: 10s
-    environment:
-      NGINX_DOMAIN: ${DOMAIN}
     ports:
       - "8000:80"
 
@@ -117,8 +115,8 @@ services:
         max_attempts: 5
         window: 10s
     environment:
-      S3_ACCESS_KEY: ${S3_ACCESS_KEY}
-      S3_SECRET_KEY: ${S3_SECRET_KEY}
+      MINIO_ROOT_USER:  ${S3_ACCESS_KEY}
+      MINIO_ROOT_PASSWORD: ${S3_SECRET_KEY}
       S3_ENDPOINT_URL: ${S3_ENDPOINT_URL}
       S3_BUCKET_NAME: ${S3_BUCKET_NAME}
     # healthcheck:
