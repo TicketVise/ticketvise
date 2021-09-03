@@ -16,8 +16,6 @@ services:
       POSTGRES_DB: ticketvise
       POSTGRES_USER: ${SQL_USER}
       POSTGRES_PASSWORD: ${SQL_PASSWORD}
-    ports:
-      - "5432:5432"
 
   web:
     image: "ticketvise/backend:sha-${GIT_DIGEST}"
@@ -27,8 +25,6 @@ services:
              python manage.py migrate --no-input &&
              python manage.py collectstatic --no-input --clear &&
              gunicorn ticketvise.wsgi:application --bind 0.0.0.0:6000"
-    ports:
-      - "6000:6000"
     deploy:
       replicas: 1
       update_config:
@@ -73,8 +69,6 @@ services:
         delay: 5s
         max_attempts: 5
         window: 10s
-    ports:
-      - "8000:80"
 
   proxy:
     image: "ticketvise/proxy:sha-${GIT_DIGEST}"
@@ -103,9 +97,6 @@ services:
     image: minio/minio:latest
     volumes:
       - minio_data:/data
-    ports:
-      - 9000:9000
-      - 9001:9001
     entrypoint: sh
     command: -c 'mkdir -p /data/$$S3_BUCKET_NAME && minio server /data --console-address ":9001"'
     deploy:
