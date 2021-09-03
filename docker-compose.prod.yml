@@ -118,7 +118,7 @@ services:
     #   retries: 3
 
   certbot:
-    image: certbot/certbot
+    image: certbot/certbot:v1.18.0
     deploy:
       restart_policy:
         condition: on-failure
