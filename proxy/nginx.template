@@ -52,7 +52,7 @@ server {
     proxy_set_header X-Forwarded-Proto https;
 
     location / {
-        proxy_pass http://frontend:8000;
+        proxy_pass http://frontend;
     }
 
     location /api {
