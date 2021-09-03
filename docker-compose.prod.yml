@@ -30,7 +30,7 @@ services:
     ports:
       - "6000:6000"
     deploy:
-      replicas: 2
+      replicas: 1
       update_config:
         parallelism: 1
         delay: 10s
@@ -62,7 +62,7 @@ services:
   frontend:
     image: "ticketvise/frontend:sha-${GIT_DIGEST}"
     deploy:
-      replicas: 2
+      replicas: 1
       update_config:
         parallelism: 1
         delay: 10s
@@ -81,7 +81,7 @@ services:
   proxy:
     image: "ticketvise/proxy:sha-${GIT_DIGEST}"
     deploy:
-      replicas: 2
+      replicas: 1
       update_config:
         parallelism: 1
         delay: 10s
