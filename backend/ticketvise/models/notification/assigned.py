@@ -19,7 +19,7 @@ class TicketAssignedNotification(Notification):
         return self.ticket.inbox
 
     def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
-        if self.receiver.notification_assigned_mail:
+        if self.pk is None and self.receiver.notification_assigned_mail:
             self.send_mail()
 
         if self.receiver.notification_assigned_app:
