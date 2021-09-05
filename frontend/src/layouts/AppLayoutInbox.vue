@@ -757,32 +757,10 @@ export default {
     isFramed () {
       return window.self !== window.top
     },
-    hasLocalStorage () {
-      // https://stackoverflow.com/questions/16427636/check-if-localstorage-is-available
-      if (typeof localStorage !== 'undefined') {
-        try {
-          localStorage.setItem('feature_test', 'yes')
-          if (localStorage.getItem('feature_test') === 'yes') {
-            localStorage.removeItem('feature_test')
-            return true
-          } else {
-            return false
-          }
-        } catch (e) {
-          return false
-        }
-      }
-
-      return false
-    },
     openInTab () {
-      if (this.hasLocalStorage) {
-        window.open(window.location.href, '_blank')
-      } else {
-        const url = new URL(window.location.href)
-        url.searchParams.append('token', store.state.token)
-        window.open(url.href, '_blank')
-      }
+      const url = new URL(window.location.href)
+      url.searchParams.append('token', store.state.token)
+      window.open(url.href, '_blank')
     }
   },
   computed: {
