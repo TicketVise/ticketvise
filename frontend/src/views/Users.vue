@@ -164,7 +164,7 @@
                   class="rounded border flex-grow py-2 px-4 flex md:flex-col-reverse space-x-2 md:space-x-0 items-center md:items-start"
                 >
                   <div class="flex items-baseline mt-1">
-                    <h2 class="text-2xl font-medium text-primary">0</h2>
+                    <h2 class="text-2xl font-medium text-primary">{{ publicTickets }}</h2>
                   </div>
                   <h3 class="text-lg leading-6 font-medium text-gray-900 dark:text-gray-100">
                     Public tickets
@@ -419,6 +419,11 @@ export default {
         .then((response) => {
           this.average = response.data.average
         })
+    }
+  },
+  computed: {
+    publicTickets () {
+      return this.tickets.filter(ticket => ticket.is_public).length
     }
   }
 }

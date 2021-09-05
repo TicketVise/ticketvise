@@ -1,5 +1,5 @@
 <template>
-  <div class="flex-1 relative overflow-y-auto focus:outline-none">
+  <div class="flex-1 relative overflow-y-auto focus:outline-none pb-16">
     <PublishConfirmation @click="requestPublish" @cancel="publishConfirmationModal = false"
                          v-if="publishConfirmationModal"/>
     <div class="py-4">
@@ -113,10 +113,9 @@
               <div class="pb-4">
                 <div class="sm:hidden">
                   <label for="tabs" class="sr-only">Select a tab</label>
-                  <select id="tabs" name="tabs"
+                  <select id="tabs" name="tabs" @change="switchTab(); tabs.find(t => t.name === $event.target.value).current = true"
                           class="block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-primary focus:border-primary sm:text-sm rounded-md">
                     <option v-show="tab.cond ? isStaff(role, user) : true"
-                            @select="switchTab"
                             v-for="tab in tabs" :key="tab.name" :selected="tab.current">{{ tab.name }}
                     </option>
                   </select>
@@ -125,7 +124,7 @@
                   <div class="border-b border-gray-200">
                     <nav class="-mb-px flex space-x-8" aria-label="Tabs">
                       <a v-show="tab.cond ? isStaff(role, user) : true"
-                         @click="switchTab"
+                         @click="switchTab(); tabs.find(t => t.name === tab.name).current = true"
                          v-for="tab in tabs" :key="tab.name" href="#"
                          :class="[tab.current ? 'border-primary text-primary-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-200', 'whitespace-nowrap flex py-4 px-1 border-b-2 font-medium text-sm']"
                          :aria-current="tab.current ? 'page' : undefined">
@@ -139,7 +138,7 @@
                   </div>
                 </div>
               </div>
-              <div>
+              <div class="pb-2 border-b mb-4 xl:pb-0 xl:border-b-0 xl:mb-0">
                 <!-- Activity feed -->
                 <activity-feed :ticket="ticket" :permissions="isStaffOrAuthor" v-if="tabs.find(t => t.current).name === 'Activity' && ticket"
                                v-on:post="loadTicketData"/>
@@ -315,6 +314,29 @@
       </div>
     </div>
   </div>
+
+  <!-- Temporary warning about the text editor. -->
+  <div class="absolute inset-x-0 bottom-0">
+    <div class="bg-primary-600">
+      <div class="max-w-7xl mx-auto py-3 px-3 sm:px-6 lg:px-8">
+        <div class="flex items-center justify-between flex-wrap">
+          <div class="w-0 flex-1 flex items-center">
+            <span class="flex p-2 rounded-lg bg-primary">
+              <SpeakerphoneIcon class="h-6 w-6 text-white" aria-hidden="true" />
+            </span>
+            <p class="ml-3 font-medium text-white truncate">
+              <span class="md:hidden">
+                Temporarily a plain text message
+              </span>
+              <span class="hidden md:inline">
+                We are working on a new editor. So we temporarily can only offer plain text messages.
+              </span>
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 </template>
 
 <script>
@@ -351,7 +373,7 @@ import {
 } from '@heroicons/vue/solid'
 
 import {
-  CloudIcon
+  CloudIcon, SpeakerphoneIcon
 } from '@heroicons/vue/outline'
 
 export default {
@@ -375,6 +397,7 @@ export default {
     PlusIconSolid,
     PublishConfirmation,
     StaffDiscussion,
+    SpeakerphoneIcon,
     ClipboardListIcon,
     ClipboardCheckIcon
   },
@@ -601,7 +624,6 @@ export default {
     },
     switchTab () {
       this.tabs.forEach(t => (t.current = false))
-      this.tabs.find(t => t.name === this.tab.name).current = true
     },
     updateAssignee (user) {
       const id = this.ticket?.assignee && this.ticket?.assignee.id === user.id ? [] : user.id
