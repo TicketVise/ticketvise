@@ -152,7 +152,7 @@ export default {
     Chip
   },
   data: () => ({
-    open: true,
+    open: false,
     title: 'Lecture tickets to teacher',
     addIf: false,
     addThen: false,
