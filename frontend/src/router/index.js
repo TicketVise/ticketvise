@@ -85,6 +85,22 @@ const routes = [
     }
   },
   {
+    path: '/inboxes/:inboxId/labels',
+    name: 'Labels',
+    component: () => import(/* webpackChunkName: "labels" */ '@/views/Labels.vue'),
+    meta: {
+      layout: 'AppLayoutInbox'
+    }
+  },
+  {
+    path: '/inboxes/:inboxId/labels/:labelId',
+    name: 'Label',
+    component: () => import(/* webpackChunkName: "label" */ '@/views/Label.vue'),
+    meta: {
+      layout: 'AppLayoutInbox'
+    }
+  },
+  {
     path: '/inboxes/:inboxId/insights',
     name: 'Insights',
     component: () => import(/* webpackChunkName: "insights" */ '@/views/Insights.vue'),

@@ -181,6 +181,19 @@
                   </router-link>
 
                   <router-link
+                    :to="'/inboxes/' + $route.params.inboxId + '/labels'"
+                    exact
+                    class="text-gray-600 group flex items-center justify-center h-12 w-12 p-3 text-sm font-medium rounded-full focus:ring ring-primary"
+                    active-class="bg-gray-100 text-gray-900 dark:bg-gray-800 dark:text-gray-700"
+                    title="Insights"
+                  >
+                    <!-- Heroicon name: outline/bookmark -->
+                    <svg xmlns="http://www.w3.org/2000/svg" class="text-gray-400 h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" />
+                    </svg>
+                  </router-link>
+
+                  <router-link
                     :to="'/inboxes/' + $route.params.inboxId + '/insights'"
                     exact
                     class="text-gray-600 group flex items-center justify-center h-12 w-12 p-3 text-sm font-medium rounded-full focus:ring ring-primary"
@@ -205,13 +218,36 @@
                   </router-link>
 
                   <router-link
+                    :to="'/inboxes/' + $route.params.inboxId + '/automation'"
+                    exact
+                    class="text-gray-600 group flex items-center justify-center h-12 w-12 p-3 text-sm font-medium rounded-full focus:ring ring-primary"
+                    active-class="bg-gray-100 text-gray-900 dark:bg-gray-800 dark:text-gray-700"
+                    title="Insights"
+                  >
+                    <svg
+                      class="text-gray-400 h-6 w-6"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"
+                      ></path>
+                    </svg>
+                  </router-link>
+
+                  <router-link
                     :to="'/inboxes/' + $route.params.inboxId + '/settings'"
                     exact
                     class="text-gray-600 group flex items-center justify-center h-12 w-12 p-3 text-sm font-medium rounded-full focus:ring ring-primary"
                     active-class="bg-gray-100 text-gray-900 dark:bg-gray-800 dark:text-gray-700"
                     title="Settings"
                   >
-                    <!-- Heroicon name: outline/calendar -->
+                    <!-- Heroicon name: outline/settings -->
                     <svg
                       class="text-gray-400 h-6 w-6"
                       fill="none"
@@ -429,6 +465,19 @@
                       </router-link>
 
                       <router-link
+                        :to="'/inboxes/' + $route.params.inboxId + '/labels'"
+                        exact
+                        class="text-gray-600 hover:bg-gray-50 hover:text-gray-900 dark:hover:bg-gray-700 dark:hover:text-white group flex items-center px-2 py-2 text-sm font-medium rounded-md"
+                        active-class="bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-white"
+                      >
+                        <!-- Heroicon name: outline/bookmark -->
+                        <svg xmlns="http://www.w3.org/2000/svg" class="text-gray-400 group-hover:text-gray-500 dark:group-hover:text-gray-400 mr-3 h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" />
+                        </svg>
+                        Labels
+                      </router-link>
+
+                      <router-link
                         :to="'/inboxes/' + $route.params.inboxId + '/insights'"
                         exact
                         class="text-gray-600 hover:bg-gray-50 hover:text-gray-900 dark:hover:bg-gray-700 dark:hover:text-white group flex items-center px-2 py-2 text-sm font-medium rounded-md"
@@ -450,6 +499,31 @@
                           ></path>
                         </svg>
                         Insights
+                      </router-link>
+
+                      <router-link
+                        :to="
+                          '/inboxes/' + $route.params.inboxId + '/automation'
+                        "
+                        exact
+                        class="text-gray-600 hover:bg-gray-50 hover:text-gray-900 dark:hover:bg-gray-700 dark:hover:text-white group flex items-center px-2 py-2 text-sm font-medium rounded-md"
+                        active-class="bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-white"
+                      >
+                        <svg
+                          class="text-gray-400 group-hover:text-gray-500 dark:group-hover:text-gray-400 mr-3 h-6 w-6"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                          xmlns="http://www.w3.org/2000/svg"
+                        >
+                          <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            stroke-width="2"
+                            d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"
+                          ></path>
+                        </svg>
+                        Automation
                       </router-link>
 
                       <router-link
@@ -480,32 +554,6 @@
                           ></path>
                         </svg>
                         Settings
-                      </router-link>
-
-                      <router-link
-                        :to="
-                          '/inboxes/' + $route.params.inboxId + '/automation'
-                        "
-                        exact
-                        class="text-gray-600 hover:bg-gray-50 hover:text-gray-900 dark:hover:bg-gray-700 dark:hover:text-white group flex items-center px-2 py-2 text-sm font-medium rounded-md"
-                        active-class="bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-white"
-                      >
-                        <!-- Heroicon name: outline/calendar -->
-                        <svg
-                          class="text-gray-400 group-hover:text-gray-500 dark:group-hover:text-gray-400 mr-3 h-6 w-6"
-                          fill="none"
-                          stroke="currentColor"
-                          viewBox="0 0 24 24"
-                          xmlns="http://www.w3.org/2000/svg"
-                        >
-                          <path
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
-                            stroke-width="2"
-                            d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"
-                          ></path>
-                        </svg>
-                        Automation
                       </router-link>
                     </div>
                     <!-- <div>
