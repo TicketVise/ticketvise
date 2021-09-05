@@ -42,7 +42,7 @@ class InboundMailProtocol(models.TextChoices):
     IMAP = 'IMAP'
 
 def inbox_directory_path(instance, filename):
-    return f"inboxes/{instance.ticket.inbox.id}/images/{token_urlsafe(64)}/{filename}"
+    return f"inboxes/{instance.id}/images/{token_urlsafe(64)}/{filename}"
 
 class Inbox(models.Model):
     """
