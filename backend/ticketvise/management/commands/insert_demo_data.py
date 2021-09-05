@@ -107,17 +107,13 @@ class Command(BaseCommand):
         # Creating Courses
         inbox_pse = Inbox.objects.create(
             code="5062STRE6Y", name="Project Software Engineering", round_robin_parameter=4, inbound_email_username="pse@ticketvise.com",
-            enable_create_new_ticket_by_email=True, enable_reply_by_email=True,
-            image="https://images.unsplash.com/photo-1524995997946-a1c2e315a42f?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=1050&q=80"
+            enable_create_new_ticket_by_email=True, enable_reply_by_email=True
         )
         inbox_ip = Inbox.objects.create(code="5062BEST6Y", name="Inleiding Programmeren")
-        inbox_ds = Inbox.objects.create(code="2020DS1864", name="Datastructuren",
-            image="https://images.unsplash.com/photo-1503676260728-1c00da094a0b?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=1009&q=80")
+        inbox_ds = Inbox.objects.create(code="2020DS1864", name="Datastructuren")
 
-        inbox_pt = Inbox.objects.create(code="5061DAVI5Y", name="Programmeertalen",
-            image="https://images.unsplash.com/photo-1581078426770-6d336e5de7bf?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=1050&q=80")
-        inbox_mp = Inbox.objects.create(code="5061GAVI5Y", name="Master's Project",
-            image="https://images.unsplash.com/photo-1580582932707-520aed937b7b?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=1489&q=80")
+        inbox_pt = Inbox.objects.create(code="5061DAVI5Y", name="Programmeertalen")
+        inbox_mp = Inbox.objects.create(code="5061GAVI5Y", name="Master's Project")
         inbox_pmpse = Inbox.objects.create(
             code="5061VEVI5Y", name="Preparation Master's Project Software Engineering"
         )
