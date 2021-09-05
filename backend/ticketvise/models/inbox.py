@@ -6,6 +6,7 @@ Contains all entity sets for the inbox database.
 **Table of contents**
 * :class:`Inbox`
 """
+from secrets import token_urlsafe
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django.db import models
 
