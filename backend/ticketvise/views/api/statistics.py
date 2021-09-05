@@ -182,3 +182,12 @@ class LabelsCountStatisticsApiView(APIView):
         labels = Label.objects.filter(inbox=inbox).annotate(count=Count("tickets")).order_by("-count")
 
         return JsonResponse(LabelWithCountSerializer(labels, many=True).data, safe=False)
+
+class UserStatisticsApiView(APIView):
+    def get(self, request):
+
+        return JsonResponse({
+            "inboxes": UserInbox.objects.filter(user=request.user).count(),
+            "tickets": Ticket.objects.filter(author=request.user).count(),
+            "public_tickets": Ticket.objects.filter(author=request.user, is_public__isnull=False).count()
+        })

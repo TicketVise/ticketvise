@@ -9,6 +9,7 @@ Contains all entity sets for the ticket database and TicketStatusChangedNotifica
 """
 import os
 import uuid
+from secrets import token_urlsafe
 
 from django.db import models, transaction
 from django.db.models import Max
@@ -47,7 +48,8 @@ class Ticket(models.Model):
     """
 
     author = models.ForeignKey("User", on_delete=models.CASCADE, related_name="tickets")
-    shared_with = models.ManyToManyField("User", blank=True, through="TicketSharedUser", through_fields=("ticket", "user"))
+    shared_with = models.ManyToManyField("User", blank=True, through="TicketSharedUser",
+                                         through_fields=("ticket", "user"))
     assignee = models.ForeignKey("User", on_delete=models.CASCADE, blank=True, null=True,
                                  related_name="assigned_tickets")
     inbox = models.ForeignKey("Inbox", on_delete=models.CASCADE, related_name="tickets")
@@ -56,8 +58,14 @@ class Ticket(models.Model):
     status = models.CharField(max_length=8, choices=Status.choices, default=Status.PENDING)
     content = models.TextField()
     labels = models.ManyToManyField("Label", blank=True, related_name="tickets", through="TicketLabel")
-    reply_message_id = models.UUIDField(default=uuid.uuid4, editable=False, unique=True, null=False)
-    comment_message_id = models.UUIDField(default=uuid.uuid4, editable=False, unique=True, null=False)
+    is_public = models.DateTimeField(auto_now_add=False, null=True, default=None)
+    is_anonymous = models.BooleanField(default=False)
+    publish_request_initiator = models.ForeignKey("User", on_delete=models.CASCADE, blank=True, null=True,
+                                                  related_name="publish_request_initiator")
+    publish_request_created = models.DateTimeField(auto_now_add=False, null=True, default=None)
+    is_pinned = models.DateTimeField(auto_now_add=False, null=True, default=None)
+    pin_initiator = models.ForeignKey("User", on_delete=models.CASCADE, blank=True, null=True,
+                                      related_name="pin_initiator")
     date_edited = models.DateTimeField(auto_now=True)
     date_created = models.DateTimeField(auto_now_add=True)
 
@@ -126,7 +134,6 @@ class Ticket(models.Model):
 
         super().save(force_insert, force_update, using, update_fields)
 
-
         if old_ticket and old_ticket.status != self.status:
             TicketStatusEvent.objects.create(ticket=self, initiator=CurrentUserMiddleware.get_current_user(),
                                              old_status=old_ticket.status, new_status=self.status)
@@ -187,12 +194,15 @@ def labels_changed_handler(sender, action, instance, model, **kwargs):
     elif action == "post_remove":
         for label in labels:
             TicketLabelEvent.objects.create(ticket=ticket, label=label, is_added=False,
+
                                             initiator=CurrentUserMiddleware.get_current_user())
 
+def ticket_directory_path(instance, filename):
+    return f"inboxes/{instance.ticket.inbox.id}/tickets/{instance.ticket.ticket_inbox_id}/attachments/{token_urlsafe(64)}/{filename}"
 
 class TicketAttachment(models.Model):
     ticket = models.ForeignKey(Ticket, on_delete=models.CASCADE, related_name="attachments")
-    file = models.FileField(upload_to="media/tickets")
+    file = models.FileField(upload_to=ticket_directory_path, max_length=1000)
     uploader = models.ForeignKey("User", on_delete=models.CASCADE, null=True)
     date_edited = models.DateTimeField(auto_now=True)
     date_created = models.DateTimeField(auto_now_add=True)
@@ -204,8 +214,9 @@ class TicketAttachment(models.Model):
         super().save(force_insert, force_update, using, update_fields)
 
     def delete(self, *args, **kwargs):
-        os.remove(os.path.join(settings.MEDIA_ROOT, self.file.name))
-        super(TicketAttachment, self).delete()
+        # Set save to false to remove file from s3 storage
+        self.file.delete(save=False)
+        super().delete()
 
 
 class TicketEvent(models.Model):

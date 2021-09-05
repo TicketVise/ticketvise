@@ -38,7 +38,7 @@ class LoginTestCase(TestCase):
 
         # Also test putting in the wrong password.
         response = self.client.post("/api/login", {"username": "root", "password": "wrong"}, follow=True)
-        self.assertEqual(response.status_code, 404)
+        self.assertEqual(response.status_code, 401)
 
         # Also test putting in no password.
         response = self.client.post("/api/login", {"username": "root", "password": ""}, follow=True)

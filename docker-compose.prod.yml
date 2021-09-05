@@ -1,7 +1,11 @@
-version: '3.7'
+version: "3.7"
 
 services:
   database:
+    hostname: database
+    image: postgres:12-alpine
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
     deploy:
       restart_policy:
         condition: on-failure
@@ -17,11 +21,12 @@ services:
     image: "ticketvise/backend:sha-${GIT_DIGEST}"
     command: >
       sh -c "python manage.py wait_for_database &&
+             python manage.py configure_s3 &&
              python manage.py migrate --no-input &&
              python manage.py collectstatic --no-input --clear &&
              gunicorn ticketvise.wsgi:application --bind 0.0.0.0:6000"
     deploy:
-      replicas: 2
+      replicas: 1
       update_config:
         parallelism: 1
         delay: 10s
@@ -32,46 +37,43 @@ services:
         delay: 5s
         max_attempts: 5
         window: 10s
-    volumes:
-      - media:/backend/ticketvise/media
-      - static:/backend/static
     environment:
       DEBUG: 0
       SEND_MAIL: 1
       DJANGO_SECRET: ${DJANGO_SECRET}
       SMTP_OUTBOUND_PASSWORD: ${EMAIL_PASSWORD}
+      SQL_HOST: database
+      SQL_DATABASE: ticketvise
+      SQL_ENGINE: django.db.backends.postgresql_psycopg2
       SQL_USER: ${SQL_USER}
       SQL_PASSWORD: ${SQL_PASSWORD}
       LTI_KEY: ${LTI_KEY}
       LTI_SECRET: ${LTI_SECRET}
       DOMAIN: ${DOMAIN}
-      SENTRY_DSN: ${SENTRY_DSN}
+      HOST: ${DOMAIN}
+      S3_USE_HTTPS: 0
+      S3_ACCESS_KEY: ${S3_ACCESS_KEY}
+      S3_SECRET_KEY: ${S3_SECRET_KEY}
 
-  cronjob:
-    image: "ticketvise/cronjob:sha-${GIT_DIGEST}"
-    command: sh -c "env > /etc/environment && cron -f"
+  frontend:
+    image: "ticketvise/frontend:sha-${GIT_DIGEST}"
     deploy:
+      replicas: 1
+      update_config:
+        parallelism: 1
+        delay: 10s
+        order: start-first
+        failure_action: rollback
       restart_policy:
         condition: on-failure
         delay: 5s
         max_attempts: 5
         window: 10s
-    environment:
-      DEBUG: 0
-      SEND_MAIL: 1
-      DJANGO_SECRET: ${DJANGO_SECRET}
-      SMTP_OUTBOUND_PASSWORD: ${EMAIL_PASSWORD}
-      SQL_USER: ${SQL_USER}
-      SQL_PASSWORD: ${SQL_PASSWORD}
-      LTI_KEY: ${LTI_KEY}
-      LTI_SECRET: ${LTI_SECRET}
-      DOMAIN: ${DOMAIN}
-      SENTRY_DSN: ${SENTRY_DSN}
 
   proxy:
     image: "ticketvise/proxy:sha-${GIT_DIGEST}"
     deploy:
-      replicas: 2
+      replicas: 1
       update_config:
         parallelism: 1
         delay: 10s
@@ -85,16 +87,38 @@ services:
     environment:
       NGINX_DOMAIN: ${DOMAIN}
     ports:
-      - 80:8080
-      - 443:8443
+      - "80:80"
+      - "443:443"
     volumes:
-      - media:/home/media:ro
-      - static:/home/static
       - cert_conf:/etc/letsencrypt
       - cert_www:/var/www/certbot
+    command: "/bin/sh -c 'while :; do sleep 6h & wait $${!}; nginx -s reload; done & nginx -g \"daemon off;\"'"
+
+  s3:
+    image: minio/minio:latest
+    volumes:
+      - minio_data:/data
+    entrypoint: sh
+    command: -c 'mkdir -p /data/$$S3_BUCKET_NAME && minio server /data --console-address ":9001"'
+    deploy:
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 5
+        window: 10s
+    environment:
+      MINIO_ROOT_USER:  ${S3_ACCESS_KEY}
+      MINIO_ROOT_PASSWORD: ${S3_SECRET_KEY}
+      S3_ENDPOINT_URL: ${S3_ENDPOINT_URL}
+      S3_BUCKET_NAME: ${S3_BUCKET_NAME}
+    # healthcheck:
+    #   test: [ "CMD", "curl", "-f", ${MINIO_ENDPOINT_URL}"/minio/health/live" ]
+    #   interval: 30s
+    #   timeout: 20s
+    #   retries: 3
 
   certbot:
-    image: certbot/certbot
+    image: certbot/certbot:v1.18.0
     deploy:
       restart_policy:
         condition: on-failure
@@ -106,13 +130,8 @@ services:
       - cert_www:/var/www/certbot
     entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done;'"
 
-  mail:
-    image: "ticketvise/mail:sha-${GIT_DIGEST}"
-    environment:
-      DOMAIN: ${DOMAIN}
-    volumes:
-      - cert_conf:/etc/letsencrypt
-
 volumes:
   cert_conf:
   cert_www:
+  postgres_data:
+  minio_data:

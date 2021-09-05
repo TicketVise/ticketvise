@@ -18,11 +18,15 @@ DEBUG = int(os.environ.get("DEBUG", True))
 #: If ``True``, mails are sent when calling :func:`email.send_email`.
 SEND_MAIL = int(os.environ.get("SEND_MAIL", False))
 
-DOMAIN = os.environ.get("DOMAIN", "uva.ticketvise.com")
+DOMAIN = os.environ.get("DOMAIN", "localhost")
+HOST = os.environ.get("HOST", DOMAIN)
+
 ALLOWED_HOSTS = ["*"]
 
 #: Application definition
 #: ~~~~~~~~~~~~~~~~~~~~~~
+
+DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 #: User model to use for authentication.
 AUTH_USER_MODEL = "ticketvise.User"
@@ -125,15 +129,29 @@ MEDIA_URL = "/"
 #: Media root path.
 MEDIA_ROOT = os.path.join(BASE_DIR, "ticketvise/")
 #: Path to the default user avatar image.
-DEFAULT_AVATAR_PATH = "/static/img/avatars/default-avatar.png"
+DEFAULT_AVATAR_PATH = "/img/default-avatar.png"
 #: Directory for uploaded avatar pictures.
 AVATAR_DIRECTORY = "media/img/avatars"
 #: Path to the default inbox image.
-DEFAULT_INBOX_IMAGE_PATH = "/static/img/inboxes/default-inbox.png"
+DEFAULT_INBOX_IMAGE_PATH = "/img/default-inbox.png"
 #: Directory for uploaded inbox images.
 INBOX_IMAGE_DIRECTORY = "media/img/inboxes"
+
+# S3 config
 #: Set max upload size for files
-FILE_UPLOAD_MAX_MEMORY_SIZE = 314572800
+AWS_S3_MAX_MEMORY_SIZE = 314572800
+AWS_S3_FILE_OVERWRITE = False
+DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
+AWS_S3_SECURE_URLS = int(os.environ.get("S3_USE_HTTPS", True))
+AWS_QUERYSTRING_AUTH = False
+
+AWS_ACCESS_KEY_ID = os.environ.get("S3_ACCESS_KEY", "minio")
+AWS_SECRET_ACCESS_KEY = os.environ.get("S3_SECRET_KEY", "Welkom01")
+
+AWS_STORAGE_BUCKET_NAME = os.environ.get("S3_BUCKET_NAME", "ticketvise")
+AWS_S3_ENDPOINT_URL = os.environ.get("S3_ENDPOINT_URL", "http://s3:9000")
+AWS_S3_CUSTOM_DOMAIN = f"{HOST}/s3/{AWS_STORAGE_BUCKET_NAME}"
+
 
 #: Password validation
 #: ~~~~~~~~~~~~~~~~~~~
@@ -168,25 +186,22 @@ DATE_FORMAT = "j N, Y"
 #: ~~~~~~~~~~~~~~~~~~~
 STATIC_URL = "/static/"
 STATIC_ROOT = os.path.join(BASE_DIR, "static")
-STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.ManifestStaticFilesStorage'
 
 #: Email settings
 #: ~~~~~~~~~~~~~~~~~~~
-
-SMTP_INBOUND_PORT = os.getenv("SMTP_INBOUND_PORT", 2525)
-
 if SEND_MAIL:
     EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 else:
-    EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+    EMAIL_BACKEND = 'django.core.mail.backends.locmem.EmailBackend'
+
 EMAIL_HOST = os.getenv("SMTP_OUTBOUND_HOST", "smtp.sendgrid.net")
 EMAIL_PORT = os.getenv("SMTP_OUTBOUND_PORT", 587)
 EMAIL_HOST_USER = os.getenv("SMTP_OUTBOUND_USER", "apikey")
 EMAIL_HOST_PASSWORD = os.getenv("SMTP_OUTBOUND_PASSWORD", "Welkom01")
 EMAIL_USE_TLS = os.getenv("SMTP_TLS", True)
 EMAIL_USE_SSL = os.getenv("SMTP_SSL", False)
-EMAIL_FROM = os.getenv("SMTP_OUTBOUND_FROM", "TicketVise <ticket@{}>".format(DOMAIN))
-
+DEFAULT_FROM_EMAIL = os.getenv("SMTP_OUTBOUND_FROM", "TicketVise <ticket@{}>".format(DOMAIN))
+ 
 PAGE_SIZE = 25
 
 ROLE_GUEST_DISPLAY_NAME = os.getenv("ROLE_GUEST_DISPLAY_NAME", "Student")
@@ -203,21 +218,9 @@ LOGGING = {
     },
     'root': {
         'handlers': ['console'],
-        'level': 'WARNING',
+        'level': 'INFO',
     },
 }
-
-SENTRY_DSN = os.getenv("SENTRY_DSN")
-if SENTRY_DSN:
-    import sentry_sdk
-    from sentry_sdk.integrations.django import DjangoIntegration
-
-    sentry_sdk.init(
-        dsn=SENTRY_DSN,
-        integrations=[DjangoIntegration()],
-        traces_sample_rate=1.0,
-        send_default_pii=False
-    )
 
 TOKEN_EXPIRED_AFTER_SECONDS = 86400
 

@@ -27,19 +27,21 @@ class Command(BaseCommand):
         password = "pbkdf2_sha256$180000$6zy2oz9vnxsr$eTQBZxgVxG7ldORL63+OcqJbzLcUhbdCkAW7NdqsOxE="
         user_admin = User.objects.create(
             username="admin",
-            first_name="admin",
-            last_name="admin",
+            first_name="Alan",
+            last_name="Turing",
+            avatar_url="https://upload.wikimedia.org/wikipedia/commons/a/a1/Alan_Turing_Aged_16.jpg",
             password=password,
             email="admin@ticketvise.com",
             is_staff=True,
             is_superuser=True,
         )
         user_ivan = User.objects.create(
-            username="ivanstudent",
-            first_name="Ivan",
-            last_name="Student",
+            username="e.dijkstra",
+            first_name="Edsger",
+            last_name="W. Dijkstra",
+            avatar_url="https://upload.wikimedia.org/wikipedia/commons/thumb/d/d9/Edsger_Wybe_Dijkstra.jpg/800px-Edsger_Wybe_Dijkstra.jpg",
             password=password,
-            email="ivanstudent@ticketvise.com",
+            email="Edsger@ticketvise.com",
             is_staff=False,
             is_superuser=False,
         )
@@ -62,11 +64,12 @@ class Command(BaseCommand):
             is_superuser=False,
         )
         user_ana = User.objects.create(
-            username="anacoordinator",
-            first_name="Ana",
-            last_name="Coordinator",
+            username="c.mcauliffe",
+            first_name="Christa",
+            last_name="McAuliffe",
+            avatar_url="https://www.biography.com/.image/t_share/MTc1NDAwODQ5MjM1NzgxMjI2/the-challenger-christa-mcauliffe-16492799851_nasa.jpg",
             password=password,
-            email="info@ticketvise.com",
+            email="christa@ticketvise.com",
             is_staff=False,
             is_superuser=False,
         )
@@ -103,16 +106,16 @@ class Command(BaseCommand):
 
         # Creating Courses
         inbox_pse = Inbox.objects.create(
-            code="5062STRE6Y", name="Project Software Engineering", round_robin_parameter=4, email="pse@ticketvise.com",
+            code="5062STRE6Y", name="Project Software Engineering", round_robin_parameter=4, inbound_email_username="pse@ticketvise.com",
             enable_create_new_ticket_by_email=True, enable_reply_by_email=True
         )
         inbox_ip = Inbox.objects.create(code="5062BEST6Y", name="Inleiding Programmeren")
         inbox_ds = Inbox.objects.create(code="2020DS1864", name="Datastructuren")
 
         inbox_pt = Inbox.objects.create(code="5061DAVI5Y", name="Programmeertalen")
-        inbox_mp = Inbox.objects.create(code="5061GAVI5Y", name="Master's Project ")
+        inbox_mp = Inbox.objects.create(code="5061GAVI5Y", name="Master's Project")
         inbox_pmpse = Inbox.objects.create(
-            code="5061VEVI5Y", name="Preparation Master's Project Software Engineering "
+            code="5061VEVI5Y", name="Preparation Master's Project Software Engineering"
         )
 
         # Creating Labels
@@ -744,6 +747,20 @@ class Command(BaseCommand):
         ticket_42.add_label(label_ds_heaps)
         ticket_42.save()
 
+        ticket_43 = Ticket.objects.create(
+            author=user_student,
+            assignee=user_assistant,
+            inbox=inbox_pse,
+            title="This ticket should be public",
+            content="Everybody should be able to see this",
+            is_public=timezone.now(),
+        )
+        ticket_43.date_created = timezone.now() - datetime.timedelta(days=2, hours=16)
+        ticket_43.date_edited = timezone.now() - datetime.timedelta(days=2, hours=16)
+        ticket_43.status = Status.CLOSED
+        ticket_43.add_label(label_pse_assignment)
+        ticket_43.save()
+
         # Create Comments
         def add_date_to_comment(comment: Comment, timedelta):
             """
@@ -841,25 +858,29 @@ class Command(BaseCommand):
                                             content="Only the papers!", )
         add_date_to_comment(comment_36, datetime.timedelta(days=2, hours=14))
 
-        comment_36 = Comment.objects.create(author=assistant_tbijker, ticket=ticket_38, is_reply=True,
+        comment_37 = Comment.objects.create(author=assistant_tbijker, ticket=ticket_38, is_reply=True,
                                             content="You need to create a struct object to store the data and point to "
                                                     "the next object in the list. The point of a linked list is that "
                                                     "you have multiple objects pointing to the next, you need to see "
                                                     "all nodes in this list separately.", )
-        add_date_to_comment(comment_36, datetime.timedelta(days=1, hours=0))
+        add_date_to_comment(comment_37, datetime.timedelta(days=1, hours=0))
 
-        comment_36 = Comment.objects.create(author=student_gmandemaker, ticket=ticket_38, is_reply=True,
+        comment_38 = Comment.objects.create(author=student_gmandemaker, ticket=ticket_38, is_reply=True,
                                             content="How does this look? I did some research and there seems "
                                                     "to be nothing wrong with this.\n"
                                                     "``` c \nclass Node {\n    public:\n    int data;\n"
                                                     "    Node* next;\n};\n ```", )
-        add_date_to_comment(comment_36, datetime.timedelta(days=0, hours=22))
+        add_date_to_comment(comment_38, datetime.timedelta(days=0, hours=22))
 
-        comment_36 = Comment.objects.create(author=assistant_tbijker, ticket=ticket_38, is_reply=True,
+        comment_39 = Comment.objects.create(author=assistant_tbijker, ticket=ticket_38, is_reply=True,
                                             content="It seems you are right, are you sure you declare the `Node*` "
                                                     "before you use it?", )
-        add_date_to_comment(comment_36, datetime.timedelta(days=0, hours=22))
+        add_date_to_comment(comment_39, datetime.timedelta(days=0, hours=22))
 
-        comment_36 = Comment.objects.create(author=student_gmandemaker, ticket=ticket_38, is_reply=True,
+        comment_40 = Comment.objects.create(author=student_gmandemaker, ticket=ticket_38, is_reply=True,
                                             content="This was indeed the problem, Thanks for helping me", )
-        add_date_to_comment(comment_36, datetime.timedelta(days=0, hours=22))
+        add_date_to_comment(comment_40, datetime.timedelta(days=0, hours=22))
+
+        comment_41 = Comment.objects.create(author=user_coordinator, ticket=ticket_43, is_reply=True,
+                                            content="This ticket is indeed public, and all replies can be seen too")
+        add_date_to_comment(comment_41, datetime.timedelta(days=0, hours=22))

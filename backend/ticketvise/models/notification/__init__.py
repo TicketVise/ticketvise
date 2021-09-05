@@ -1,15 +1,20 @@
+import logging
+import uuid
+from ticketvise.models.inbox import MailSecurity
+from django.core.mail import get_connection
 from django.db import models
-from django.urls import reverse
 from model_utils.managers import InheritanceManager
 
 from ticketvise import settings
-from ticketvise.email import send_mail_template
+from ticketvise.mail.send import send_mail_template
 
 
 class Notification(models.Model):
     objects = InheritanceManager()
-    receiver = models.ForeignKey("User", on_delete=models.CASCADE, related_name="notifications")
+    receiver = models.ForeignKey(
+        "User", on_delete=models.CASCADE, related_name="notifications")
     is_read = models.BooleanField(default=False)
+    email_message_id = models.UUIDField(default=uuid.uuid4, unique=True, null=False)
     date_edited = models.DateTimeField(auto_now=True)
     date_created = models.DateTimeField(auto_now_add=True)
 
@@ -31,20 +36,23 @@ class Notification(models.Model):
     def get_email_comments(self):
         return self.ticket.comments.filter(is_reply=True)
 
-    def get_message_id(self):
-        return self.ticket.reply_message_id
-
     def send_mail(self):
         send_mail_template(
             self.get_email_subject(),
+            self.ticket.inbox.smtp_username if self.ticket.inbox.email_enabled else settings.DEFAULT_FROM_EMAIL,
             self.receiver.email,
             "comments",
             {
-                "Message-Id": f"<{self.get_message_id()}@{settings.DOMAIN}>",
+                "Message-Id": f"<{self.email_message_id}@{settings.DOMAIN}>".lower(),
             },
             {
                 "title": self.content,
                 "ticket": self.ticket,
                 "comments": self.get_email_comments(),
-            }
+            },
+            self.ticket.inbox.smtp_server if self.ticket.inbox.email_enabled else None,
+            self.ticket.inbox.smtp_port if self.ticket.inbox.email_enabled else None,
+            self.ticket.inbox.smtp_username if self.ticket.inbox.email_enabled else None,
+            self.ticket.inbox.smtp_password if self.ticket.inbox.email_enabled else None,
+            self.ticket.inbox.smtp_security if self.ticket.inbox.email_enabled else None
         )
