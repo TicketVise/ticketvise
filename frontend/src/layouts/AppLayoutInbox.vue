@@ -28,6 +28,13 @@
 
           <!-- Right section on desktop -->
           <div class="flex lg:ml-4 lg:items-center py-4 pr-0.5">
+            <button type="button"
+                    class="inline-flex items-center justify-center py-1 px-4 border border-transparent rounded-md shadow-sm text-white bg-primary hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500 mr-4 space-x-2"
+                    aria-label="Fullscreen" @click="openInTab()" v-if="isFramed()">
+                    <span>New Tab</span>
+                    <ExternalLinkIcon class="h-5 w-5" />
+            </button>
+
             <router-link
               to="/notifications"
               type="button"
@@ -690,6 +697,8 @@
 
 <script>
 import axios from 'axios'
+import store from '@/store'
+import { mapState } from 'vuex'
 
 import GettingStarted from '@/components/onboarding/GettingStarted'
 import DevelopPanel from '@/components/devpanel/DevelopPanel.vue'
@@ -701,7 +710,8 @@ import {
   MenuItems
 } from '@headlessui/vue'
 import {
-  BellIcon
+  BellIcon,
+  ExternalLinkIcon
 } from '@heroicons/vue/outline'
 
 const logo = require('@/assets/logo/logo.svg')
@@ -713,6 +723,7 @@ export default {
     MenuButton,
     MenuItem,
     MenuItems,
+    ExternalLinkIcon,
     GettingStarted,
     DevelopPanel
   },
@@ -742,12 +753,20 @@ export default {
     },
     logout () {
       this.$store.dispatch('logout')
+    },
+    isFramed () {
+      return window.self !== window.top
+    },
+    openInTab () {
+      const url = new URL(window.location.href)
+      url.searchParams.append('token', store.state.token)
+      window.open(url.href, '_blank')
     }
   },
   computed: {
-    user () {
-      return this.$store.state.user
-    },
+    ...mapState({
+      user: state => state.user
+    }),
     is_staff () {
       if (!this.inbox) {
         return false

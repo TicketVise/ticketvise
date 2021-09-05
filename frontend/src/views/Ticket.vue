@@ -141,7 +141,7 @@
               </div>
               <div>
                 <!-- Activity feed -->
-                <activity-feed :ticket="ticket" v-if="tabs.find(t => t.current).name === 'Activity' && ticket"
+                <activity-feed :ticket="ticket" :permissions="isStaffOrAuthor" v-if="tabs.find(t => t.current).name === 'Activity' && ticket"
                                v-on:post="loadTicketData"/>
                 <!-- Staff discussion -->
                 <staff-discussion :ticket="ticket" v-if="tabs.find(t => t.current).name === 'Staff discussion'"
@@ -200,9 +200,6 @@
                     <span class="block truncate">{{ ticket?.assignee.first_name }} {{
                         ticket?.assignee.last_name
                       }}</span>
-                  </div>
-                  <div class="flex items-center m-2" v-else>
-                    No one - assign to
                   </div>
                 </ListboxButton>
                 <transition leave-active-class="transition ease-in duration-100" leave-from-class="opacity-100"
