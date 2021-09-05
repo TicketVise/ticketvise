@@ -46,7 +46,7 @@
                 <div class="mt-1 lg:hidden">
                   <div class="flex items-center">
                     <div class="flex-shrink-0 inline-block rounded-md overflow-hidden h-16 w-20" aria-hidden="true">
-                      <img class="rounded-md h-full w-full" :src="im_url" alt="" />
+                      <img class="rounded-md h-full w-full" :src="im_url || '/img/default-inbox.png'" alt="" />
                     </div>
                     <div class="ml-5 rounded-md shadow-sm">
                       <div class="group relative border border-gray-300 rounded-md py-2 px-3 flex items-center justify-center hover:bg-gray-50 focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-primary">
@@ -61,7 +61,7 @@
                 </div>
 
                 <div class="hidden relative rounded-md overflow-hidden lg:block">
-                  <img class="relative rounded-md w-64 h-40" :src="im_url" alt="" />
+                  <img class="relative rounded-md w-64 h-40" :src="im_url || '/img/default-inbox.png'" alt="" />
                   <label for="inbox-photo" class="absolute inset-0 w-full h-full bg-black bg-opacity-75 flex items-center justify-center text-sm font-medium text-white opacity-0 hover:opacity-100 focus-within:opacity-100">
                     <span>Change</span>
                     <span class="sr-only"> inbox photo</span>
