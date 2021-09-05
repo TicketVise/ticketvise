@@ -1,5 +1,5 @@
 <template>
-  <div class="flex-1 relative overflow-y-auto focus:outline-none">
+  <div class="flex-1 relative overflow-y-auto focus:outline-none pb-16">
     <PublishConfirmation @click="requestPublish" @cancel="publishConfirmationModal = false"
                          v-if="publishConfirmationModal"/>
     <div class="py-4">
@@ -314,6 +314,29 @@
       </div>
     </div>
   </div>
+
+  <!-- Temporary warning about the text editor. -->
+  <div class="absolute inset-x-0 bottom-0">
+    <div class="bg-primary-600">
+      <div class="max-w-7xl mx-auto py-3 px-3 sm:px-6 lg:px-8">
+        <div class="flex items-center justify-between flex-wrap">
+          <div class="w-0 flex-1 flex items-center">
+            <span class="flex p-2 rounded-lg bg-primary">
+              <SpeakerphoneIcon class="h-6 w-6 text-white" aria-hidden="true" />
+            </span>
+            <p class="ml-3 font-medium text-white truncate">
+              <span class="md:hidden">
+                Temporarily a plain text message
+              </span>
+              <span class="hidden md:inline">
+                We are working on a new editor. So we temporarily can only offer plain text messages.
+              </span>
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 </template>
 
 <script>
@@ -350,7 +373,7 @@ import {
 } from '@heroicons/vue/solid'
 
 import {
-  CloudIcon
+  CloudIcon, SpeakerphoneIcon
 } from '@heroicons/vue/outline'
 
 export default {
@@ -374,6 +397,7 @@ export default {
     PlusIconSolid,
     PublishConfirmation,
     StaffDiscussion,
+    SpeakerphoneIcon,
     ClipboardListIcon,
     ClipboardCheckIcon
   },
