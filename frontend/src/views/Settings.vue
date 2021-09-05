@@ -1,5 +1,5 @@
 <template>
-  <div class="flex w-full h-full overflow-y-auto">
+  <div class="w-full h-full overflow-y-auto">
     <div class="relative w-full max-w-screen-lg mx-auto bg-white">
       <div class="divide-y divide-gray-200 lg:divide-y-0 lg:divide-x">
         <form class="divide-y divide-gray-200" @submit.prevent="onSave" method="POST">

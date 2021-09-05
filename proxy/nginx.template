@@ -1,20 +1,22 @@
 include cache.conf;
 
 server {
-    listen 8080;
-    listen [::]:8080;
+    listen 80;
+    listen [::]:80;
     server_name ${NGINX_DOMAIN};
 
     location /.well-known/acme-challenge/ {
         root /var/www/certbot;
     }
 
-    return 301 https://$host$request_uri;
+    location / {
+        return 301 https://$host$request_uri;
+    }
 }
 
 server {
-    listen 8443 ssl http2;
-    listen [::]:8443 ssl http2;
+    listen 443 ssl http2;
+    listen [::]:443 ssl http2;
     server_name ${NGINX_DOMAIN};
 
 
@@ -52,7 +54,7 @@ server {
     proxy_set_header X-Forwarded-Proto https;
 
     location / {
-        proxy_pass http://frontend:8000;
+        proxy_pass http://frontend;
     }
 
     location /api {

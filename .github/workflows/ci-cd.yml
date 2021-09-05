@@ -72,6 +72,8 @@ jobs:
           EMAIL_PASSWORD: ${{ secrets.EMAIL_PASSWORD }}
           S3_ACCESS_KEY: ${{ secrets.S3_ACCESS_KEY_DEV }}
           S3_SECRET_KEY: ${{ secrets.S3_SECRET_KEY_DEV }}
+          S3_BUCKET_NAME: ticketvise
+          S3_ENDPOINT_URL: https://dev.ticketvise.com
           DOMAIN: dev.ticketvise.com
         with:
           remote_host: ${{ secrets.DOCKER_SSH_HOST_DEV }}
@@ -92,6 +94,8 @@ jobs:
           EMAIL_PASSWORD: ${{ secrets.EMAIL_PASSWORD }}
           S3_ACCESS_KEY: ${{ secrets.S3_ACCESS_KEY }}
           S3_SECRET_KEY: ${{ secrets.S3_SECRET_KEY }}
+          S3_BUCKET_NAME: ticketvise
+          S3_ENDPOINT_URL: https://uva.ticketvise.com
           DOMAIN: uva.ticketvise.com
         with:
           remote_host: ${{ secrets.DOCKER_SSH_HOST }}
