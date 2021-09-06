@@ -139,6 +139,7 @@ cython_debug/
 
 # SQLite
 .sqlite3
+/ticketvise.sqlite3
 
 # Django
 static
