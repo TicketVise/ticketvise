@@ -28,6 +28,13 @@
 
           <!-- Right section on desktop -->
           <div class="flex lg:ml-4 lg:items-center py-4 pr-0.5">
+            <button type="button"
+                    class="inline-flex items-center justify-center py-1 px-4 border border-transparent rounded-md shadow-sm text-white bg-primary hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500 mr-4 space-x-2"
+                    aria-label="Fullscreen" @click="openInTab()" v-if="isFramed()">
+                    <span>New Tab</span>
+                    <ExternalLinkIcon class="h-5 w-5" />
+            </button>
+
             <router-link
               to="/notifications"
               type="button"
@@ -181,6 +188,19 @@
                   </router-link>
 
                   <router-link
+                    :to="'/inboxes/' + $route.params.inboxId + '/labels'"
+                    exact
+                    class="text-gray-600 group flex items-center justify-center h-12 w-12 p-3 text-sm font-medium rounded-full focus:ring ring-primary"
+                    active-class="bg-gray-100 text-gray-900 dark:bg-gray-800 dark:text-gray-700"
+                    title="Insights"
+                  >
+                    <!-- Heroicon name: outline/bookmark -->
+                    <svg xmlns="http://www.w3.org/2000/svg" class="text-gray-400 h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" />
+                    </svg>
+                  </router-link>
+
+                  <router-link
                     :to="'/inboxes/' + $route.params.inboxId + '/insights'"
                     exact
                     class="text-gray-600 group flex items-center justify-center h-12 w-12 p-3 text-sm font-medium rounded-full focus:ring ring-primary"
@@ -205,13 +225,36 @@
                   </router-link>
 
                   <router-link
+                    :to="'/inboxes/' + $route.params.inboxId + '/automation'"
+                    exact
+                    class="text-gray-600 group flex items-center justify-center h-12 w-12 p-3 text-sm font-medium rounded-full focus:ring ring-primary"
+                    active-class="bg-gray-100 text-gray-900 dark:bg-gray-800 dark:text-gray-700"
+                    title="Insights"
+                  >
+                    <svg
+                      class="text-gray-400 h-6 w-6"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"
+                      ></path>
+                    </svg>
+                  </router-link>
+
+                  <router-link
                     :to="'/inboxes/' + $route.params.inboxId + '/settings'"
                     exact
                     class="text-gray-600 group flex items-center justify-center h-12 w-12 p-3 text-sm font-medium rounded-full focus:ring ring-primary"
                     active-class="bg-gray-100 text-gray-900 dark:bg-gray-800 dark:text-gray-700"
                     title="Settings"
                   >
-                    <!-- Heroicon name: outline/calendar -->
+                    <!-- Heroicon name: outline/settings -->
                     <svg
                       class="text-gray-400 h-6 w-6"
                       fill="none"
@@ -429,6 +472,19 @@
                       </router-link>
 
                       <router-link
+                        :to="'/inboxes/' + $route.params.inboxId + '/labels'"
+                        exact
+                        class="text-gray-600 hover:bg-gray-50 hover:text-gray-900 dark:hover:bg-gray-700 dark:hover:text-white group flex items-center px-2 py-2 text-sm font-medium rounded-md"
+                        active-class="bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-white"
+                      >
+                        <!-- Heroicon name: outline/bookmark -->
+                        <svg xmlns="http://www.w3.org/2000/svg" class="text-gray-400 group-hover:text-gray-500 dark:group-hover:text-gray-400 mr-3 h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" />
+                        </svg>
+                        Labels
+                      </router-link>
+
+                      <router-link
                         :to="'/inboxes/' + $route.params.inboxId + '/insights'"
                         exact
                         class="text-gray-600 hover:bg-gray-50 hover:text-gray-900 dark:hover:bg-gray-700 dark:hover:text-white group flex items-center px-2 py-2 text-sm font-medium rounded-md"
@@ -450,6 +506,31 @@
                           ></path>
                         </svg>
                         Insights
+                      </router-link>
+
+                      <router-link
+                        :to="
+                          '/inboxes/' + $route.params.inboxId + '/automation'
+                        "
+                        exact
+                        class="text-gray-600 hover:bg-gray-50 hover:text-gray-900 dark:hover:bg-gray-700 dark:hover:text-white group flex items-center px-2 py-2 text-sm font-medium rounded-md"
+                        active-class="bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-white"
+                      >
+                        <svg
+                          class="text-gray-400 group-hover:text-gray-500 dark:group-hover:text-gray-400 mr-3 h-6 w-6"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                          xmlns="http://www.w3.org/2000/svg"
+                        >
+                          <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            stroke-width="2"
+                            d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"
+                          ></path>
+                        </svg>
+                        Automation
                       </router-link>
 
                       <router-link
@@ -480,32 +561,6 @@
                           ></path>
                         </svg>
                         Settings
-                      </router-link>
-
-                      <router-link
-                        :to="
-                          '/inboxes/' + $route.params.inboxId + '/automation'
-                        "
-                        exact
-                        class="text-gray-600 hover:bg-gray-50 hover:text-gray-900 dark:hover:bg-gray-700 dark:hover:text-white group flex items-center px-2 py-2 text-sm font-medium rounded-md"
-                        active-class="bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-white"
-                      >
-                        <!-- Heroicon name: outline/calendar -->
-                        <svg
-                          class="text-gray-400 group-hover:text-gray-500 dark:group-hover:text-gray-400 mr-3 h-6 w-6"
-                          fill="none"
-                          stroke="currentColor"
-                          viewBox="0 0 24 24"
-                          xmlns="http://www.w3.org/2000/svg"
-                        >
-                          <path
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
-                            stroke-width="2"
-                            d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"
-                          ></path>
-                        </svg>
-                        Automation
                       </router-link>
                     </div>
                     <!-- <div>
@@ -642,6 +697,8 @@
 
 <script>
 import axios from 'axios'
+import store from '@/store'
+import { mapState } from 'vuex'
 
 import GettingStarted from '@/components/onboarding/GettingStarted'
 import DevelopPanel from '@/components/devpanel/DevelopPanel.vue'
@@ -653,7 +710,8 @@ import {
   MenuItems
 } from '@headlessui/vue'
 import {
-  BellIcon
+  BellIcon,
+  ExternalLinkIcon
 } from '@heroicons/vue/outline'
 
 const logo = require('@/assets/logo/logo.svg')
@@ -665,6 +723,7 @@ export default {
     MenuButton,
     MenuItem,
     MenuItems,
+    ExternalLinkIcon,
     GettingStarted,
     DevelopPanel
   },
@@ -694,12 +753,20 @@ export default {
     },
     logout () {
       this.$store.dispatch('logout')
+    },
+    isFramed () {
+      return window.self !== window.top
+    },
+    openInTab () {
+      const url = new URL(window.location.href)
+      url.searchParams.append('token', store.state.token)
+      window.open(url.href, '_blank')
     }
   },
   computed: {
-    user () {
-      return this.$store.state.user
-    },
+    ...mapState({
+      user: state => state.user
+    }),
     is_staff () {
       if (!this.inbox) {
         return false

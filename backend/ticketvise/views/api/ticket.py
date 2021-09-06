@@ -31,7 +31,7 @@ from ticketvise.models.inbox import Inbox, SchedulingAlgorithm
 from ticketvise.models.label import Label
 from ticketvise.models.ticket import Ticket, TicketAttachment, TicketEvent, Status, TicketStatusEvent, \
     TicketAssigneeEvent, TicketLabelEvent, TicketLabel, TicketTitleEvent
-from ticketvise.models.user import User, Role, UserTicket
+from ticketvise.models.user import User, Role, UserTicket, UserInbox
 from ticketvise.notifications import unread_related_ticket_notifications
 from ticketvise.views.api import CommentSerializer, TicketSerializer, LabelSerializer
 from ticketvise.views.api.inbox import InboxSerializer

@@ -33,7 +33,12 @@
           </div>
 
           <!-- The labels of the ticket. -->
-          <select-input v-model="label" label="Labels" :data="inbox?.labels || []" emptyLabel="Select label" />
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">
+              Labels
+            </label>
+            <label-dropdown :selected="labels" :values="inbox?.labels || []" v-model="labels" />
+          </div>
 
           <!-- This privacy setting for ticket. -->
           <RadioGroup v-model="privacy">
@@ -115,7 +120,7 @@ import router from '@/router'
 import { mapState } from 'vuex'
 
 import FileUpload from '@/components/inputs/FileInput'
-import SelectInput from '@/components/inputs/SelectInput'
+import LabelDropdown from '@/components/dropdown/LabelDropdown'
 import FormTextFieldWithSuggestions from '@/components/form/FormTextFieldWithSuggestions'
 import Error from '@/components/inputs/Error'
 
@@ -139,18 +144,18 @@ export default {
     Error,
     FileUpload,
     FormTextFieldWithSuggestions,
+    LabelDropdown,
     RadioGroup,
     RadioGroupDescription,
     RadioGroupLabel,
     RadioGroupOption,
-    SelectInput,
     XIcon
   },
   data: () => ({
     inbox: {},
     title: '',
     content: '',
-    label: {},
+    labels: [],
     shareInput: '',
     sharedWith: [],
     files: [],
@@ -189,7 +194,7 @@ export default {
       formData.append('title', this.title)
 
       // this.labels.forEach(label => formData.append('labels', label.id))
-      formData.append('labels', [this.label.id])
+      this.labels.forEach(label => formData.append('labels', label.id))
       this.files.forEach(file => formData.append('files', file))
       this.sharedWith.forEach(sharedWith => formData.append('shared_with', sharedWith.id))
       formData.append('make_public', this.privacy.key === 'public' || this.privacy.key === 'anonymous')

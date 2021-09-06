@@ -29,6 +29,13 @@
 
           <!-- Right section on desktop -->
           <div class="flex lg:ml-4 lg:items-center lg:py-5 lg:pr-0.5">
+            <button type="button"
+                    class="inline-flex items-center justify-center py-1 px-4 border border-transparent rounded-md shadow-sm text-white bg-primary hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500 mr-4 space-x-2"
+                    aria-label="Fullscreen" @click="openInTab()" v-if="isFramed()">
+                    <span>New Tab</span>
+                    <ExternalLinkIcon class="h-5 w-5" />
+            </button>
+
             <router-link
               to="/notifications"
               type="button"
@@ -95,16 +102,17 @@
 </template>
 
 <script>
+import { mapState } from 'vuex'
+
 import {
   Menu,
   MenuButton,
   MenuItem,
   MenuItems
 } from '@headlessui/vue'
-import { BellIcon } from '@heroicons/vue/outline'
+import { BellIcon, ExternalLinkIcon } from '@heroicons/vue/outline'
 
 import DevelopPanel from '@/components/devpanel/DevelopPanel.vue'
-import { mapState } from 'vuex'
 
 const logo = require('@/assets/logo/logo.svg')
 
@@ -115,6 +123,7 @@ export default {
     MenuButton,
     MenuItem,
     MenuItems,
+    ExternalLinkIcon,
     BellIcon,
     DevelopPanel
   },
@@ -132,6 +141,14 @@ export default {
   methods: {
     logout () {
       this.$store.dispatch('logout')
+    },
+    isFramed () {
+      return window.self !== window.top
+    },
+    openInTab () {
+      const url = new URL(window.location.href)
+      url.searchParams.append('token', this.$store.state.token)
+      window.open(url.href, '_blank')
     }
   }
 }

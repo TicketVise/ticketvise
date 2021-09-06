@@ -185,7 +185,6 @@ export default {
     search: null,
     showPersonal: false,
     labels: [],
-    label: null,
     inbox_labels: [],
     is_staff: false
   }),

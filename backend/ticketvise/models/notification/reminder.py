@@ -23,7 +23,7 @@ class TicketReminderNotification(Notification):
         if self.receiver == self.ticket.author:
             return
 
-        if self.receiver.notification_ticket_reminder_mail:
+        if self.pk is None and self.receiver.notification_ticket_reminder_mail:
             self.send_mail()
 
         if self.receiver.notification_ticket_reminder_app:
