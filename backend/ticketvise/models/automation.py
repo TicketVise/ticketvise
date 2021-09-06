@@ -1,5 +1,4 @@
 from django.db import models
-from django.db.models.fields.related_descriptors import ManyRelatedManager
 
 class Automation(models.Model):
     name = models.CharField(max_length=255)
@@ -27,15 +26,17 @@ class AutomationCondition(models.Model):
         unique_together = ["automation", "index"]
 
     def __call__(self, ticket):
-        field = getattr(ticket, self.field_name)
+        field = ticket._meta.get_field(self.field_name)
         value = self.evaluation_value
-        if isinstance(field, models.Model):
-            value = type(field).objects.get(pk=value)
-        # elif isinstance(field, ManyRelatedManager):
-        #     value = type(field).objects.get(pk=value)
-        #     field = field.all()
+        if isinstance(field, models.ForeignKey):
+            value = field.related_model.objects.get(pk=value)
+            field = getattr(ticket, self.field_name)
+        elif isinstance(field, models.ManyToManyField):
+            # Convert to list to be able to make comparisons, Querysets cannot be compared.
+            value = list(field.related_model.objects.filter(pk=value).values("pk"))
+            field = list(getattr(ticket, self.field_name).all().values("pk"))
         else:
-            field = str(field)
+            field = str(getattr(ticket, self.field_name))
             value = str(value)
 
         return getattr(self, self.evaluation_func)(field, value)

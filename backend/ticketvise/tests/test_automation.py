@@ -71,7 +71,7 @@ class AutomationTestCase(TicketTestCase):
             index=0,
             field_name="labels",
             evaluation_func="eq",
-            evaluation_value=self.ticket.labels) #TODO: only pass ids?
+            evaluation_value='1')
         result = automation_condition(self.ticket)
         self.assertTrue(result)
         self.assertEqual(self.ticket.labels.count(), 0)
@@ -85,7 +85,7 @@ class AutomationTestCase(TicketTestCase):
             index=0,
             field_name="labels",
             evaluation_func="eq",
-            evaluation_value=ticket.labels)
+            evaluation_value=str(label.id))
         result = automation_condition(ticket)
         self.assertTrue(result)
         self.assertNotEqual(ticket.labels.count(), 0)
@@ -248,7 +248,7 @@ class AutomationTestCase(TicketTestCase):
             index=0,
             field_name="labels",
             evaluation_func="contains",
-            evaluation_value=label1.id)
+            evaluation_value=str(label1.id))
         result = automation_condition(ticket)
         self.assertTrue(result)
 
@@ -262,6 +262,6 @@ class AutomationTestCase(TicketTestCase):
             index=0,
             field_name="labels",
             evaluation_func="contains",
-            evaluation_value=label2)
+            evaluation_value=str(label2.id))
         result = automation_condition(ticket)
         self.assertFalse(result)
