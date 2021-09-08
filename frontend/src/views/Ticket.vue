@@ -326,7 +326,7 @@
             </span>
             <p class="ml-3 font-medium text-white truncate">
               <span class="md:hidden">
-                Temporarily a plain text message
+                Temporarily a plain text tickets
               </span>
               <span class="hidden md:inline">
                 We are working on a new editor. So we temporarily can only offer plain text messages.
