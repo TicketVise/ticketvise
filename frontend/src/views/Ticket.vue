@@ -298,7 +298,7 @@
                     @click="ticket.shared_with.splice(ticket.shared_with.map(s => s.id).indexOf(person.id), 1); updateSharedWith()"
                     type="button"
                     class="ml-6 bg-white rounded-md text-sm font-medium text-primary-600 hover:text-primary focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary"
-                    v-if="isStaffOrAuthor">>
+                    v-if="isStaffOrAuthor">
                     Remove<span class="sr-only"> {{ person.name }}</span>
                   </button>
                 </li>
@@ -501,6 +501,7 @@ export default {
                 href: '#'
               } : null,
               tags: type === 'tags' ? [{ name: event.label.name, href: '#', color: event.label.color }] : null,
+              is_added: type === 'tags' ? event.is_added : null,
               assigned: event.assignee ? {
                 name: event.assignee.first_name + ' ' + event.assignee.last_name,
                 href: '#'
@@ -556,7 +557,7 @@ export default {
           newActivities.push(lastActivity)
           lastActivity = activity
         } else if (lastActivity && moment(lastActivity.datetime).diff(moment(activity.datetime)) < time) {
-          if (lastActivity.type === 'tags') lastActivity.tags.push(activity.tags[0])
+          if (lastActivity.type === 'tags' && lastActivity.is_added === activity.is_added && lastActivity.person?.name === activity.person?.name) lastActivity.tags.push(activity.tags[0])
           else {
             newActivities.push(lastActivity)
             lastActivity = activity
@@ -621,18 +622,12 @@ export default {
 
       this.loadTicketData()
     },
-    updateLabels () {
-      const data = {
-        events: true
-      }
-      axios.put(`/api/inboxes/${ this.$route.params.inboxId }/tickets/${ this.$route.params.ticketInboxId }/labels`,
-        {
-          labels: this.ticket.labels.map(label => label.id)
-        }).then(_ => {
-        return axios.get(`/api/inboxes/${ this.$route.params.inboxId }/tickets/${ this.$route.params.ticketInboxId }`, { params: data })
-      }).then(response => {
-        this.events = response.data.events
+    async updateLabels () {
+      await axios.put(`/api/inboxes/${ this.$route.params.inboxId }/tickets/${ this.$route.params.ticketInboxId }/labels`, {
+        labels: this.ticket.labels.map(label => label.id)
       })
+
+      this.loadTicketData()
     },
     containsObject (list, id) {
       return list && list.some(e => e.id === id)
