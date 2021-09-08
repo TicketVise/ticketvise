@@ -22,6 +22,14 @@
                 >
                   Dashboard
                 </router-link>
+                <router-link
+                  v-if="user.is_superuser"
+                  to="/admin"
+                  class="hidden sm:block px-3 py-2 rounded-md text-sm font-medium text-gray-300 hover:text-white hover:bg-gray-700 focus:outline-none focus:text-white focus:bg-gray-700"
+                  active-class="text-gray-100 bg-gray-800"
+                >
+                  Admin
+                </router-link>
               </div>
             </div>
           </div>

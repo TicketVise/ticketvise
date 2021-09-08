@@ -23,7 +23,7 @@
                 </div>
                 <div class="mt-4 flex space-x-3 md:mt-0">
                   <button @click="publishConfirmationModal = true"
-                          v-if="isStaff(role, user) && !ticket.publish_request_created && !ticket.is_public"
+                          v-if="isStaff(role, user) && !ticket?.publish_request_created && !ticket?.is_public"
                           type="button"
                           class="inline-flex justify-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-900">
                     <CloudIcon class="-ml-1 mr-2 h-5 w-5 text-primary-400" aria-hidden="true"/>
