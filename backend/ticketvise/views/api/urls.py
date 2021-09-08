@@ -15,7 +15,7 @@ from ticketvise.views.api.ticket import TicketApiView, TicketUpdateAssignee, \
     TicketAttachmentsApiView, AttachmentViewApiView, UserTicketsApiView, UserAverageApiView, \
     RecentTicketApiView, InboxTicketsApiView, TicketLabelApiView, TicketCreateApiView, TicketSharedAPIView, \
     TicketsApiView, OpenTicketApiView, CloseTicketApiView, TicketTitleAPIView, TicketRequestPublishAPIView, \
-    TicketPublishAPIView, PublicTicketAPIView, PinUnpinTicketAPIView, SubscribeToTicketAPIView, \
+    TicketPublishAPIView, TicketPrivateAPIView, PinUnpinTicketAPIView, SubscribeToTicketAPIView, \
     UnsubscribeFromTicketAPIView
 from ticketvise.views.api.user import UserRoleApiView, CurrentUserApiView, NotificationsSettingsAPIView, \
     UsersApiView, IntroductionAPIView
@@ -41,6 +41,7 @@ urlpatterns = [
     path("inboxes/<int:inbox_id>/users/<int:user_id>/tickets/average", UserAverageApiView.as_view()),
     path("inboxes/<int:inbox_id>/tickets/<int:ticket_inbox_id>/request-publish", TicketRequestPublishAPIView.as_view()),
     path("inboxes/<int:inbox_id>/tickets/<int:ticket_inbox_id>/publish", TicketPublishAPIView.as_view()),
+    path("inboxes/<int:inbox_id>/tickets/<int:ticket_inbox_id>/private", TicketPrivateAPIView.as_view()),
     path("inboxes/<int:inbox_id>/tickets/<int:ticket_inbox_id>/pin", PinUnpinTicketAPIView.as_view()),
     path("inboxes/<int:inbox_id>/tickets/<int:ticket_inbox_id>/subscribe", SubscribeToTicketAPIView.as_view()),
     path("inboxes/<int:inbox_id>/tickets/<int:ticket_inbox_id>/unsubscribe", UnsubscribeFromTicketAPIView.as_view()),

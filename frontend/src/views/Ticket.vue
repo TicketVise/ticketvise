@@ -2,6 +2,8 @@
   <div class="flex-1 relative overflow-y-auto focus:outline-none pb-16">
     <PublishConfirmation @click="requestPublish" @cancel="publishConfirmationModal = false"
                          v-if="publishConfirmationModal"/>
+    <PrivateConfirmation @click="makePrivate" @cancel="privateConfirmationModal = false"
+                         v-if="privateConfirmationModal"/>
     <div class="py-4">
       <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 xl:max-w-5xl xl:grid xl:grid-cols-3">
 
@@ -25,9 +27,16 @@
                   <button @click="publishConfirmationModal = true"
                           v-if="isStaff(role, user) && !ticket?.publish_request_created && !ticket?.is_public"
                           type="button"
-                          class="inline-flex justify-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-900">
+                          class="inline-flex justify-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary">
                     <CloudIcon class="-ml-1 mr-2 h-5 w-5 text-primary-400" aria-hidden="true"/>
                     <span>Publish</span>
+                  </button>
+                  <button @click="privateConfirmationModal = true"
+                          v-if="isStaff(role, user) && ticket?.is_public"
+                          type="button"
+                          class="inline-flex justify-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary">
+                    <LockIcon class="-ml-1 mr-2 h-5 w-5 text-primary-400" aria-hidden="true"/>
+                    <span>Private</span>
                   </button>
                   <!-- Future feature of subscribing to a ticket to get notifications. -->
                   <!-- <button type="button" class="inline-flex justify-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-900">
@@ -349,6 +358,7 @@ import StaffDiscussion from '@/components/tickets/StaffDiscussion.vue'
 import Attachments from '@/components/tickets/Attachments.vue'
 import Chip from '@/components/chip/Chip'
 import PublishConfirmation from '@/components/tickets/PublishConfirmation.vue'
+import PrivateConfirmation from '@/components/tickets/PrivateConfirmation.vue'
 import FormTextFieldWithSuggestions from '@/components/form/FormTextFieldWithSuggestions'
 
 import { ref } from 'vue'
@@ -373,7 +383,9 @@ import {
 } from '@heroicons/vue/solid'
 
 import {
-  CloudIcon, SpeakerphoneIcon
+  CloudIcon,
+  SpeakerphoneIcon,
+  LockClosedIcon as LockIcon
 } from '@heroicons/vue/outline'
 
 export default {
@@ -387,6 +399,7 @@ export default {
     CloudIcon,
     FormTextFieldWithSuggestions,
     InformationCircleIcon,
+    LockIcon,
     LockOpenIcon,
     LockClosedIcon,
     Listbox,
@@ -396,6 +409,7 @@ export default {
     PencilIcon,
     PlusIconSolid,
     PublishConfirmation,
+    PrivateConfirmation,
     StaffDiscussion,
     SpeakerphoneIcon,
     ClipboardListIcon,
@@ -403,6 +417,7 @@ export default {
   },
   data: () => ({
     publishConfirmationModal: false,
+    privateConfirmationModal: false,
     ticket: null,
     staff: [],
     tabs: [
@@ -570,6 +585,15 @@ export default {
     },
     ticketStatus (status) {
       return (status === 'ASGD' || status === 'CLSD') ? 'closed' : 'open'
+    },
+    makePrivate () {
+      this.privateConfirmationModal = false
+      axios.put(`/api/inboxes/${this.$route.params.inboxId}/tickets/${this.$route.params.ticketInboxId}/private`).then(() => {
+        this.ticket.is_public = null
+        this.ticket.is_anonymous = null
+        this.ticket.publish_request_created = null
+        this.ticket.publish_request_initiator = null
+      })
     },
     requestPublish () {
       this.publishConfirmationModal = false
