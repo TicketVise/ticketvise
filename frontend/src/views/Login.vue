@@ -9,7 +9,7 @@
                   class="text-2xl text-primary font-bold">Vise</span>
           </div>
           <h2 class="mt-6 text-3xl font-extrabold text-gray-900 dark:text-white">
-            Sign in to your accountt
+            Sign in to your account
           </h2>
         </div>
 
