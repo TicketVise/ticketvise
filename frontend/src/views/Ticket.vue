@@ -2,6 +2,8 @@
   <div class="flex-1 relative overflow-y-auto focus:outline-none pb-16">
     <PublishConfirmation @click="requestPublish" @cancel="publishConfirmationModal = false"
                          v-if="publishConfirmationModal"/>
+    <PrivateConfirmation @click="makePrivate" @cancel="privateConfirmationModal = false"
+                         v-if="privateConfirmationModal"/>
     <div class="py-4">
       <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 xl:max-w-5xl xl:grid xl:grid-cols-3">
 
@@ -23,11 +25,18 @@
                 </div>
                 <div class="mt-4 flex space-x-3 md:mt-0">
                   <button @click="publishConfirmationModal = true"
-                          v-if="isStaff(role, user) && !ticket.publish_request_created && !ticket.is_public"
+                          v-if="isStaff(role, user) && !ticket?.publish_request_created && !ticket?.is_public"
                           type="button"
-                          class="inline-flex justify-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-900">
+                          class="inline-flex justify-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary">
                     <CloudIcon class="-ml-1 mr-2 h-5 w-5 text-primary-400" aria-hidden="true"/>
                     <span>Publish</span>
+                  </button>
+                  <button @click="privateConfirmationModal = true"
+                          v-if="isStaff(role, user) && ticket?.is_public"
+                          type="button"
+                          class="inline-flex justify-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary">
+                    <LockIcon class="-ml-1 mr-2 h-5 w-5 text-primary-400" aria-hidden="true"/>
+                    <span>Private</span>
                   </button>
                   <!-- Future feature of subscribing to a ticket to get notifications. -->
                   <!-- <button type="button" class="inline-flex justify-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-900">
@@ -289,7 +298,7 @@
                     @click="ticket.shared_with.splice(ticket.shared_with.map(s => s.id).indexOf(person.id), 1); updateSharedWith()"
                     type="button"
                     class="ml-6 bg-white rounded-md text-sm font-medium text-primary-600 hover:text-primary focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary"
-                    v-if="isStaffOrAuthor">>
+                    v-if="isStaffOrAuthor">
                     Remove<span class="sr-only"> {{ person.name }}</span>
                   </button>
                 </li>
@@ -326,7 +335,7 @@
             </span>
             <p class="ml-3 font-medium text-white truncate">
               <span class="md:hidden">
-                Temporarily a plain text message
+                Temporarily a plain text tickets
               </span>
               <span class="hidden md:inline">
                 We are working on a new editor. So we temporarily can only offer plain text messages.
@@ -349,6 +358,7 @@ import StaffDiscussion from '@/components/tickets/StaffDiscussion.vue'
 import Attachments from '@/components/tickets/Attachments.vue'
 import Chip from '@/components/chip/Chip'
 import PublishConfirmation from '@/components/tickets/PublishConfirmation.vue'
+import PrivateConfirmation from '@/components/tickets/PrivateConfirmation.vue'
 import FormTextFieldWithSuggestions from '@/components/form/FormTextFieldWithSuggestions'
 
 import { ref } from 'vue'
@@ -373,7 +383,9 @@ import {
 } from '@heroicons/vue/solid'
 
 import {
-  CloudIcon, SpeakerphoneIcon
+  CloudIcon,
+  SpeakerphoneIcon,
+  LockClosedIcon as LockIcon
 } from '@heroicons/vue/outline'
 
 export default {
@@ -387,6 +399,7 @@ export default {
     CloudIcon,
     FormTextFieldWithSuggestions,
     InformationCircleIcon,
+    LockIcon,
     LockOpenIcon,
     LockClosedIcon,
     Listbox,
@@ -396,6 +409,7 @@ export default {
     PencilIcon,
     PlusIconSolid,
     PublishConfirmation,
+    PrivateConfirmation,
     StaffDiscussion,
     SpeakerphoneIcon,
     ClipboardListIcon,
@@ -403,6 +417,7 @@ export default {
   },
   data: () => ({
     publishConfirmationModal: false,
+    privateConfirmationModal: false,
     ticket: null,
     staff: [],
     tabs: [
@@ -486,6 +501,7 @@ export default {
                 href: '#'
               } : null,
               tags: type === 'tags' ? [{ name: event.label.name, href: '#', color: event.label.color }] : null,
+              is_added: type === 'tags' ? event.is_added : null,
               assigned: event.assignee ? {
                 name: event.assignee.first_name + ' ' + event.assignee.last_name,
                 href: '#'
@@ -541,7 +557,7 @@ export default {
           newActivities.push(lastActivity)
           lastActivity = activity
         } else if (lastActivity && moment(lastActivity.datetime).diff(moment(activity.datetime)) < time) {
-          if (lastActivity.type === 'tags') lastActivity.tags.push(activity.tags[0])
+          if (lastActivity.type === 'tags' && lastActivity.is_added === activity.is_added && lastActivity.person?.name === activity.person?.name) lastActivity.tags.push(activity.tags[0])
           else {
             newActivities.push(lastActivity)
             lastActivity = activity
@@ -571,6 +587,15 @@ export default {
     ticketStatus (status) {
       return (status === 'ASGD' || status === 'CLSD') ? 'closed' : 'open'
     },
+    makePrivate () {
+      this.privateConfirmationModal = false
+      axios.put(`/api/inboxes/${this.$route.params.inboxId}/tickets/${this.$route.params.ticketInboxId}/private`).then(() => {
+        this.ticket.is_public = null
+        this.ticket.is_anonymous = null
+        this.ticket.publish_request_created = null
+        this.ticket.publish_request_initiator = null
+      })
+    },
     requestPublish () {
       this.publishConfirmationModal = false
       axios.put(`/api/inboxes/${ this.$route.params.inboxId }/tickets/${ this.$route.params.ticketInboxId }/request-publish`, {
@@ -597,18 +622,12 @@ export default {
 
       this.loadTicketData()
     },
-    updateLabels () {
-      const data = {
-        events: true
-      }
-      axios.put(`/api/inboxes/${ this.$route.params.inboxId }/tickets/${ this.$route.params.ticketInboxId }/labels`,
-        {
-          labels: this.ticket.labels.map(label => label.id)
-        }).then(_ => {
-        return axios.get(`/api/inboxes/${ this.$route.params.inboxId }/tickets/${ this.$route.params.ticketInboxId }`, { params: data })
-      }).then(response => {
-        this.events = response.data.events
+    async updateLabels () {
+      await axios.put(`/api/inboxes/${ this.$route.params.inboxId }/tickets/${ this.$route.params.ticketInboxId }/labels`, {
+        labels: this.ticket.labels.map(label => label.id)
       })
+
+      this.loadTicketData()
     },
     containsObject (list, id) {
       return list && list.some(e => e.id === id)

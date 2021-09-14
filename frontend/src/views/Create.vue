@@ -1,6 +1,6 @@
 <template>
-  <div class="w-full h-full overflow-y-auto">
-    <div class="w-screen max-w-screen-lg mx-auto p-4">
+  <div class="w-full h-full overflow-y-auto pb-16">
+    <div class="w-full max-w-screen-lg mx-auto p-4">
       <form @submit.prevent="submit" autocomplete="off">
         <div class="space-y-6">
           <div>
@@ -112,6 +112,29 @@
       </form>
     </div>
   </div>
+
+  <!-- Temporary warning about the text editor. -->
+  <div class="absolute inset-x-0 bottom-0 z-10">
+    <div class="bg-primary-600">
+      <div class="max-w-7xl mx-auto py-3 px-3 sm:px-6 lg:px-8">
+        <div class="flex items-center justify-between flex-wrap">
+          <div class="w-0 flex-1 flex items-center">
+            <span class="flex p-2 rounded-lg bg-primary">
+              <SpeakerphoneIcon class="h-6 w-6 text-white" aria-hidden="true" />
+            </span>
+            <p class="ml-3 font-medium text-white truncate">
+              <span class="md:hidden">
+                Temporarily a plain text tickets
+              </span>
+              <span class="hidden md:inline">
+                We are working on a new editor. So we temporarily can only offer plain text messages.
+              </span>
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 </template>
 
 <script>
@@ -132,6 +155,9 @@ import {
   RadioGroupOption
 } from '@headlessui/vue'
 import { XIcon } from '@heroicons/vue/solid'
+import {
+  SpeakerphoneIcon
+} from '@heroicons/vue/outline'
 
 const settings = [
   { key: 'private', name: 'Private ticket', description: 'Only you and the staff team will be able to access this ticket' },
@@ -149,6 +175,7 @@ export default {
     RadioGroupDescription,
     RadioGroupLabel,
     RadioGroupOption,
+    SpeakerphoneIcon,
     XIcon
   },
   data: () => ({

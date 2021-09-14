@@ -121,11 +121,11 @@
                           <div
                             class="group relative border border-gray-300 rounded-md py-2 px-3 flex items-center justify-center hover:bg-gray-50 focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-sky-500">
                             <label for="user-photo"
-                                   class="relative text-sm leading-4 font-medium text-gray-700 pointer-events-none">
+                                   class="relative text-sm leading-4 font-medium text-gray-300 pointer-events-none">
                               <span>Change</span>
                               <span class="sr-only"> user photo</span>
                             </label>
-                            <input id="user-photo" name="user-photo" type="file"
+                            <input id="user-photo" name="user-photo" type="file" disabled
                                    class="absolute w-full h-full opacity-0 cursor-pointer border-gray-300 rounded-md"/>
                           </div>
                         </div>
@@ -134,13 +134,13 @@
 
                     <div class="hidden relative rounded-full overflow-hidden lg:block">
                       <img class="relative rounded-full w-40 h-40" :src="user.avatar_url" alt=""/>
-                      <label for="user-photo"
+                      <!-- <label for="user-photo"
                              class="absolute inset-0 w-full h-full bg-black bg-opacity-75 flex items-center justify-center text-sm font-medium text-white opacity-0 hover:opacity-100 focus-within:opacity-100">
                         <span>Change</span>
                         <span class="sr-only"> user photo</span>
                         <input type="file" id="user-photo" name="user-photo"
                                class="absolute inset-0 w-full h-full opacity-0 cursor-pointer border-gray-300 rounded-md"/>
-                      </label>
+                      </label> -->
                     </div>
                   </div>
                 </div>

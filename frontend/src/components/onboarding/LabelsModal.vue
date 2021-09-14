@@ -7,7 +7,7 @@
         </h3>
         <div class="mt-2">
           <p class="text-sm text-gray-500">
-            We offer four default labels, but their are fully customizable. Labels are useful for organizing the tickets
+            We offer four default labels, but they are fully customizable. Labels are useful for organizing the tickets
             inside the inbox. You can even change the visibility of the labels for students. Labels can be managed from the labels page.
           </p>
         </div>

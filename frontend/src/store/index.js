@@ -50,9 +50,11 @@ const store = createStore({
       state.inboxes = inboxes
     },
     update_tickets (state, payload) {
+      if (state.user.is_superuser) return
       state.inboxes.find(i => i.id === parseInt(payload.inbox)).tickets = payload.tickets
     },
     update_public_tickets (state, payload) {
+      if (state.user.is_superuser) return
       state.inboxes.find(i => i.id === parseInt(payload.inbox)).public_tickets = payload.public_tickets
     }
   },

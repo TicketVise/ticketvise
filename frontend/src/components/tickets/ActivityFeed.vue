@@ -62,7 +62,7 @@
                   <span class="mr-0.5">
                     <span class="font-medium text-gray-900">{{ item?.person?.name }}</span>
                     {{ ' ' }}
-                    {{ item?.person ? 'added labels' : 'Ticket got labels' }}
+                    {{ item?.person ? (item?.is_added ? 'added labels' : 'removed labels') : 'Ticket got labels' }}
                   </span>
                   {{ ' ' }}
                   <span class="mr-0.5">
