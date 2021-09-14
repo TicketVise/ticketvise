@@ -29,6 +29,14 @@ const routes = [
     }
   },
   {
+    path: '/admin',
+    name: 'Admin',
+    component: () => import(/* webpackChunkName: "admin" */ '@/views/Admin.vue'),
+    meta: {
+      layout: 'AppLayoutGeneral'
+    }
+  },
+  {
     path: '/account',
     name: 'Account',
     component: () => import(/* webpackChunkName: "account" */ '@/views/Account.vue'),

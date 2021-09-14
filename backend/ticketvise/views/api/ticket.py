@@ -620,6 +620,26 @@ class TicketPublishAPIView(UpdateAPIView):
         return super().update(request, *args, **kwargs)
 
 
+class TicketPrivateAPIView(UpdateAPIView):
+    permission_classes = [UserIsTicketAuthorOrInboxStaffPermission]
+
+    def get_serializer(self, *args, **kwargs):
+        return TicketSerializer(fields=["is_public", "is_anonymous"], *args, **kwargs)
+
+    def get_object(self):
+        inbox = get_object_or_404(Inbox, pk=self.kwargs["inbox_id"])
+
+        return Ticket.objects.get(inbox=inbox, ticket_inbox_id=self.kwargs["ticket_inbox_id"])
+
+    def update(self, request, *args, **kwargs):
+        # Make a ticket private again.
+        ticket = self.get_object()
+        ticket.is_public = None
+        ticket.publish_request_created = None
+        ticket.publish_request_initiator = None
+        ticket.save()
+        return super().update(request, *args, **kwargs)
+
 class TicketRequestPublishAPIView(UpdateAPIView):
     permission_classes = [UserIsInboxStaffPermission]
     serializer_class = PublishRequestUpdateSerializer
