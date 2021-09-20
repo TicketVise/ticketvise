@@ -41,14 +41,24 @@ export default {
   data: () => ({
     files: [],
     errors: '',
-    upload: Upload
+    upload: Upload,
+    isStaff: false
   }),
+  mounted () {
+    /* Get role. */
+    const { inboxId } = this.$route.params
+
+    axios.get(`/api/inboxes/${inboxId}/role`).then(response => {
+      this.isStaff = response.data.key === 'MANAGER' || response.data.key === 'AGENT'
+    })
+  },
   methods: {
     submit () {
       const formData = new FormData()
+      const { inboxId, ticketInboxId } = this.$route.params
+
       this.files.forEach(file => formData.append('files', file))
-      const inboxId = this.$route.params.inboxId
-      const ticketInboxId = this.$route.params.ticketInboxId
+
       axios.post(`/api/inboxes/${inboxId}/tickets/${ticketInboxId}/attachments`, formData, {
         headers: {
           'Content-Type': 'multipart/form-data'
@@ -68,7 +78,7 @@ export default {
       this.submit()
     },
     showDeleteButton (uploaderId) {
-      return (this.is_staff || uploaderId === this.user.id)
+      return (this.isStaff || uploaderId === this.user.id)
     }
   },
   computed: {

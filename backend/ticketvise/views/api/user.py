@@ -9,8 +9,7 @@ from rest_framework.views import APIView
 from ticketvise.models.inbox import Inbox
 from ticketvise.models.notification import Notification
 from ticketvise.models.user import User, Role, UserInbox, UserTicket
-from ticketvise.views.api import TicketSerializer, RoleSerializer
-from ticketvise.views.api import UserSerializer
+from ticketvise.views.api import TicketSerializer, RoleSerializer, UserSerializer
 from ticketvise.views.api.security import UserIsInInboxPermission, UserIsSuperUserPermission
 
 

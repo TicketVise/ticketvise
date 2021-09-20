@@ -193,7 +193,7 @@
             </div>
           </div>
           <div class="mt-6 border-t border-gray-200 py-6 space-y-8">
-            <div>
+            <div v-if="ticket?.assignee && isStaff(role, user)">
               <h2 class="text-sm font-medium text-gray-500">Assignee</h2>
               <Listbox as="span" class="-ml-px relative block">
                 <ListboxButton class="relative flex items-center text-sm font-medium focus:outline-none ml-1">
@@ -239,6 +239,14 @@
                 </transition>
               </Listbox>
             </div>
+
+            <div v-else>
+              <h2 class="text-sm font-medium text-gray-500">Assignee</h2>
+              <h3 v-if="!ticket || !assignee || !assignee.username" class="text-xs text-gray-500">
+                <button class="hover:text-orange-600 no-underline">Assign yourself</button>
+              </h3>
+            </div>
+
             <!--Labels-->
             <div>
               <div class="relative inline-flex pb-2">
