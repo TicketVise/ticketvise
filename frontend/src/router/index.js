@@ -29,6 +29,14 @@ const routes = [
     }
   },
   {
+    path: '/admin',
+    name: 'Admin',
+    component: () => import(/* webpackChunkName: "admin" */ '@/views/Admin.vue'),
+    meta: {
+      layout: 'AppLayoutGeneral'
+    }
+  },
+  {
     path: '/account',
     name: 'Account',
     component: () => import(/* webpackChunkName: "account" */ '@/views/Account.vue'),
@@ -80,6 +88,22 @@ const routes = [
     path: '/inboxes/:inboxId/users',
     name: 'Users',
     component: () => import(/* webpackChunkName: "users" */ '@/views/Users.vue'),
+    meta: {
+      layout: 'AppLayoutInbox'
+    }
+  },
+  {
+    path: '/inboxes/:inboxId/labels',
+    name: 'Labels',
+    component: () => import(/* webpackChunkName: "labels" */ '@/views/Labels.vue'),
+    meta: {
+      layout: 'AppLayoutInbox'
+    }
+  },
+  {
+    path: '/inboxes/:inboxId/labels/:labelId',
+    name: 'Label',
+    component: () => import(/* webpackChunkName: "label" */ '@/views/Label.vue'),
     meta: {
       layout: 'AppLayoutInbox'
     }

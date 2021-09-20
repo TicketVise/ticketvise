@@ -13,3 +13,4 @@ boto3==1.17.102
 django-storages==1.11.1
 requests==2.26.0
 requests_oauthlib==1.3.0
+Pillow==8.3.2

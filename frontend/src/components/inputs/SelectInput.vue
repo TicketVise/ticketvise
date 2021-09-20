@@ -5,9 +5,7 @@
       {{ label }}
     </ListboxLabel>
     <div class="mt-1 relative">
-      <ListboxButton
-        class="relative w-full bg-white border border-gray-300 rounded-md pl-3 pr-10 py-2 text-left cursor-pointer focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary sm:text-sm"
-      >
+      <ListboxButton class="relative w-full bg-white border border-gray-300 rounded-md pl-3 pr-10 py-2 text-left cursor-pointer focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary sm:text-sm">
         <span class="flex items-center">
           <span v-if="selected?.color" class="flex-shrink-0 inline-block h-2 w-2 rounded-full mr-3" :style="`background-color: ${selected?.color}`" />
           <img
@@ -36,7 +34,7 @@
           <ListboxOption
             as="template"
             v-for="element in data"
-            :key="element.id"
+            :key="element.value"
             :value="element"
             v-slot="{ active, selected }"
           >
@@ -83,6 +81,8 @@
 </template>
 
 <script>
+// import { ref } from 'vue'
+
 import {
   Listbox,
   ListboxButton,
@@ -123,18 +123,25 @@ export default {
       required: false,
       type: String
     },
-    value: {
-      required: false,
-      type: Array
+    modelValue: {
+      default: '',
+      required: false
     }
   },
-  computed: {
+  data: () => ({
+    selected: null
+  }),
+  watch: {
+    modelValue: {
+      immediate: true,
+      handler (value) {
+        this.selected = this.data.find(element => element.value === value)
+      }
+    },
     selected: {
-      get () {
-        return this.value
-      },
-      set (value) {
-        this.$emit('input', value)
+      immediate: true,
+      handler (value) {
+        this.$emit('modelValue', this.selected?.value)
       }
     }
   }

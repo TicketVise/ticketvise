@@ -8,7 +8,7 @@
             <!-- Logo -->
             <div class="left-0 py-4 flex-shrink-0">
               <router-link to="/" class="flex items-center">
-                <img class="h-8 w-auto" :src="logo" alt="TicketVise" />
+                <img class="h-8 w-auto" :src="logo" alt="TicketVise"/>
                 <span class="text-2xl ml-2 text-white">Ticket</span>
                 <span class="text-2xl text-primary font-bold">Vise</span>
               </router-link>
@@ -22,19 +22,34 @@
                 >
                   Dashboard
                 </router-link>
+                <router-link
+                  v-if="user.is_superuser"
+                  to="/admin"
+                  class="hidden sm:block px-3 py-2 rounded-md text-sm font-medium text-gray-300 hover:text-white hover:bg-gray-700 focus:outline-none focus:text-white focus:bg-gray-700"
+                  active-class="text-gray-100 bg-gray-800"
+                >
+                  Admin
+                </router-link>
               </div>
             </div>
           </div>
 
           <!-- Right section on desktop -->
           <div class="flex lg:ml-4 lg:items-center py-4 pr-0.5">
+            <button type="button"
+                    class="inline-flex items-center justify-center py-1 px-4 border border-transparent rounded-md shadow-sm text-white bg-primary hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500 mr-4 space-x-2"
+                    aria-label="Fullscreen" @click="openInTab()" v-if="isFramed()">
+                    <span>New Tab</span>
+                    <ExternalLinkIcon class="h-5 w-5" />
+            </button>
+
             <router-link
               to="/notifications"
               type="button"
               class="flex-shrink-0 p-1 text-gray-200 rounded-full hover:text-white hover:bg-white hover:bg-opacity-10 focus:outline-none focus:ring-2 focus:ring-white"
             >
               <span class="sr-only">View notifications</span>
-              <BellIcon class="h-6 w-6" aria-hidden="true" />
+              <BellIcon class="h-6 w-6" aria-hidden="true"/>
             </router-link>
 
             <!-- Profile dropdown -->
@@ -59,19 +74,15 @@
                 <MenuItems
                   class="origin-top-right z-40 absolute -right-2 mt-2 w-48 rounded-md shadow-lg py-1 bg-white ring-1 ring-black ring-opacity-5 focus:outline-none"
                 >
-                  <MenuItem
-                    v-for="item in userNavigation"
-                    :key="item.name"
-                    v-slot="{ active }"
-                  >
-                    <a
-                      :href="item.href"
-                      :class="[
-                        active ? 'bg-gray-100' : '',
-                        'block px-4 py-2 text-sm text-gray-700'
-                      ]"
-                      >{{ item.name }}</a
-                    >
+                  <MenuItem v-slot="{ active }">
+                    <router-link to="/account"
+                                 :class="[active ? 'bg-gray-100' : '', 'block px-4 py-2 text-sm text-gray-700']">Your
+                      profile
+                    </router-link>
+                  </MenuItem>
+                  <MenuItem v-slot="{ active }">
+                    <a href="#" @click="logout()"
+                       :class="[active ? 'bg-gray-100' : '', 'block px-4 py-2 text-sm text-gray-700']">Sign out</a>
                   </MenuItem>
                 </MenuItems>
               </transition>
@@ -124,8 +135,10 @@
                   title="Public questions"
                 >
                   <!-- Heroicon name: outline/globe -->
-                  <svg class="text-gray-400 h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  <svg class="text-gray-400 h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                       stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                          d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
                   </svg>
                 </router-link>
 
@@ -183,6 +196,19 @@
                   </router-link>
 
                   <router-link
+                    :to="'/inboxes/' + $route.params.inboxId + '/labels'"
+                    exact
+                    class="text-gray-600 group flex items-center justify-center h-12 w-12 p-3 text-sm font-medium rounded-full focus:ring ring-primary"
+                    active-class="bg-gray-100 text-gray-900 dark:bg-gray-800 dark:text-gray-700"
+                    title="Insights"
+                  >
+                    <!-- Heroicon name: outline/bookmark -->
+                    <svg xmlns="http://www.w3.org/2000/svg" class="text-gray-400 h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" />
+                    </svg>
+                  </router-link>
+
+                  <router-link
                     :to="'/inboxes/' + $route.params.inboxId + '/insights'"
                     exact
                     class="text-gray-600 group flex items-center justify-center h-12 w-12 p-3 text-sm font-medium rounded-full focus:ring ring-primary"
@@ -207,13 +233,36 @@
                   </router-link>
 
                   <router-link
+                    :to="'/inboxes/' + $route.params.inboxId + '/automation'"
+                    exact
+                    class="text-gray-600 group flex items-center justify-center h-12 w-12 p-3 text-sm font-medium rounded-full focus:ring ring-primary"
+                    active-class="bg-gray-100 text-gray-900 dark:bg-gray-800 dark:text-gray-700"
+                    title="Insights"
+                  >
+                    <svg
+                      class="text-gray-400 h-6 w-6"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"
+                      ></path>
+                    </svg>
+                  </router-link>
+
+                  <router-link
                     :to="'/inboxes/' + $route.params.inboxId + '/settings'"
                     exact
                     class="text-gray-600 group flex items-center justify-center h-12 w-12 p-3 text-sm font-medium rounded-full focus:ring ring-primary"
                     active-class="bg-gray-100 text-gray-900 dark:bg-gray-800 dark:text-gray-700"
                     title="Settings"
                   >
-                    <!-- Heroicon name: outline/calendar -->
+                    <!-- Heroicon name: outline/settings -->
                     <svg
                       class="text-gray-400 h-6 w-6"
                       fill="none"
@@ -299,7 +348,7 @@
                           {{ inbox.inbox.coordinator.first_name }}
                           {{ inbox.inbox.coordinator.last_name }}
                         </span>
-                        <div v-else class="h-5 w-24 bg-gray-200 rounded" />
+                        <div v-else class="h-5 w-24 bg-gray-200 rounded"/>
                       </div>
                       <div class="flex items-center text-xs text-gray-500 dark:text-gray-200">
                         <!-- Heroicon name: code -->
@@ -318,7 +367,7 @@
                           ></path>
                         </svg>
                         <span v-if="inbox">{{ inbox.inbox.code }}</span>
-                        <div v-else class="h-5 w-24 bg-gray-200 rounded" />
+                        <div v-else class="h-5 w-24 bg-gray-200 rounded"/>
                       </div>
                       <div class="pt-2 w-full">
                         <router-link
@@ -387,8 +436,10 @@
                       active-class="bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-white"
                     >
                       <!-- Heroicon name: outline/globe -->
-                      <svg class="text-gray-400 group-hover:text-gray-500 dark:group-hover:text-gray-400 mr-3 h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                      <svg class="text-gray-400 group-hover:text-gray-500 dark:group-hover:text-gray-400 mr-3 h-6 w-6"
+                           xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                              d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
                       </svg>
                       Public tickets
                     </router-link>
@@ -403,110 +454,124 @@
                       >
                         Staff only
                       </h3>
-                      <router-link
-                        :to="'/inboxes/' + $route.params.inboxId + '/users'"
-                        exact
-                        class="text-gray-600 hover:bg-gray-50 hover:text-gray-900 dark:hover:bg-gray-700 dark:hover:text-white group flex items-center px-2 py-2 text-sm font-medium rounded-md"
-                        active-class="bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-white"
-                      >
-                        <!-- Heroicon name: outline/users -->
-                        <svg
-                          class="text-gray-400 group-hover:text-gray-500 dark:group-hover:text-gray-400 mr-3 h-6 w-6"
-                          xmlns="http://www.w3.org/2000/svg"
-                          fill="none"
-                          viewBox="0 0 24 24"
-                          stroke="currentColor"
-                          aria-hidden="true"
+                      <div class="space-y-1">
+                        <router-link
+                          :to="'/inboxes/' + $route.params.inboxId + '/users'"
+                          exact
+                          class="text-gray-600 hover:bg-gray-50 hover:text-gray-900 dark:hover:bg-gray-700 dark:hover:text-white group flex items-center px-2 py-2 text-sm font-medium rounded-md"
+                          active-class="bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-white"
                         >
-                          <path
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
-                            stroke-width="2"
-                            d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"
-                          />
-                        </svg>
-                        Users
-                      </router-link>
+                          <!-- Heroicon name: outline/users -->
+                          <svg
+                            class="text-gray-400 group-hover:text-gray-500 dark:group-hover:text-gray-400 mr-3 h-6 w-6"
+                            xmlns="http://www.w3.org/2000/svg"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            stroke="currentColor"
+                            aria-hidden="true"
+                          >
+                            <path
+                              stroke-linecap="round"
+                              stroke-linejoin="round"
+                              stroke-width="2"
+                              d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"
+                            />
+                          </svg>
+                          Users
+                        </router-link>
 
-                      <router-link
-                        :to="'/inboxes/' + $route.params.inboxId + '/insights'"
-                        exact
-                        class="text-gray-600 hover:bg-gray-50 hover:text-gray-900 dark:hover:bg-gray-700 dark:hover:text-white group flex items-center px-2 py-2 text-sm font-medium rounded-md"
-                        active-class="bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-white"
-                      >
-                        <!-- Heroicon name: outline/chart-square-bar -->
-                        <svg
-                          class="text-gray-400 group-hover:text-gray-500 dark:group-hover:text-gray-400 mr-3 h-6 w-6"
-                          fill="none"
-                          stroke="currentColor"
-                          viewBox="0 0 24 24"
-                          xmlns="http://www.w3.org/2000/svg"
+                        <router-link
+                          :to="'/inboxes/' + $route.params.inboxId + '/labels'"
+                          exact
+                          class="text-gray-600 hover:bg-gray-50 hover:text-gray-900 dark:hover:bg-gray-700 dark:hover:text-white group flex items-center px-2 py-2 text-sm font-medium rounded-md"
+                          active-class="bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-white"
                         >
-                          <path
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
-                            stroke-width="2"
-                            d="M16 8v8m-4-5v5m-4-2v2m-2 4h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
-                          ></path>
-                        </svg>
-                        Insights
-                      </router-link>
+                          <!-- Heroicon name: outline/bookmark -->
+                          <svg xmlns="http://www.w3.org/2000/svg" class="text-gray-400 group-hover:text-gray-500 dark:group-hover:text-gray-400 mr-3 h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" />
+                          </svg>
+                          Labels
+                        </router-link>
 
-                      <router-link
-                        :to="'/inboxes/' + $route.params.inboxId + '/settings'"
-                        exact
-                        class="text-gray-600 hover:bg-gray-50 hover:text-gray-900 dark:hover:bg-gray-700 dark:hover:text-white group flex items-center px-2 py-2 text-sm font-medium rounded-md"
-                        active-class="bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-white"
-                      >
-                        <!-- Heroicon name: outline/calendar -->
-                        <svg
-                          class="text-gray-400 group-hover:text-gray-500 dark:group-hover:text-gray-400 mr-3 h-6 w-6"
-                          fill="none"
-                          stroke="currentColor"
-                          viewBox="0 0 24 24"
-                          xmlns="http://www.w3.org/2000/svg"
+                        <router-link
+                          :to="'/inboxes/' + $route.params.inboxId + '/insights'"
+                          exact
+                          class="text-gray-600 hover:bg-gray-50 hover:text-gray-900 dark:hover:bg-gray-700 dark:hover:text-white group flex items-center px-2 py-2 text-sm font-medium rounded-md"
+                          active-class="bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-white"
                         >
-                          <path
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
-                            stroke-width="2"
-                            d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"
-                          ></path>
-                          <path
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
-                            stroke-width="2"
-                            d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
-                          ></path>
-                        </svg>
-                        Settings
-                      </router-link>
+                          <!-- Heroicon name: outline/chart-square-bar -->
+                          <svg
+                            class="text-gray-400 group-hover:text-gray-500 dark:group-hover:text-gray-400 mr-3 h-6 w-6"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                            xmlns="http://www.w3.org/2000/svg"
+                          >
+                            <path
+                              stroke-linecap="round"
+                              stroke-linejoin="round"
+                              stroke-width="2"
+                              d="M16 8v8m-4-5v5m-4-2v2m-2 4h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
+                            ></path>
+                          </svg>
+                          Insights
+                        </router-link>
 
-                      <router-link
-                        :to="
-                          '/inboxes/' + $route.params.inboxId + '/automation'
-                        "
-                        exact
-                        class="text-gray-600 hover:bg-gray-50 hover:text-gray-900 dark:hover:bg-gray-700 dark:hover:text-white group flex items-center px-2 py-2 text-sm font-medium rounded-md"
-                        active-class="bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-white"
-                      >
-                        <!-- Heroicon name: outline/calendar -->
-                        <svg
-                          class="text-gray-400 group-hover:text-gray-500 dark:group-hover:text-gray-400 mr-3 h-6 w-6"
-                          fill="none"
-                          stroke="currentColor"
-                          viewBox="0 0 24 24"
-                          xmlns="http://www.w3.org/2000/svg"
+                        <router-link
+                          :to="
+                            '/inboxes/' + $route.params.inboxId + '/automation'
+                          "
+                          exact
+                          class="text-gray-600 hover:bg-gray-50 hover:text-gray-900 dark:hover:bg-gray-700 dark:hover:text-white group flex items-center px-2 py-2 text-sm font-medium rounded-md"
+                          active-class="bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-white"
                         >
-                          <path
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
-                            stroke-width="2"
-                            d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"
-                          ></path>
-                        </svg>
-                        Automation
-                      </router-link>
+                          <svg
+                            class="text-gray-400 group-hover:text-gray-500 dark:group-hover:text-gray-400 mr-3 h-6 w-6"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                            xmlns="http://www.w3.org/2000/svg"
+                          >
+                            <path
+                              stroke-linecap="round"
+                              stroke-linejoin="round"
+                              stroke-width="2"
+                              d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"
+                            ></path>
+                          </svg>
+                          Automation
+                        </router-link>
+
+                        <router-link
+                          :to="'/inboxes/' + $route.params.inboxId + '/settings'"
+                          exact
+                          class="text-gray-600 hover:bg-gray-50 hover:text-gray-900 dark:hover:bg-gray-700 dark:hover:text-white group flex items-center px-2 py-2 text-sm font-medium rounded-md"
+                          active-class="bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-white"
+                        >
+                          <!-- Heroicon name: outline/calendar -->
+                          <svg
+                            class="text-gray-400 group-hover:text-gray-500 dark:group-hover:text-gray-400 mr-3 h-6 w-6"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                            xmlns="http://www.w3.org/2000/svg"
+                          >
+                            <path
+                              stroke-linecap="round"
+                              stroke-linejoin="round"
+                              stroke-width="2"
+                              d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"
+                            ></path>
+                            <path
+                              stroke-linecap="round"
+                              stroke-linejoin="round"
+                              stroke-width="2"
+                              d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                            ></path>
+                          </svg>
+                          Settings
+                        </router-link>
+                      </div>
                     </div>
                     <!-- <div>
                       <hr class="border-t border-gray-200 my-4" aria-hidden="true" />
@@ -592,7 +657,7 @@
                 ></path>
               </svg>
               <span v-if="inbox">{{ inbox.inbox.code }}</span>
-              <div v-else class="h-5 w-24 bg-gray-200 rounded" />
+              <div v-else class="h-5 w-24 bg-gray-200 rounded"/>
             </div>
             <div class="flex items-center text-xs text-gray-500">
               <!-- Heroicon name: user -->
@@ -611,10 +676,10 @@
                 ></path>
               </svg>
               <span class="w-full truncate" v-if="inbox"
-                >{{ inbox.inbox.coordinator.first_name }}
+              >{{ inbox.inbox.coordinator.first_name }}
                 {{ inbox.inbox.coordinator.last_name }}</span
               >
-              <div v-else class="h-5 w-24 bg-gray-200 rounded" />
+              <div v-else class="h-5 w-24 bg-gray-200 rounded"/>
             </div>
           </div>
         </div>
@@ -627,7 +692,7 @@
         <main
           class="flex-1 relative overflow-hidden focus:outline-none flex flex-col"
         >
-          <slot />
+          <slot/>
         </main>
       </div>
     </div>
@@ -637,11 +702,13 @@
     @update="user.give_introduction = false"
     v-if="is_staff && user && user.give_introduction"
   />
-  <develop-panel v-if="development" />
+  <develop-panel v-if="development"/>
 </template>
 
 <script>
 import axios from 'axios'
+import store from '@/store'
+import { mapState } from 'vuex'
 
 import GettingStarted from '@/components/onboarding/GettingStarted'
 import DevelopPanel from '@/components/devpanel/DevelopPanel.vue'
@@ -653,14 +720,9 @@ import {
   MenuItems
 } from '@headlessui/vue'
 import {
-  BellIcon
+  BellIcon,
+  ExternalLinkIcon
 } from '@heroicons/vue/outline'
-
-const userNavigation = [
-  { name: 'Your Profile', href: '#' },
-  { name: 'Settings', href: '#' },
-  { name: 'Sign out', href: '#' }
-]
 
 const logo = require('@/assets/logo/logo.svg')
 
@@ -671,12 +733,12 @@ export default {
     MenuButton,
     MenuItem,
     MenuItems,
+    ExternalLinkIcon,
     GettingStarted,
     DevelopPanel
   },
   setup () {
     return {
-      userNavigation,
       logo
     }
   },
@@ -687,7 +749,7 @@ export default {
   }),
   async mounted () {
     const response = await axios.get(
-      `/api/me/inboxes/${this.$route.params.inboxId}`
+      `/api/me/inboxes/${ this.$route.params.inboxId }`
     )
     this.inbox = response.data
   },
@@ -695,15 +757,26 @@ export default {
     async goto (index) {
       this.$router.push('/inboxes/' + index + '/tickets')
       const response = await axios.get(
-        `/api/me/inboxes/${this.$route.params.inboxId}`
+        `/api/me/inboxes/${ this.$route.params.inboxId }`
       )
       this.inbox = response.data
+    },
+    logout () {
+      this.$store.dispatch('logout')
+    },
+    isFramed () {
+      return window.self !== window.top
+    },
+    openInTab () {
+      const url = new URL(window.location.href)
+      url.searchParams.append('token', store.state.token)
+      window.open(url.href, '_blank')
     }
   },
   computed: {
-    user () {
-      return this.$store.state.user
-    },
+    ...mapState({
+      user: state => state.user
+    }),
     is_staff () {
       if (!this.inbox) {
         return false

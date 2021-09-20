@@ -7,7 +7,11 @@
                 tabindex="-1"
                 type="button">
           <div class="flex items-center space-x-3">
-            <span class="block truncate dark:text-gray-200">{{ values && values.length ? "Select labels" : "No labels available" }}</span>
+            <span v-for="label in labels.slice(0, 1)" :key="label.id" class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-gray-100 text-gray-800">
+              {{ label.name }}
+            </span>
+            <span v-if="labels.length > 1" class="text-xs text-gray-800">+{{ labels.length - 1 }}</span>
+            <span class="block truncate dark:text-gray-200">{{ values && values.length ? (labels.length === 0 ? "Select labels" : "") : "No labels available" }}</span>
           </div>
           <span class="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none">
             <svg class="h-5 w-5 text-gray-400" viewBox="0 0 20 20" fill="none" stroke="currentColor">

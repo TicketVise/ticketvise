@@ -42,7 +42,7 @@ class CommentNotification(Notification):
         if self.receiver == self.comment.author:
             return
 
-        if self.receiver.notification_comment_mail:
+        if self.pk is None and self.receiver.notification_comment_mail:
             self.send_mail()
 
         if self.receiver.notification_comment_app:
