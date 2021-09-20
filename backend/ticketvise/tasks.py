@@ -3,13 +3,56 @@ Tasks
 -------------------------------
 Periodic tsks for changing ticket statuses and sending emails.
 """
+from backend.ticketvise.mail.retrieve import retrieve_emails, submit_email_ticket
+import datetime
+import logging
+import sched
 from django.db.models import Q
 from django.utils import timezone
 
-from .models.inbox import Inbox
+from .models.inbox import Inbox, MailSecurity
 from .models.notification.reminder import TicketReminderNotification
 from .models.ticket import Ticket, Status
 from .models.user import Role
+
+
+def start_schedule():
+    tasks = [(sync_mail, 60)]
+    s = sched.scheduler()
+
+    # setting up repeating tasks
+    for task, seconds in tasks:
+        def run():
+            try:
+                task()
+                print(f"Task '{task.__name__}' successfully finished!")
+            except Exception as e:
+                print(f"Task '{task.__name__}' failed with exception: {e}")
+            
+            # rescheduling task
+            s.enter(seconds, 1, run)
+            print(f"Task '{task.__name__}' scheduled to repeat in {seconds} seconds.")
+        
+        # initial task schedule
+        s.enter(seconds, 1, run)
+    
+    s.run()
+
+def sync_mail():
+    start_time = datetime.now()
+    logging.info(f"Started retrieving email at {start_time}")
+    for inbox in Inbox.objects.filter(email_enabled=True):
+        logging.info(f"Retrieving email for inbox: {inbox.name} ({inbox.id})")
+        for message in retrieve_emails(inbox.inbound_email_protocol,
+                                       inbox.inbound_email_server,
+                                       inbox.inbound_email_port,
+                                       inbox.inbound_email_username,
+                                       inbox.inbound_email_password,
+                                       inbox.inbound_email_security == MailSecurity.TLS,
+                                       inbox.inbound_email_use_oauth2):
+            submit_email_ticket(message)
+    end_time = datetime.now()
+    logging.info(f"Finished retrieving email at {end_time}, took: {end_time - start_time}")
 
 
 def close_expired_answered_tickets():

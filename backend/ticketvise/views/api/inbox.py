@@ -1,7 +1,7 @@
 from django.db.models import Case, BooleanField, When, Q
 from django.shortcuts import get_object_or_404
 from rest_framework import serializers
-from rest_framework.generics import ListAPIView, RetrieveUpdateDestroyAPIView, ListCreateAPIView, RetrieveAPIView
+from rest_framework.generics import ListAPIView, RetrieveUpdateDestroyAPIView, ListCreateAPIView, RetrieveAPIView, UpdateAPIView
 from rest_framework.generics import RetrieveUpdateAPIView
 from rest_framework.response import Response
 from rest_framework.serializers import ModelSerializer
@@ -34,6 +34,15 @@ class InboxSerializer(DynamicFieldsModelSerializer):
     def get_coordinator(self, obj):
         return UserSerializer(obj.get_coordinator()).data
 
+    class Meta:
+        model = Inbox
+        fields = [
+            "name", "id", "color", "labels", "image", "scheduling_algorithm", "code", "show_assignee_to_guest",
+            "fixed_scheduling_assignee", "is_active", "date_created", "close_answered_weeks",
+            "alert_coordinator_unanswered_days", "coordinator"
+        ]
+
+class InboxEmailSerializer(ModelSerializer):
     class Meta:
         model = Inbox
         fields = [
@@ -195,6 +204,12 @@ class InboxSettingsApiView(RetrieveUpdateAPIView):
             request.POST._mutable = True
             request.POST["fixed_scheduling_assignee"] = None
         return super().update(request, *args, **kwargs)
+
+class InboxUpdateEmail(UpdateAPIView):
+    queryset = Inbox
+    permission_classes = [UserIsInboxStaffPermission]
+    lookup_url_kwarg = "inbox_id"
+
 
 
 class CurrentUserInboxSerializer(ModelSerializer):

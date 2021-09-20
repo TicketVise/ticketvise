@@ -3,10 +3,15 @@ Utils
 -------------------------------
 Various utility functions for use in python files.
 """
+from backend.ticketvise.mail import create_microsoft_config
 import random
 
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.response import Response
+
+from authlib.integrations.django_client import OAuth
+oauth = OAuth()
+microsoft = oauth.create_client(create_microsoft_config("consumer"))
 
 
 def random_preselected_color():

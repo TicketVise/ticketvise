@@ -171,6 +171,10 @@ class Inbox(models.Model):
     def __str__(self):
         return self.name
 
+    def setup_email():
+        pass
+
+
 
 class InboxSection(models.Model):
     code = models.CharField(max_length=100)
