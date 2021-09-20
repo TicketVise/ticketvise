@@ -42,7 +42,7 @@ class Command(BaseCommand):
 
         protocol = "IMAP"
         host = "outlook.office365.com"
-        username = "ticket@lydis.com"
+        username = "ticket@lydisnl.onmicrosoft.com"
         require_tls = True
         use_oauth2 = True
 
