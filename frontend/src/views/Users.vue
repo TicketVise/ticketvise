@@ -228,7 +228,7 @@
             </div>
 
             <div>
-              <div class="border border-red-600 overflow-hidden rounded p-4 mt-2">
+              <div class="border border-red-600 overflow-hidden rounded p-4 mt-2 mb-4">
                 <h3 class="text-lg leading-6 font-medium text-gray-900">
                   Remove user
                 </h3>
