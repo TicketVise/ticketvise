@@ -1,4 +1,4 @@
-from datetime import datetime, timedelta
+from datetime import date, datetime, time, timedelta
 
 from django.db.models import F, Count, OuterRef, Subquery, Avg
 from django.db.models.functions import TruncDate, TruncMonth, TruncYear, TruncWeek, \
@@ -48,6 +48,35 @@ class InboxTicketsPerDateTypeStatisticsApiView(APIView):
                     "total": next((result["total"] for result in results if result["date"] == hour), 0)
                 } for hour in range(24)
             ]
+        elif date_type == "date":
+            base = results[0]["date"]
+            end = list(results)[-1]["date"]
+            date_list = [base + timedelta(days=i) for i in range((end - base).days + 1)]
+            return [
+                {
+                    "date": date,
+                    "total": next((result["total"] for result in results if result["date"] == date), 0)
+                } for date in date_list
+            ]
+        elif date_type == "labels":
+            base = None
+            end = None
+            for label in results:
+                for result in results[label]:
+                    if base == None or (result["date"] - base).days < 0:
+                        base = result["date"]
+                    if end == None or (result["date"] - end).days > 0:
+                        end = result["date"]
+            date_list = [base + timedelta(days=i) for i in range((end - base).days + 1)]
+            return dict({
+                "labels": date_list,
+                "datasets": [
+                    {
+                        "label": LabelSerializer(label).data,
+                        "data": list(results[label])
+                    } for label in results
+                ]
+            })
 
         return list(results)
 
@@ -56,11 +85,22 @@ class InboxTicketsPerDateTypeStatisticsApiView(APIView):
 
         date_modifier = self.get_date_modifier(request)
 
-        counts = Ticket.objects.filter(inbox=inbox) \
-            .annotate(date=date_modifier('date_created')) \
-            .values('date') \
-            .annotate(**{'total': Count('date')}) \
-            .order_by("date")
+        if request.GET.get("date_type") == "labels":
+            labels = Label.objects.filter(inbox=inbox)
+            counts = dict()
+            for label in labels:
+                label_counts = Ticket.objects.filter(inbox=inbox, labels=label) \
+                    .annotate(date=date_modifier('date_created')) \
+                    .values('date') \
+                    .annotate(**{'total': Count('date')}) \
+                    .order_by("date")
+                counts[label] = label_counts
+        else:
+            counts = Ticket.objects.filter(inbox=inbox) \
+                .annotate(date=date_modifier('date_created')) \
+                .values('date') \
+                .annotate(**{'total': Count('date')}) \
+                .order_by("date")
 
         results = self.fill_gaps(request, counts)
 
