@@ -208,6 +208,7 @@ export default {
           }
         })
         .then(async (response) => {
+          console.log(response.data)
           if (!store.getters.inbox(inboxId)) await store.dispatch('update_inboxes')
 
           store.commit('update_tickets', { inbox: inboxId, tickets: response.data })
@@ -275,7 +276,7 @@ export default {
     axios
       .get(`/api/inboxes/${this.$route.params.inboxId}/role`)
       .then((response) => {
-        this.is_staff = (response.data.key === 'AGENT' || response.data.key === 'MANAGER')
+        this.is_staff = (response.data.key === 'AGENT' || response.data.key === 'MANAGER') || this.user.is_superuser
       })
 
     this.get_tickets()
