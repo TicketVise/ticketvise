@@ -111,9 +111,7 @@
 
               <div class="py-3 xl:pt-6 xl:pb-0">
                 <h2 class="sr-only">Description</h2>
-                <div class="prose max-w-none">
-                  {{ ticket?.content }}
-                </div>
+                <TicketInputViewer v-if="ticket" :content="ticket.content" />
               </div>
             </div>
           </div>
@@ -325,29 +323,6 @@
       </div>
     </div>
   </div>
-
-  <!-- Temporary warning about the text editor. -->
-  <div class="absolute inset-x-0 bottom-0">
-    <div class="bg-primary-600">
-      <div class="max-w-7xl mx-auto py-3 px-3 sm:px-6 lg:px-8">
-        <div class="flex items-center justify-between flex-wrap">
-          <div class="w-0 flex-1 flex items-center">
-            <span class="flex p-2 rounded-lg bg-primary">
-              <SpeakerphoneIcon class="h-6 w-6 text-white" aria-hidden="true" />
-            </span>
-            <p class="ml-3 font-medium text-white truncate">
-              <span class="md:hidden">
-                Temporarily a plain text tickets
-              </span>
-              <span class="hidden md:inline">
-                We are working on a new editor. So we temporarily can only offer plain text messages.
-              </span>
-            </p>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
 </template>
 
 <script>
@@ -362,6 +337,7 @@ import Chip from '@/components/chip/Chip'
 import PublishConfirmation from '@/components/tickets/PublishConfirmation.vue'
 import PrivateConfirmation from '@/components/tickets/PrivateConfirmation.vue'
 import FormTextFieldWithSuggestions from '@/components/form/FormTextFieldWithSuggestions'
+import TicketInputViewer from '@/components/inputs/TicketInputViewer'
 
 import { ref } from 'vue'
 import {
@@ -386,7 +362,6 @@ import {
 
 import {
   CloudIcon,
-  SpeakerphoneIcon,
   LockClosedIcon as LockIcon
 } from '@heroicons/vue/outline'
 
@@ -413,9 +388,9 @@ export default {
     PublishConfirmation,
     PrivateConfirmation,
     StaffDiscussion,
-    SpeakerphoneIcon,
     ClipboardListIcon,
-    ClipboardCheckIcon
+    ClipboardCheckIcon,
+    TicketInputViewer
   },
   data: () => ({
     publishConfirmationModal: false,

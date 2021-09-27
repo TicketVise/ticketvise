@@ -32,7 +32,7 @@
               Content
             </label>
             <div class="relative mt-1">
-              <textarea v-model="content" id="content" name="content" rows="4" class="block w-full sm:text-sm border rounded-md" placeholder="This is the space to describe your ticket" :class="errors.content ? 'border-red-300 text-red-900 placeholder-red-300 focus:ring-red-500 focus:border-red-500' : 'focus:ring-primary focus:border-primary border-gray-300'" />
+              <TicketInput v-model="content" :class="errors.content ? 'border-red-300 text-red-900 placeholder-red-300 focus:ring-red-500 focus:border-red-500' : 'focus:ring-primary focus:border-primary border-gray-300'" />
               <div v-if="errors.content" class="absolute inset-y-0 right-0 top-2 pr-3 flex pointer-events-none">
                 <ExclamationCircleIcon class="h-5 w-5 text-red-500" aria-hidden="true" />
               </div>
@@ -120,29 +120,6 @@
       </form>
     </div>
   </div>
-
-  <!-- Temporary warning about the text editor. -->
-  <div class="absolute inset-x-0 bottom-0 z-10">
-    <div class="bg-primary-600">
-      <div class="max-w-7xl mx-auto py-3 px-3 sm:px-6 lg:px-8">
-        <div class="flex items-center justify-between flex-wrap">
-          <div class="w-0 flex-1 flex items-center">
-            <span class="flex p-2 rounded-lg bg-primary">
-              <SpeakerphoneIcon class="h-6 w-6 text-white" aria-hidden="true" />
-            </span>
-            <p class="ml-3 font-medium text-white truncate">
-              <span class="md:hidden">
-                Temporarily a plain text tickets
-              </span>
-              <span class="hidden md:inline">
-                We are working on a new editor. So we temporarily can only offer plain text messages.
-              </span>
-            </p>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
 </template>
 
 <script>
@@ -151,6 +128,7 @@ import router from '@/router'
 import { mapState } from 'vuex'
 
 import FileUpload from '@/components/inputs/FileInput'
+import TicketInput from '@/components/inputs/TicketInput'
 import LabelDropdown from '@/components/dropdown/LabelDropdown'
 import FormTextFieldWithSuggestions from '@/components/form/FormTextFieldWithSuggestions'
 import Error from '@/components/inputs/Error'
@@ -163,9 +141,6 @@ import {
   RadioGroupOption
 } from '@headlessui/vue'
 import { XIcon, ExclamationCircleIcon } from '@heroicons/vue/solid'
-import {
-  SpeakerphoneIcon
-} from '@heroicons/vue/outline'
 
 const settings = [
   { key: 'private', name: 'Private ticket', description: 'Only you and the staff team will be able to access this ticket' },
@@ -178,13 +153,13 @@ export default {
   components: {
     Error,
     FileUpload,
+    TicketInput,
     FormTextFieldWithSuggestions,
     LabelDropdown,
     RadioGroup,
     RadioGroupDescription,
     RadioGroupLabel,
     RadioGroupOption,
-    SpeakerphoneIcon,
     XIcon,
     ExclamationCircleIcon
   },
