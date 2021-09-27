@@ -672,7 +672,7 @@ export default {
         .filter(g => this.ticket?.shared_with.map(s => s.id).indexOf(g.id) === -1)
     },
     isStaffOrAuthor () {
-      return this.isStaff(this.role, this.user) || (this.user && this.ticket?.author.id === this.user.id)
+      return this.isStaff(this.role, this.user) || (this.user && this.ticket?.author?.id === this.user.id)
     }
   }
 }
