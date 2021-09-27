@@ -193,27 +193,18 @@
             </div>
           </div>
           <div class="mt-6 border-t border-gray-200 py-6 space-y-8">
-            <div v-if="ticket?.assignee && isStaff(role, user)">
-              <h2 class="text-sm font-medium text-gray-500">Assignee</h2>
+            <div v-if="isStaff(role, user)">
               <Listbox as="span" class="-ml-px relative block">
-                <ListboxButton class="relative flex items-center text-sm font-medium focus:outline-none ml-1">
-                  <div class="flex items-center space-x-3 m-2" v-if="ticket?.assignee && ticket?.assignee.id">
-                    <div class="flex-shrink-0">
-                      <img
-                        class="h-8 w-8 rounded-full"
-                        :src="ticket?.assignee.avatar_url"
-                        alt=""
-                      />
-                    </div>
-                    <span class="block truncate">{{ ticket?.assignee.first_name }} {{
-                        ticket?.assignee.last_name
-                      }}</span>
+                <ListboxButton class="relative flex items-center w-full text-sm font-medium focus:outline-none ml-1">
+                  <div class="group flex justify-between w-full items-center">
+                    <h2 class="text-sm font-medium text-gray-500 group-hover:text-gray-800">Assignee</h2>
+                    <CogIcon class="h-4 w-4 text-gray-400 group-hover:text-gray-800" aria-hidden="true"/>
                   </div>
                 </ListboxButton>
                 <transition leave-active-class="transition ease-in duration-100" leave-from-class="opacity-100"
                             leave-to-class="opacity-0">
                   <ListboxOptions
-                    class="absolute z-10 mt-1 bg-white shadow-lg max-h-56 rounded-md py-1 text-base ring-1 ring-black ring-opacity-5 overflow-auto focus:outline-none sm:text-sm">
+                    class="absolute z-10 mt-1 bg-white shadow-lg max-h-56 w-full rounded-md py-1 text-base ring-1 ring-black ring-opacity-5 overflow-auto focus:outline-none sm:text-sm">
                     <ListboxOption as="template" v-for="assignee in staff" :key="assignee.id"
                                    :value="assignee" v-slot="{ active }">
                       <li @click="updateAssignee(assignee)"
@@ -238,31 +229,33 @@
                   </ListboxOptions>
                 </transition>
               </Listbox>
-            </div>
-
-            <div v-else-if="isStaff(role, user)">
-              <h2 class="text-sm font-medium text-gray-500">Assignee</h2>
-              <h3 v-if="!ticket?.assignee && isStaff(role, user)" class="text-xs text-gray-500">
-                <button class="hover:text-orange-600 no-underline">Assign yourself</button>
-              </h3>
+              <div class="flex items-center space-x-3 m-2" v-if="ticket?.assignee && ticket?.assignee.id">
+                <div class="flex-shrink-0">
+                  <img class="h-8 w-8 rounded-full" :src="ticket?.assignee.avatar_url" alt="" />
+                </div>
+                <span class="block truncate">{{ ticket?.assignee.first_name }} {{ ticket?.assignee.last_name }}</span>
+              </div>
+              <span v-else class="text-gray-400 text-sm ml-3">
+                None yet<span v-if="isStaff(role, user)">—<button @click="assignUser" class="hover:text-primary-600 no-underline">Assign yourself</button></span>
+              </span>
             </div>
 
             <!--Labels-->
-            <div v-if="ticket?.labels.length > 0">
-              <div class="relative inline-flex pb-2">
-                <h2 class="text-sm font-medium text-gray-500 pr-2">Labels</h2>
+            <div>
+              <div class="relative">
+                <h2 v-if="!isStaffOrAuthor" class="text-sm font-medium text-gray-500 group-hover:text-gray-800">Labels</h2>
                 <div v-if="isStaffOrAuthor">
                   <Listbox as="span" class="-ml-px relative block">
-                    <ListboxButton class="relative flex items-center text-sm font-medium focus:outline-none ml-1">
-                      <span
-                        class="w-5 h-5 rounded-md border border-dashed border-primary-400 flex items-center justify-center text-primary-400">
-                        <PencilIcon class="h-5 w-5" aria-hidden="true"/>
-                      </span>
+                    <ListboxButton class="relative flex items-center w-full text-sm font-medium focus:outline-none ml-1">
+                      <div class="group flex justify-between w-full items-center">
+                        <h2 class="text-sm font-medium text-gray-500 group-hover:text-gray-800">Labels</h2>
+                        <CogIcon class="h-4 w-4 text-gray-400 group-hover:text-gray-800" aria-hidden="true"/>
+                      </div>
                     </ListboxButton>
                     <transition leave-active-class="transition ease-in duration-100" leave-from-class="opacity-100"
                                 leave-to-class="opacity-0">
                       <ListboxOptions
-                        class="absolute z-10 mt-1 bg-white shadow-lg max-h-56 rounded-md py-1 text-base ring-1 ring-black ring-opacity-5 overflow-auto focus:outline-none sm:text-sm">
+                        class="absolute z-10 mt-1 bg-white shadow-lg max-h-56 w-full rounded-md py-1 text-base ring-1 ring-black ring-opacity-5 overflow-auto focus:outline-none sm:text-sm">
                         <ListboxOption as="template" v-for="label in ticket?.inbox.labels" :key="label.id"
                                        :value="label" v-slot="{ active }">
                           <li @click="toggleLabel(label)"
@@ -286,13 +279,14 @@
                   </Listbox>
                 </div>
               </div>
-              <div class="flex flex-wrap mb-2" v-if="ticket?.labels.length > 0">
+              <div class="flex flex-wrap mb-2 pt-2" v-if="ticket?.labels.length > 0">
                 <chip :background="label.color" :key="label.id" class="mr-1 mb-1" v-for="label in ticket?.labels">
                   {{ label.name }}
                 </chip>
               </div>
+              <span v-else class="text-gray-400 text-sm ml-3">None yet</span>
             </div>
-            <div v-if="ticket?.shared_with.length > 0">
+            <div v-if="!ticket?.is_public">
               <h2 class="text-sm font-medium text-gray-500">Shared with</h2>
               <ul class="mt-2 leading-8 divide-y divide-gray-200">
                 <li v-for="person in ticket?.shared_with" :key="person.id"
@@ -381,11 +375,11 @@ import {
   CalendarIcon,
   ChatAltIcon,
   CheckIcon,
+  CogIcon,
   InformationCircleIcon,
   LockOpenIcon,
   LockClosedIcon,
   PlusIcon as PlusIconSolid,
-  PencilIcon,
   ClipboardListIcon,
   ClipboardCheckIcon
 } from '@heroicons/vue/solid'
@@ -405,6 +399,7 @@ export default {
     CheckIcon,
     Chip,
     CloudIcon,
+    CogIcon,
     FormTextFieldWithSuggestions,
     InformationCircleIcon,
     LockIcon,
@@ -414,7 +409,6 @@ export default {
     ListboxButton,
     ListboxOption,
     ListboxOptions,
-    PencilIcon,
     PlusIconSolid,
     PublishConfirmation,
     PrivateConfirmation,
@@ -661,6 +655,9 @@ export default {
           this.ticket.assignee = id === user.id ? user : undefined
           this.loadTicketData()
         })
+    },
+    assignUser () {
+      this.updateAssignee(this.user)
     }
   },
   computed: {

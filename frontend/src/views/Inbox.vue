@@ -35,6 +35,7 @@
         :length="column.total"
         @input="loadStatus(column.label)"
         class="min-w-3/4 sm:min-w-1/2 md:min-w-0 pr-4"
+        v-on:refresh="get_tickets"
       />
     </div>
 
