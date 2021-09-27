@@ -6,7 +6,7 @@
     </span>
 
     <!-- More menu -->
-    <Menu v-if="showDelete" as="div" class="relative inline-block text-left">
+    <Menu as="div" class="relative inline-block text-left">
       <div>
         <MenuButton class="-m-2 p-2 rounded-full flex items-center text-gray-400 hover:text-gray-600">
           <span class="sr-only">Open options</span>
@@ -30,7 +30,7 @@
               </a>
             </MenuItem>
           </div>
-          <div class="py-1">
+          <div v-if="showDelete" class="py-1">
             <MenuItem v-slot="{ active }">
               <button @click="remove(attachment)" :class="[active ? 'bg-gray-100 text-gray-900' : 'text-gray-700', 'flex w-full px-4 py-2 text-sm']">
                 <DocumentRemoveIcon class="mr-3 h-5 w-5 text-gray-400" aria-hidden="true" />
@@ -41,15 +41,6 @@
         </MenuItems>
       </transition>
     </Menu>
-    <div v-else class="relative">
-      <a
-        :href="attachment.file"
-        :download="getFilename(attachment.file)"
-        class="flex items-center justify-center relative ml-auto rounded-full cursor-pointer w-6 h-6 text-center -mr-2 text-gray-700 hover:bg-gray-100"
-      >
-        <documentDownloadIcon class="h-5 w-5 text-gray-800" />
-      </a>
-    </div>
   </div>
 </template>
 

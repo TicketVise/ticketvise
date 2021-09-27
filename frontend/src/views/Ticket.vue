@@ -240,15 +240,15 @@
               </Listbox>
             </div>
 
-            <div v-else>
+            <div v-else-if="isStaff(role, user)">
               <h2 class="text-sm font-medium text-gray-500">Assignee</h2>
-              <h3 v-if="!ticket || !assignee || !assignee.username" class="text-xs text-gray-500">
+              <h3 v-if="!ticket?.assignee && isStaff(role, user)" class="text-xs text-gray-500">
                 <button class="hover:text-orange-600 no-underline">Assign yourself</button>
               </h3>
             </div>
 
             <!--Labels-->
-            <div>
+            <div v-if="ticket?.labels.length > 0">
               <div class="relative inline-flex pb-2">
                 <h2 class="text-sm font-medium text-gray-500 pr-2">Labels</h2>
                 <div v-if="isStaffOrAuthor">
@@ -292,7 +292,7 @@
                 </chip>
               </div>
             </div>
-            <div>
+            <div v-if="ticket?.shared_with.length > 0">
               <h2 class="text-sm font-medium text-gray-500">Shared with</h2>
               <ul class="mt-2 leading-8 divide-y divide-gray-200">
                 <li v-for="person in ticket?.shared_with" :key="person.id"

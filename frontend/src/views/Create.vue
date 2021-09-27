@@ -18,7 +18,7 @@
               Title
             </label>
             <div class="relative mt-1">
-              <input v-model="title" type="text" name="project-name" id="project-name" class="block w-full focus:ring-primary focus:border-primary sm:text-sm border-gray-300 rounded-md" :class="errors.content ? 'border-red-300 text-red-900 placeholder-red-300 focus:ring-red-500 focus:border-red-500' : 'focus:ring-primary focus:border-primary border-gray-300'" placeholder="Short and concise title for your ticket" />
+              <input v-model="title" type="text" name="project-name" id="project-name" class="block w-full sm:text-sm rounded-md" :class="errors.content ? 'border-red-300 text-red-900 placeholder-red-300 focus:ring-red-500 focus:border-red-500' : 'focus:ring-primary focus:border-primary border-gray-300'" placeholder="Short and concise title for your ticket" />
               <div v-if="errors.title" class="absolute inset-y-0 right-0 items-center pr-3 flex pointer-events-none">
                 <ExclamationCircleIcon class="h-5 w-5 text-red-500" aria-hidden="true" />
               </div>

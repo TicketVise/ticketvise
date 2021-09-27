@@ -123,18 +123,24 @@
           <form @submit.prevent="submit">
             <div>
               <label for="comment" class="sr-only">Comment</label>
-              <textarea v-model="comment" id="comment" name="comment" rows="3"
-                        class="block w-full focus:ring-gray-900 focus:border-gray-900 sm:text-sm border border-gray-300 rounded-md"
-                        placeholder="Leave a comment"/>
+              <div class="relative">
+                <textarea v-model="comment" id="comment" name="comment" rows="3"
+                          class="block w-full sm:text-sm border rounded-md" :class="errors.content ? 'border-red-300 text-red-900 placeholder-red-300 focus:ring-red-500 focus:border-red-500' : 'focus:ring-primary focus:border-primary border-gray-300'"
+                          placeholder="Leave a comment"/>
+                <div v-if="errors.content" class="absolute inset-y-0 right-0 top-2 pr-3 flex pointer-events-none">
+                  <ExclamationCircleIcon class="h-5 w-5 text-red-500" aria-hidden="true" />
+                </div>
+              </div>
+              <p v-if="errors.content" class="mt-2 text-sm text-red-600" id="email-error">{{ errors.content[0] }}</p>
             </div>
             <div class="mt-6 flex items-center justify-end space-x-4">
               <button type="button" @click="closeTicket" v-if="ticket.status !== 'CLSD' && permissions"
-                      class="inline-flex justify-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-900">
+                      class="inline-flex justify-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary">
                 <CheckCircleIcon class="-ml-1 mr-2 h-5 w-5 text-green-500" aria-hidden="true" />
                 Close ticket
               </button>
               <button type="submit"
-                      class="inline-flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-primary hover:bg-primary-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-900">
+                      class="inline-flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-primary hover:bg-primary-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary">
                 <span v-if="ticket.status !== 'CLSD'">Comment</span>
                 <span v-else>Comment and reopen ticket</span>
               </button>
@@ -155,7 +161,8 @@ import {
   CheckCircleIcon,
   CollectionIcon,
   TagIcon,
-  UserCircleIcon as UserCircleIconSolid
+  UserCircleIcon as UserCircleIconSolid,
+  ExclamationCircleIcon
 } from '@heroicons/vue/solid'
 
 const statusses = {
@@ -184,7 +191,8 @@ export default {
     Chip,
     CollectionIcon,
     TagIcon,
-    UserCircleIconSolid
+    UserCircleIconSolid,
+    ExclamationCircleIcon
   },
   props: {
     ticket: {
@@ -198,7 +206,8 @@ export default {
     }
   },
   data: () => ({
-    comment: ''
+    comment: '',
+    errors: []
   }),
   setup () {
     return { statusses }
@@ -212,6 +221,10 @@ export default {
         .then(() => {
           this.$emit('post')
           this.comment = ''
+          this.errors = []
+        })
+        .catch(error => {
+          this.errors = error.response.data
         })
     },
     closeTicket () {

@@ -2,7 +2,7 @@
   <div class="w-full">
     <div v-if="ticket.attachments.length > 0" class="w-full grid grid-cols-1 sm:grid-cols-2 gap-4">
       <attachment v-for="(attachment, index) in ticket.attachments" :key="index" :attachment="attachment"
-                  @remove="$emit('uploaded')" :show-delete="showDeleteButton(attachment.uploader.id)"/>
+                  @remove="$emit('uploaded')" :show-delete="showDeleteButton(attachment.uploader?.id)"/>
 <!-- @remove="ticket.attachments.splice(index, 1)" -->
     </div>
     <!-- <div v-if="ticket.attachments.length === 0" class="text-center mb-4">
@@ -11,8 +11,8 @@
     </div> -->
 
     <div class="flex flex-col justify-center w-full mt-4">
-      <file-upload ref="upload" v-bind:value="files" v-on:input="setFiles" class="mb-4 w-full" :preview="false" />
       <error :key="errors" :message="errors" v-if="errors"></error>
+      <file-upload ref="upload" v-bind:value="files" v-on:input="setFiles" class="mb-4 w-full" :preview="false" />
     </div>
   </div>
 </template>
