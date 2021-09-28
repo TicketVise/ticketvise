@@ -17,9 +17,13 @@
             <label for="project-name" class="block text-sm font-medium text-gray-700">
               Title
             </label>
-            <div class="mt-1">
-              <input v-model="title" type="text" name="project-name" id="project-name" class="block w-full focus:ring-primary focus:border-primary sm:text-sm border-gray-300 rounded-md" placeholder="Short and concise title for your ticket" />
+            <div class="relative mt-1">
+              <input v-model="title" type="text" name="project-name" id="project-name" class="block w-full sm:text-sm rounded-md" :class="errors.content ? 'border-red-300 text-red-900 placeholder-red-300 focus:ring-red-500 focus:border-red-500' : 'focus:ring-primary focus:border-primary border-gray-300'" placeholder="Short and concise title for your ticket" />
+              <div v-if="errors.title" class="absolute inset-y-0 right-0 items-center pr-3 flex pointer-events-none">
+                <ExclamationCircleIcon class="h-5 w-5 text-red-500" aria-hidden="true" />
+              </div>
             </div>
+            <p v-if="errors.title" class="mt-2 text-sm text-red-600" id="email-error">{{ errors.title[0] }}</p>
           </div>
 
           <!-- Description of the ticket. -->
@@ -27,9 +31,13 @@
             <label for="content" class="block text-sm font-medium text-gray-700">
               Content
             </label>
-            <div class="mt-1">
-              <textarea v-model="content" id="content" name="content" rows="4" class="block w-full focus:ring-primary focus:border-primary sm:text-sm border border-gray-300 rounded-md" placeholder="This is the space to describe your ticket" />
+            <div class="relative mt-1">
+              <TicketInput v-model="content" :class="errors.content ? 'border-red-300 text-red-900 placeholder-red-300 focus:ring-red-500 focus:border-red-500' : 'focus:ring-primary focus:border-primary border-gray-300'" />
+              <div v-if="errors.content" class="absolute inset-y-0 right-0 top-2 pr-3 flex pointer-events-none">
+                <ExclamationCircleIcon class="h-5 w-5 text-red-500" aria-hidden="true" />
+              </div>
             </div>
+            <p v-if="errors.content" class="mt-2 text-sm text-red-600" id="email-error">{{ errors.content[0] }}</p>
           </div>
 
           <!-- The labels of the ticket. -->
@@ -94,8 +102,8 @@
               Attachments
             </label>
             <div class="flex flex-col justify-center w-full mt-1">
-              <file-upload ref="upload" v-bind:value="files" v-on:input="setFiles" class="w-full" />
               <error class="mb-2" v-for="error in this.errors.attachments" :key="error" :message="error"></error>
+              <file-upload ref="upload" v-on:input="setFiles" class="w-full" />
             </div>
           </div>
 
@@ -112,29 +120,6 @@
       </form>
     </div>
   </div>
-
-  <!-- Temporary warning about the text editor. -->
-  <div class="absolute inset-x-0 bottom-0 z-10">
-    <div class="bg-primary-600">
-      <div class="max-w-7xl mx-auto py-3 px-3 sm:px-6 lg:px-8">
-        <div class="flex items-center justify-between flex-wrap">
-          <div class="w-0 flex-1 flex items-center">
-            <span class="flex p-2 rounded-lg bg-primary">
-              <SpeakerphoneIcon class="h-6 w-6 text-white" aria-hidden="true" />
-            </span>
-            <p class="ml-3 font-medium text-white truncate">
-              <span class="md:hidden">
-                Temporarily a plain text tickets
-              </span>
-              <span class="hidden md:inline">
-                We are working on a new editor. So we temporarily can only offer plain text messages.
-              </span>
-            </p>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
 </template>
 
 <script>
@@ -143,6 +128,7 @@ import router from '@/router'
 import { mapState } from 'vuex'
 
 import FileUpload from '@/components/inputs/FileInput'
+import TicketInput from '@/components/inputs/TicketInput'
 import LabelDropdown from '@/components/dropdown/LabelDropdown'
 import FormTextFieldWithSuggestions from '@/components/form/FormTextFieldWithSuggestions'
 import Error from '@/components/inputs/Error'
@@ -154,10 +140,7 @@ import {
   RadioGroupLabel,
   RadioGroupOption
 } from '@headlessui/vue'
-import { XIcon } from '@heroicons/vue/solid'
-import {
-  SpeakerphoneIcon
-} from '@heroicons/vue/outline'
+import { XIcon, ExclamationCircleIcon } from '@heroicons/vue/solid'
 
 const settings = [
   { key: 'private', name: 'Private ticket', description: 'Only you and the staff team will be able to access this ticket' },
@@ -166,17 +149,19 @@ const settings = [
 ]
 
 export default {
+  name: 'Create',
   components: {
     Error,
     FileUpload,
+    TicketInput,
     FormTextFieldWithSuggestions,
     LabelDropdown,
     RadioGroup,
     RadioGroupDescription,
     RadioGroupLabel,
     RadioGroupOption,
-    SpeakerphoneIcon,
-    XIcon
+    XIcon,
+    ExclamationCircleIcon
   },
   data: () => ({
     inbox: {},
@@ -220,7 +205,6 @@ export default {
       formData.append('content', this.content)
       formData.append('title', this.title)
 
-      // this.labels.forEach(label => formData.append('labels', label.id))
       this.labels.forEach(label => formData.append('labels', label.id))
       this.files.forEach(file => formData.append('files', file))
       this.sharedWith.forEach(sharedWith => formData.append('shared_with', sharedWith.id))
@@ -240,7 +224,11 @@ export default {
           }
         })
       }).catch(error => {
-        this.errors = error.response.data
+        if (error.response.status === 413) {
+          this.errors.attachments = ['The files you are trying to upload are too big.']
+        } else {
+          this.errors = error.response.data
+        }
       })
     },
     setFiles (files) {

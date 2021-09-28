@@ -1,5 +1,5 @@
 <template>
-  <line-chart
+  <VerticalBarChart
     v-if="data"
     :data="data"
     :options="options"
@@ -7,11 +7,11 @@
 </template>
 
 <script>
-  import LineChart from './LineChart'
+  import VerticalBarChart from './VerticalBarChart'
   import axios from 'axios'
 
   export default {
-    components: { LineChart },
+    components: { VerticalBarChart },
     props: {
       type: {
         type: String,
@@ -42,34 +42,17 @@
         }
       })
 
-      if (response.data.labels) {
-        const base = response.data.labels.map(label => ({
-          date: label,
-          total: 0
-        }))
-        this.data = {
-          labels: response.data.labels,
-          datasets: response.data?.datasets?.map(item => ({
+      this.data = {
+        labels: response.data.map(item => item.date),
+        datasets: [
+          {
             fill: false,
-            label: item.label.name,
-            backgroundColor: item.label.color,
-            borderColor: item.label.color,
-            data: base.map(b => item.data.find(d => d.date === b.date)?.total || 0)
-          }))
-        }
-      } else {
-        this.data = {
-          labels: response.data.map(item => item.date),
-          datasets: [
-            {
-              fill: false,
-              label: 'Tickets',
-              backgroundColor: '#ed8936',
-              borderColor: '#fbd38d',
-              data: response.data.map(item => item.total)
-            }
-          ]
-        }
+            label: 'Tickets',
+            backgroundColor: '#ed8936',
+            borderColor: '#fbd38d',
+            data: response.data.map(item => item.total)
+          }
+        ]
       }
     },
     computed: {
