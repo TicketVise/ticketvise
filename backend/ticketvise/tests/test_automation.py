@@ -20,10 +20,16 @@ class AutomationTestCase(TicketTestCase):
         self.assistant.add_inbox(self.inbox)
         self.assistant.set_role_for_inbox(self.inbox, Role.AGENT)
 
-        self.automation = Automation.objects.create(name="Test1", inbox=self.inbox)
+        self.assistant2 = User.objects.create(username="assistant2", password="test67891",
+                                              email="assistant2@ticketvise.com")
+        self.assistant2.add_inbox(self.inbox)
+        self.assistant2.set_role_for_inbox(self.inbox, Role.AGENT)
+
+        self.automation = Automation.objects.create(name="Test1", inbox=self.inbox, action_func="assign_to",
+                                                    action_value=self.assistant.id)
         self.ticket = Ticket.objects.create(author=self.student,
-            assignee=self.assistant, title="hetwerkt", content="lol",
-            inbox=self.inbox, status=Status.ASSIGNED)
+                                            assignee=self.assistant, title="hetwerkt", content="lol",
+                                            inbox=self.inbox, status=Status.ASSIGNED)
 
     def test_equals_valid(self):
         automation_condition = AutomationCondition.objects.create(
@@ -265,3 +271,16 @@ class AutomationTestCase(TicketTestCase):
             evaluation_value=str(label2.id))
         result = automation_condition(ticket)
         self.assertFalse(result)
+
+    def test_assign_to_valid(self):
+        automation = Automation.objects.create(name="Test1", inbox=self.inbox, action_func="assign_to",
+                                               action_value=self.assistant2.id)
+        AutomationCondition.objects.create(
+            automation=automation,
+            index=0,
+            field_name="title",
+            evaluation_func="eq",
+            evaluation_value="hetwerkt")
+
+        automation.execute(self.ticket)
+        self.assertEqual(self.ticket.assignee, self.assistant2)

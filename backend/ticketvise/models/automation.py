@@ -1,25 +1,41 @@
 from django.core.exceptions import ObjectDoesNotExist
 from django.db import models
 
+
 class Automation(models.Model):
+    ACTION_CHOICES = (
+        ("ASSIGN_TO", "assign_to"),
+        ("ADD_LABEL", "add_label"),
+    )
+
     name = models.CharField(max_length=255)
     inbox = models.ForeignKey("Inbox", on_delete=models.CASCADE, related_name="automation_condition")
-    # assign_to = models.ForeignKey("User", on_delete=models.CASCADE)
+    action_func = models.CharField(max_length=50, choices=ACTION_CHOICES)
+    action_value = models.CharField(max_length=50)
 
     def get_condtions(self):
-        return AutomationCondition.objects.filter(automation=self)\
+        return AutomationCondition.objects.filter(automation=self) \
             .order_by("index")
 
     def execute(self, ticket):
         if all(condition(ticket) for condition in self.get_condtions()):
-            ticket.assign_to(self.assign_to)
+            getattr(ticket, self.action_func)(self.action_value)
 
 
 class AutomationCondition(models.Model):
+    EVALUATION_CHOICES = (
+        ("EQ", "equals"),
+        ("IN", "contains"),
+        ("GT", "greater than"),
+        ("GTE", "greater than equal"),
+        ("LT", "lesser than"),
+        ("LTE", "lesser than equal"),
+    )
+
     automation = models.ForeignKey("Automation", on_delete=models.CASCADE)
-    index = models.IntegerField() #TODO: auto increment this value?
+    index = models.IntegerField()  # TODO: auto increment this value?
     field_name = models.CharField(max_length=50)
-    evaluation_func = models.CharField(max_length=50)
+    evaluation_func = models.CharField(max_length=50, choices=EVALUATION_CHOICES)
     evaluation_value = models.CharField(max_length=50)
     negation = models.BooleanField(default=False)
 
@@ -30,7 +46,10 @@ class AutomationCondition(models.Model):
         field = ticket._meta.get_field(self.field_name)
         value = self.evaluation_value
         if isinstance(field, models.ForeignKey):
-            value = field.related_model.objects.get(pk=value)
+            try:
+                value = field.related_model.objects.get(pk=value)
+            except ObjectDoesNotExist:
+                value = None
             field = getattr(ticket, self.field_name)
         elif isinstance(field, models.ManyToManyField):
             try:
