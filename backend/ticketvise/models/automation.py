@@ -1,3 +1,4 @@
+from django.core.exceptions import ObjectDoesNotExist
 from django.db import models
 
 class Automation(models.Model):
@@ -32,9 +33,14 @@ class AutomationCondition(models.Model):
             value = field.related_model.objects.get(pk=value)
             field = getattr(ticket, self.field_name)
         elif isinstance(field, models.ManyToManyField):
-            # Convert to list to be able to make comparisons, Querysets cannot be compared.
-            value = list(field.related_model.objects.filter(pk=value).values("pk"))
-            field = list(getattr(ticket, self.field_name).all().values("pk"))
+            try:
+                value = field.related_model.objects.get(pk=value).pk
+            except ObjectDoesNotExist:
+                value = None
+            field = list(getattr(ticket, self.field_name).all().values_list("pk", flat=True))
+            # If the evaluation function is equals, put value in a list so the lists can be compared to be equal.
+            if self.evaluation_func == "eq":
+                value = [value]
         else:
             field = str(getattr(ticket, self.field_name))
             value = str(value)

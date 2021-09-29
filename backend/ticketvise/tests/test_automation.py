@@ -73,7 +73,7 @@ class AutomationTestCase(TicketTestCase):
             evaluation_func="eq",
             evaluation_value='1')
         result = automation_condition(self.ticket)
-        self.assertTrue(result)
+        self.assertFalse(result)
         self.assertEqual(self.ticket.labels.count(), 0)
 
     def test_equals_many_to_many_valid(self):
