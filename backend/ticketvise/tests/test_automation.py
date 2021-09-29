@@ -341,21 +341,21 @@ class AutomationTestCase(TicketTestCase):
         AutomationCondition.objects.create(
             automation=automation,
             index=0,
-            field_name="title",
-            evaluation_func="eq",
-            evaluation_value="staaternietin")
-        AutomationCondition.objects.create(
-            automation=automation,
-            index=1,
             field_name="content",
             evaluation_func="contains",
             evaluation_value="ol")
         AutomationCondition.objects.create(
             automation=automation,
-            index=2,
+            index=1,
             field_name="assignee",
             evaluation_func="eq",
             evaluation_value=self.assistant.id)
+        AutomationCondition.objects.create(
+            automation=automation,
+            index=2,
+            field_name="title",
+            evaluation_func="eq",
+            evaluation_value="staaternietin")
 
         self.assertEqual(ticket.labels.count(), 0)
         automation.execute(ticket)
