@@ -302,3 +302,61 @@ class AutomationTestCase(TicketTestCase):
         self.assertEqual(ticket.labels.count(), 0)
         automation.execute(ticket)
         self.assertEqual(ticket.labels.count(), 1)
+
+    def test_multiple_conditions_valid(self):
+        ticket = self.ticket
+        label = Label.objects.create(inbox=self.ticket.inbox, name="first label")
+
+        automation = Automation.objects.create(name="Test1", inbox=self.inbox, action_func="add_label",
+                                               action_value=label.id)
+        AutomationCondition.objects.create(
+            automation=automation,
+            index=0,
+            field_name="title",
+            evaluation_func="eq",
+            evaluation_value="hetwerkt")
+        AutomationCondition.objects.create(
+            automation=automation,
+            index=1,
+            field_name="content",
+            evaluation_func="contains",
+            evaluation_value="ol")
+        AutomationCondition.objects.create(
+            automation=automation,
+            index=2,
+            field_name="assignee",
+            evaluation_func="eq",
+            evaluation_value=self.assistant.id)
+
+        self.assertEqual(ticket.labels.count(), 0)
+        automation.execute(ticket)
+        self.assertEqual(ticket.labels.count(), 1)
+
+    def test_multiple_conditions_invalid(self):
+        ticket = self.ticket
+        label = Label.objects.create(inbox=self.ticket.inbox, name="first label")
+
+        automation = Automation.objects.create(name="Test1", inbox=self.inbox, action_func="add_label",
+                                               action_value=label.id)
+        AutomationCondition.objects.create(
+            automation=automation,
+            index=0,
+            field_name="title",
+            evaluation_func="eq",
+            evaluation_value="staaternietin")
+        AutomationCondition.objects.create(
+            automation=automation,
+            index=1,
+            field_name="content",
+            evaluation_func="contains",
+            evaluation_value="ol")
+        AutomationCondition.objects.create(
+            automation=automation,
+            index=2,
+            field_name="assignee",
+            evaluation_func="eq",
+            evaluation_value=self.assistant.id)
+
+        self.assertEqual(ticket.labels.count(), 0)
+        automation.execute(ticket)
+        self.assertEqual(ticket.labels.count(), 0)
