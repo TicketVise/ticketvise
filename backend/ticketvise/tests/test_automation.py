@@ -282,5 +282,23 @@ class AutomationTestCase(TicketTestCase):
             evaluation_func="eq",
             evaluation_value="hetwerkt")
 
+        self.assertEqual(self.ticket.assignee, self.assistant)
         automation.execute(self.ticket)
         self.assertEqual(self.ticket.assignee, self.assistant2)
+
+    def test_add_label_valid(self):
+        ticket = self.ticket
+        label = Label.objects.create(inbox=self.ticket.inbox, name="first label")
+
+        automation = Automation.objects.create(name="Test1", inbox=self.inbox, action_func="add_label",
+                                               action_value=label.id)
+        AutomationCondition.objects.create(
+            automation=automation,
+            index=0,
+            field_name="title",
+            evaluation_func="eq",
+            evaluation_value="hetwerkt")
+
+        self.assertEqual(ticket.labels.count(), 0)
+        automation.execute(ticket)
+        self.assertEqual(ticket.labels.count(), 1)

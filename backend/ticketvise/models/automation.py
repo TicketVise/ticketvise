@@ -1,6 +1,9 @@
 from django.core.exceptions import ObjectDoesNotExist
 from django.db import models
 
+from ticketvise.models.label import Label
+from ticketvise.models.user import User
+
 
 class Automation(models.Model):
     name = models.CharField(max_length=255)
@@ -14,12 +17,25 @@ class Automation(models.Model):
 
     def execute(self, ticket):
         if all(condition(ticket) for condition in self.get_condtions()):
-            getattr(ticket, self.action_func)(self.action_value)
+            value = None
+            # TODO: Wat gebeurd er als een user of label verwijderd wordt, maar de automation nog bestaat.
+            if self.action_func == "assign_to":
+                try:
+                    value = User.objects.get(pk=self.action_value)
+                except ObjectDoesNotExist:
+                    value = None
+            elif self.action_func == "add_label":
+                try:
+                    value = Label.objects.get(pk=self.action_value)
+                except ObjectDoesNotExist:
+                    value = None
+
+            getattr(ticket, self.action_func)(value)
 
 
 class AutomationCondition(models.Model):
     automation = models.ForeignKey("Automation", on_delete=models.CASCADE)
-    index = models.IntegerField()  # TODO: auto increment this value?
+    index = models.IntegerField()  # TODO: auto increment this value (in the save)?
     field_name = models.CharField(max_length=50)
     evaluation_func = models.CharField(max_length=50)
     evaluation_value = models.CharField(max_length=50)
