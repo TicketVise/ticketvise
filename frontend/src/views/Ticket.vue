@@ -2,6 +2,8 @@
   <div class="flex-1 relative overflow-y-auto focus:outline-none pb-16">
     <PublishConfirmation @click="requestPublish" @cancel="publishConfirmationModal = false"
                          v-if="publishConfirmationModal"/>
+    <PrivateConfirmation @click="makePrivate" @cancel="privateConfirmationModal = false"
+                         v-if="privateConfirmationModal"/>
     <div class="py-4">
       <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 xl:max-w-5xl xl:grid xl:grid-cols-3">
 
@@ -23,11 +25,18 @@
                 </div>
                 <div class="mt-4 flex space-x-3 md:mt-0">
                   <button @click="publishConfirmationModal = true"
-                          v-if="isStaff(role, user) && !ticket.publish_request_created && !ticket.is_public"
+                          v-if="isStaff(role, user) && !ticket?.publish_request_created && !ticket?.is_public"
                           type="button"
-                          class="inline-flex justify-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-900">
+                          class="inline-flex justify-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary">
                     <CloudIcon class="-ml-1 mr-2 h-5 w-5 text-primary-400" aria-hidden="true"/>
                     <span>Publish</span>
+                  </button>
+                  <button @click="privateConfirmationModal = true"
+                          v-if="isStaff(role, user) && ticket?.is_public"
+                          type="button"
+                          class="inline-flex justify-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary">
+                    <LockIcon class="-ml-1 mr-2 h-5 w-5 text-primary-400" aria-hidden="true"/>
+                    <span>Private</span>
                   </button>
                   <!-- Future feature of subscribing to a ticket to get notifications. -->
                   <!-- <button type="button" class="inline-flex justify-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-900">
@@ -102,9 +111,7 @@
 
               <div class="py-3 xl:pt-6 xl:pb-0">
                 <h2 class="sr-only">Description</h2>
-                <div class="prose max-w-none">
-                  {{ ticket?.content }}
-                </div>
+                <TicketInputViewer v-if="ticket" :content="ticket.content" />
               </div>
             </div>
           </div>
@@ -184,27 +191,18 @@
             </div>
           </div>
           <div class="mt-6 border-t border-gray-200 py-6 space-y-8">
-            <div>
-              <h2 class="text-sm font-medium text-gray-500">Assignee</h2>
+            <div v-if="isStaff(role, user)">
               <Listbox as="span" class="-ml-px relative block">
-                <ListboxButton class="relative flex items-center text-sm font-medium focus:outline-none ml-1">
-                  <div class="flex items-center space-x-3 m-2" v-if="ticket?.assignee && ticket?.assignee.id">
-                    <div class="flex-shrink-0">
-                      <img
-                        class="h-8 w-8 rounded-full"
-                        :src="ticket?.assignee.avatar_url"
-                        alt=""
-                      />
-                    </div>
-                    <span class="block truncate">{{ ticket?.assignee.first_name }} {{
-                        ticket?.assignee.last_name
-                      }}</span>
+                <ListboxButton class="relative flex items-center w-full text-sm font-medium focus:outline-none ml-1">
+                  <div class="group flex justify-between w-full items-center">
+                    <h2 class="text-sm font-medium text-gray-500 group-hover:text-gray-800">Assignee</h2>
+                    <CogIcon class="h-4 w-4 text-gray-400 group-hover:text-gray-800" aria-hidden="true"/>
                   </div>
                 </ListboxButton>
                 <transition leave-active-class="transition ease-in duration-100" leave-from-class="opacity-100"
                             leave-to-class="opacity-0">
                   <ListboxOptions
-                    class="absolute z-10 mt-1 bg-white shadow-lg max-h-56 rounded-md py-1 text-base ring-1 ring-black ring-opacity-5 overflow-auto focus:outline-none sm:text-sm">
+                    class="absolute z-10 mt-1 bg-white shadow-lg max-h-56 w-full rounded-md py-1 text-base ring-1 ring-black ring-opacity-5 overflow-auto focus:outline-none sm:text-sm">
                     <ListboxOption as="template" v-for="assignee in staff" :key="assignee.id"
                                    :value="assignee" v-slot="{ active }">
                       <li @click="updateAssignee(assignee)"
@@ -229,23 +227,33 @@
                   </ListboxOptions>
                 </transition>
               </Listbox>
+              <div class="flex items-center space-x-3 m-2" v-if="ticket?.assignee && ticket?.assignee.id">
+                <div class="flex-shrink-0">
+                  <img class="h-8 w-8 rounded-full" :src="ticket?.assignee.avatar_url" alt="" />
+                </div>
+                <span class="block truncate">{{ ticket?.assignee.first_name }} {{ ticket?.assignee.last_name }}</span>
+              </div>
+              <span v-else class="text-gray-400 text-sm ml-3">
+                None yet<span v-if="isStaff(role, user)">—<button @click="assignUser" class="hover:text-primary-600 no-underline">Assign yourself</button></span>
+              </span>
             </div>
+
             <!--Labels-->
             <div>
-              <div class="relative inline-flex pb-2">
-                <h2 class="text-sm font-medium text-gray-500 pr-2">Labels</h2>
+              <div class="relative">
+                <h2 v-if="!isStaffOrAuthor" class="text-sm font-medium text-gray-500 group-hover:text-gray-800">Labels</h2>
                 <div v-if="isStaffOrAuthor">
                   <Listbox as="span" class="-ml-px relative block">
-                    <ListboxButton class="relative flex items-center text-sm font-medium focus:outline-none ml-1">
-                      <span
-                        class="w-5 h-5 rounded-md border border-dashed border-primary-400 flex items-center justify-center text-primary-400">
-                        <PencilIcon class="h-5 w-5" aria-hidden="true"/>
-                      </span>
+                    <ListboxButton class="relative flex items-center w-full text-sm font-medium focus:outline-none ml-1">
+                      <div class="group flex justify-between w-full items-center">
+                        <h2 class="text-sm font-medium text-gray-500 group-hover:text-gray-800">Labels</h2>
+                        <CogIcon class="h-4 w-4 text-gray-400 group-hover:text-gray-800" aria-hidden="true"/>
+                      </div>
                     </ListboxButton>
                     <transition leave-active-class="transition ease-in duration-100" leave-from-class="opacity-100"
                                 leave-to-class="opacity-0">
                       <ListboxOptions
-                        class="absolute z-10 mt-1 bg-white shadow-lg max-h-56 rounded-md py-1 text-base ring-1 ring-black ring-opacity-5 overflow-auto focus:outline-none sm:text-sm">
+                        class="absolute z-10 mt-1 bg-white shadow-lg max-h-56 w-full rounded-md py-1 text-base ring-1 ring-black ring-opacity-5 overflow-auto focus:outline-none sm:text-sm">
                         <ListboxOption as="template" v-for="label in ticket?.inbox.labels" :key="label.id"
                                        :value="label" v-slot="{ active }">
                           <li @click="toggleLabel(label)"
@@ -269,13 +277,14 @@
                   </Listbox>
                 </div>
               </div>
-              <div class="flex flex-wrap mb-2" v-if="ticket?.labels.length > 0">
+              <div class="flex flex-wrap mb-2 pt-2" v-if="ticket?.labels.length > 0">
                 <chip :background="label.color" :key="label.id" class="mr-1 mb-1" v-for="label in ticket?.labels">
                   {{ label.name }}
                 </chip>
               </div>
+              <span v-else class="text-gray-400 text-sm ml-3">None yet</span>
             </div>
-            <div>
+            <div v-if="!ticket?.is_public">
               <h2 class="text-sm font-medium text-gray-500">Shared with</h2>
               <ul class="mt-2 leading-8 divide-y divide-gray-200">
                 <li v-for="person in ticket?.shared_with" :key="person.id"
@@ -289,7 +298,7 @@
                     @click="ticket.shared_with.splice(ticket.shared_with.map(s => s.id).indexOf(person.id), 1); updateSharedWith()"
                     type="button"
                     class="ml-6 bg-white rounded-md text-sm font-medium text-primary-600 hover:text-primary focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary"
-                    v-if="isStaffOrAuthor">>
+                    v-if="isStaffOrAuthor">
                     Remove<span class="sr-only"> {{ person.name }}</span>
                   </button>
                 </li>
@@ -314,29 +323,6 @@
       </div>
     </div>
   </div>
-
-  <!-- Temporary warning about the text editor. -->
-  <div class="absolute inset-x-0 bottom-0">
-    <div class="bg-primary-600">
-      <div class="max-w-7xl mx-auto py-3 px-3 sm:px-6 lg:px-8">
-        <div class="flex items-center justify-between flex-wrap">
-          <div class="w-0 flex-1 flex items-center">
-            <span class="flex p-2 rounded-lg bg-primary">
-              <SpeakerphoneIcon class="h-6 w-6 text-white" aria-hidden="true" />
-            </span>
-            <p class="ml-3 font-medium text-white truncate">
-              <span class="md:hidden">
-                Temporarily a plain text message
-              </span>
-              <span class="hidden md:inline">
-                We are working on a new editor. So we temporarily can only offer plain text messages.
-              </span>
-            </p>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
 </template>
 
 <script>
@@ -349,7 +335,9 @@ import StaffDiscussion from '@/components/tickets/StaffDiscussion.vue'
 import Attachments from '@/components/tickets/Attachments.vue'
 import Chip from '@/components/chip/Chip'
 import PublishConfirmation from '@/components/tickets/PublishConfirmation.vue'
+import PrivateConfirmation from '@/components/tickets/PrivateConfirmation.vue'
 import FormTextFieldWithSuggestions from '@/components/form/FormTextFieldWithSuggestions'
+import TicketInputViewer from '@/components/inputs/TicketInputViewer'
 
 import { ref } from 'vue'
 import {
@@ -363,17 +351,18 @@ import {
   CalendarIcon,
   ChatAltIcon,
   CheckIcon,
+  CogIcon,
   InformationCircleIcon,
   LockOpenIcon,
   LockClosedIcon,
   PlusIcon as PlusIconSolid,
-  PencilIcon,
   ClipboardListIcon,
   ClipboardCheckIcon
 } from '@heroicons/vue/solid'
 
 import {
-  CloudIcon, SpeakerphoneIcon
+  CloudIcon,
+  LockClosedIcon as LockIcon
 } from '@heroicons/vue/outline'
 
 export default {
@@ -385,24 +374,27 @@ export default {
     CheckIcon,
     Chip,
     CloudIcon,
+    CogIcon,
     FormTextFieldWithSuggestions,
     InformationCircleIcon,
+    LockIcon,
     LockOpenIcon,
     LockClosedIcon,
     Listbox,
     ListboxButton,
     ListboxOption,
     ListboxOptions,
-    PencilIcon,
     PlusIconSolid,
     PublishConfirmation,
+    PrivateConfirmation,
     StaffDiscussion,
-    SpeakerphoneIcon,
     ClipboardListIcon,
-    ClipboardCheckIcon
+    ClipboardCheckIcon,
+    TicketInputViewer
   },
   data: () => ({
     publishConfirmationModal: false,
+    privateConfirmationModal: false,
     ticket: null,
     staff: [],
     tabs: [
@@ -486,6 +478,7 @@ export default {
                 href: '#'
               } : null,
               tags: type === 'tags' ? [{ name: event.label.name, href: '#', color: event.label.color }] : null,
+              is_added: type === 'tags' ? event.is_added : null,
               assigned: event.assignee ? {
                 name: event.assignee.first_name + ' ' + event.assignee.last_name,
                 href: '#'
@@ -541,7 +534,7 @@ export default {
           newActivities.push(lastActivity)
           lastActivity = activity
         } else if (lastActivity && moment(lastActivity.datetime).diff(moment(activity.datetime)) < time) {
-          if (lastActivity.type === 'tags') lastActivity.tags.push(activity.tags[0])
+          if (lastActivity.type === 'tags' && lastActivity.is_added === activity.is_added && lastActivity.person?.name === activity.person?.name) lastActivity.tags.push(activity.tags[0])
           else {
             newActivities.push(lastActivity)
             lastActivity = activity
@@ -571,6 +564,15 @@ export default {
     ticketStatus (status) {
       return (status === 'ASGD' || status === 'CLSD') ? 'closed' : 'open'
     },
+    makePrivate () {
+      this.privateConfirmationModal = false
+      axios.put(`/api/inboxes/${this.$route.params.inboxId}/tickets/${this.$route.params.ticketInboxId}/private`).then(() => {
+        this.ticket.is_public = null
+        this.ticket.is_anonymous = null
+        this.ticket.publish_request_created = null
+        this.ticket.publish_request_initiator = null
+      })
+    },
     requestPublish () {
       this.publishConfirmationModal = false
       axios.put(`/api/inboxes/${ this.$route.params.inboxId }/tickets/${ this.$route.params.ticketInboxId }/request-publish`, {
@@ -597,18 +599,12 @@ export default {
 
       this.loadTicketData()
     },
-    updateLabels () {
-      const data = {
-        events: true
-      }
-      axios.put(`/api/inboxes/${ this.$route.params.inboxId }/tickets/${ this.$route.params.ticketInboxId }/labels`,
-        {
-          labels: this.ticket.labels.map(label => label.id)
-        }).then(_ => {
-        return axios.get(`/api/inboxes/${ this.$route.params.inboxId }/tickets/${ this.$route.params.ticketInboxId }`, { params: data })
-      }).then(response => {
-        this.events = response.data.events
+    async updateLabels () {
+      await axios.put(`/api/inboxes/${ this.$route.params.inboxId }/tickets/${ this.$route.params.ticketInboxId }/labels`, {
+        labels: this.ticket.labels.map(label => label.id)
       })
+
+      this.loadTicketData()
     },
     containsObject (list, id) {
       return list && list.some(e => e.id === id)
@@ -634,6 +630,9 @@ export default {
           this.ticket.assignee = id === user.id ? user : undefined
           this.loadTicketData()
         })
+    },
+    assignUser () {
+      this.updateAssignee(this.user)
     }
   },
   computed: {
@@ -645,7 +644,7 @@ export default {
         .filter(g => this.ticket?.shared_with.map(s => s.id).indexOf(g.id) === -1)
     },
     isStaffOrAuthor () {
-      return this.isStaff(this.role, this.user) || (this.user && this.ticket?.author.id === this.user.id)
+      return this.isStaff(this.role, this.user) || (this.user && this.ticket?.author?.id === this.user.id)
     }
   }
 }

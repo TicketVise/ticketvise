@@ -9,11 +9,29 @@
                   class="text-2xl text-primary font-bold">Vise</span>
           </div>
           <h2 class="mt-6 text-3xl font-extrabold text-gray-900 dark:text-white">
-            Sign in to your accountt
+            Sign in to your account
           </h2>
         </div>
 
-        <div class="mt-8">
+        <div class="mt-4">
+          <div class="rounded-md bg-yellow-50 p-4 mb-4">
+            <div class="flex">
+              <div class="flex-shrink-0">
+                <ExclamationIcon class="h-5 w-5 text-yellow-400" aria-hidden="true" />
+              </div>
+              <div class="ml-3">
+                <h3 class="text-sm font-medium text-yellow-800">
+                  Login is unavailable
+                </h3>
+                <div class="mt-2 text-sm text-yellow-700">
+                  <p>
+                    We currently only support login via Canvas, so please go to TicketVise through the course page in Canvas. We are working on a solution to login via SURFconext.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+
           <div>
             <div>
               <p class="text-sm font-medium text-gray-700 dark:text-gray-200">
@@ -22,10 +40,17 @@
 
               <div class="mt-1 grid grid-cols-2 gap-3">
                 <div>
-                  <a href="#" class="w-full inline-flex justify-center py-2 px-4 border border-gray-300 dark:border-white rounded-md shadow-sm bg-white dark:bg-gray-800 text-sm font-medium text-gray-500 hover:bg-gray-50 dark:hover:bg-gray-700">
-                    <span class="sr-only">Sign in with SURFconext</span>
-                    <img class="h-6 w-auto dark:filter dark:invert" :src="surfconext" alt="SURFconext">
+                  <a href="https://canvas.uva.nl" class="w-full inline-flex justify-center py-2 px-4 border border-gray-300 dark:border-white rounded-md shadow-sm bg-white dark:bg-gray-800 text-sm font-medium text-gray-500 hover:bg-gray-50 dark:hover:bg-gray-700">
+                    <span class="sr-only">Go to Canvas</span>
+                    <img class="h-6 w-auto dark:filter dark:invert" :src="canvas" alt="Canvas">
                   </a>
+                </div>
+
+                <div>
+                  <button disabled class="w-full inline-flex justify-center py-2 px-4 border border-gray-300 dark:border-white rounded-md shadow-sm bg-white dark:bg-gray-800 text-sm font-medium text-gray-500 cursor-not-allowed">
+                    <span class="sr-only">Sign in with SURFconext</span>
+                    <img class="h-6 w-auto filter opacity-20 dark:filter dark:invert" :src="surfconext" alt="SURFconext">
+                  </button>
                 </div>
               </div>
             </div>
@@ -94,17 +119,24 @@
 </template>
 
 <script>
+import { ExclamationIcon } from '@heroicons/vue/solid'
+
 const Logo = require('@/assets/logo/logo.svg')
 const SurfConext = require('@/assets/img/ext/surfconext.png')
+const Canvas = require('@/assets/img/ext/canvas.svg')
 
 export default {
   name: 'Login',
+  components: {
+    ExclamationIcon
+  },
   data: () => ({
     username: '',
     password: '',
     error: '',
     logo: Logo,
-    surfconext: SurfConext
+    surfconext: SurfConext,
+    canvas: Canvas
   }),
   methods: {
     login: function () {
