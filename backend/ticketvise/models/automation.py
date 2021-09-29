@@ -3,14 +3,9 @@ from django.db import models
 
 
 class Automation(models.Model):
-    ACTION_CHOICES = (
-        ("ASSIGN_TO", "assign_to"),
-        ("ADD_LABEL", "add_label"),
-    )
-
     name = models.CharField(max_length=255)
     inbox = models.ForeignKey("Inbox", on_delete=models.CASCADE, related_name="automation_condition")
-    action_func = models.CharField(max_length=50, choices=ACTION_CHOICES)
+    action_func = models.CharField(max_length=50)
     action_value = models.CharField(max_length=50)
 
     def get_condtions(self):
@@ -23,19 +18,10 @@ class Automation(models.Model):
 
 
 class AutomationCondition(models.Model):
-    EVALUATION_CHOICES = (
-        ("EQ", "equals"),
-        ("IN", "contains"),
-        ("GT", "greater than"),
-        ("GTE", "greater than equal"),
-        ("LT", "lesser than"),
-        ("LTE", "lesser than equal"),
-    )
-
     automation = models.ForeignKey("Automation", on_delete=models.CASCADE)
     index = models.IntegerField()  # TODO: auto increment this value?
     field_name = models.CharField(max_length=50)
-    evaluation_func = models.CharField(max_length=50, choices=EVALUATION_CHOICES)
+    evaluation_func = models.CharField(max_length=50)
     evaluation_value = models.CharField(max_length=50)
     negation = models.BooleanField(default=False)
 
