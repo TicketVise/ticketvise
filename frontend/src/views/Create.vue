@@ -112,7 +112,7 @@
             <button type="button" class="bg-white py-2 px-4 border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary">
               Cancel
             </button>
-            <button type="submit" class="ml-3 inline-flex justify-center py-2 px-4 border border-transparent rounded-md text-sm font-medium text-white bg-primary hover:bg-primary-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary">
+            <button :disabled="buttonDisabled" type="submit" class="ml-3 inline-flex justify-center py-2 px-4 border border-transparent rounded-md text-sm font-medium text-white focus:outline-none" :class="buttonDisabled ? 'bg-primary-200 cursor-wait' : 'bg-primary hover:bg-primary-600 focus:ring-2 focus:ring-offset-2 focus:ring-primary'">
               Create this ticket
             </button>
           </div>
@@ -171,7 +171,8 @@ export default {
     shareInput: '',
     sharedWith: [],
     files: [],
-    errors: []
+    errors: [],
+    buttonDisabled: false
   }),
   setup () {
     const open = ref(false)
@@ -200,6 +201,7 @@ export default {
   },
   methods: {
     submit () {
+      this.buttonDisabled = true
       const formData = new FormData()
 
       formData.append('content', this.content)
@@ -229,6 +231,7 @@ export default {
         } else {
           this.errors = error.response.data
         }
+        this.buttonDisabled = false
       })
     },
     setFiles (files) {
