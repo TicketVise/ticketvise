@@ -3,7 +3,7 @@ Tasks
 -------------------------------
 Periodic tsks for changing ticket statuses and sending emails.
 """
-from backend.ticketvise.mail.retrieve import retrieve_emails, submit_email_ticket
+from ticketvise.mail.retrieve import retrieve_emails, submit_email_ticket
 import datetime
 import logging
 import sched
