@@ -290,11 +290,7 @@ export default {
       return Math.round(bytes / Math.pow(1024, i), 2) + ' ' + sizes[i]
     },
     filterImages (files) {
-      const images = []
-      for (let i = 0; i < files.length; i++) {
-        if (['jpg', 'png'].includes(files[i].extension.toLowerCase())) images.push(files[i])
-      }
-      return images
+      return files.filter(file => ['jpg', 'png'].includes(file.extension.toLowerCase()))
     }
   },
   computed: {
