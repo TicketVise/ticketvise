@@ -501,6 +501,26 @@ export default {
             }
           }))
 
+          /* Add the attachments to the activities timeline. */
+          this.ticket.activity.push(...response.data.ticket.attachments.map(attachment => {
+            return {
+              id: attachment.id,
+              date: this.date(attachment.date_created),
+              datetime: attachment.date_created,
+              person: { name: attachment.uploader.first_name + ' ' + attachment.uploader.last_name, href: '#' },
+              imageUrl: attachment.uploader.avatar_url,
+              attachment: [{
+                name: attachment.file.substring(attachment.file.lastIndexOf('/') + 1, attachment.file.lastIndexOf('.')),
+                extension: attachment.file.substring(attachment.file.lastIndexOf('.') + 1),
+                size: attachment.file_size,
+                href: attachment.file
+              }],
+              type: 'attachment',
+              visible: false,
+              index: 0
+            }
+          }))
+
           /* Sort the activities on date. */
           this.ticket.activity.sort((a, b) => moment(a.datetime).diff(moment(b.datetime)))
 
@@ -535,6 +555,7 @@ export default {
           lastActivity = activity
         } else if (lastActivity && moment(lastActivity.datetime).diff(moment(activity.datetime)) < time) {
           if (lastActivity.type === 'tags' && lastActivity.is_added === activity.is_added && lastActivity.person?.name === activity.person?.name) lastActivity.tags.push(activity.tags[0])
+          else if (lastActivity.type === 'attachment' && lastActivity.is_added === activity.is_added && lastActivity.person?.name === activity.person?.name) lastActivity.attachment.push(activity.attachment[0])
           else {
             newActivities.push(lastActivity)
             lastActivity = activity

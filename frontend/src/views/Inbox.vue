@@ -208,7 +208,6 @@ export default {
           }
         })
         .then(async (response) => {
-          console.log(response.data)
           if (!store.getters.inbox(inboxId)) await store.dispatch('update_inboxes')
 
           store.commit('update_tickets', { inbox: inboxId, tickets: response.data })
