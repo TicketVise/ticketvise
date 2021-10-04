@@ -21,6 +21,8 @@ SEND_MAIL = int(os.environ.get("SEND_MAIL", False))
 DOMAIN = os.environ.get("DOMAIN", "localhost")
 HOST = os.environ.get("HOST", DOMAIN)
 
+MICROSOFT_CLIENT_ID = os.environ.get("MICROSOFT_CLIENT_ID", "TODO")
+
 ALLOWED_HOSTS = ["*"]
 
 #: Application definition

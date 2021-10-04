@@ -15,7 +15,6 @@
         </h3>
         <div class="mt-2 mb-2">
           <img :src="mailboxImage" alt="mailbox" class="w-2/3 md:w-1/2 mx-auto py-8">
-
           <p class="text-sm text-gray-500">
             Provide your email address and password to connect your mailbox to your TicketVise inbox.
           </p>
@@ -38,6 +37,27 @@
               <input id="password" name="password" type="password" v-model="password" autocomplete="current-password" required="" class="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" />
             </div>
           </div>
+
+          <div class="rounded-md bg-red-50 p-4" v-if="error">
+            <div class="flex">
+              <div class="flex-shrink-0">
+                <XCircleIcon class="h-5 w-5 text-red-400" aria-hidden="true" />
+              </div>
+              <div class="ml-3">
+                <h3 class="text-sm font-medium text-red-800">
+                  Encountered an error while trying to automatically configure email. Please try again, change your credentials or configure email settings <a class="underline text-blue-600 hover:text-blue-800" href="#">manually</a>.
+                </h3>
+                <div class="mt-2 text-sm text-red-700">
+                  <ul role="list" class="list-disc pl-5 space-y-1">
+                    <li>
+                      {{ error }}
+                    </li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+
             <div class="mt-5 sm:mt-6 sm:grid sm:grid-cols-2 sm:gap-3 sm:grid-flow-row-dense">
               <button :disabled="loading" type="submit" :class="{'cursor-not-allowed': loading}" class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-primary-600 text-base font-medium text-white hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 sm:col-start-2 sm:text-sm">
                 <svg v-if="loading" class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
@@ -50,6 +70,9 @@
                 Cancel
               </button>
             </div>
+            <p class="text-sm text-center text-gray-500">
+              Manually <a class="underline text-blue-600 hover:text-blue-800" href="#">configure</a> email settings
+            </p>
         </form>
       </div>
     </div>
@@ -58,17 +81,22 @@
 
 <script>
 import axios from 'axios'
+import { XCircleIcon } from '@heroicons/vue/solid'
 
 const Mailbox = require('@/assets/img/svg/mailbox.svg')
 
   export default {
     name: 'EmailSetup',
+    components: {
+      XCircleIcon,
+    },
     data () {
       return {
         mailboxImage: Mailbox,
         email: "",
         password: "",
-        loading: false
+        loading: false,
+        error: ""
       }
     },
     methods: {
@@ -83,9 +111,20 @@ const Mailbox = require('@/assets/img/svg/mailbox.svg')
         }
 
         this.loading = true
-        axios.post(`/api/inboxes/${ inboxId }/email/login`, data).then(() => {
+        this.error = ""
+        axios.post(`/api/inboxes/${ inboxId }/settings/email/login`, data).then(() => {
             this.email = this.password = ''
-        })
+        }).catch((err) => {
+          if (err.response) {
+            this.error = err.response.data
+          } else {
+            this.error = "Unknown error encountered"
+            console.error(err);
+          }
+
+        }).finally(() => {
+          this.loading = false
+        });
       }
     }
   }
