@@ -1,18 +1,11 @@
+import re
+
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from django.db import models
 
 from ticketvise.models.label import Label
 from ticketvise.models.ticket import Ticket
 from ticketvise.models.user import User
-
-
-def is_ticket_field_validator(value):
-    """
-    Validate if the value is a ticket field. Cannot be placed in validators.py due to circular imports.
-    """
-    test = [field.name for field in Ticket._meta.get_fields()]
-    if value not in [field.name for field in Ticket._meta.get_fields()]:
-        raise ValidationError(f"'{value}' is not a ticket field")
 
 
 class Automation(models.Model):
@@ -53,20 +46,28 @@ class AutomationCondition(models.Model):
     ]
 
     automation = models.ForeignKey("Automation", on_delete=models.CASCADE)
-    field_name = models.CharField(max_length=50, validators=[is_ticket_field_validator])
+    field_name = models.CharField(max_length=50)
     evaluation_func = models.CharField(max_length=50, choices=EVALUATION_FUNC_CHOICES)
     evaluation_value = models.CharField(max_length=50)
     negation = models.BooleanField(default=False)
 
     def clean(self):
         super().clean()
+        # Checks if the field is a ticket field and uses the field for further cleaning
         field = Ticket._meta.get_field(self.field_name)
 
         # Check if foreign keys and manytomany fields have an int as evaluation value.
-        if isinstance(field, models.ForeignKey) or isinstance(field, models.ManyToManyField) \
+        if (isinstance(field, models.ForeignKey) or isinstance(field, models.ManyToManyField)) \
                 and not self.evaluation_value.isdigit():
             raise ValidationError(
-                f"Field 'evaluation_value' expected a number in combination with field_name {self.field_name}, but got '{self.evaluation_value}'.")
+                f"Field 'evaluation_value' expected a number in combination with field_name '{self.field_name}', but got '{self.evaluation_value}'.")
+
+        # Check if value is in ISO format for datetimefield. TODO: check weekdays, rethink regex (regex is faulty)
+        # iso_regex = re.compile(
+        #     r"^(-?(?:[1-9][0-9]*)?[0-9]{4})-(1[0-2]|0[1-9])-(3[01]|0[1-9]|[12][0-9])T(2[0-3]|[01][0-9]):([0-5][0-9]):([0-5][0-9])(\.[0-9]+)?(Z|[+-](?:2[0-3]|[01][0-9]):[0-5][0-9])?$")
+        # if isinstance(field, models.DateTimeField) and not iso_regex.match(self.evaluation_value):
+        #     raise ValidationError(
+        #         f"Unexpected string format '{self.evaluation_value}' for DateTimeField '{self.field_name}'")
 
     def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
         self.full_clean()

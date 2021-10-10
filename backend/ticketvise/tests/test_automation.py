@@ -1,4 +1,4 @@
-from django.core.exceptions import ValidationError
+from django.core.exceptions import ValidationError, FieldDoesNotExist
 
 from ticketvise.models.automation import Automation, AutomationCondition
 from ticketvise.models.inbox import Inbox
@@ -333,7 +333,7 @@ class AutomationTestCase(TicketTestCase):
         self.assertEqual(ticket.labels.count(), 0)
 
     def test_invalid_condition_field_name(self):
-        with self.assertRaises(ValidationError):
+        with self.assertRaises(FieldDoesNotExist):
             AutomationCondition.objects.create(
                 automation=self.automation,
                 field_name="foo",
@@ -364,4 +364,12 @@ class AutomationTestCase(TicketTestCase):
                 automation=self.automation,
                 field_name="labels",
                 evaluation_func="eq",
+                evaluation_value="label")
+
+    def test_invalid_datetime_value(self):
+        with self.assertRaises(ValidationError):
+            AutomationCondition.objects.create(
+                automation=self.automation,
+                field_name="date_created",
+                evaluation_func="gt",
                 evaluation_value="label")
