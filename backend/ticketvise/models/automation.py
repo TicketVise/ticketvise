@@ -1,8 +1,18 @@
-from django.core.exceptions import ObjectDoesNotExist
+from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from django.db import models
 
 from ticketvise.models.label import Label
+from ticketvise.models.ticket import Ticket
 from ticketvise.models.user import User
+
+
+def is_ticket_field_validator(value):
+    """
+    Validate if the value is a ticket field. Cannot be placed in validators.py due to circular imports.
+    """
+    test = [field.name for field in Ticket._meta.get_fields()]
+    if value not in [field.name for field in Ticket._meta.get_fields()]:
+        raise ValidationError(f"'{value}' is not a ticket field")
 
 
 class Automation(models.Model):
@@ -34,15 +44,29 @@ class Automation(models.Model):
 
 
 class AutomationCondition(models.Model):
+    EVALUATION_FUNC_CHOICES = [
+        ("eq", "equals"),
+        ("contains", "contains"),
+        ("gt", "greater than"),
+        ("ge", "greater than or equals"),
+        ("lt", "less than"),
+        ("le", "less than or equal"),
+    ]
+
     automation = models.ForeignKey("Automation", on_delete=models.CASCADE)
     index = models.IntegerField()  # TODO: auto increment this value (in the save)?
-    field_name = models.CharField(max_length=50)
-    evaluation_func = models.CharField(max_length=50)
+    field_name = models.CharField(max_length=50, validators=[is_ticket_field_validator])
+    evaluation_func = models.CharField(max_length=50, choices=EVALUATION_FUNC_CHOICES)
     evaluation_value = models.CharField(max_length=50)
     negation = models.BooleanField(default=False)
 
     class Meta:
         unique_together = ["automation", "index"]
+
+    def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
+        self.full_clean()
+
+        super().save(force_insert, force_update, using, update_fields)
 
     def __call__(self, ticket):
         field = ticket._meta.get_field(self.field_name)

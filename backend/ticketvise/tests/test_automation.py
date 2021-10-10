@@ -1,3 +1,5 @@
+from django.core.exceptions import ValidationError
+
 from ticketvise.models.automation import Automation, AutomationCondition
 from ticketvise.models.inbox import Inbox
 from ticketvise.models.ticket import Status, Ticket
@@ -360,3 +362,21 @@ class AutomationTestCase(TicketTestCase):
         self.assertEqual(ticket.labels.count(), 0)
         automation.execute(ticket)
         self.assertEqual(ticket.labels.count(), 0)
+
+    def test_invalid_automationcondition_field_name(self):
+        with self.assertRaises(ValidationError):
+            AutomationCondition.objects.create(
+                automation=self.automation,
+                index=0,
+                field_name="foo",
+                evaluation_func="eq",
+                evaluation_value="ol")
+
+    def test_invalid_automationcondition_function(self):
+        with self.assertRaises(ValidationError):
+            AutomationCondition.objects.create(
+                automation=self.automation,
+                index=0,
+                field_name="content",
+                evaluation_func="wrong",
+                evaluation_value="ol")
