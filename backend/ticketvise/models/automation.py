@@ -84,7 +84,12 @@ class AutomationCondition(models.Model):
             field = str(getattr(ticket, self.field_name))
             value = str(value)
 
-        return getattr(self, self.evaluation_func)(field, value)
+        evaluation = getattr(self, self.evaluation_func)(field, value)
+
+        if self.negation:
+            return not evaluation
+        else:
+            return evaluation
 
     def eq(self, field, value):
         return field == value

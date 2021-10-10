@@ -347,3 +347,13 @@ class AutomationTestCase(TicketTestCase):
                 field_name="content",
                 evaluation_func="wrong",
                 evaluation_value="ol")
+
+    def test_negate(self):
+        automation_condition = AutomationCondition.objects.create(
+            automation=self.automation,
+            field_name="title",
+            evaluation_func="eq",
+            evaluation_value="foo",
+            negation=True)
+        result = automation_condition(self.ticket)
+        self.assertTrue(result)
