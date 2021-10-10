@@ -22,8 +22,7 @@ class Automation(models.Model):
     action_value = models.CharField(max_length=50)
 
     def get_condtions(self):
-        return AutomationCondition.objects.filter(automation=self) \
-            .order_by("index")
+        return AutomationCondition.objects.filter(automation=self)
 
     def execute(self, ticket):
         if all(condition(ticket) for condition in self.get_condtions()):
@@ -54,18 +53,13 @@ class AutomationCondition(models.Model):
     ]
 
     automation = models.ForeignKey("Automation", on_delete=models.CASCADE)
-    index = models.IntegerField()  # TODO: auto increment this value (in the save)?
     field_name = models.CharField(max_length=50, validators=[is_ticket_field_validator])
     evaluation_func = models.CharField(max_length=50, choices=EVALUATION_FUNC_CHOICES)
     evaluation_value = models.CharField(max_length=50)
     negation = models.BooleanField(default=False)
 
-    class Meta:
-        unique_together = ["automation", "index"]
-
     def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
         self.full_clean()
-
         super().save(force_insert, force_update, using, update_fields)
 
     def __call__(self, ticket):

@@ -36,7 +36,6 @@ class AutomationTestCase(TicketTestCase):
     def test_equals_valid(self):
         automation_condition = AutomationCondition.objects.create(
             automation=self.automation,
-            index=0,
             field_name="title",
             evaluation_func="eq",
             evaluation_value="hetwerkt")
@@ -46,7 +45,6 @@ class AutomationTestCase(TicketTestCase):
     def test_equals_foreign_key_valid(self):
         automation_condition = AutomationCondition.objects.create(
             automation=self.automation,
-            index=0,
             field_name="author",
             evaluation_func="eq",
             evaluation_value=str(self.ticket.author.id))
@@ -56,7 +54,6 @@ class AutomationTestCase(TicketTestCase):
     def test_equals_datetime_valid(self):
         automation_condition = AutomationCondition.objects.create(
             automation=self.automation,
-            index=0,
             field_name="is_public",
             evaluation_func="eq",
             evaluation_value=str(self.ticket.is_public))
@@ -66,7 +63,6 @@ class AutomationTestCase(TicketTestCase):
     def test_equals_boolean_valid(self):
         automation_condition = AutomationCondition.objects.create(
             automation=self.automation,
-            index=0,
             field_name="is_anonymous",
             evaluation_func="eq",
             evaluation_value="False")
@@ -76,7 +72,6 @@ class AutomationTestCase(TicketTestCase):
     def test_equals_many_to_many_empty_valid(self):
         automation_condition = AutomationCondition.objects.create(
             automation=self.automation,
-            index=0,
             field_name="labels",
             evaluation_func="eq",
             evaluation_value='1')
@@ -90,7 +85,6 @@ class AutomationTestCase(TicketTestCase):
         ticket.add_label(label)
         automation_condition = AutomationCondition.objects.create(
             automation=self.automation,
-            index=0,
             field_name="labels",
             evaluation_func="eq",
             evaluation_value=str(label.id))
@@ -101,7 +95,6 @@ class AutomationTestCase(TicketTestCase):
     def test_equals_invalid(self):
         automation_condition = AutomationCondition.objects.create(
             automation=self.automation,
-            index=0,
             field_name="title",
             evaluation_func="eq",
             evaluation_value="hetwerktniet")
@@ -111,7 +104,6 @@ class AutomationTestCase(TicketTestCase):
     def test_gt_valid(self):
         automation_condition = AutomationCondition.objects.create(
             automation=self.automation,
-            index=0,
             field_name="date_created",
             evaluation_func="gt",
             evaluation_value="2000-08-27T09:32:21+02:00")
@@ -121,7 +113,6 @@ class AutomationTestCase(TicketTestCase):
     def test_gt_invalid(self):
         automation_condition = AutomationCondition.objects.create(
             automation=self.automation,
-            index=0,
             field_name="date_created",
             evaluation_func="gt",
             evaluation_value="3000-08-27T09:32:21+02:00")
@@ -130,7 +121,6 @@ class AutomationTestCase(TicketTestCase):
 
         automation_condition = AutomationCondition.objects.create(
             automation=self.automation,
-            index=1,
             field_name="date_created",
             evaluation_func="gt",
             evaluation_value=str(self.ticket.date_created))
@@ -140,7 +130,6 @@ class AutomationTestCase(TicketTestCase):
     def test_ge_valid(self):
         automation_condition = AutomationCondition.objects.create(
             automation=self.automation,
-            index=0,
             field_name="date_created",
             evaluation_func="ge",
             evaluation_value="2000-08-27T09:32:21+02:00")
@@ -149,7 +138,6 @@ class AutomationTestCase(TicketTestCase):
 
         automation_condition = AutomationCondition.objects.create(
             automation=self.automation,
-            index=1,
             field_name="date_created",
             evaluation_func="ge",
             evaluation_value=str(self.ticket.date_created))
@@ -159,7 +147,6 @@ class AutomationTestCase(TicketTestCase):
     def test_ge_invalid(self):
         automation_condition = AutomationCondition.objects.create(
             automation=self.automation,
-            index=0,
             field_name="date_created",
             evaluation_func="ge",
             evaluation_value="3000-08-27T09:32:21+02:00")
@@ -169,7 +156,6 @@ class AutomationTestCase(TicketTestCase):
     def test_lt_valid(self):
         automation_condition = AutomationCondition.objects.create(
             automation=self.automation,
-            index=0,
             field_name="date_created",
             evaluation_func="lt",
             evaluation_value="3000-08-27T09:32:21+02:00")
@@ -179,7 +165,6 @@ class AutomationTestCase(TicketTestCase):
     def test_lt_invalid(self):
         automation_condition = AutomationCondition.objects.create(
             automation=self.automation,
-            index=0,
             field_name="date_created",
             evaluation_func="lt",
             evaluation_value="2000-08-27T09:32:21+02:00")
@@ -188,7 +173,6 @@ class AutomationTestCase(TicketTestCase):
 
         automation_condition = AutomationCondition.objects.create(
             automation=self.automation,
-            index=1,
             field_name="date_created",
             evaluation_func="lt",
             evaluation_value=str(self.ticket.date_created))
@@ -198,7 +182,6 @@ class AutomationTestCase(TicketTestCase):
     def test_le_valid(self):
         automation_condition = AutomationCondition.objects.create(
             automation=self.automation,
-            index=0,
             field_name="date_created",
             evaluation_func="le",
             evaluation_value="3000-08-27T09:32:21+02:00")
@@ -207,7 +190,6 @@ class AutomationTestCase(TicketTestCase):
 
         automation_condition = AutomationCondition.objects.create(
             automation=self.automation,
-            index=1,
             field_name="date_created",
             evaluation_func="le",
             evaluation_value=str(self.ticket.date_created))
@@ -217,7 +199,6 @@ class AutomationTestCase(TicketTestCase):
     def test_le_invalid(self):
         automation_condition = AutomationCondition.objects.create(
             automation=self.automation,
-            index=0,
             field_name="date_created",
             evaluation_func="le",
             evaluation_value="2000-08-27T09:32:21+02:00")
@@ -227,7 +208,6 @@ class AutomationTestCase(TicketTestCase):
     def test_contains_charfield_valid(self):
         automation_condition = AutomationCondition.objects.create(
             automation=self.automation,
-            index=0,
             field_name="title",
             evaluation_func="contains",
             evaluation_value="werkt")
@@ -237,7 +217,6 @@ class AutomationTestCase(TicketTestCase):
     def test_contains_charfield_invalid(self):
         automation_condition = AutomationCondition.objects.create(
             automation=self.automation,
-            index=0,
             field_name="title",
             evaluation_func="contains",
             evaluation_value="olifant")
@@ -253,7 +232,6 @@ class AutomationTestCase(TicketTestCase):
         ticket.add_label(label2)
         automation_condition = AutomationCondition.objects.create(
             automation=self.automation,
-            index=0,
             field_name="labels",
             evaluation_func="contains",
             evaluation_value=str(label1.id))
@@ -267,7 +245,6 @@ class AutomationTestCase(TicketTestCase):
         ticket.add_label(label1)
         automation_condition = AutomationCondition.objects.create(
             automation=self.automation,
-            index=0,
             field_name="labels",
             evaluation_func="contains",
             evaluation_value=str(label2.id))
@@ -279,7 +256,6 @@ class AutomationTestCase(TicketTestCase):
                                                action_value=self.assistant2.id)
         AutomationCondition.objects.create(
             automation=automation,
-            index=0,
             field_name="title",
             evaluation_func="eq",
             evaluation_value="hetwerkt")
@@ -296,7 +272,6 @@ class AutomationTestCase(TicketTestCase):
                                                action_value=label.id)
         AutomationCondition.objects.create(
             automation=automation,
-            index=0,
             field_name="title",
             evaluation_func="eq",
             evaluation_value="hetwerkt")
@@ -313,19 +288,16 @@ class AutomationTestCase(TicketTestCase):
                                                action_value=label.id)
         AutomationCondition.objects.create(
             automation=automation,
-            index=0,
             field_name="title",
             evaluation_func="eq",
             evaluation_value="hetwerkt")
         AutomationCondition.objects.create(
             automation=automation,
-            index=1,
             field_name="content",
             evaluation_func="contains",
             evaluation_value="ol")
         AutomationCondition.objects.create(
             automation=automation,
-            index=2,
             field_name="assignee",
             evaluation_func="eq",
             evaluation_value=self.assistant.id)
@@ -342,19 +314,16 @@ class AutomationTestCase(TicketTestCase):
                                                action_value=label.id)
         AutomationCondition.objects.create(
             automation=automation,
-            index=0,
             field_name="content",
             evaluation_func="contains",
             evaluation_value="ol")
         AutomationCondition.objects.create(
             automation=automation,
-            index=1,
             field_name="assignee",
             evaluation_func="eq",
             evaluation_value=self.assistant.id)
         AutomationCondition.objects.create(
             automation=automation,
-            index=2,
             field_name="title",
             evaluation_func="eq",
             evaluation_value="staaternietin")
@@ -363,20 +332,18 @@ class AutomationTestCase(TicketTestCase):
         automation.execute(ticket)
         self.assertEqual(ticket.labels.count(), 0)
 
-    def test_invalid_automationcondition_field_name(self):
+    def test_invalid_condition_field_name(self):
         with self.assertRaises(ValidationError):
             AutomationCondition.objects.create(
                 automation=self.automation,
-                index=0,
                 field_name="foo",
                 evaluation_func="eq",
                 evaluation_value="ol")
 
-    def test_invalid_automationcondition_function(self):
+    def test_invalid_condition_function(self):
         with self.assertRaises(ValidationError):
             AutomationCondition.objects.create(
                 automation=self.automation,
-                index=0,
                 field_name="content",
                 evaluation_func="wrong",
                 evaluation_value="ol")
