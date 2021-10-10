@@ -58,6 +58,16 @@ class AutomationCondition(models.Model):
     evaluation_value = models.CharField(max_length=50)
     negation = models.BooleanField(default=False)
 
+    def clean(self):
+        super().clean()
+        field = Ticket._meta.get_field(self.field_name)
+
+        # Check if foreign keys and manytomany fields have an int as evaluation value.
+        if isinstance(field, models.ForeignKey) or isinstance(field, models.ManyToManyField) \
+                and not self.evaluation_value.isdigit():
+            raise ValidationError(
+                f"Field 'evaluation_value' expected a number in combination with field_name {self.field_name}, but got '{self.evaluation_value}'.")
+
     def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
         self.full_clean()
         super().save(force_insert, force_update, using, update_fields)
@@ -65,19 +75,20 @@ class AutomationCondition(models.Model):
     def __call__(self, ticket):
         field = ticket._meta.get_field(self.field_name)
         value = self.evaluation_value
+
         if isinstance(field, models.ForeignKey):
             try:
                 value = field.related_model.objects.get(pk=value)
             except ObjectDoesNotExist:
                 value = None
             field = getattr(ticket, self.field_name)
+
         elif isinstance(field, models.ManyToManyField):
             try:
                 value = field.related_model.objects.get(pk=value).pk
             except ObjectDoesNotExist:
                 value = None
             field = list(getattr(ticket, self.field_name).all().values_list("pk", flat=True))
-            # If the evaluation function is equals, put value in a list so the lists can be compared to be equal.
             if self.evaluation_func == "eq":
                 value = [value]
         else:

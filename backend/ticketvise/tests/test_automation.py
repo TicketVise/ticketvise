@@ -340,14 +340,6 @@ class AutomationTestCase(TicketTestCase):
                 evaluation_func="eq",
                 evaluation_value="ol")
 
-    def test_invalid_condition_function(self):
-        with self.assertRaises(ValidationError):
-            AutomationCondition.objects.create(
-                automation=self.automation,
-                field_name="content",
-                evaluation_func="wrong",
-                evaluation_value="ol")
-
     def test_negate(self):
         automation_condition = AutomationCondition.objects.create(
             automation=self.automation,
@@ -357,3 +349,19 @@ class AutomationTestCase(TicketTestCase):
             negation=True)
         result = automation_condition(self.ticket)
         self.assertTrue(result)
+
+    def test_invalid_condition_function(self):
+        with self.assertRaises(ValidationError):
+            AutomationCondition.objects.create(
+                automation=self.automation,
+                field_name="content",
+                evaluation_func="wrong",
+                evaluation_value="ol")
+
+    def test_invalid_value_type(self):
+        with self.assertRaises(ValidationError):
+            AutomationCondition.objects.create(
+                automation=self.automation,
+                field_name="labels",
+                evaluation_func="eq",
+                evaluation_value="label")
