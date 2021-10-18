@@ -9,14 +9,13 @@ from ticketvise.views.api.security import UserIsInboxStaffPermission
 from ticketvise import settings
 from ticketvise.models.inbox import Inbox
 import itertools
-from msal import PublicClientApplication
+from msal import ConfidentialClientApplication
 
 def email_username(email):
     return email.split("@")[0]
 
 def email_domain(email):
     return email.split("@")[-1]
-
 
 class EmailLoginSerializer(serializers.Serializer):
     email = serializers.CharField(required=True)
@@ -33,11 +32,15 @@ class EmailSetupApiView(APIView):
 
         email = serializer.validated_data.get("email")
         password = serializer.validated_data.get("password")
-        app = PublicClientApplication(settings.MICROSOFT_CLIENT_ID)
+        app = ConfidentialClientApplication(settings.MICROSOFT_CLIENT_ID,
+                                            settings.MICROSOFT_CLIENT_SECRET)
 
-        return Response(status=status.HTTP_200_OK)
+        scopes = ["https://outlook.office.com/IMAP.AccessAsUser.All",
+                 "https://outlook.office.com/POP.AccessAsUser.All", 
+                 "https://outlook.office.com/SMTP.Send"]
 
-
+        auth_code_request = app.initiate_auth_code_flow(scopes, login_hint=email)
+        return Response(data=auth_code_request, status=status.HTTP_200_OK)
 
 SMTP_PORTS = [587, 465, 25]
 SMTP_SUBDOMAINS = ["", "smtp.", "mail."]
@@ -75,4 +78,3 @@ def guess_basic_auth(email):
                 pop3_options.append((port, host))
 
     return smtp_options, imap_options, pop3_options
-

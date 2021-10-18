@@ -112,7 +112,8 @@ const Mailbox = require('@/assets/img/svg/mailbox.svg')
 
         this.loading = true
         this.error = ""
-        axios.post(`/api/inboxes/${ inboxId }/settings/email/login`, data).then(() => {
+        axios.post(`/api/inboxes/${ inboxId }/settings/email/login`, data).then((resp) => {
+            window.open(resp.data.auth_uri)
             this.email = this.password = ''
         }).catch((err) => {
           if (err.response) {
