@@ -55,7 +55,8 @@ class InboxTicketsPerDateTypeStatisticsApiView(APIView):
             return [
                 {
                     "date": date,
-                    "total": next((result["total"] for result in results if result["date"] == date), 0)
+                    "total": next((result["total"] for result in results if result["date"] == date), 0),
+                    "public": next((result["public"] for result in results if result["date"] == date), 0)
                 } for date in date_list
             ]
         elif date_type == "labels":
@@ -99,7 +100,7 @@ class InboxTicketsPerDateTypeStatisticsApiView(APIView):
             counts = Ticket.objects.filter(inbox=inbox) \
                 .annotate(date=date_modifier('date_created')) \
                 .values('date') \
-                .annotate(**{'total': Count('date')}) \
+                .annotate(**{'total': Count('date'), 'public': Count('is_public')}) \
                 .order_by("date")
 
         results = self.fill_gaps(request, counts)
@@ -150,41 +151,16 @@ class InboxStatisticsApiView(APIView):
         last_14_days = now - timedelta(days=14)
 
         return JsonResponse({
-            "current_week_pending": TicketStatusEvent.objects.filter(ticket__inbox=inbox,
-                                                                     date_created__gte=last_7_days,
-                                                                     old_status=Status.PENDING).count(),
-            "current_week_assigned": TicketStatusEvent.objects.filter(ticket__inbox=inbox,
-                                                                      date_created__gte=last_7_days,
-                                                                      new_status=Status.ASSIGNED).count(),
-            "current_week_answered": TicketStatusEvent.objects.filter(ticket__inbox=inbox,
-                                                                      date_created__gte=last_7_days,
-                                                                      new_status=Status.ANSWERED).count(),
-            "current_week_closed": TicketStatusEvent.objects.filter(ticket__inbox=inbox,
-                                                                    date_created__gte=last_7_days,
-                                                                    new_status=Status.CLOSED).count(),
-            "last_week_pending": TicketStatusEvent.objects.filter(ticket__inbox=inbox,
-                                                                  date_created__lte=last_7_days,
-                                                                  date_created__gte=last_14_days,
-                                                                  old_status=Status.PENDING).count(),
-            "last_week_assigned": TicketStatusEvent.objects.filter(ticket__inbox=inbox,
-                                                                   date_created__lte=last_7_days,
-                                                                   date_created__gte=last_14_days,
-                                                                   new_status=Status.ASSIGNED).count(),
-            "last_week_answered": TicketStatusEvent.objects.filter(ticket__inbox=inbox,
-                                                                   date_created__lte=last_7_days,
-                                                                   date_created__gte=last_14_days,
-                                                                   new_status=Status.ANSWERED).count(),
-            "last_week_closed": TicketStatusEvent.objects.filter(ticket__inbox=inbox,
-                                                                 date_created__lte=last_7_days,
-                                                                 date_created__gte=last_14_days,
-                                                                 new_status=Status.ANSWERED).count(),
             "avg_response_time": get_average_response_time(inbox),
+            "avg_ticket_per_student": Ticket.objects.filter(inbox=inbox).count() / UserInbox.objects.filter(inbox=inbox, role=Role.GUEST).count(),
             "total_guests": UserInbox.objects.filter(inbox=inbox, role=Role.GUEST).count(),
             "last_week_total_tickets": Ticket.objects.filter(inbox=inbox, date_created__lte=last_7_days).count(),
-            'total_tickets': Ticket.objects.filter(inbox=inbox).count(),
-            'labels': Label.objects.filter(inbox=inbox).count(),
-            'users': User.objects.filter(inbox_relationship__inbox_id=inbox).count(),
-            'coordinator': UserSerializer(inbox.get_coordinator()).data
+            "total_tickets": Ticket.objects.filter(inbox=inbox).count(),
+            "total_open_tickets": Ticket.objects.filter(inbox=inbox, status=Status.PENDING).count(),
+            "total_public_tickets": Ticket.objects.filter(inbox=inbox, is_public__isnull=False).count(),
+            "labels": Label.objects.filter(inbox=inbox).count(),
+            "users": User.objects.filter(inbox_relationship__inbox_id=inbox).count(),
+            "coordinator": UserSerializer(inbox.get_coordinator()).data
         }, safe=False)
 
 

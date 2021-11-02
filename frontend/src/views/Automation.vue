@@ -43,6 +43,9 @@
             </div>
           </div>
         </div>
+
+        <div class="control-section">
+        </div>
       </div>
 
       <!-- Default header -->
@@ -81,7 +84,8 @@ export default {
     // AutomationFilter
     },
   data: () => ({
-    items: []
+    items: [],
+    values: ['Mr.', 'Mrs.', 'Ms.']
   })
 }
 </script>

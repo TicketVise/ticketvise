@@ -29,34 +29,24 @@
 </template>
 
 <script>
-import axios from 'axios'
 import { ArrowSmDownIcon, ArrowSmUpIcon } from '@heroicons/vue/solid'
 
+const stats = [
+  { name: 'Total Students', stat: '125', previousStat: '', change: '', changeDirection: '', changeType: 'increase' },
+  { name: 'Active Students', stat: '61', previousStat: '54', change: '18.34%', changeDirection: 'up', changeType: 'increase' },
+  { name: 'Open Tickets', stat: '4', previousStat: '5', change: '20.00%', changeDirection: 'down', changeType: 'increase' },
+  { name: 'Average Tickets per user', stat: '2.4', previousStat: '', change: '', changeDirection: '', changeType: 'decrease' }
+]
+
 export default {
-  name: 'InsightsTickets',
+  name: 'InsightsStudents',
   components: {
     ArrowSmDownIcon,
     ArrowSmUpIcon
   },
-  data: () => ({
-    statsData: null
-  }),
-  async mounted () {
-    const { inboxId } = this.$route.params
-
-    /* Gettings general statistics. */
-    const statsResponse = await axios.get(`/api/inboxes/${inboxId}/statistics`)
-    console.log(statsResponse.data)
-    this.statsData = statsResponse.data
-  },
-  computed: {
-    stats () {
-      return [
-        { name: 'Total Tickets', stat: this.statsData?.total_tickets || 0, previousStat: '', change: '', changeDirection: '', changeType: 'increase' },
-        { name: 'Public Tickets', stat: this.statsData?.total_public_tickets || 0, previousStat: '', change: '', changeDirection: '', changeType: 'increase' },
-        { name: 'Open Tickets', stat: this.statsData?.total_open_tickets || 0, previousStat: '3', change: '33%', changeDirection: 'down', changeType: 'increase' },
-        { name: 'Average Tickets per user', stat: this.statsData?.avg_ticket_per_student || 0, previousStat: '', change: '', changeDirection: '', changeType: 'increase' }
-      ]
+  setup () {
+    return {
+      stats
     }
   }
 }

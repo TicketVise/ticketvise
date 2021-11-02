@@ -25,38 +25,34 @@
     </dl>
 
     <!-- Some general graphs here -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mt-4">
+      <div class="col-span-2 border rounded p-4 pt-2">
+        <h2 class="text-lg font-semibold text-primary-600">Activity per staff member</h2>
+        <div ref="chart" class="w-full h-64" />
+      </div>
+    </div>
   </section>
 </template>
 
 <script>
-import axios from 'axios'
 import { ArrowSmDownIcon, ArrowSmUpIcon } from '@heroicons/vue/solid'
 
+const stats = [
+  { name: 'Total Staff', stat: '6', previousStat: '', change: '', changeDirection: '', changeType: 'increase' },
+  { name: 'Average time to respond', stat: '2.3h', previousStat: '2.4h', change: '3.15%', changeDirection: 'down', changeType: 'increase' },
+  { name: 'Open Tickets', stat: '4', previousStat: '5', change: '20.00%', changeDirection: '', changeType: 'decrease' },
+  { name: 'Average Tickets per user', stat: '2.4', previousStat: '', change: '', changeDirection: '', changeType: 'decrease' }
+]
+
 export default {
-  name: 'InsightsTickets',
+  name: 'InsightsStaff',
   components: {
     ArrowSmDownIcon,
     ArrowSmUpIcon
   },
-  data: () => ({
-    statsData: null
-  }),
-  async mounted () {
-    const { inboxId } = this.$route.params
-
-    /* Gettings general statistics. */
-    const statsResponse = await axios.get(`/api/inboxes/${inboxId}/statistics`)
-    console.log(statsResponse.data)
-    this.statsData = statsResponse.data
-  },
-  computed: {
-    stats () {
-      return [
-        { name: 'Total Tickets', stat: this.statsData?.total_tickets || 0, previousStat: '', change: '', changeDirection: '', changeType: 'increase' },
-        { name: 'Public Tickets', stat: this.statsData?.total_public_tickets || 0, previousStat: '', change: '', changeDirection: '', changeType: 'increase' },
-        { name: 'Open Tickets', stat: this.statsData?.total_open_tickets || 0, previousStat: '3', change: '33%', changeDirection: 'down', changeType: 'increase' },
-        { name: 'Average Tickets per user', stat: this.statsData?.avg_ticket_per_student || 0, previousStat: '', change: '', changeDirection: '', changeType: 'increase' }
-      ]
+  setup () {
+    return {
+      stats
     }
   }
 }

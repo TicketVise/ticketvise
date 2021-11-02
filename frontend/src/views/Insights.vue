@@ -1,12 +1,8 @@
 <template>
   <div class="overflow-y-auto">
-    <div class="pt-8 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="flex">
-        <h1 class="flex-1 text-2xl font-bold text-gray-900">Insights</h1>
-      </div>
-
+    <div>
       <!-- Tabs -->
-      <div class="mt-3 sm:mt-2">
+      <div class="">
         <div class="sm:hidden">
           <label for="tabs" class="sr-only">Select a tab</label>
           <!-- Use an "onChange" listener to redirect the user to the selected tab URL. -->
@@ -16,16 +12,23 @@
         </div>
         <div class="hidden sm:block">
           <div class="flex items-center border-b border-gray-200">
-            <nav class="flex-1 -mb-px flex space-x-6 xl:space-x-8" aria-label="Tabs">
-              <a v-for="tab in tabs" :key="tab.name" :aria-current="tab.current ? 'page' : undefined" @click="switchTab(); tabs.find(t => t.name === tab.name).current = true" :class="[tab.current ? 'border-primary text-primary-600' : 'cursor-pointer border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300', 'whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm']">
-                {{ tab.name }}
+            <nav class="flex-1 -mb-px flex space-x-6 xl:space-x-8 px-4" aria-label="Tabs">
+              <a v-for="tab in tabs" :key="tab.name" :aria-current="tab.current ? 'page' : undefined" @click="switchTab(); tabs.find(t => t.name === tab.name).current = true" :class="[tab.current ? 'border-primary text-primary-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300', 'cursor-pointer group inline-flex items-center py-4 px-1 border-b-2 font-medium text-sm']">
+                <component :is="tab.icon" :class="[tab.current ? 'text-primary' : 'text-gray-400 group-hover:text-gray-500', '-ml-0.5 mr-2 h-5 w-5']" aria-hidden="true" />
+                <span>{{ tab.name }}</span>
               </a>
             </nav>
           </div>
         </div>
       </div>
 
-      <InsightsTickets v-show="tabs.find(t => t.current).name === 'Tickets'" />
+      <div class="p-4">
+        <InsightsGeneral v-if="tabs.find(t => t.current).name === 'General'" />
+        <InsightsTickets v-if="tabs.find(t => t.current).name === 'Tickets'" />
+        <InsightsLabels v-if="tabs.find(t => t.current).name === 'Labels'" />
+        <InsightsStudents v-if="tabs.find(t => t.current).name === 'Students'" />
+        <InsightsStaff v-if="tabs.find(t => t.current).name === 'Staff'" />
+      </div>
     </div>
   </div>
 </template>
@@ -33,17 +36,29 @@
 <script>
 import { mapState } from 'vuex'
 
+import { BookmarkIcon, TemplateIcon, TicketIcon, UserIcon, UsersIcon } from '@heroicons/vue/solid'
+
+import InsightsGeneral from '@/components/insights/InsightsGeneral'
 import InsightsTickets from '@/components/insights/InsightsTickets'
+import InsightsLabels from '@/components/insights/InsightsLabels'
+import InsightsStudents from '@/components/insights/InsightsStudents'
+import InsightsStaff from '@/components/insights/InsightsStaff'
 
 export default {
   components: {
-    InsightsTickets
+    InsightsGeneral,
+    InsightsTickets,
+    InsightsLabels,
+    InsightsStudents,
+    InsightsStaff
   },
   data: () => ({
     tabs: [
-      { name: 'Tickets', current: true },
-      { name: 'Labels', current: false },
-      { name: 'Users', current: false }
+      { name: 'General', current: true, icon: TemplateIcon },
+      { name: 'Tickets', current: false, icon: TicketIcon },
+      { name: 'Labels', current: false, icon: BookmarkIcon },
+      { name: 'Students', current: false, icon: UsersIcon },
+      { name: 'Staff', current: false, icon: UserIcon }
     ]
   }),
   methods: {
