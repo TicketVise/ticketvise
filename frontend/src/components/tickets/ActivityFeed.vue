@@ -25,6 +25,18 @@
                 <div class="mt-2 text-sm text-gray-700">
                   <TicketInputViewer v-if="item" :content="item.comment" />
                 </div>
+                <div class="mt-2 text-sm flex space-x-2">
+                  <button @click="helpful(item.id)" class="inline-flex items-center px-3 py-0.5 rounded-full text-sm border text-primary" :class="item?.helpful === 'helpful' ? 'font-medium' : ''">
+                    <ThumbUpSolidIcon v-if="item?.helpful === 'helpful'" class="h-4 w-4 text-primary mr-1" />
+                    <ThumbUpOutlineIcon v-else class="h-4 w-4 text-primary mr-1" />
+                    Helpful
+                  </button>
+                  <button @click="notHelpful(item.id)" class="inline-flex items-center px-3 py-0.5 rounded-full text-sm border text-primary" :class="item?.helpful === 'notHelpful' ? 'font-medium' : ''">
+                    <ThumbDownSolidIcon v-if="item?.helpful === 'notHelpful'" class="h-4 w-4 text-primary mr-1" />
+                    <ThumbDownOutlineIcon v-else class="h-4 w-4 text-primary mr-1" />
+                    Not Helpful
+                  </button>
+                </div>
               </div>
             </template>
             <template v-else-if="item.type === 'assignment'" condition="item.type === 'assignment'">
@@ -205,8 +217,14 @@ import {
   DocumentIcon,
   TagIcon,
   UserCircleIcon as UserCircleIconSolid,
-  ExclamationCircleIcon
+  ExclamationCircleIcon,
+  ThumbUpIcon as ThumbUpSolidIcon,
+  ThumbDownIcon as ThumbDownSolidIcon
 } from '@heroicons/vue/solid'
+import {
+  ThumbUpIcon as ThumbUpOutlineIcon,
+  ThumbDownIcon as ThumbDownOutlineIcon
+} from '@heroicons/vue/outline'
 
 const statusses = {
   PNDG: {
@@ -239,7 +257,11 @@ export default {
     ExclamationCircleIcon,
     TicketInput,
     TicketInputViewer,
-    VueEasyLightbox
+    VueEasyLightbox,
+    ThumbUpSolidIcon,
+    ThumbDownSolidIcon,
+    ThumbUpOutlineIcon,
+    ThumbDownOutlineIcon
   },
   props: {
     ticket: {
@@ -291,6 +313,12 @@ export default {
     },
     filterImages (files) {
       return files.filter(file => ['jpg', 'png'].includes(file.extension.toLowerCase()))
+    },
+    helpful (id) {
+      this.$emit('helpful', 'helpful', id)
+    },
+    notHelpful (id) {
+      this.$emit('helpful', 'notHelpful', id)
     }
   },
   computed: {
