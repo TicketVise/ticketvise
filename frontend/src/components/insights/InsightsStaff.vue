@@ -26,15 +26,54 @@
 
     <!-- Some general graphs here -->
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mt-4">
-      <div class="col-span-2 border rounded p-4 pt-2">
-        <h2 class="text-lg font-semibold text-primary-600">Activity per staff member</h2>
-        <div ref="chart" class="w-full h-64" />
+      <div class="col-span-1 border rounded-lg p-4 pt-2">
+        <h2 class="text-lg font-semibold text-primary-600">Helpfulness of staff</h2>
+        <ul role="list" class="divide-y divide-gray-200">
+          <li v-for="member in staff.sort((a, b) => b.helpfulness.percentage - a.helpfulness.percentage)" :key="member.id">
+            <div class="p-3">
+              <div class="flex items-center justify-between">
+                <span class="inline-flex items-center px-2 py-0.5 rounded-full text-sm text-gray-800 truncate space-x-2">
+                  <img class="inline-block h-6 w-6 rounded-full" :src="member.image" alt="" />
+                  <span class="truncate">{{ member.name }}</span>
+                </span>
+                <div class="ml-2 flex-shrink-0 flex">
+                  <p class="px-2 inline-flex leading-5 font-medium rounded-full text-primary text-xl items-baseline">
+                    {{ member.helpfulness.percentage }}
+                    <span class="text-gray-400 text-xs font-normal">/{{ member.helpfulness.count }}</span>
+                  </p>
+                </div>
+              </div>
+            </div>
+          </li>
+        </ul>
+      </div>
+
+      <div class="col-span-1 border rounded-lg p-4 pt-2">
+        <h2 class="text-lg font-semibold text-primary-600">Most answered topic</h2>
+        <ul role="list" class="divide-y divide-gray-200">
+          <li v-for="member in staff" :key="member.id">
+            <div class="p-3">
+              <div class="flex items-center justify-between">
+                <span class="inline-flex items-center px-2 py-0.5 rounded-full text-sm text-gray-800 truncate space-x-2">
+                  <img class="inline-block h-6 w-6 rounded-full" :src="member.image" alt="" />
+                  <span class="truncate">{{ member.name }}</span>
+                </span>
+                <div class="ml-2 flex-shrink-0 flex">
+                  <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-primary-100 text-primary-700">
+                    {{ member.mainTopic }}
+                  </span>
+                </div>
+              </div>
+            </div>
+          </li>
+        </ul>
       </div>
     </div>
   </section>
 </template>
 
 <script>
+import axios from 'axios'
 import { ArrowSmDownIcon, ArrowSmUpIcon } from '@heroicons/vue/solid'
 
 const stats = [
@@ -54,6 +93,28 @@ export default {
     return {
       stats
     }
+  },
+  data: () => ({
+    staff: []
+  }),
+  async mounted () {
+    const { inboxId } = this.$route.params
+
+    const testTopics = ['Assignment', 'Lecture', 'Slides', 'Code', '']
+
+    /* Getting the staff data. */
+    const staffResponse = await axios.get(`/api/inboxes/${inboxId}/staff`)
+    this.staff = staffResponse.data.map(member => {
+      return {
+        name: member.first_name + ' ' + member.last_name,
+        helpfulness: {
+          percentage: (Math.random() * 100).toPrecision(3),
+          count: Math.floor(Math.random() * 100)
+        },
+        image: member.avatar_url,
+        mainTopic: testTopics[Math.floor(Math.random() * testTopics.length)]
+      }
+    })
   }
 }
 </script>
