@@ -165,14 +165,10 @@ class LabelSerializer(ModelSerializer):
 
 class TicketAttachmentSerializer(DynamicFieldsModelSerializer):
     uploader = UserSerializer(read_only=True, fields=(["first_name", "last_name", "username", "avatar_url", "id"]))
-    file_size = serializers.SerializerMethodField()
 
     class Meta:
         model = TicketAttachment
-        fields = ["id", "file", "file_size", "uploader", "date_created"]
-
-    def get_file_size(self, obj):
-        return obj.file.size
+        fields = ["id", "file", "uploader", "date_created"]
 
 
 class RoleSerializer(serializers.BaseSerializer):

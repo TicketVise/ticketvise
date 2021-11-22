@@ -12,8 +12,7 @@
           :key="ticket.id"
           :ticket="ticket"
           :assignee_show="title !== 'Pending'"
-          v-for="ticket in ticketList"
-          v-on:refresh="$emit('refresh')" />
+          v-for="ticket in ticketList"/>
 
         <div v-if="!ticketList" class="space-y-2">
           <div v-for="i of length" :key="i" class="h-24 w-full bg-gray-200 rounded"/>

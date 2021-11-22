@@ -88,32 +88,26 @@
       Graphs
     </h3>
 
-    <div class="grid grid-cols-1 sm:grid-cols-12 mb-2 gap-4">
-      <div class="border rounded p-4 col-span-6">
-        <h3 class="text-lg leading-6 font-medium text-gray-900">
-          Number of tickets per label
-        </h3>
-        <tickets-chart type="labels" :inbox-id="$route.params.inboxId"/>
-      </div>
-      <div class="border rounded p-4 col-span-6">
+    <div class="grid grid-cols-1 sm:grid-cols-2 mb-2 gap-4">
+      <div class="border rounded p-4">
         <h3 class="text-lg leading-6 font-medium text-gray-900">
           Number of tickets per day
         </h3>
         <tickets-chart :inbox-id="$route.params.inboxId"/>
       </div>
-      <div class="border rounded p-3 col-span-4">
+      <div class="border rounded p-3">
         <h3 class="text-lg leading-6 font-medium text-gray-900">
           Number of tickets per hour
         </h3>
-        <TicketsTimeChart type="hour" :inbox-id="$route.params.inboxId"/>
+        <tickets-chart type="hour" :inbox-id="$route.params.inboxId"/>
       </div>
-      <div class="border rounded p-3 col-span-4">
+      <div class="border rounded p-3">
         <h3 class="text-lg leading-6 font-medium text-gray-900">
           Average response time
         </h3>
         <agent-response-time-chart />
       </div>
-      <div class="border rounded p-3 col-span-4">
+      <div class="border rounded p-3">
         <h3 class="text-lg leading-6 font-medium text-gray-900">
           Label usage
         </h3>
@@ -126,13 +120,12 @@
 <script>
 import axios from 'axios'
 import TicketsChart from '@/components/insights/TicketsChart'
-import TicketsTimeChart from '@/components/insights/TicketsTimeChart'
 import AgentResponseTimeChart from '@/components/insights/AgentResponseTimeChart'
 import LabelsChart from '@/components/insights/LabelsChart'
 import IncreaseLabel from '@/components/chip/IncreaseLabel'
 
 export default {
-  components: { IncreaseLabel, TicketsChart, TicketsTimeChart, AgentResponseTimeChart, LabelsChart },
+  components: { IncreaseLabel, TicketsChart, AgentResponseTimeChart, LabelsChart },
   data: () => ({
     statistics: null
   }),

@@ -50,11 +50,11 @@ const store = createStore({
       state.inboxes = inboxes
     },
     update_tickets (state, payload) {
-      // if (state.user.is_superuser) return
+      if (state.user.is_superuser) return
       state.inboxes.find(i => i.id === parseInt(payload.inbox)).tickets = payload.tickets
     },
     update_public_tickets (state, payload) {
-      // if (state.user.is_superuser) return
+      if (state.user.is_superuser) return
       state.inboxes.find(i => i.id === parseInt(payload.inbox)).public_tickets = payload.public_tickets
     }
   },
@@ -96,14 +96,9 @@ const store = createStore({
       commit('unauth_success')
       router.push({ name: 'Login' })
     },
-    async update_inboxes ({ commit, state }) {
-      if (state.user.is_superuser) {
-        const response = await axios.get('/api/inboxes')
-        commit('update_inboxes', response.data)
-      } else {
-        const response = await axios.get('/api/me/inboxes')
-        commit('update_inboxes', response.data.map(inbox => inbox.inbox))
-      }
+    async update_inboxes ({ commit }) {
+      const response = await axios.get('/api/me/inboxes')
+      commit('update_inboxes', response.data.map(inbox => inbox.inbox))
     }
   },
   getters: {

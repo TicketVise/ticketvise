@@ -7,11 +7,12 @@
       >
         <!-- Breadcrumb -->
         <nav
-          v-show="selected"
+          v-show="!show_list"
           class="flex items-start px-4 py-3 sm:px-6 lg:px-8 lg:hidden"
           aria-label="Breadcrumb"
         >
-          <router-link :to="{ name: 'Users', params: { inboxId: $route.params.inboxId }}"
+          <a
+            @click="show_list = true"
             class="inline-flex items-center space-x-3 text-sm font-medium text-gray-900"
           >
             <!-- Heroicon name: solid/chevron-left -->
@@ -29,10 +30,10 @@
               />
             </svg>
             <span>List of users</span>
-          </router-link>
+          </a>
         </nav>
 
-        <article v-if="selected">
+        <article v-if="show && !show_list">
           <!-- Profile header -->
           <div>
             <div>
@@ -47,7 +48,7 @@
                 <div class="flex">
                   <img
                     class="h-24 w-24 rounded-full ring-4 ring-white sm:h-32 sm:w-32"
-                    :src="selected.user.avatar_url"
+                    :src="show.user.avatar_url"
                     alt=""
                   />
                 </div>
@@ -56,14 +57,14 @@
                 >
                   <div class="sm:hidden 2xl:block mt-6 min-w-0 flex-1">
                     <h1 class="text-2xl font-bold text-gray-900 dark:text-white truncate">
-                      {{ selected.user.first_name }} {{ selected.user.last_name }}
+                      {{ show.user.first_name }} {{ show.user.last_name }}
                     </h1>
                   </div>
                 </div>
               </div>
               <div class="hidden sm:block 2xl:hidden mt-6 min-w-0 flex-1">
                 <h1 class="text-2xl font-bold text-gray-900 dark:text-white truncate">
-                  {{ selected.user.first_name }} {{ selected.user.last_name }}
+                  {{ show.user.first_name }} {{ show.user.last_name }}
                 </h1>
               </div>
             </div>
@@ -97,14 +98,6 @@
                     </span>
                   </div>
 
-                  <div
-                    @click="tab = 'settings'"
-                    class="border-transparent text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300 whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm cursor-pointer"
-                    :class="tab == 'settings' ? 'border-primary text-gray-900' : 'hover:border-gray-300'"
-                  >
-                    Settings
-                  </div>
-
                   <!-- <div
                     @click="tab = 'insights'"
                     class="border-transparent text-gray-500 hover:text-gray-700 whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm cursor-pointer"
@@ -126,28 +119,28 @@
               <div class="sm:col-span-1">
                 <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">Role</dt>
                 <dd class="mt-1 text-sm text-gray-900 dark:text-gray-100">
-                  {{ selected.role_label }}
+                  {{ show.role_label }}
                 </dd>
               </div>
 
               <div class="sm:col-span-1">
                 <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">Email</dt>
                 <dd class="mt-1 text-sm text-gray-900 dark:text-gray-100">
-                  {{ selected.user.email }}
+                  {{ show.user.email }}
                 </dd>
               </div>
 
               <div class="sm:col-span-1">
                 <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">Full Name</dt>
                 <dd class="mt-1 text-sm text-gray-900 dark:text-gray-100">
-                  {{ selected.user.first_name }} {{ selected.user.last_name }}
+                  {{ show.user.first_name }} {{ show.user.last_name }}
                 </dd>
               </div>
 
               <div class="sm:col-span-1">
                 <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">Username</dt>
                 <dd class="mt-1 text-sm text-gray-900 dark:text-gray-100">
-                  {{ selected.user.username }}
+                  {{ show.user.username }}
                 </dd>
               </div>
             </dl>
@@ -203,7 +196,7 @@
 
             <div v-else class="text-center mb-4">
               <img
-                :src="BlankCanvas"
+                src="/static/img/svg/undraw_blank_canvas_3rbb.svg"
                 alt="Nothing here"
                 class="w-1/2 md:w-1/3 mx-auto py-8"
               />
@@ -212,44 +205,13 @@
               </span>
             </div>
           </div>
-
-          <!-- User inbox settings -->
-          <div v-show="tab == 'settings'" class="mt-6 max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col space-y-8">
-            <div v-if="selected.role !== 'GUEST'" class="space-y-2 mb-4">
-              <SwitchGroup as="div" class="flex items-center justify-between">
-                <span class="flex-grow flex flex-col">
-                  <SwitchLabel as="span" class="text-sm font-medium text-gray-900" passive>Assignable</SwitchLabel>
-                  <SwitchDescription as="span" class="text-sm text-gray-500">This user is assignable using the automatic scheduler.</SwitchDescription>
-                </span>
-                <Switch v-if="selected" :change="save()" v-model="selected.is_assignable" :class="[selected.is_assignable ? 'bg-primary-600' : 'bg-gray-200', 'relative inline-flex flex-shrink-0 h-6 w-11 border-2 border-transparent rounded-full cursor-pointer transition-colors ease-in-out duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary']">
-                  <span aria-hidden="true" :class="[selected.is_assignable ? 'translate-x-5' : 'translate-x-0', 'pointer-events-none inline-block h-5 w-5 rounded-full bg-white shadow transform ring-0 transition ease-in-out duration-200']" />
-                </Switch>
-              </SwitchGroup>
-            </div>
-
-            <div>
-              <div class="border border-red-600 overflow-hidden rounded p-4 mt-2 mb-4">
-                <h3 class="text-lg leading-6 font-medium text-gray-900">
-                  Remove user
-                </h3>
-                <p class="mt-1 max-w-2xl text-sm leading-5 text-gray-500">
-                  The user will lose access to the inbox and will be unable to create new tickets or answer tickets.
-                </p>
-                <button type="button" @click="onDelete()"
-                        class="w-full sm:w-auto mt-4 inline-flex justify-center items-center rounded-md border border-transparent px-4 py-2 bg-red-200 text-red-600 co text-base leading-6 font-medium shadow-sm hover:bg-red-100 focus:outline-none focus:border-red-700 focus:ring-red transition ease-in-out duration-150 sm:text-sm sm:leading-5">
-                  <TrashIcon class="h-5 w-5 text-red-600 mr-2" />
-                  Remove
-                </button>
-              </div>
-            </div>
-          </div>
         </article>
       </main>
 
       <!-- Users list -->
       <aside
         class="w-full lg:w-96 lg:border-r order-first flex flex-col border-gray-200"
-        :class="{ 'hidden lg:flex lg:flex-col flex-shrink-0': selected}"
+        :class="{ 'hidden lg:flex lg:flex-col flex-shrink-0': !show_list}"
       >
         <div class="p-4">
           <h2 class="text-lg font-medium text-gray-900 dark:text-gray-200">Inbox Users</h2>
@@ -298,7 +260,7 @@
         <nav class="flex-1 min-h-0 overflow-y-auto" aria-label="Users">
           <div v-if="Object.keys(sorted).length == 0" class="text-center">
             <img
-              :src="Empty"
+              src="/static/img/svg/undraw_empty_xct9.svg"
               alt="Nothing here"
               class="w-3/5 mx-auto py-8"
             />
@@ -325,7 +287,8 @@
                     />
                   </div>
                   <div class="flex-1 min-w-0">
-                    <router-link :to="{ name: 'User', params: { inboxId: $route.params.inboxId, userId: user.user.id }}"
+                    <div
+                      @click="show = user; tab = 'profile'; show_list = false"
                       class="cursor-pointer focus:outline-none"
                     >
                       <!-- Extend touch target to entire panel -->
@@ -336,7 +299,7 @@
                       <p class="text-sm text-gray-500 truncate">
                         {{ user.role_label }}
                       </p>
-                    </router-link>
+                    </div>
                   </div>
                 </div>
               </li>
@@ -354,14 +317,7 @@ import TicketCard from '@/components/tickets/TicketCard'
 import SearchBar from '@/components/searchbar/SearchBar'
 import axios from 'axios'
 import { debounce } from 'lodash'
-import { Menu, MenuButton, MenuItem, MenuItems, Switch, SwitchDescription, SwitchGroup, SwitchLabel } from '@headlessui/vue'
-
-import {
-  TrashIcon
-} from '@heroicons/vue/outline'
-
-const Empty = require('@/assets/img/svg/empty.svg')
-const BlankCanvas = require('@/assets/img/svg/blank_canvas.svg')
+import { Menu, MenuButton, MenuItem, MenuItems } from '@headlessui/vue'
 
 export default {
   name: 'Users',
@@ -370,11 +326,6 @@ export default {
     MenuButton,
     MenuItem,
     MenuItems,
-    Switch,
-    SwitchDescription,
-    SwitchGroup,
-    SwitchLabel,
-    TrashIcon,
     SearchBar,
     TicketCard
   },
@@ -383,39 +334,28 @@ export default {
       query: '',
       users: [],
       sorted: [],
+      show: null,
+      show_list: true,
       tab: 'profile',
       tickets: [],
       average: 0,
       filter_menu: false,
-      filter: 'name',
-      user: null
+      filter: 'name'
     }
   },
-  setup () {
-    return { Empty, BlankCanvas }
-  },
-  async mounted () {
-    const { inboxId } = this.$route.params
-    await axios.get(`/api/inboxes/${inboxId}/users`).then((response) => {
-      this.users = response.data
-    })
+  mounted () {
+    const inboxId = this.$route.params.inboxId
+    axios
+      .get(`/api/inboxes/${inboxId}/users`)
+      .then((response) => {
+        this.users = response.data
+      })
 
     this.performSearch()
   },
   methods: {
     away () {
       this.filter_menu = false
-    },
-    save () {
-      const { inboxId, userId } = this.$route.params
-
-      axios.put(`/api/inboxes/${inboxId}/users/${userId}`, this.selected)
-    },
-    onDelete () {
-      if (confirm('Are you sure you want to delete this user?')) {
-        const { inboxId, userId } = this.$route.params
-        axios.delete(`/api/inboxes/${inboxId}/users/${userId}`).then(() => this.$route.push('Users'))
-      }
     },
     performSearch () {
       const inboxId = this.$route.params.inboxId
@@ -459,31 +399,31 @@ export default {
     },
     search: debounce(function () {
       this.performSearch()
-    }, 250)
+    }, 250),
+    getInboxUserUrl (inboxUser) {
+      const inboxId = this.$route.params.inboxId
+      return `/inboxes/${inboxId}/users/${inboxUser.user.id}`
+    }
   },
   watch: {
-    selected () {
-      const { inboxId, userId } = this.$route.params
+    show () {
+      const inboxId = this.$route.params.inboxId
+      axios
+        .get(`/api/inboxes/${inboxId}/users/${this.show.user.id}/tickets`)
+        .then((response) => {
+          this.tickets = response.data
+        })
 
-      if (!userId) return
-
-      this.tab = 'profile'
-
-      axios.get(`/api/inboxes/${inboxId}/users/${userId}/tickets`).then((response) => {
-        this.tickets = response.data
-      })
-
-      axios.get(`/api/inboxes/${inboxId}/users/${userId}/tickets/average`).then((response) => {
-        this.average = response.data.average
-      })
+      axios
+        .get(`/api/inboxes/${inboxId}/users/${this.show.user.id}/tickets/average`)
+        .then((response) => {
+          this.average = response.data.average
+        })
     }
   },
   computed: {
     publicTickets () {
       return this.tickets.filter(ticket => ticket.is_public).length
-    },
-    selected () {
-      return this.users?.find((user) => user.user.id === parseInt(this.$route.params.userId))
     }
   }
 }

@@ -48,7 +48,7 @@
     },
     methods: {
       emitValue () {
-        this.$emit('update:modelValue', this.search)
+        this.$emit('input', this.search)
       }
     }
   }

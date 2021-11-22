@@ -14,7 +14,7 @@
     <div v-else class="py-3 px-4 space-y-2">
       <div class="flex justify-between w-full">
         <span class="font-medium">Default ticket assignment</span>
-        <x-icon @click="cancel()" class="h-4 w-4 cursor-pointer" />
+        <x-icon @click="open = false" class="h-4 w-4 cursor-pointer" />
       </div>
       <div class="space-y-2">
         <div>
@@ -177,8 +177,6 @@ export default {
           if (this.selected[0] === 'fixed') {
             formData.append('fixed_scheduling_assignee', this.fixed_user.id)
           }
-        } else if (key === 'image') {
-          continue
         } else if (key !== 'fixed_scheduling_assignee') {
           formData.append(key, this.inbox[key])
         }

@@ -1,5 +1,5 @@
 <template>
-  <HorizontalBarChart
+  <bar-chart
     v-if="data"
     :data="data"
     :options="options" />
@@ -7,11 +7,11 @@
 
 <script>
 import axios from 'axios'
-import HorizontalBarChart from './HorizontalBarChart'
+import BarChart from './BarChart'
 import moment from 'moment'
 
 export default {
-  components: { HorizontalBarChart },
+  components: { BarChart },
   data: () => ({
     data: null,
     options: {

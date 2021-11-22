@@ -60,6 +60,10 @@ export default {
   name: 'FileUpload',
   components: { DocumentAddIcon, XIcon },
   props: {
+    value: {
+      type: Array,
+      required: true
+    },
     accepted: {
       type: String,
       required: false,

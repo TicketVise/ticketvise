@@ -23,7 +23,9 @@
                   <p class="mt-0.5 text-sm text-gray-500">Commented {{ item?.date }}</p>
                 </div>
                 <div class="mt-2 text-sm text-gray-700">
-                  <TicketInputViewer v-if="item" :content="item.comment" />
+                  <p>
+                    {{ item?.comment }}
+                  </p>
                 </div>
               </div>
             </template>
@@ -99,48 +101,6 @@
                 </div>
               </div>
             </template>
-            <template v-else-if="item.type === 'attachment'" condition="item.type === 'attachment'">
-              <div>
-                <div class="relative px-1">
-                  <div class="h-8 w-8 bg-gray-100 rounded-full ring-8 ring-white flex items-center justify-center">
-                    <DocumentIcon class="h-5 w-5 text-gray-500" aria-hidden="true"/>
-                  </div>
-                </div>
-              </div>
-              <div class="min-w-0 flex-1 py-0">
-                <div class="text-sm leading-8 text-gray-500">
-                  <span class="mr-0.5">
-                    <span class="font-medium text-gray-900">{{ item?.person?.name }}</span>
-                    {{ ' ' }}
-                    uploaded the following file{{ item?.attachment?.length > 1 ? 's' : '' }}
-                  </span>
-                  {{ ' ' }}
-                  <span class="mr-0.5" v-for="attachment in item.attachment" :key="attachment.name">
-                    <a :href="attachment.href" target="_blank">
-                      <chip class="max-w-xs">
-                        <span class="truncate leading-4">{{ attachment.name + '.' + attachment.extension }}</span>
-                      </chip>
-                    </a>
-                    {{ ' ' }}
-                  </span>
-                  <span class="whitespace-nowrap">{{ item.date }}</span>
-                </div>
-
-                <VueEasyLightbox scrollDisabled moveDisabled :imgs="filterImages(item.attachment).map(a => a.href)" :visible="item.visible" :index="item.index" @hide="item.visible = false" />
-                <ul role="list" class="mt-2 grid grid-cols-2 gap-x-4 gap-y-8 sm:grid-cols-3 sm:gap-x-6 md:grid-cols-4 lg:grid-cols-3 xl:grid-cols-4 xl:gap-x-8">
-                  <li v-for="(attachment, index) in filterImages(item.attachment)" :key="index">
-                    <button @click="item.index = index; item.visible = true" class="group block w-full aspect-w-10 aspect-h-7 rounded-lg bg-gray-100 overflow-hidden">
-                      <img :src="attachment.href" class="object-cover pointer-events-none" loading=lazy />
-                      <button type="button" class="absolute inset-0 focus:outline-none">
-                        <span class="sr-only">View details for {{ attachment.name }}</span>
-                      </button>
-                    </button>
-                    <p class="mt-2 block text-sm font-medium text-gray-900 truncate pointer-events-none">{{ attachment.name + '.' + attachment.extension }}</p>
-                    <p class="block text-sm font-medium text-gray-500 pointer-events-none">{{ readableBytes(attachment.size) }}</p>
-                  </li>
-                </ul>
-              </div>
-            </template>
           </div>
         </div>
       </li>
@@ -163,22 +123,18 @@
           <form @submit.prevent="submit">
             <div>
               <label for="comment" class="sr-only">Comment</label>
-              <div class="relative">
-                <TicketInput v-model="comment" ref="commentInput" />
-                <div v-if="errors.content" class="absolute inset-y-0 right-0 top-14 pr-3 flex pointer-events-none">
-                  <ExclamationCircleIcon class="h-5 w-5 text-red-500" aria-hidden="true" />
-                </div>
-              </div>
-              <p v-if="errors.content" class="mt-2 text-sm text-red-600" id="email-error">{{ errors.content[0] }}</p>
+              <textarea v-model="comment" id="comment" name="comment" rows="3"
+                        class="block w-full focus:ring-gray-900 focus:border-gray-900 sm:text-sm border border-gray-300 rounded-md"
+                        placeholder="Leave a comment"/>
             </div>
             <div class="mt-6 flex items-center justify-end space-x-4">
               <button type="button" @click="closeTicket" v-if="ticket.status !== 'CLSD' && permissions"
-                      class="inline-flex justify-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary">
+                      class="inline-flex justify-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-900">
                 <CheckCircleIcon class="-ml-1 mr-2 h-5 w-5 text-green-500" aria-hidden="true" />
                 Close ticket
               </button>
               <button type="submit"
-                      class="inline-flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-primary hover:bg-primary-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary">
+                      class="inline-flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-primary hover:bg-primary-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-900">
                 <span v-if="ticket.status !== 'CLSD'">Comment</span>
                 <span v-else>Comment and reopen ticket</span>
               </button>
@@ -192,20 +148,14 @@
 
 <script>
 import axios from 'axios'
-import VueEasyLightbox from 'vue-easy-lightbox'
-
 import Chip from '@/components/chip/Chip'
-import TicketInput from '@/components/inputs/TicketInput'
-import TicketInputViewer from '@/components/inputs/TicketInputViewer'
 
 import {
   ChatAltIcon,
   CheckCircleIcon,
   CollectionIcon,
-  DocumentIcon,
   TagIcon,
-  UserCircleIcon as UserCircleIconSolid,
-  ExclamationCircleIcon
+  UserCircleIcon as UserCircleIconSolid
 } from '@heroicons/vue/solid'
 
 const statusses = {
@@ -233,13 +183,8 @@ export default {
     CheckCircleIcon,
     Chip,
     CollectionIcon,
-    DocumentIcon,
     TagIcon,
-    UserCircleIconSolid,
-    ExclamationCircleIcon,
-    TicketInput,
-    TicketInputViewer,
-    VueEasyLightbox
+    UserCircleIconSolid
   },
   props: {
     ticket: {
@@ -253,8 +198,7 @@ export default {
     }
   },
   data: () => ({
-    comment: '',
-    errors: []
+    comment: ''
   }),
   setup () {
     return { statusses }
@@ -268,11 +212,6 @@ export default {
         .then(() => {
           this.$emit('post')
           this.comment = ''
-          this.$refs.commentInput.setMarkdown('')
-          this.errors = []
-        })
-        .catch(error => {
-          this.errors = error.response.data
         })
     },
     closeTicket () {
@@ -282,15 +221,6 @@ export default {
       axios.patch(`/api/inboxes/${ inboxId }/tickets/${ ticketInboxId }/status/close`).then(() => {
         this.$emit('post')
       })
-    },
-    readableBytes (bytes) {
-      const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB']
-      if (bytes === 0) return '0 Byte'
-      const i = parseInt(Math.floor(Math.log(bytes) / Math.log(1024)))
-      return Math.round(bytes / Math.pow(1024, i), 2) + ' ' + sizes[i]
-    },
-    filterImages (files) {
-      return files.filter(file => ['jpg', 'png'].includes(file.extension.toLowerCase()))
     }
   },
   computed: {

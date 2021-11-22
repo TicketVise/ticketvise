@@ -1,3 +1,5 @@
+![Logo of TicketVise](backend/ticketvise/static/img/logo/banner.png)
+
 ## Introduction
 TicketVise is a ticket system that makes answering questions from students easier than ever before.
 The currently used mailing list has many flaws, such as confusion about who will answer what.

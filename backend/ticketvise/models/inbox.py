@@ -60,7 +60,7 @@ class Inbox(models.Model):
     code = models.CharField(max_length=50, unique=True)
     name = models.CharField(max_length=100)
     color = models.CharField(max_length=7, validators=[validate_hex_color], default=random_preselected_color)
-    image = models.ImageField(upload_to=inbox_directory_path, max_length=1000, blank=True, null=True)
+    image = models.ImageField(upload_to=inbox_directory_path, max_length=1000, null=True)
     image_old = models.URLField(default=DEFAULT_INBOX_IMAGE_PATH, max_length=255)
     scheduling_algorithm = models.CharField(choices=SchedulingAlgorithm.choices, max_length=255,
                                             default=SchedulingAlgorithm.LEAST_ASSIGNED_FIRST)
