@@ -70,8 +70,13 @@ export default {
   },
   methods: {
     async getInboxes () {
-      const response = await axios.get('/api/me/inboxes')
-      return response.data.map(inbox => inbox.inbox)
+      if (this.user.is_superuser) {
+        const response = await axios.get('/api/inboxes')
+        return response.data
+      } else {
+        const response = await axios.get('/api/me/inboxes')
+        return response.data.map(inbox => inbox.inbox)
+      }
     }
   },
   computed: {
