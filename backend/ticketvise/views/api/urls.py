@@ -24,6 +24,7 @@ from ticketvise.views.api.mail import EmailSetupApiView
 urlpatterns = [
     path("login", LoginApiView.as_view()),
     path("inboxes", InboxesApiView.as_view()),
+    path("callback", InboxesApiView.as_view()),
     path("inboxes/<int:inbox_id>/settings", InboxSettingsApiView.as_view(), name="api_inbox_settings"),
     path("inboxes/<int:inbox_id>/settings/email/login", EmailSetupApiView.as_view(), name="api_inbox_settings_email_login"),
     path("inboxes/<int:inbox_id>/tickets", InboxTicketsApiView.as_view(), name="api_inbox_tickets"),

@@ -21,7 +21,7 @@ SEND_MAIL = int(os.environ.get("SEND_MAIL", False))
 DOMAIN = os.environ.get("DOMAIN", "localhost")
 HOST = os.environ.get("HOST", DOMAIN)
 
-MICROSOFT_CLIENT_ID = os.environ.get("MICROSOFT_CLIENT_ID", "07393535-8009-4e06-b756-6ff6a1267bc6")
+MICROSOFT_CLIENT_ID = os.environ.get("MICROSOFT_CLIENT_ID", "08b84072-b4f7-41d9-89bf-07364079ba9e")
 MICROSOFT_CLIENT_SECRET = os.environ.get("MICROSOFT_CLIENT_SECRET", "")
 
 ALLOWED_HOSTS = ["*"]
