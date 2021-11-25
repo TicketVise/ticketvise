@@ -55,8 +55,8 @@ class AutomationTestCase(TicketTestCase):
         automation_condition = AutomationCondition.objects.create(
             automation=self.automation,
             field_name="is_public",
-            evaluation_func="eq",
-            evaluation_value=str(self.ticket.is_public))
+            evaluation_func="isset",
+            evaluation_value="True")
         result = automation_condition(self.ticket)
         self.assertTrue(result)
 
@@ -123,7 +123,7 @@ class AutomationTestCase(TicketTestCase):
             automation=self.automation,
             field_name="date_created",
             evaluation_func="gt",
-            evaluation_value=str(self.ticket.date_created))
+            evaluation_value=self.ticket.date_created.isoformat())
         result = automation_condition(self.ticket)
         self.assertFalse(result)
 
@@ -140,7 +140,7 @@ class AutomationTestCase(TicketTestCase):
             automation=self.automation,
             field_name="date_created",
             evaluation_func="ge",
-            evaluation_value=str(self.ticket.date_created))
+            evaluation_value=self.ticket.date_created.isoformat())
         result = automation_condition(self.ticket)
         self.assertTrue(result)
 
@@ -175,7 +175,7 @@ class AutomationTestCase(TicketTestCase):
             automation=self.automation,
             field_name="date_created",
             evaluation_func="lt",
-            evaluation_value=str(self.ticket.date_created))
+            evaluation_value=self.ticket.date_created.isoformat())
         result = automation_condition(self.ticket)
         self.assertFalse(result)
 
@@ -192,7 +192,7 @@ class AutomationTestCase(TicketTestCase):
             automation=self.automation,
             field_name="date_created",
             evaluation_func="le",
-            evaluation_value=str(self.ticket.date_created))
+            evaluation_value=self.ticket.date_created.isoformat())
         result = automation_condition(self.ticket)
         self.assertTrue(result)
 

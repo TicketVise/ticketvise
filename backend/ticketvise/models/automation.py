@@ -1,5 +1,5 @@
 import re
-
+from datetime import datetime
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from django.db import models
 
@@ -51,6 +51,17 @@ class AutomationCondition(models.Model):
     evaluation_value = models.CharField(max_length=50)
     negation = models.BooleanField(default=False)
 
+    def parse_iso(self, value):
+        try:
+            try:
+                return datetime.strptime(value, '%Y-%m-%dT%H:%M:%S.%f%z')
+            except ValueError:
+                return datetime.strptime(value, '%Y-%m-%dT%H:%M:%S%z')
+        except ValueError as e:
+            raise ValidationError(f"Field 'evaluation_value' expected a date in combination with field_name '{self.field_name}', but got '{self.evaluation_value}'.") from e
+
+
+
     def clean(self):
         super().clean()
         # Checks if the field is a ticket field and uses the field for further cleaning
@@ -62,12 +73,10 @@ class AutomationCondition(models.Model):
             raise ValidationError(
                 f"Field 'evaluation_value' expected a number in combination with field_name '{self.field_name}', but got '{self.evaluation_value}'.")
 
-        # Check if value is in ISO format for datetimefield. TODO: check weekdays, rethink regex (regex is faulty)
-        # iso_regex = re.compile(
-        #     r"^(-?(?:[1-9][0-9]*)?[0-9]{4})-(1[0-2]|0[1-9])-(3[01]|0[1-9]|[12][0-9])T(2[0-3]|[01][0-9]):([0-5][0-9]):([0-5][0-9])(\.[0-9]+)?(Z|[+-](?:2[0-3]|[01][0-9]):[0-5][0-9])?$")
-        # if isinstance(field, models.DateTimeField) and not iso_regex.match(self.evaluation_value):
-        #     raise ValidationError(
-        #         f"Unexpected string format '{self.evaluation_value}' for DateTimeField '{self.field_name}'")
+
+        # Parse ISO 8601 date format
+        if isinstance(field, models.DateField):
+            self.parse_iso(self.evaluation_value)
 
     def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
         self.full_clean()
@@ -76,6 +85,9 @@ class AutomationCondition(models.Model):
     def __call__(self, ticket):
         field = ticket._meta.get_field(self.field_name)
         value = self.evaluation_value
+
+        if self.evaluation_func == "is_set":
+            return self.isset(field, value)
 
         if isinstance(field, models.ForeignKey):
             try:
@@ -92,6 +104,9 @@ class AutomationCondition(models.Model):
             field = list(getattr(ticket, self.field_name).all().values_list("pk", flat=True))
             if self.evaluation_func == "eq":
                 value = [value]
+        elif isinstance(field, models.DateTimeField):
+            field = getattr(ticket, self.field_name)
+            value = self.parse_iso(self.evaluation_value)
         else:
             field = str(getattr(ticket, self.field_name))
             value = str(value)
@@ -120,3 +135,6 @@ class AutomationCondition(models.Model):
 
     def le(self, field, value):
         return field <= value
+
+    def is_set(self, field, value):
+        return str(field is not None and field != "None") == value
