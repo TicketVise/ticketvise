@@ -9,7 +9,7 @@ from ticketvise.models.user import User
 
 class Automation(models.Model):
     name = models.CharField(max_length=255)
-    inbox = models.ForeignKey("Inbox", on_delete=models.CASCADE, related_name="automation_condition")
+    inbox = models.ForeignKey("Inbox", on_delete=models.CASCADE, related_name="automations")
     action_func = models.CharField(max_length=50)
     action_value = models.CharField(max_length=50)
 
@@ -17,7 +17,8 @@ class Automation(models.Model):
         return AutomationCondition.objects.filter(automation=self)
 
     def execute(self, ticket):
-        if all(condition(ticket) for condition in self.get_conditions()): # TODO if no conditions exist, continue
+        conditions = self.get_conditions()
+        if conditions and all(condition(ticket) for condition in conditions):
             value = None
             # TODO: Wat gebeurd er als een user of label verwijderd wordt, maar de automation nog bestaat.
             if self.action_func == "assign_to":

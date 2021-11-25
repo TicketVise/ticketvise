@@ -7,6 +7,7 @@ Contains all entity sets for the ticket database and TicketStatusChangedNotifica
 * :class:`Ticket`
 * :class:`TicketStatuscChangedNotification`
 """
+import logging
 from secrets import token_urlsafe
 
 from django.db import models, transaction
@@ -128,6 +129,12 @@ class Ticket(models.Model):
                                     .aggregate(Max('ticket_inbox_id'))["ticket_inbox_id__max"] or 0) + 1
             if not self.assignee:
                 schedule_ticket(self)
+
+            try:
+                for automation in self.inbox.automations:
+                    automation.execute(self)
+            except Exception as e:
+                logging.error(e)
 
         super().save(force_insert, force_update, using, update_fields)
 

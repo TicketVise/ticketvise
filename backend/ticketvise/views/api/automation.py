@@ -45,7 +45,7 @@ class ListAutomationApiView(ListAPIView):
         inbox = get_object_or_404(Inbox, pk=self.kwargs["inbox_id"])
         conditions = AutomationCondition.objects.filter(automation__inbox=inbox)
 
-        automations = set([c.automation for c in conditions])
+        automations = Automation.objects.filter(inbox=inbox)
         results = [{**AutomationSerializer(automation).data,
                     "conditons": AutomationConditionSerializer(
                         [condition for condition in conditions if condition.automation == automation], many=True).data
@@ -69,6 +69,9 @@ class AutomationConditionApiView(RetrieveUpdateDestroyAPIView):
     permission_classes = [UserIsInboxStaffPermission]
     serializer_class = AutomationConditionSerializer
 
+    def get_object(self):
+        return get_object_or_404(AutomationCondition, pk=self.kwargs["condition_id"])
+
 
 class AutomationApiView(RetrieveUpdateDestroyAPIView):
     permission_classes = [UserIsInboxStaffPermission]
@@ -81,11 +84,14 @@ class AutomationApiView(RetrieveUpdateDestroyAPIView):
     def get(self, request, *args, **kwargs):
         automation = self.get_object()
         conditions = AutomationCondition.objects.filter(automation=automation)
-        results = defaultdict(list)
+        results = {
+            "automation": AutomationSerializer(automation).data,
+            "conditions": []
+        }
 
         for condition in conditions:
             data = AutomationConditionSerializer(condition).data
-            results[automation].append(data)
+            results["conditions"].append(data)
 
         return JsonResponse(results, safe=False)
 
