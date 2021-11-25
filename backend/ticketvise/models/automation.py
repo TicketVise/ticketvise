@@ -1,4 +1,3 @@
-import re
 from datetime import datetime
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from django.db import models
