@@ -1,7 +1,7 @@
 from collections import defaultdict
 from django.http.response import JsonResponse
 from django.shortcuts import get_object_or_404
-from rest_framework.generics import CreateAPIView, RetrieveUpdateAPIView, ListAPIView
+from rest_framework.generics import CreateAPIView, RetrieveUpdateAPIView, ListAPIView, RetrieveUpdateDestroyAPIView
 from rest_framework.response import Response
 from ticketvise.models.automation import Automation, AutomationCondition
 
@@ -32,39 +32,26 @@ class AutomationSerializer(DynamicFieldsModelSerializer):
 
 
 class AutomationConditionSerializer(DynamicFieldsModelSerializer):
-    automation = AutomationSerializer(read_only=True, fields=(["name", "action_func", "action_value"]))
-
     class Meta:
         model = AutomationCondition
-        fields = ["automation", "field_name", "evaluation_func", "evaluation_value"]
+        fields = ["field_name", "evaluation_func", "evaluation_value"]
 
-
-# class ListCreateAutomationApiView(ListCreateAPIView):
-#     permission_classes = [UserIsInboxStaffPermission]
-#     serializer_class = AutomationSerializer
-#
-#     def perform_create(self, serializer):
-#         inbox_id = self.kwargs["inbox_id"]
-#         inbox = get_object_or_404(Inbox, pk=inbox_id)
-#
-#         serializer.save(inbox=inbox)
-#
-#     def list(self, request, *args, **kwargs):
-#         inbox_id = self.kwargs["inbox_id"]
-#         inbox = get_object_or_404(Inbox, pk=inbox_id)
-#
-#         conditions = AutomationCondition.objects.filter(automation__inbox=inbox)
-#         results = defaultdict(list)
-#         for condition in conditions:
-#             data = AutomationConditionSerializer(condition).data
-#             results[condition.automation.id].append(data)
-#
-#         return JsonResponse(results, safe=False)
 
 class ListAutomationApiView(ListAPIView):
     permission_classes = [UserIsInboxStaffPermission]
     serializer_class = AutomationSerializer
-    lookup_url_kwarg = "inbox_id"
+
+    def get(self, request, *args, **kwargs):
+        inbox = get_object_or_404(Inbox, pk=self.kwargs["inbox_id"])
+        conditions = AutomationCondition.objects.filter(automation__inbox=inbox)
+
+        automations = set([c.automation for c in conditions])
+        results = [{**AutomationSerializer(automation).data,
+                    "conditons": AutomationConditionSerializer(
+                        [condition for condition in conditions if condition.automation == automation], many=True).data
+                    } for automation in automations]
+
+        return JsonResponse(results, safe=False)
 
 
 class CreateAutomationConditionApiView(CreateAPIView):
@@ -78,22 +65,22 @@ class CreateAutomationConditionApiView(CreateAPIView):
         serializer.save(automation=automation)
 
 
-class AutomationConditionApiView(RetrieveUpdateAPIView):
+class AutomationConditionApiView(RetrieveUpdateDestroyAPIView):
     permission_classes = [UserIsInboxStaffPermission]
     serializer_class = AutomationConditionSerializer
 
 
-class AutomationApiView(RetrieveUpdateAPIView):
+class AutomationApiView(RetrieveUpdateDestroyAPIView):
     permission_classes = [UserIsInboxStaffPermission]
     serializer_class = AutomationSerializer
 
     def get_object(self):
-        inbox_id = self.kwargs["inbox_id"]
         automation_id = self.kwargs["automation_id"]
-        return get_object_or_404(Automation, pk=automation_id, inbox__id=inbox_id)
+        return get_object_or_404(Automation, pk=automation_id)
 
     def get(self, request, *args, **kwargs):
-        conditions = AutomationCondition.objects.filter(automation=self.get_object())
+        automation = self.get_object()
+        conditions = AutomationCondition.objects.filter(automation=automation)
         results = defaultdict(list)
 
         for condition in conditions:
@@ -101,15 +88,6 @@ class AutomationApiView(RetrieveUpdateAPIView):
             results[automation].append(data)
 
         return JsonResponse(results, safe=False)
-
-    def delete(self, request, *args, **kwargs):
-        inbox_id = self.kwargs["inbox_id"]
-        automation_id = self.kwargs["automation_id"]
-        automation = get_object_or_404(Automation, pk=automation_id, inbox__id=inbox_id)
-
-        automation.delete()
-
-        return Response(status=204)
 
 
 class CreateAutomationApiView(CreateAPIView):
