@@ -55,7 +55,7 @@ class AutomationTestCase(TicketTestCase):
         automation_condition = AutomationCondition.objects.create(
             automation=self.automation,
             field_name="is_public",
-            evaluation_func="isset",
+            evaluation_func="is_set",
             evaluation_value="True")
         result = automation_condition(self.ticket)
         self.assertTrue(result)

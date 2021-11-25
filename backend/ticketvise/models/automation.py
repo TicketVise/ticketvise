@@ -14,11 +14,11 @@ class Automation(models.Model):
     action_func = models.CharField(max_length=50)
     action_value = models.CharField(max_length=50)
 
-    def get_condtions(self):
+    def get_conditions(self):
         return AutomationCondition.objects.filter(automation=self)
 
     def execute(self, ticket):
-        if all(condition(ticket) for condition in self.get_condtions()):
+        if all(condition(ticket) for condition in self.get_conditions()): # TODO if no conditions exist, continue
             value = None
             # TODO: Wat gebeurd er als een user of label verwijderd wordt, maar de automation nog bestaat.
             if self.action_func == "assign_to":
@@ -43,6 +43,7 @@ class AutomationCondition(models.Model):
         ("ge", "greater than or equals"),
         ("lt", "less than"),
         ("le", "less than or equal"),
+        ("is_set", "is set"),
     ]
 
     automation = models.ForeignKey("Automation", on_delete=models.CASCADE)
@@ -75,7 +76,7 @@ class AutomationCondition(models.Model):
 
 
         # Parse ISO 8601 date format
-        if isinstance(field, models.DateField):
+        if self.evaluation_func != "is_set" and isinstance(field, models.DateField):
             self.parse_iso(self.evaluation_value)
 
     def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
@@ -87,7 +88,7 @@ class AutomationCondition(models.Model):
         value = self.evaluation_value
 
         if self.evaluation_func == "is_set":
-            return self.isset(field, value)
+            return self.is_set(field, value)
 
         if isinstance(field, models.ForeignKey):
             try:
