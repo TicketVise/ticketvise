@@ -100,7 +100,7 @@ export default {
   async mounted () {
     const { inboxId } = this.$route.params
 
-    const testTopics = ['Assignment', 'Lecture', 'Slides', 'Code', '']
+    const testTopics = ['Assignment', 'Lecture', 'Slides', 'Code']
 
     /* Getting the staff data. */
     const staffResponse = await axios.get(`/api/inboxes/${inboxId}/staff`)
