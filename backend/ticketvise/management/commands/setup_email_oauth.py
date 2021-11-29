@@ -1,14 +1,9 @@
-from ticketvise.mail.retrieve import retrieve_imap_emails
-from ticketvise.mail.retrieve import retrieve_emails, submit_email_ticket
-from ticketvise.models.inbox import Inbox, MailSecurity
+from ticketvise.mail.retrieve import retrieve_emails
 from django.core.management.base import BaseCommand
-import logging
-from datetime import datetime
 import webbrowser
 import http.server
 import socketserver
 import os 
-from oauthlib.oauth2 import BackendApplicationClient
 from requests_oauthlib import OAuth2Session
 
 

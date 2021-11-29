@@ -1,6 +1,6 @@
+from ticketvise.models.utils import MailSecurity
 from ticketvise.mail import oauth_2_auth_base64
 import logging
-from ticketvise.models.inbox import MailSecurity
 import threading
 
 from django.core.mail.backends.smtp import EmailBackend

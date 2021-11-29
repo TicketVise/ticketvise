@@ -6,10 +6,12 @@ Contains all entity sets for the inbox database.
 **Table of contents**
 * :class:`Inbox`
 """
+import logging
 from secrets import token_urlsafe
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django.db import models
-
+from ticketvise.models.utils import InboundMailProtocol, MailSecurity
+from ticketvise.mail.retrieve import retrieve_emails, submit_email_ticket
 from ticketvise.models.user import User, Role
 from ticketvise.models.validators import validate_hex_color
 from ticketvise.settings import DEFAULT_INBOX_IMAGE_PATH
@@ -32,15 +34,6 @@ class SchedulingAlgorithm(models.TextChoices):
     FIXED = ("fixed", "Fixed")
 
 
-class MailSecurity(models.TextChoices):
-    NONE = ('NONE', 'None')
-    STARTTLS = ('STARTTLS', 'STARTTLS')
-    TLS = ('TLS', 'TLS')
-
-
-class InboundMailProtocol(models.TextChoices):
-    POP3 = 'POP3'
-    IMAP = 'IMAP'
 
 def inbox_directory_path(instance, filename):
     return f"inboxes/{instance.id}/images/{token_urlsafe(64)}/{filename}"
@@ -174,22 +167,35 @@ class Inbox(models.Model):
 
     def is_classic_email_setup(self):
         return self.inbound_email_server is not None and \
-        self.inbound_email_username is not None and \
-        self.inbound_email_password is not None and \
-        self.smtp_server is not None and \
-        self.smtp_username is not None and \
-        self.smtp_password is not None
+            self.inbound_email_username is not None and \
+            self.inbound_email_password is not None and \
+            self.smtp_server is not None and \
+            self.smtp_username is not None and \
+            self.smtp_password is not None
 
     def is_email_setup(self):
         # if SMTP and IMAP are enabled, we consider the inbox setup
-        return (self.email_enabled and self.is_classic_email_setup()) \
-            or (self.email_access_token is not None and self.email_refresh_token is not None)
+        return self.email_enabled and ((self.is_classic_email_setup()) \
+                or (self.email_access_token is not None and self.email_refresh_token is not None))
+
+    def sync_email(self):
+        if not self.email_enabled:
+            logging.info(f"Skipping retrieving email for inbox: {self.name} ({self.id})")
+            return
+
+        logging.info(f"Retrieving email for inbox: {self.name} ({self.id})")
+        emails = retrieve_emails(self.inbound_email_protocol,
+                           self.inbound_email_server,
+                           self.inbound_email_port,
+                           self.inbound_email_username,
+                           self.inbound_email_password,
+                           self.inbound_email_security == MailSecurity.TLS,
+                           self.inbound_email_use_oauth2)
+        for message in emails:
+            submit_email_ticket(message, self)
 
     def __str__(self):
         return self.name
-
-    def setup_email():
-        pass
 
 
 class InboxSection(models.Model):

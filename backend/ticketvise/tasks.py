@@ -3,14 +3,13 @@ Tasks
 -------------------------------
 Periodic tsks for changing ticket statuses and sending emails.
 """
-from ticketvise.mail.retrieve import retrieve_emails, submit_email_ticket
 import datetime
 import logging
 import sched
 from django.db.models import Q
 from django.utils import timezone
 
-from .models.inbox import Inbox, MailSecurity
+from .models.inbox import Inbox
 from .models.notification.reminder import TicketReminderNotification
 from .models.ticket import Ticket, Status
 from .models.user import Role
@@ -42,15 +41,8 @@ def sync_mail():
     start_time = datetime.now()
     logging.info(f"Started retrieving email at {start_time}")
     for inbox in Inbox.objects.filter(email_enabled=True):
-        logging.info(f"Retrieving email for inbox: {inbox.name} ({inbox.id})")
-        for message in retrieve_emails(inbox.inbound_email_protocol,
-                                       inbox.inbound_email_server,
-                                       inbox.inbound_email_port,
-                                       inbox.inbound_email_username,
-                                       inbox.inbound_email_password,
-                                       inbox.inbound_email_security == MailSecurity.TLS,
-                                       inbox.inbound_email_use_oauth2):
-            submit_email_ticket(message)
+        inbox.sync_mail()
+
     end_time = datetime.now()
     logging.info(f"Finished retrieving email at {end_time}, took: {end_time - start_time}")
 

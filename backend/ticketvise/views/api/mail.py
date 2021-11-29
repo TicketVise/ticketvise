@@ -1,14 +1,15 @@
 import logging
 import socket
 from django.shortcuts import redirect
-from rest_framework import permissions, serializers
+from rest_framework import serializers
 from rest_framework.generics import get_object_or_404
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
+from ticketvise.models.utils import InboundMailProtocol, MailSecurity
 from ticketvise.views.api.security import UserIsInboxStaffPermission
 from ticketvise import settings
-from ticketvise.models.inbox import InboundMailProtocol, Inbox, MailSecurity
+from ticketvise.models.inbox import Inbox
 import itertools
 from msal import ConfidentialClientApplication
 from django.core.cache import cache
@@ -93,6 +94,7 @@ class EmailCallbackApiView(APIView):
             logging.error(token_response)
             return Response(status=status.HTTP_400_BAD_REQUEST)
 
+        inbox.email_enabled = True
         inbox.email_login_state = None
         inbox.email_access_token = token_response["access_token"]
         inbox.email_refresh_token = token_response["refresh_token"]

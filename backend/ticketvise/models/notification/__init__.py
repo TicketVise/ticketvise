@@ -1,7 +1,4 @@
-import logging
 import uuid
-from ticketvise.models.inbox import MailSecurity
-from django.core.mail import get_connection
 from django.db import models
 from model_utils.managers import InheritanceManager
 
@@ -11,8 +8,7 @@ from ticketvise.mail.send import send_mail_template
 
 class Notification(models.Model):
     objects = InheritanceManager()
-    receiver = models.ForeignKey(
-        "User", on_delete=models.CASCADE, related_name="notifications")
+    receiver = models.ForeignKey("User", on_delete=models.CASCADE, related_name="notifications")
     is_read = models.BooleanField(default=False)
     email_message_id = models.UUIDField(default=uuid.uuid4, unique=True, null=False)
     date_edited = models.DateTimeField(auto_now=True)
