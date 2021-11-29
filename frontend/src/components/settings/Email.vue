@@ -1,31 +1,20 @@
 <template>
-  <EmailStatus />
+  <email-card :connected="connected" />
 </template>
 
 <script>
 
-import EmailStatus from './EmailStatus.vue'
-import EmailSetup from './EmailSetup.vue'
+import EmailCard from './EmailCard.vue'
 
 export default {
   name: 'Email',
   components: {
-    EmailStatus,
-    EmailSetup
+    EmailCard
   },
-  data: () => ({
-    showSetupModal: false
-  }),
   props: {
-    label: {
-      type: String,
-      required: false,
-      default: ''
-    },
-    checked: {
+    connected: {
       type: Boolean,
-      required: false,
-      default: false
+      required: true,
     }
   }
 }

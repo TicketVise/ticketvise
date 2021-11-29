@@ -1,5 +1,6 @@
 import logging
 import socket
+from django.shortcuts import redirect
 from rest_framework import permissions, serializers
 from rest_framework.generics import get_object_or_404
 from rest_framework.views import APIView
@@ -7,7 +8,7 @@ from rest_framework.response import Response
 from rest_framework import status
 from ticketvise.views.api.security import UserIsInboxStaffPermission
 from ticketvise import settings
-from ticketvise.models.inbox import Inbox
+from ticketvise.models.inbox import InboundMailProtocol, Inbox, MailSecurity
 import itertools
 from msal import ConfidentialClientApplication
 from django.core.cache import cache
@@ -20,7 +21,6 @@ def email_domain(email):
 
 class EmailLoginSerializer(serializers.Serializer):
     email = serializers.CharField(required=True)
-    password = serializers.CharField(required=True)
 
 class EmailSetupApiView(APIView):
     permission_classes = [UserIsInboxStaffPermission]
@@ -32,7 +32,6 @@ class EmailSetupApiView(APIView):
         inbox = get_object_or_404(Inbox, pk=inbox_id)
 
         email = serializer.validated_data.get("email")
-        password = serializer.validated_data.get("password")
         app = ConfidentialClientApplication(settings.MICROSOFT_CLIENT_ID,
                                             settings.MICROSOFT_CLIENT_SECRET)
 
@@ -51,6 +50,29 @@ class EmailSetupApiView(APIView):
 
         return Response(data=auth_code_request, status=status.HTTP_200_OK)
 
+    def delete(self, request, inbox_id):
+        inbox = get_object_or_404(Inbox, pk=inbox_id)
+
+        inbox.email_enabled = False
+        inbox.email_login_state = None
+        inbox.email_access_token = None
+        inbox.email_refresh_token = None
+        inbox.smtp_server = None
+        inbox.smtp_port = 587
+        inbox.smtp_security = MailSecurity.TLS
+        inbox.smtp_username = None
+        inbox.smtp_password = None
+        inbox.smtp_use_oauth2 = False
+        inbox.inbound_email_protocol = InboundMailProtocol.IMAP
+        inbox.inbound_email_server = None
+        inbox.inbound_email_port = 993
+        inbox.inbound_email_security = MailSecurity.TLS
+        inbox.inbound_email_username = None
+        inbox.inbound_email_password = None
+        inbox.inbound_email_use_oauth2 = False
+        inbox.save()
+
+        return Response(status=status.HTTP_200_OK)
 
 class EmailCallbackApiView(APIView):
     authenticaton_classes = []
@@ -76,9 +98,7 @@ class EmailCallbackApiView(APIView):
         inbox.email_refresh_token = token_response["refresh_token"]
         inbox.save()
 
-        print(token_response)
-
-        return Response(status=status.HTTP_200_OK) 
+        return redirect(f"/inboxes/{inbox.id}/settings")
 
 SMTP_PORTS = [587, 465, 25]
 SMTP_SUBDOMAINS = ["", "smtp.", "mail."]
@@ -94,21 +114,21 @@ def guess_basic_auth(email):
     pop3_options = []
 
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
-        # Testing SMTP configuration possibilties
+        # Testing SMTP configuration possibilities
         for port, subdomain in itertools.product(SMTP_PORTS, SMTP_SUBDOMAINS):
             host = subdomain + domain
             logging.info(f"Testing SMTP connection: f{host}:{port}")
             if s.connect_ex((port, host)):
                 smtp_options.append((port, host))
 
-        # Testing IMAP configuration possibilties
+        # Testing IMAP configuration possibilities
         for port, subdomain in itertools.product(IMAP_PORTS, IMAP_SUBDOMAINS):
             host = subdomain + domain
             logging.info(f"Testing IMAP connection: f{host}:{port}")
             if s.connect_ex((port, host)):
                 imap_options.append((port, host))
 
-        # Testing POP3 configuration possibilties
+        # Testing POP3 configuration possibilities
         for port, subdomain in itertools.product(POP3_PORTS, POP_SUBDOMAINS):
             host = subdomain + domain
             logging.info(f"Testing POP3 connection: f{host}:{port}")

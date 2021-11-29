@@ -26,7 +26,7 @@ urlpatterns = [
     path("inboxes", InboxesApiView.as_view()),
     path("callback", EmailCallbackApiView.as_view()),
     path("inboxes/<int:inbox_id>/settings", InboxSettingsApiView.as_view(), name="api_inbox_settings"),
-    path("inboxes/<int:inbox_id>/settings/email/login", EmailSetupApiView.as_view(), name="api_inbox_settings_email_login"),
+    path("inboxes/<int:inbox_id>/settings/email", EmailSetupApiView.as_view(), name="api_inbox_settings_email"),
     path("inboxes/<int:inbox_id>/tickets", InboxTicketsApiView.as_view(), name="api_inbox_tickets"),
     path("inboxes/<int:inbox_id>/tickets/new", TicketCreateApiView.as_view(), name="api_new_ticket"),
     path("inboxes/<int:inbox_id>/tickets/<int:ticket_inbox_id>", TicketApiView.as_view(), name="api_inbox_ticket"),

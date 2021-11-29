@@ -80,20 +80,20 @@ class Inbox(models.Model):
     email_access_token = models.TextField(null=True, blank=True)
     email_refresh_token = models.TextField(null=True, blank=True)
 
-    smtp_server = models.CharField(blank=True, max_length=100)
+    smtp_server = models.CharField(max_length=255, null=True, blank=True)
     smtp_port = models.IntegerField(validators=[MinValueValidator(1), MaxValueValidator(65535)], default=587)
     smtp_security = models.CharField(choices=MailSecurity.choices, default=MailSecurity.TLS, max_length=8)
-    smtp_username = models.EmailField(blank=True)
-    smtp_password = models.CharField(blank=True, max_length=100)
+    smtp_username = models.EmailField(null=True, blank=True)
+    smtp_password = models.CharField(max_length=255, null=True, blank=True)
     smtp_use_oauth2 = models.BooleanField(default=False)
 
     inbound_email_protocol = models.CharField(choices=InboundMailProtocol.choices, default=InboundMailProtocol.IMAP,
                                               max_length=4)
-    inbound_email_server = models.CharField(blank=True, max_length=100)
+    inbound_email_server = models.CharField(max_length=255, null=True, blank=True)
     inbound_email_port = models.IntegerField(validators=[MinValueValidator(1), MaxValueValidator(65535)], default=993)
     inbound_email_security = models.CharField(choices=MailSecurity.choices, default=MailSecurity.TLS, max_length=8)
-    inbound_email_username = models.EmailField(blank=True)
-    inbound_email_password = models.CharField(blank=True, max_length=100)
+    inbound_email_username = models.EmailField(null=True, blank=True)
+    inbound_email_password = models.CharField(max_length=255, null=True, blank=True)
     inbound_email_use_oauth2 = models.BooleanField(default=False)
 
     def round_robin_parameter_increase(self):
@@ -172,12 +172,24 @@ class Inbox(models.Model):
 
         return self.tickets.filter(author=author, status=status)
 
+    def is_classic_email_setup(self):
+        return self.inbound_email_server is not None and \
+        self.inbound_email_username is not None and \
+        self.inbound_email_password is not None and \
+        self.smtp_server is not None and \
+        self.smtp_username is not None and \
+        self.smtp_password is not None
+
+    def is_email_setup(self):
+        # if SMTP and IMAP are enabled, we consider the inbox setup
+        return (self.email_enabled and self.is_classic_email_setup()) \
+            or (self.email_access_token is not None and self.email_refresh_token is not None)
+
     def __str__(self):
         return self.name
 
     def setup_email():
         pass
-
 
 
 class InboxSection(models.Model):

@@ -197,8 +197,9 @@
             </div>
           </div>
 
-          <!-- Email section -->
-          <Email />
+          <div class="mt-4 py-4 px-4">
+            <Email :connected="inbox.is_email_setup" />
+          </div>
         </form>
       </div>
     </div>
@@ -323,6 +324,7 @@ export default {
         this.im_url = this.inbox.image
         this.close_answered_weeks = this.closeTicketsOptions[this.inbox.close_answered_weeks]
         this.alert_coordinator_unanswered_days = this.sendAlertOptions[this.inbox.alert_coordinator_unanswered_days]
+        console.log(this.inbox.is_email_setup)
       })
   },
   methods: {

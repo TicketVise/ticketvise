@@ -20,6 +20,7 @@ from ticketvise.views.api.user import UserSerializer, UserInboxSerializer
 class InboxSerializer(DynamicFieldsModelSerializer):
     labels = serializers.SerializerMethodField()
     coordinator = serializers.SerializerMethodField()
+    is_email_setup = serializers.SerializerMethodField()
 
     def get_labels(self, obj):
         user = CurrentUserMiddleware.get_current_user()
@@ -34,12 +35,14 @@ class InboxSerializer(DynamicFieldsModelSerializer):
     def get_coordinator(self, obj):
         return UserSerializer(obj.get_coordinator()).data
 
+    def get_is_email_setup(self, obj):
+        return obj.is_email_setup()
     class Meta:
         model = Inbox
         fields = [
             "name", "id", "color", "labels", "image", "scheduling_algorithm", "code", "show_assignee_to_guest",
             "fixed_scheduling_assignee", "is_active", "date_created", "close_answered_weeks",
-            "alert_coordinator_unanswered_days", "coordinator"
+            "alert_coordinator_unanswered_days", "coordinator", "is_email_setup"
         ]
 
 class InboxEmailSerializer(ModelSerializer):
@@ -97,7 +100,7 @@ class InboxLabelsApiView(ListCreateAPIView):
         inbox = get_object_or_404(Inbox, pk=self.kwargs["inbox_id"])
         serializer.save(inbox=inbox)
 
-
+ 
 class InboxesApiView(ListAPIView):
     permission_classes = [UserIsSuperUserPermission]
 
@@ -185,7 +188,7 @@ class InboxSettingsApiView(RetrieveUpdateAPIView):
     def get_serializer(self, *args, **kwargs):
         return InboxSerializer(*args, **kwargs, fields=(
             "name", "id", "color", "image", "scheduling_algorithm", "code", "show_assignee_to_guest",
-            "fixed_scheduling_assignee", "close_answered_weeks", "alert_coordinator_unanswered_days"))
+            "fixed_scheduling_assignee", "close_answered_weeks", "alert_coordinator_unanswered_days", "is_email_setup"))
 
     def retrieve(self, request, *args, **kwargs):
         inbox = self.get_object()
@@ -213,7 +216,7 @@ class InboxUpdateEmail(UpdateAPIView):
 
 
 class CurrentUserInboxSerializer(ModelSerializer):
-    inbox = InboxSerializer(fields=["name", "id", "color", "labels", "image", "code", "coordinator"])
+    inbox = InboxSerializer(fields=["name", "id", "color", "labels", "image", "code", "coordinator", "is_email_setup"])
     role_label = serializers.SerializerMethodField()
 
     def get_role_label(self, user_inbox):
