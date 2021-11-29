@@ -76,9 +76,9 @@ class Inbox(models.Model):
     date_created = models.DateTimeField(auto_now_add=True)
 
     email_enabled = models.BooleanField(default=False)
-    email_login_state = models.CharField(max_length=255, blank=True)
-    email_access_token = models.TextField(blank=True)
-    email_refresh_token = models.TextField(blank=True)
+    email_login_state = models.CharField(max_length=255, null=True, blank=True)
+    email_access_token = models.TextField(null=True, blank=True)
+    email_refresh_token = models.TextField(null=True, blank=True)
 
     smtp_server = models.CharField(blank=True, max_length=100)
     smtp_port = models.IntegerField(validators=[MinValueValidator(1), MaxValueValidator(65535)], default=587)
