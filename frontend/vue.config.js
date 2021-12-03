@@ -1,4 +1,7 @@
 module.exports = {
+  chainWebpack: config => {
+    config.module.rules.delete('eslint');
+  },
   pwa: {
     name: 'TicketVise',
     themeColor: '#dd6b20',

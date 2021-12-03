@@ -10,19 +10,6 @@ from ticketvise.views.api import DynamicFieldsModelSerializer
 from ticketvise.views.api.security import UserIsInboxStaffPermission
 
 
-# class Automation(models.Model):
-#     name = models.CharField(max_length=255)
-#     inbox = models.ForeignKey("Inbox", on_delete=models.CASCADE, related_name="automation_condition")
-#     action_func = models.CharField(max_length=50)
-#     action_value = models.CharField(max_length=50)
-
-# class AutomationCondition(models.Model):
-
-#     automation = models.ForeignKey("Automation", on_delete=models.CASCADE)
-#     field_name = models.CharField(max_length=50)
-#     evaluation_func = models.CharField(max_length=50, choices=EVALUATION_FUNC_CHOICES)
-#     evaluation_value = models.CharField(max_length
-
 class AutomationSerializer(DynamicFieldsModelSerializer):
     # inbox = InboxSerializer(fields=["name", "id", "color", "labels", "image", "code", "coordinator"])
 
