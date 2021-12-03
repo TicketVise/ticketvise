@@ -5,7 +5,7 @@
   >
     <div v-if="!open" @click="open = true" class="group py-3 px-4 flex flex-col space-y-1 cursor-pointer rounded">
       <div class="flex space-x-2 items-center justify-between">
-        <span class="font-medium">{{ title }}</span>
+        <span class="font-medium">{{ item.name }}</span>
         <selector-icon class="h-6 w-6 handle text-primary cursor-move" />
       </div>
       <div class="flex items-center">
@@ -24,7 +24,7 @@
               Action title:
             </label>
             <input
-              v-model="title"
+              v-model="item.name"
               type="text"
               id="text"
               placeholder="Filter name"
@@ -40,7 +40,7 @@
           <div class="h-1 border-b w-1/2"></div>
         </div>
         <!-- Place for the IF filters -->
-        <div v-for="(filter, index) in ifs" :key="index" class="flex space-x-2">
+        <div v-for="(filter, index) in item.conditions" :key="index" class="flex space-x-2">
           <div
             class="flex w-22 justify-center items-center rounded px-4 py-2 space-x-2 text-blue-500 focus:outline-none"
           >
@@ -159,6 +159,11 @@ export default {
     ifs: [],
     thens: []
   }),
+  props: {
+    item: {
+      required: true
+    }
+  },
   methods: {
     cancel () {
       this.open = false

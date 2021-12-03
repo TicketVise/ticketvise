@@ -3,7 +3,7 @@ import datetime
 from django.core.management import BaseCommand
 from django.db import IntegrityError, transaction
 from django.utils import timezone
-
+from ticketvise.models.automation import Automation, AutomationCondition
 from ticketvise.models.comment import Comment
 from ticketvise.models.inbox import Inbox
 from ticketvise.models.label import Label
@@ -884,3 +884,38 @@ class Command(BaseCommand):
         comment_41 = Comment.objects.create(author=user_coordinator, ticket=ticket_43, is_reply=True,
                                             content="This ticket is indeed public, and all replies can be seen too")
         add_date_to_comment(comment_41, datetime.timedelta(days=0, hours=22))
+
+        automation1 = Automation.objects.create(
+           name="Ticket about exam",
+           inbox=inbox_pse,
+           action_func="add_label",
+           action_value=label_pse_lecture.id
+        )
+
+        AutomationCondition.objects.create(
+           automation=automation1,
+           field_name="title",
+           evaluation_func="contains",
+           evaluation_value="exam",
+        )
+
+        automation1 = Automation.objects.create(
+           name="Ticket before deadline about assignment 2",
+           inbox=inbox_pse,
+           action_func="add_label",
+           action_value=label_pse_lecture.id
+        )
+
+        AutomationCondition.objects.create(
+           automation=automation1,
+           field_name="title",
+           evaluation_func="contains",
+           evaluation_value="exam",
+        )
+
+        AutomationCondition.objects.create(
+           automation=automation1,
+           field_name="date_created",
+           evaluation_func="lt",
+           evaluation_value="3000-08-27T09:32:21+02:00",
+        )
