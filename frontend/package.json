@@ -19,12 +19,14 @@
     "prismjs": "^1.25.0",
     "register-service-worker": "^1.7.1",
     "vue": "^3.0.0",
+    "vue-easy-lightbox": "^1.2.4",
     "vue-router": "^4.0.0-0",
     "vue3-chart-v2": "^0.8.2",
     "vuedraggable": "^2.24.3",
     "vuex": "^4.0.0-0"
   },
   "devDependencies": {
+    "@tailwindcss/aspect-ratio": "^0.2.1",
     "@tailwindcss/forms": "^0.3.3",
     "@toast-ui/editor": "^3.1.0",
     "@toast-ui/editor-plugin-code-syntax-highlight": "^3.0.0",
