@@ -1,39 +1,45 @@
 <template>
   <div>
     <div>
-      <div class="mt-3 text-center sm:mt-5">
-        <h3 class="text-lg leading-6 font-medium text-gray-900" id="modal-headline">
-          Welcome!
+      <div class="mt-3sm:mt-5">
+        <h3 class="text-xl text-center leading-6 font-medium text-gray-800" id="modal-headline">
+          Hi there, welcome!
         </h3>
         <div class="mt-2">
           <img :src="image" alt="Options" class="w-2/3 md:w-1/2 mx-auto py-8">
 
+          <div class="rounded-md bg-blue-50 p-4 mb-4">
+            <div class="flex">
+              <div class="flex-shrink-0">
+                <InformationCircleIcon class="h-5 w-5 text-blue-400" aria-hidden="true" />
+              </div>
+              <div class="ml-3 flex-1 md:flex md:justify-between">
+                <p class="text-sm text-blue-700">
+                  If you are new to TicketVise, check out our <a href="https://ticketvise.com/getting-started/" target="_blank" rel="noopener noreferrer" class="underline">Getting Started</a> guide to get an impression of what you can do with TicketVise.
+                </p>
+              </div>
+            </div>
+          </div>
+
           <p class="text-sm text-gray-500">
-            Connected users can now access this inbox and create tickets. To get to know TicketVise and to personalize
-            this inbox, we guide you through the most important things. For more information, visit the getting started
-            page found under the question mark in the navigation.
+            So now that you are here, let us help you get started! Your inbox has been created and out of the box everything is working for connected users, but to get you started with some settings you can follow this quick guide. If you know your way around, you can skip this guide or go straight to the settings page to configure your inbox.
           </p>
         </div>
       </div>
-    </div>
-    <div class="mt-5 sm:mt-6 sm:grid sm:grid-cols-2 sm:gap-3 sm:grid-flow-row-dense">
-      <button type="button" @click="$emit('next')"
-              class="w-full inline-flex justify-center rounded-md px-4 py-2 bg-primary text-base font-medium text-white hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 sm:col-start-2 sm:text-sm">
-        Continue
-      </button>
-      <button type="button" @click="$emit('cancel')"
-              class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 sm:mt-0 sm:col-start-1 sm:text-sm">
-        Skip introduction
-      </button>
     </div>
   </div>
 </template>
 
 <script>
-const image = require('@/assets/img/svg/options.svg')
+import { InformationCircleIcon } from '@heroicons/vue/solid'
+
+const image = require('@/assets/img/svg/welcome.svg')
 
 export default {
   name: 'WelcomeModal',
+  components: {
+    InformationCircleIcon
+  },
   setup () {
     return { image }
   }

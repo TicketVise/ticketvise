@@ -104,6 +104,50 @@ const store = createStore({
         const response = await axios.get('/api/me/inboxes')
         commit('update_inboxes', response.data.map(inbox => inbox.inbox))
       }
+    },
+    demo_tickets ({ commit, state }, payload) {
+      const ticket = {
+        id: 1,
+        ticket_inbox_id: 1,
+        title: 'Example ticket',
+        date_created: Date.now(),
+        author: { first_name: 'John', last_name: 'Doe' },
+        assignee: payload.status !== 'pending' ? state.user : null,
+        labels: [
+          {
+            id: 1,
+            name: 'General',
+            color: '#9061F9'
+          }
+        ]
+      }
+      const inbox = {
+        inbox: payload.inboxId,
+        tickets: [
+          {
+            label: 'Pending',
+            total: 1,
+            tickets: payload.status === 'pending' ? [ticket] : []
+          },
+          {
+            label: 'Assigned',
+            total: 0,
+            tickets: payload.status === 'assigned' ? [ticket] : []
+          },
+          {
+            label: 'Awaiting response',
+            total: 0,
+            tickets: payload.status === 'awaiting' ? [ticket] : []
+          },
+          {
+            label: 'Closed',
+            total: 0,
+            tickets: payload.status === 'closed' ? [ticket] : []
+          }
+        ]
+      }
+
+      commit('update_tickets', inbox)
     }
   },
   getters: {
