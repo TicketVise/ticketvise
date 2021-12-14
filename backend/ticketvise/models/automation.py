@@ -39,6 +39,7 @@ class AutomationCondition(models.Model):
     EVALUATION_FUNC_CHOICES = [
         ("eq", "equals"),
         ("contains", "contains"),
+        ("contains_not", "contains not"),
         ("gt", "greater than"),
         ("ge", "greater than or equals"),
         ("lt", "less than"),
@@ -124,6 +125,9 @@ class AutomationCondition(models.Model):
 
     def contains(self, field, value):
         return value in field
+
+    def contains_not(self, field, value):
+        return value not in field
 
     def gt(self, field, value):
         return field > value

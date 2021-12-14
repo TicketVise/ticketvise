@@ -6,13 +6,17 @@
     <div v-if="!open" @click="open = true" class="group py-3 px-4 flex flex-col space-y-1 cursor-pointer rounded">
       <div class="flex space-x-2 items-center justify-between">
         <span class="font-medium">{{ item.name }}</span>
-        <selector-icon class="h-6 w-6 handle text-primary cursor-move" />
+        <!-- <selector-icon class="h-6 w-6 handle text-primary cursor-move" /> -->
       </div>
       <div class="flex items-center">
-        <chip background="#FF0000">Grades</chip>
-        <i class="fa fa-arrow-right text-gray-800"></i>
+        <div class="flex space-x-1">
+          <template v-for="(condition, index) in item.conditions" :key="index">
+            <chip v-if="condition.field_name === 'title'">{{ conditionNames[condition.field_name] }} = {{ condition.evaluation_value }}</chip>
+            <chip v-if="condition.field_name === 'date_created'">{{ conditionNames[condition.field_name] }} {{ condition.evaluation_func === 'lt' || condition.evaluation_func === 'le' ? 'before' : 'after' }} {{ condition.evaluation_value }}</chip>
+          </template>
+        </div>
         <chevron-right-icon class="h-6 w-6" />
-        <chip>Ana Coordinator</chip>
+        <chip v-if="item.action_func === 'add_label'" :background="labels.find(l => l.id === parseInt(item.action_value))?.color">{{ labels.find(l => l.id === parseInt(item.action_value))?.name }}</chip>
       </div>
     </div>
     <div v-else class="py-3 px-4 space-y-2">
@@ -40,14 +44,12 @@
           <div class="h-1 border-b w-1/2"></div>
         </div>
         <!-- Place for the IF filters -->
-        <div v-for="(filter, index) in item.conditions" :key="index" class="flex space-x-2">
-          <div
-            class="flex w-22 justify-center items-center rounded px-4 py-2 space-x-2 text-blue-500 focus:outline-none"
-          >
+        <div v-for="(condition, index) in item.conditions" :key="index" class="flex space-x-2">
+          <div class="flex w-22 justify-center items-center rounded px-4 py-2 space-x-2 text-blue-500 focus:outline-none">
             <span>{{ index === 0 ? 'IF' : 'AND' }}</span>
           </div>
 
-          <component :is="filter" />
+          <AutomationCondition :condition="condition" />
 
           <button
             @click="remove(index)"
@@ -59,7 +61,7 @@
         <div class="flex space-x-2">
           <div class="relative inline-block w-min-content">
             <button
-              @click="ifs.push('automationFilterLabel')"
+              @click="item.conditions.push({ evaluation_func: '', evaluation_value: '', field_name: '' })"
               class="flex justify-center items-center rounded px-4 py-2 space-x-1 text-blue-500 bg-blue-100 focus:outline-none hover:bg-blue-200"
             >
               <plus-icon class="h6 w-6" />
@@ -70,7 +72,7 @@
 
         <div class="flex w-full items-center space-x-2">
           <div class="h-1 border-b w-1/2"></div>
-          <span class="leading-5 font-medium text-primary">Actions</span>
+          <span class="leading-5 font-medium text-primary">Action</span>
           <div class="h-1 border-b w-1/2"></div>
         </div>
         <!-- Place for the thens actions -->
@@ -83,17 +85,6 @@
           >
             <trash-icon class="h-6 w-6 text-red-600" />
           </button>
-        </div>
-        <div class="flex space-x-2">
-          <div class="relative inline-block w-min-content">
-            <button
-              @click="thens.push('automationAction')"
-              class="flex justify-center items-center rounded px-4 py-2 space-x-1 text-blue-500 bg-blue-100 focus:outline-none hover:bg-blue-200"
-            >
-              <plus-icon class="h6 w-6" />
-              <span>Add action</span>
-            </button>
-          </div>
         </div>
 
         <!-- Divider -->
@@ -126,10 +117,10 @@
 </template>
 
 <script>
-import AutomationFilterLabel from '@/components/automation/AutomationFilterLabel'
-import AutomationFilterText from '@/components/automation/AutomationFilterText'
-import AutomationAction from '@/components/automation/AutomationAction'
+import axios from 'axios'
+
 import Chip from '@/components/chip/Chip'
+import AutomationCondition from '@/components/automation/AutomationCondition'
 
 import {
   TrashIcon,
@@ -142,13 +133,11 @@ import {
 
 export default {
   components: {
+    AutomationCondition,
     PlusIcon,
     ChevronRightIcon,
     TrashIcon,
     SelectorIcon,
-    AutomationFilterLabel,
-    AutomationFilterText,
-    AutomationAction,
     Chip
   },
   data: () => ({
@@ -157,8 +146,18 @@ export default {
     addIf: false,
     addThen: false,
     ifs: [],
-    thens: []
+    thens: [],
+    labels: [],
+    conditionNames: {
+      'title': 'Title',
+      'date_created': 'Created'
+    },
   }),
+  mounted () {
+    axios.get(`/api/inboxes/${this.$route.params.inboxId}/labels/all`).then(response => {
+      this.labels = response.data
+    })
+  },
   props: {
     item: {
       required: true

@@ -34,7 +34,7 @@ class ListAutomationApiView(ListAPIView):
 
         automations = Automation.objects.filter(inbox=inbox)
         results = [{**AutomationSerializer(automation).data,
-                    "conditons": AutomationConditionSerializer(
+                    "conditions": AutomationConditionSerializer(
                         [condition for condition in conditions if condition.automation == automation], many=True).data
                     } for automation in automations]
 

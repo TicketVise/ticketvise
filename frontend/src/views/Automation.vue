@@ -60,13 +60,13 @@ import AutomationFilter from "@/components/automation/AutomationFilter";
 
 import {
   ExclamationIcon,
-  // PlusIcon
+  PlusIcon
 } from "@heroicons/vue/solid";
 
 export default {
   name: "Automation",
   components: {
-    // PlusIcon,
+    PlusIcon,
     AutomationDefault,
     ExclamationIcon,
     AutomationFilter,
@@ -76,7 +76,7 @@ export default {
     items: [],
   }),
   mounted () {
-      axios.get(`/api/inboxes/${this.$route.params.inboxId}/automations`) 
+    axios.get(`/api/inboxes/${this.$route.params.inboxId}/automations`) 
       .then((response) => {
         this.items = response.data
       })

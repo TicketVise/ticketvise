@@ -23,6 +23,11 @@
           backgroundColor: this.background
         }
       }
+    },
+    watch: {
+      background: function (val) {
+        this.style.backgroundColor = val
+      }
     }
   }
 </script>
