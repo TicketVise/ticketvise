@@ -48,7 +48,7 @@ class EmailTestCase(TestCase):
             msg['Subject'] = "This must be the title2343!!?"
             msg['From'] = self.student.email
             msg['To'] = self.inbox.inbound_email_username
-            submit_email_ticket(msg)
+            submit_email_ticket(msg, self.inbox)
 
             self.assertFalse(Ticket.objects.filter(
                 title=msg['Subject'], content=content).exists())
@@ -70,7 +70,7 @@ class EmailTestCase(TestCase):
             msg['To'] = self.inbox.inbound_email_username
             msg['References'] = f"<{self.notification.email_message_id}@{settings.DOMAIN}>"
 
-            submit_email_ticket(msg)
+            submit_email_ticket(msg, self.inbox)
             self.assertFalse(Comment.objects.filter(
                 ticket=self.ticket, content=content, is_reply=True).exists())
 
@@ -82,7 +82,7 @@ class EmailTestCase(TestCase):
         msg['From'] = self.student.email
         msg['To'] = self.inbox.inbound_email_username
 
-        submit_email_ticket(msg)
+        submit_email_ticket(msg, self.inbox)
         self.assertTrue(Ticket.objects.filter(
             title=msg['Subject'], content=content).exists())
 
@@ -94,7 +94,7 @@ class EmailTestCase(TestCase):
         msg['From'] = "tom.wassing@" + settings.DOMAIN
         msg['To'] = self.inbox.inbound_email_username
 
-        submit_email_ticket(msg)
+        submit_email_ticket(msg, self.inbox)
         self.assertTrue(Ticket.objects.filter(
             title=msg['Subject'], content=content).exists())
         self.assertTrue(User.objects.filter(email=msg['From']).exists())
@@ -114,7 +114,7 @@ class EmailTestCase(TestCase):
         msg.add_attachment(
             b"import numpy as np\nx = np.array([42, 69])", maintype='text', subtype='plain', filename="test.py")
 
-        submit_email_ticket(msg)
+        submit_email_ticket(msg, self.inbox)
         self.assertTrue(Ticket.objects.filter(
             title=msg['Subject'], content=content).exists())
         self.assertTrue(User.objects.filter(email=msg['From']).exists())
@@ -133,7 +133,7 @@ class EmailTestCase(TestCase):
         msg['To'] = self.inbox.inbound_email_username
         msg['References'] = f"<{self.notification.email_message_id}@{settings.DOMAIN}>"
 
-        submit_email_ticket(msg)
+        submit_email_ticket(msg, self.ticket.inbox)
         self.assertTrue(Comment.objects.filter(
             ticket=self.ticket, content=content, is_reply=True).exists())
 
@@ -146,7 +146,7 @@ class EmailTestCase(TestCase):
         msg['To'] = self.inbox.inbound_email_username
         msg['References'] = f"<{self.notification.email_message_id}@{settings.DOMAIN}>"
 
-        submit_email_ticket(msg)
+        submit_email_ticket(msg, self.ticket.inbox)
         self.assertTrue(Comment.objects.filter(
             ticket=self.ticket, content=content, is_reply=True).exists())
 
@@ -159,7 +159,7 @@ class EmailTestCase(TestCase):
         msg['To'] = self.inbox.inbound_email_username
         msg['References'] = f"<{self.notification.email_message_id}@{settings.DOMAIN}>"
 
-        submit_email_ticket(msg)
+        submit_email_ticket(msg, self.ticket.inbox)
         self.assertTrue(Comment.objects.filter(
             ticket=self.ticket, content=content, is_reply=True).exists())
 
@@ -172,6 +172,6 @@ class EmailTestCase(TestCase):
         msg['To'] = self.inbox.inbound_email_username
         msg['References'] = f"<{self.notification.email_message_id}@{settings.DOMAIN}>"
 
-        submit_email_ticket(msg)
+        submit_email_ticket(msg, self.ticket.inbox)
         self.assertTrue(Comment.objects.filter(
             ticket=self.ticket, content=content, is_reply=True).exists())
