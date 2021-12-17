@@ -18,7 +18,6 @@ from django.dispatch import receiver
 from django.utils.translation import gettext_lazy as _
 from model_utils.managers import InheritanceManager
 
-from ticketvise import settings
 from ticketvise.middleware import CurrentUserMiddleware
 from ticketvise.models.label import Label
 from ticketvise.models.notification.assigned import TicketAssignedNotification
