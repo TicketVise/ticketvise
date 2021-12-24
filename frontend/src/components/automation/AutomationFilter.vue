@@ -17,6 +17,9 @@
         </div>
         <chevron-right-icon class="h-6 w-6" />
         <chip v-if="item.action_func === 'add_label'" :background="labels.find(l => l.id === parseInt(item.action_value))?.color">{{ labels.find(l => l.id === parseInt(item.action_value))?.name }}</chip>
+        <chip v-else-if="item.action_func === 'assign_to'">
+          Assign to
+        </chip>
       </div>
     </div>
     <div v-else class="py-3 px-4 space-y-2">
@@ -27,13 +30,7 @@
             <label class="block text-xs leading-5 font-medium text-primary">
               Action title:
             </label>
-            <input
-              v-model="item.name"
-              type="text"
-              id="text"
-              placeholder="Filter name"
-              class="h-8 text-sm w-full rounded-md border border-gray-300 bg-white pl-3 pr-10 py-2 text-left focus:outline-none"
-            />
+            <input v-model="item.name" type="text" id="text" placeholder="Filter name" class="h-8 text-sm w-full rounded-md border border-gray-300 bg-white pl-3 pr-10 py-2 text-left focus:outline-none" />
           </div>
         </div>
       </div>
@@ -75,17 +72,8 @@
           <span class="leading-5 font-medium text-primary">Action</span>
           <div class="h-1 border-b w-1/2"></div>
         </div>
-        <!-- Place for the thens actions -->
-        <div v-for="(filter, index) in thens" :key="index" class="flex space-x-2">
-          <component :is="filter" />
-
-          <button
-            @click="remove(index)"
-            class="flex items-center px-2 focus:outline-none"
-          >
-            <trash-icon class="h-6 w-6 text-red-600" />
-          </button>
-        </div>
+        
+        <AutomationAction :item="item" />
 
         <!-- Divider -->
         <div class="w-full border-b pt-2 mb-2"></div>
@@ -120,6 +108,7 @@
 import axios from 'axios'
 
 import Chip from '@/components/chip/Chip'
+import AutomationAction from '@/components/automation/AutomationAction'
 import AutomationCondition from '@/components/automation/AutomationCondition'
 
 import {
@@ -133,6 +122,7 @@ import {
 
 export default {
   components: {
+    AutomationAction,
     AutomationCondition,
     PlusIcon,
     ChevronRightIcon,
@@ -142,11 +132,7 @@ export default {
   },
   data: () => ({
     open: false,
-    title: 'Lecture tickets to teacher',
-    addIf: false,
-    addThen: false,
-    ifs: [],
-    thens: [],
+    title: '',
     labels: [],
     conditionNames: {
       'title': 'Title',
@@ -167,9 +153,7 @@ export default {
     cancel () {
       this.open = false
     },
-    remove (index) {
-      this.ifs.splice(index, 1)
-    }
+    remove (index) {}
   }
 }
 </script>
