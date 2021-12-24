@@ -1,5 +1,6 @@
 import logging
 import socket
+from django.http.response import Http404
 from django.shortcuts import redirect
 from rest_framework import serializers
 from rest_framework.generics import get_object_or_404
@@ -42,7 +43,7 @@ class EmailSetupApiView(APIView):
 
         redirect_uri = f"https://{request.get_host()}/api/callback"
         auth_code_request = app.initiate_auth_code_flow(scopes, login_hint=email, redirect_uri=redirect_uri)
-        cache.set(f"{email}_auth_code_request", auth_code_request)
+        cache.set(f"auth_code_request_{auth_code_request['state']}", auth_code_request)
 
         inbox.email_login_state = auth_code_request["state"]
         inbox.smtp_username = email
@@ -88,14 +89,22 @@ class EmailCallbackApiView(APIView):
         app = ConfidentialClientApplication(settings.MICROSOFT_CLIENT_ID,
                                             settings.MICROSOFT_CLIENT_SECRET)
 
-        auth_code_request = cache.get(f"{inbox.smtp_username}_auth_code_request")
+        auth_code_request = cache.get(f"auth_code_request_{state}")
+        if auth_code_request is None:
+            logging.error("auth_code_request for {} is None".format(state))
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+
         token_response = app.acquire_token_by_auth_code_flow(auth_code_request, request.GET.dict())
         if "error" in token_response:
-            logging.error(token_response)
+            logging.error("Error in token_response: {}".format(token_response))
             return Response(status=status.HTTP_400_BAD_REQUEST)
 
         inbox.email_enabled = True
         inbox.email_login_state = None
+        inbox.inbound_email_server = "outlook.office365.com"
+        inbox.inbound_email_use_oauth2 = True
+        inbox.smtp_server = "smtp.office365.com"
+        inbox.smtp_use_oauth2 = True
         inbox.email_access_token = token_response["access_token"]
         inbox.email_refresh_token = token_response["refresh_token"]
         inbox.save()

@@ -38,12 +38,12 @@ def start_schedule():
     s.run()
 
 def sync_mail():
-    start_time = datetime.now()
+    start_time = datetime.datetime.now()
     logging.info(f"Started retrieving email at {start_time}")
     for inbox in Inbox.objects.filter(email_enabled=True):
-        inbox.sync_mail()
+        inbox.sync_email()
 
-    end_time = datetime.now()
+    end_time = datetime.datetime.now()
     logging.info(f"Finished retrieving email at {end_time}, took: {end_time - start_time}")
 
 

@@ -183,11 +183,12 @@ class Inbox(models.Model):
             return
 
         logging.info(f"Retrieving email for inbox: {self.name} ({self.id})")
+        email_password = self.email_access_token if self.inbound_email_use_oauth2 else self.inbound_email_password
         emails = retrieve_emails(self.inbound_email_protocol,
                            self.inbound_email_server,
                            self.inbound_email_port,
                            self.inbound_email_username,
-                           self.inbound_email_password,
+                           email_password,
                            self.inbound_email_security == MailSecurity.TLS,
                            self.inbound_email_use_oauth2)
         for message in emails:
