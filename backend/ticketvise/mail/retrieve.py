@@ -9,7 +9,6 @@ from django.core.files.base import ContentFile
 
 from django.db import transaction
 from email_reply_parser import EmailReplyParser
-from bs4 import BeautifulSoup
 import html2text
 
 from ticketvise.mail import oauth_2_auth_base64
