@@ -10,6 +10,7 @@ from django.core.files.base import ContentFile
 from django.db import transaction
 from email_reply_parser import EmailReplyParser
 from bs4 import BeautifulSoup
+import html2text
 
 from ticketvise.mail import oauth_2_auth_base64
 from ticketvise.models.notification import Notification
@@ -88,21 +89,10 @@ def submit_email_ticket(message: email.message.EmailMessage, inbox):
             f"Received empty email body from: '{email_from}', with subject: {subject}")
         return
 
-
-    temp = message.get_body()
-    for part in message.walk():
-        if part.get_content_type() == "multipart/related":
-            for part in part.walk():
-                print("x", part.get_content_type())
-        # print(part.get_content_type())
-        # print(part.get_content())
-        # print("------------------------------")
-
     content = body.get_content()
-    # if body.get_content_type() == "text/html":
-    #     content = BeautifulSoup(content).get_text(strip=True, separator="\n\n\n")
+    if body.get_content_type() == "text/html":
+        content = html2text.html2text(content)
     reply = EmailReplyParser.parse_reply(content)
-    # print(reply)
 
     # Extract name and email adress from 'From' header
     realname, address = email.utils.parseaddr(email_from)
