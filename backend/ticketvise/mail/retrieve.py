@@ -234,5 +234,5 @@ def retrieve_imap_emails(host, port, username, password, require_tls, use_oauth2
         for msg_uid in data[0].split():
             _, data = server.fetch(msg_uid, "(RFC822)")
             yield email.message_from_bytes(data[0][1], policy=email.policy.default)
-            # imap.store(msg_uid, '+FLAGS', '\\Deleted')
+            imap.store(msg_uid, '+FLAGS', '\\Deleted')
         imap.expunge()
