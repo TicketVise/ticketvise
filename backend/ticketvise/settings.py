@@ -193,7 +193,7 @@ STATIC_ROOT = os.path.join(BASE_DIR, "static")
 #: Email settings
 #: ~~~~~~~~~~~~~~~~~~~
 if SEND_MAIL:
-    EMAIL_BACKEND = 'application.backend.ticketvise.mail.OAuthCompatibleEmailBackend'
+    EMAIL_BACKEND = 'ticketvise.mail.send.OAuthCompatibleEmailBackend'
 else:
     EMAIL_BACKEND = 'django.core.mail.backends.locmem.EmailBackend'
 
@@ -204,7 +204,7 @@ EMAIL_HOST_PASSWORD = os.getenv("SMTP_OUTBOUND_PASSWORD", "Welkom01")
 EMAIL_USE_TLS = os.getenv("SMTP_TLS", True)
 EMAIL_USE_SSL = os.getenv("SMTP_SSL", False)
 DEFAULT_FROM_EMAIL = os.getenv("SMTP_OUTBOUND_FROM", "TicketVise <ticket@{}>".format(DOMAIN))
- 
+
 PAGE_SIZE = 25
 
 ROLE_GUEST_DISPLAY_NAME = os.getenv("ROLE_GUEST_DISPLAY_NAME", "Student")

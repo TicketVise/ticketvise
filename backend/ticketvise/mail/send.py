@@ -15,8 +15,8 @@ class OAuthCompatibleEmailBackend(EmailBackend):
     A wrapper that manages the SMTP network connection.
     """
     def __init__(self, use_oauth2=False, *args, **kwargs):
+        super().__init__(*args, **kwargs)
         self.use_oauth2=use_oauth2
-        super(EmailBackend, self).__init__(*args, **kwargs)
 
     def open(self):
         """
@@ -43,10 +43,11 @@ class OAuthCompatibleEmailBackend(EmailBackend):
             # non-secure connections.
             if not self.use_ssl and self.use_tls:
                 self.connection.starttls(keyfile=self.ssl_keyfile, certfile=self.ssl_certfile)
+                self.connection.ehlo_or_helo_if_needed()
             if self.username and self.password:
                 if self.use_oauth2:
                     auth_string = oauth_2_auth_base64(self.username, self.password)
-                    self.connection.auth("XOAUTH2", lambda x: auth_string)
+                    self.connection.auth("XOAUTH2", lambda: auth_string)
                 else:
                     self.connection.login(self.username, self.password)
             return True
