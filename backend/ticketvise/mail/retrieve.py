@@ -8,7 +8,7 @@ from uuid import UUID
 from django.core.files.base import ContentFile
 
 from django.db import transaction
-from email_reply_parser import EmailReplyParser
+from email_reply_parser import EmailMessage, EmailReplyParser
 import html2text
 
 from ticketvise.mail import oauth_2_auth_base64
@@ -91,6 +91,8 @@ def submit_email_ticket(message: email.message.EmailMessage, inbox):
     content = body.get_content()
     if body.get_content_type() == "text/html":
         content = html2text.html2text(content)
+
+    EmailMessage.HEADER_REGEX = re.compile(r'^\*?(From|Sent|To|Subject|Van|Verzonden|Aan|Onderwerp):\*? .+')
     reply = EmailReplyParser.parse_reply(content)
 
     # Extract name and email adress from 'From' header
