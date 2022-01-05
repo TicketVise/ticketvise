@@ -36,9 +36,6 @@ class Notification(models.Model):
         sender = settings.DEFAULT_FROM_EMAIL
         if self.ticket.inbox.email_enabled:
             sender = self.ticket.inbox.smtp_sender or self.ticket.inbox.smtp_username
-        
-
-
 
         send_mail_template(
             self.get_email_subject(),
@@ -56,7 +53,7 @@ class Notification(models.Model):
             self.ticket.inbox.smtp_server if self.ticket.inbox.email_enabled else None,
             self.ticket.inbox.smtp_port if self.ticket.inbox.email_enabled else None,
             self.ticket.inbox.smtp_username if self.ticket.inbox.email_enabled else None,
-            (self.ticket.inbox.email_access_token if self.ticket.inbox.smtp_use_oauth2 else self.ticket.inbox.smtp_password) if self.ticket.inbox.email_enabled else None,
+            (self.ticket.inbox.get_email_access_token() if self.ticket.inbox.smtp_use_oauth2 else self.ticket.inbox.smtp_password) if self.ticket.inbox.email_enabled else None,
             self.ticket.inbox.smtp_security if self.ticket.inbox.email_enabled else None,
             self.ticket.inbox.smtp_use_oauth2 if self.ticket.inbox.smtp_use_oauth2 else None
         )

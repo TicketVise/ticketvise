@@ -10,11 +10,12 @@ import logging
 from secrets import token_urlsafe
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django.db import models
+
+from ticketvise import settings
 from ticketvise.models.utils import InboundMailProtocol, MailSecurity
 from ticketvise.mail.retrieve import retrieve_emails, submit_email_ticket
 from ticketvise.models.user import User, Role
 from ticketvise.models.validators import validate_hex_color
-from ticketvise.settings import DEFAULT_INBOX_IMAGE_PATH
 from ticketvise.utils import random_preselected_color
 
 
@@ -178,13 +179,28 @@ class Inbox(models.Model):
         return self.email_enabled and ((self.is_classic_email_setup()) \
                 or (self.email_access_token is not None and self.email_refresh_token is not None))
 
+    def get_email_access_token(self):
+        if not self.email_enabled or not (self.smtp_use_oauth2 and self.inbound_email_use_oauth2):
+            return None
+
+        accounts = [a for a in settings.MICROSOFT_AUTH.get_accounts() if a["username"] in [self.inbound_email_username, self.smtp_username]]
+        if accounts:
+            result = settings.MICROSOFT_AUTH.acquire_token_silent_with_error(scopes=settings.MICROSOFT_EMAIL_SCOPES, account=accounts[0])
+        else:
+            result = settings.MICROSOFT_AUTH.acquire_token_by_refresh_token(self.email_refresh_token, settings.MICROSOFT_EMAIL_SCOPES)
+        
+        return result.get('access_token')
+
     def sync_email(self):
         if not self.email_enabled:
             logging.info(f"Skipping retrieving email for inbox: {self.name} ({self.id})")
             return
 
         logging.info(f"Retrieving email for inbox: {self.name} ({self.id})")
-        email_password = self.email_access_token if self.inbound_email_use_oauth2 else self.inbound_email_password
+        email_password = self.inbound_email_password
+        if self.inbound_email_use_oauth2:
+            email_password = self.get_email_access_token()
+
         emails = retrieve_emails(self.inbound_email_protocol,
                            self.inbound_email_server,
                            self.inbound_email_port,

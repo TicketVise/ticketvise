@@ -1,6 +1,5 @@
 import logging
 import socket
-from django.http.response import Http404
 from django.shortcuts import redirect
 from rest_framework import serializers
 from rest_framework.generics import get_object_or_404
@@ -12,7 +11,6 @@ from ticketvise.views.api.security import UserIsInboxStaffPermission
 from ticketvise import settings
 from ticketvise.models.inbox import Inbox
 import itertools
-from msal import ConfidentialClientApplication
 from django.core.cache import cache
 
 def email_username(email):
@@ -34,15 +32,10 @@ class EmailSetupApiView(APIView):
         inbox = get_object_or_404(Inbox, pk=inbox_id)
 
         email = serializer.validated_data.get("email")
-        app = ConfidentialClientApplication(settings.MICROSOFT_CLIENT_ID,
-                                            settings.MICROSOFT_CLIENT_SECRET)
-
-        scopes = ["https://outlook.office.com/IMAP.AccessAsUser.All",
-                 "https://outlook.office.com/POP.AccessAsUser.All", 
-                 "https://outlook.office.com/SMTP.Send"]
+        app = settings.MICROSOFT_AUTH
 
         redirect_uri = f"https://{request.get_host()}/api/callback"
-        auth_code_request = app.initiate_auth_code_flow(scopes, login_hint=email, redirect_uri=redirect_uri)
+        auth_code_request = app.initiate_auth_code_flow(settings.MICROSOFT_EMAIL_SCOPES, login_hint=email, redirect_uri=redirect_uri)
         cache.set(f"auth_code_request_{auth_code_request['state']}", auth_code_request)
 
         inbox.email_login_state = auth_code_request["state"]
@@ -86,8 +79,7 @@ class EmailCallbackApiView(APIView):
             return Response(status=status.HTTP_400_BAD_REQUEST)
 
         inbox = get_object_or_404(Inbox, email_login_state=state)
-        app = ConfidentialClientApplication(settings.MICROSOFT_CLIENT_ID,
-                                            settings.MICROSOFT_CLIENT_SECRET)
+        app = settings.MICROSOFT_AUTH
 
         auth_code_request = cache.get(f"auth_code_request_{state}")
         if auth_code_request is None:

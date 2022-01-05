@@ -1,5 +1,6 @@
 from ticketvise.models.utils import MailSecurity
 from ticketvise.mail import oauth_2_auth_base64
+from ticketvise import settings
 import logging
 import threading
 

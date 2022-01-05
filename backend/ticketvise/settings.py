@@ -6,6 +6,8 @@ some custom.
 """
 import os
 
+from msal.application import ConfidentialClientApplication
+
 #: Project base directory.
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -23,6 +25,12 @@ HOST = os.environ.get("HOST", DOMAIN)
 
 MICROSOFT_CLIENT_ID = os.environ.get("MICROSOFT_CLIENT_ID")
 MICROSOFT_CLIENT_SECRET = os.environ.get("MICROSOFT_CLIENT_SECRET")
+MICROSOFT_EMAIL_SCOPES = ["https://outlook.office.com/IMAP.AccessAsUser.All",
+                          "https://outlook.office.com/POP.AccessAsUser.All", 
+                          "https://outlook.office.com/SMTP.Send"]
+MICROSOFT_AUTH = None
+if MICROSOFT_CLIENT_ID and MICROSOFT_CLIENT_SECRET:
+    MICROSOFT_AUTH = ConfidentialClientApplication(MICROSOFT_CLIENT_ID, MICROSOFT_CLIENT_SECRET)
 
 ALLOWED_HOSTS = ["*"]
 
