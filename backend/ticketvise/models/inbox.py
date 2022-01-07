@@ -208,8 +208,8 @@ class Inbox(models.Model):
                            email_password,
                            self.inbound_email_security == MailSecurity.TLS,
                            self.inbound_email_use_oauth2)
-        for message in emails:
-            submit_email_ticket(message, self)
+        for message, raw_message in emails:
+            submit_email_ticket(message, raw_message, self)
 
     def __str__(self):
         return self.name

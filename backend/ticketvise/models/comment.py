@@ -33,6 +33,7 @@ class Comment(models.Model):
     content = models.TextField()
     is_reply = models.BooleanField(default=False)
     is_approved = models.DateTimeField(auto_now=False, null=True, default=None)
+    email_message = models.TextField(null=True, blank=True)
     date_edited = models.DateTimeField(auto_now=True)
     date_created = models.DateTimeField(auto_now_add=True)
 

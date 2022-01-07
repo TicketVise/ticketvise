@@ -65,6 +65,7 @@ class Ticket(models.Model):
     is_pinned = models.DateTimeField(auto_now_add=False, null=True, default=None)
     pin_initiator = models.ForeignKey("User", on_delete=models.CASCADE, blank=True, null=True,
                                       related_name="pin_initiator")
+    email_message = models.TextField(null=True, blank=True)
     date_edited = models.DateTimeField(auto_now=True)
     date_created = models.DateTimeField(auto_now_add=True)
 
