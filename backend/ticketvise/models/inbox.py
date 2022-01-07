@@ -209,7 +209,7 @@ class Inbox(models.Model):
                            self.inbound_email_security == MailSecurity.TLS,
                            self.inbound_email_use_oauth2)
         for message, raw_message in emails:
-            submit_email_ticket(message, raw_message, self)
+            submit_email_ticket(message, self, raw_message=raw_message)
 
     def __str__(self):
         return self.name
