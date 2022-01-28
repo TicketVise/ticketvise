@@ -138,13 +138,6 @@ def submit_email_ticket(message: email.message.EmailMessage, inbox, raw_message=
 
     # Ticket does not exist, threat email as a new ticket.
     else:
-        # TODO: check if recipient is in email config?
-        # inbox = Inbox.objects.filter(
-        #     inbound_email_username__in=recipients).first()
-        # if not inbox:
-        #     logging.warning(f"Could not find inbox with email(s): {recipients}")
-        #     return
-
         if not inbox.email_enabled:
             logging.warning(
                 f"Email is disabled for the inbox: {inbox.name} ({inbox.id})")
