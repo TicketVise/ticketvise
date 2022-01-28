@@ -9,11 +9,6 @@ import random
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.response import Response
 
-# from authlib.integrations.django_client import OAuth
-# oauth = OAuth()
-# microsoft = oauth.create_client(create_microsoft_config("consumer"))
-
-
 def random_preselected_color():
     """Randomly selected a color from a pre-defined list. The colors are the 500 colors from tailwind."""
 
