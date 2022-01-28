@@ -6,8 +6,11 @@
       </h3>
       <div class="mt-2 sm:flex sm:items-start sm:justify-between">
         <div class="max-w-xl text-sm text-gray-500">
-          <p>
+          <p v-if="connected">
             Connect a email address to your TicketVise inbox to automatically create tickets from emails
+          </p>
+          <p v-else>
+            Remove your email inbox from your TicketVise inbox. This will remove the functionallity to automatically create tickets from emails
           </p>
         </div>
         <div class="mt-5 sm:mt-0 sm:ml-6 sm:flex-shrink-0 sm:flex sm:items-center">
