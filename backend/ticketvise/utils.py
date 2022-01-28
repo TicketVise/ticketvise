@@ -3,7 +3,6 @@ Utils
 -------------------------------
 Various utility functions for use in python files.
 """
-from ticketvise.mail import create_microsoft_config
 import random
 
 from rest_framework.pagination import PageNumberPagination
