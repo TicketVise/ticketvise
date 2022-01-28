@@ -208,13 +208,6 @@ class InboxSettingsApiView(RetrieveUpdateAPIView):
             request.POST["fixed_scheduling_assignee"] = None
         return super().update(request, *args, **kwargs)
 
-class InboxUpdateEmail(UpdateAPIView):
-    queryset = Inbox
-    permission_classes = [UserIsInboxStaffPermission]
-    lookup_url_kwarg = "inbox_id"
-
-
-
 class CurrentUserInboxSerializer(ModelSerializer):
     inbox = InboxSerializer(fields=["name", "id", "color", "labels", "image", "code", "coordinator", "is_email_setup"])
     role_label = serializers.SerializerMethodField()
