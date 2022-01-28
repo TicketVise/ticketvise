@@ -19,26 +19,12 @@
 
     <div class="flex justify-between items-center">
       <h3 v-if="!small" class="text-xs text-gray-500 dark:text-gray-400">
-        <span class="font-medium">{{ ticket.author?.first_name }} {{ ticket.author?.last_name }}</span>・{{ date(ticket.date_created) }}
+        <span class="font-medium">{{ ticket.author?.first_name }} {{ ticket.author?.last_name }}</span>・{{ date(ticket.date_created) }}<span v-if="!assignee?.first_name">・<button @click="assignUser(ticket.ticket_inbox_id)" class="text-primary-600 no-underline font-medium">Assign yourself</button></span>
       </h3>
       <div v-if="ticket.labels.length == 0 && avatar" class="flex-shrink-0">
         <img class="h-5 w-5 rounded-full" :src="avatar" alt="" :title="assignee.first_name + ' ' + assignee.last_name" />
       </div>
     </div>
-    <!-- TODO: Implement easy assign button. -->
-    <!-- <h3
-      v-if="!ticket || !assignee || !assignee.username"
-      class="text-xs text-gray-500"
-      >Assignee: No one—<button class="hover:text-orange-600 no-underline">
-        Assign yourself
-      </button></h3
-    >
-    <h3
-      class="text-xs text-gray-500"
-      v-if="!small && assignee && assignee.username"
-    >
-      {{ ticket.author.first_name }} {{ ticket.author.last_name }}
-    </h3> -->
 
     <div class="flex justify-between items-center">
       <div v-if="!small" class="space-x-1 select-none">
@@ -59,6 +45,7 @@
 </template>
 
 <script>
+import axios from 'axios'
 import { mapState } from 'vuex'
 import moment from 'moment'
 import Chip from '@/components/chip/Chip'
@@ -98,6 +85,15 @@ export default {
           nextWeek: 'dddd [at] HH:mm',
           sameElse: 'L [at] HH:mm'
       })
+    },
+    assignUser (ticketId) {
+      const id = this.ticket?.assignee && this.ticket?.assignee.id === this.user.id ? [] : this.user.id
+      const formData = new FormData()
+      formData.append('assignee', id)
+      axios.patch(`/api/inboxes/${this.$route.params.inboxId}/tickets/${ticketId}/assignee`, formData)
+        .then(_ => {
+          this.$emit('refresh')
+        })
     }
   },
   computed: {

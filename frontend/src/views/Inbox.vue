@@ -3,7 +3,7 @@
   <section v-if="is_staff" class="flex flex-col h-full flex-grow justify-start dark:bg-gray-800">
     <div class="flex flex-col md:grid md:grid-cols-5 md:gap-2 p-4 space-y-2 md:space-y-0">
       <div class="flex space-x-2 md:col-span-2 xl:col-span-3 items-center">
-        <search-bar v-model="search" v-on:input="callDebounceGetTickets"></search-bar>
+        <SearchBar v-model="search" v-on:input="callDebounceGetTickets" />
       </div>
 
       <div class="flex space-x-2 md:col-span-3 xl:col-span-2 items-center">
@@ -35,6 +35,7 @@
         :length="column.total"
         @input="loadStatus(column.label)"
         class="min-w-3/4 sm:min-w-1/2 md:min-w-0 pr-4"
+        v-on:refresh="get_tickets"
       />
     </div>
 
@@ -196,7 +197,7 @@ export default {
       // Call this function by using callDebounceGetTickets
       const labelsIds = []
       this.labels.forEach((label) => labelsIds.push(label.id))
-      const inboxId = this.$route.params.inboxId
+      const { inboxId } = this.$route.params
 
       axios
         .get(`/api/inboxes/${inboxId}/tickets`, {
@@ -274,7 +275,7 @@ export default {
     axios
       .get(`/api/inboxes/${this.$route.params.inboxId}/role`)
       .then((response) => {
-        this.is_staff = (response.data.key === 'AGENT' || response.data.key === 'MANAGER')
+        this.is_staff = (response.data.key === 'AGENT' || response.data.key === 'MANAGER') || this.user.is_superuser
       })
 
     this.get_tickets()
