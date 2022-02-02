@@ -16,7 +16,7 @@ module.exports = {
         'primary-500': '#dd6b20',
         'primary-600': '#CF651E',
         'primary-700': '#BF5D1B',
-        'light-blue': colors.lightBlue,
+        sky: colors.sky,
         teal: colors.teal,
         cyan: colors.cyan,
         rose: colors.rose,

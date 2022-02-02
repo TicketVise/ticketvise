@@ -15,13 +15,13 @@ class AutomationSerializer(DynamicFieldsModelSerializer):
 
     class Meta:
         model = Automation
-        fields = ["name", "action_func", "action_value"]
+        fields = ["id", "name", "action_func", "action_value"]
 
 
 class AutomationConditionSerializer(DynamicFieldsModelSerializer):
     class Meta:
         model = AutomationCondition
-        fields = ["field_name", "evaluation_func", "evaluation_value"]
+        fields = ["id", "field_name", "evaluation_func", "evaluation_value"]
 
 
 class ListAutomationApiView(ListAPIView):

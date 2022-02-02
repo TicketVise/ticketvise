@@ -1,6 +1,6 @@
 <!-- This example requires Tailwind CSS v2.0+ -->
 <template>
-  <Listbox as="div" v-model="selected" @change="onChange">
+  <Listbox as="div" v-model="selected">
     <ListboxLabel class="block text-sm font-medium text-gray-700">
       {{ label }}
     </ListboxLabel>
@@ -138,16 +138,17 @@ export default {
   data: () => ({
     selected: null
   }),
-  methods: {
-    onChange(event) {
-      this.$emit('update:modelValue', event.value)
-    }
-  },
   watch: {
     modelValue: {
       immediate: true,
-      handler(value) {
+      handler (value) {
         this.selected = value
+      }
+    },
+    selected: {
+      handler (value) {
+        this.$emit('update:modelValue', value)
+        this.$emit('update', value)
       }
     }
   }
