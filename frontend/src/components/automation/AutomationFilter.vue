@@ -10,13 +10,14 @@
         <span v-else class="italic">No title for filter</span>
         <!-- <selector-icon class="h-6 w-6 handle text-primary cursor-move" /> -->
       </div>
-      <div v-if="filter.name" class="flex items-center">
+      <div v-if="filter.name" class="items-center hidden sm:flex">
         <div class="flex space-x-1">
           <template v-for="(condition, index) in filter.conditions" :key="index">
             <chip v-if="condition.field_name === 'title'">{{ conditionNames[condition.field_name] }} = {{ condition.evaluation_value }}</chip>
             <chip v-if="condition.field_name === 'content'">{{ conditionNames[condition.field_name] }} = {{ condition.evaluation_value }}</chip>
             <chip v-if="condition.field_name === 'date_created'">{{ conditionNames[condition.field_name] }} {{ condition.evaluation_func === 'lt' || condition.evaluation_func === 'le' ? 'before' : 'after' }} {{ condition.evaluation_value }}</chip>
             <chip v-if="condition.field_name === 'labels'" :background="labels.find(l => parseInt(l.id) === parseInt(condition.evaluation_value))?.color">{{ labels.find(l => parseInt(l.id) === parseInt(condition.evaluation_value))?.name }}</chip>
+            <chip v-if="condition.field_name === 'is_public'">{{ condition.evaluation_value === 'True' ? 'Public' : 'Private' }}</chip>
           </template>
         </div>
         <chevron-right-icon class="h-6 w-6" />
@@ -27,7 +28,7 @@
         </chip>
       </div>
     </div>
-    <div v-else class="py-3 px-4 space-y-2">
+    <div v-else class="py-3 px-4 space-y-2 w-full">
       <div class="flex justify-between w-full">
         <div class="flex space-x-2 items-center w-full">
           <!-- Name -->
@@ -35,7 +36,13 @@
             <label class="block text-xs leading-5 font-medium text-primary">
               Action title:
             </label>
-            <input v-model="filter.name" type="text" id="text" placeholder="Filter name" class="h-8 text-sm w-full rounded-md border border-gray-300 bg-white pl-3 pr-10 py-2 text-left focus:outline-none" />
+            <div class="mt-1 relative rounded-md">
+              <input v-model="filter.name" type="text" id="filterName" class="block w-full focus:outline-none sm:text-sm rounded-md" :class="errors?.name ? 'pr-10 border-red-300 text-red-900 placeholder-red-300 focus:ring-red-500 focus:border-red-500' : 'focus:ring-primary focus:border-primary border-gray-300'" placeholder="Filter name" aria-invalid="true" aria-autocomplete="false" />
+              <div v-if="errors?.name" class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                <ExclamationCircleIcon class="h-5 w-5 text-red-500" aria-hidden="true" />
+              </div>
+            </div>
+            <p v-if="errors?.name" class="mt-1 text-sm text-red-600" id="name-error">{{ errors?.name }}</p>
           </div>
         </div>
       </div>
@@ -45,20 +52,23 @@
           <span class="leading-5 font-medium text-primary">Conditions</span>
           <div class="h-1 border-b w-1/2"></div>
         </div>
-        <!-- Place for the IF filters -->
+        <!-- Place for the conditions -->
         <div v-for="(condition, index) in filter.conditions" :key="condition">
-          <div class="flex space-x-2">
+          <div class="flex space-x-2 w-full">
             <div class="flex w-22 justify-center items-center rounded px-4 py-2 space-x-2 text-blue-500 focus:outline-none">
               <span>{{ index === 0 ? 'IF' : 'AND' }}</span>
             </div>
 
             <AutomationCondition :filterId="filter.id" :conditionId="condition.id" />
 
-            <button @click="removeCondition(condition)" class="flex items-center px-2 focus:outline-none">
-              <trash-icon class="h-6 w-6 text-red-600" />
-            </button>
+            <div class="flex items-center">
+              <button @click="removeCondition(condition)" class="p-2 focus:outline-none">
+                <trash-icon class="h-6 w-6 text-red-600" />
+              </button>
+            </div>
           </div>
         </div>
+        <p v-if="errors?.conditions" class="mt-1 text-sm text-red-600" id="conditions-error">{{ errors?.conditions }}</p>
         <div class="flex space-x-2">
           <div class="relative inline-block w-min-content">
             <button
@@ -78,6 +88,7 @@
         </div>
         
         <AutomationAction :filterId="filter.id" />
+        <p v-if="errors?.action" class="mt-1 text-sm text-red-600" id="action-error">{{ errors?.action }}</p>
 
         <!-- Divider -->
         <div class="w-full border-b pt-2 mb-2"></div>
@@ -86,20 +97,20 @@
         <div class="flex justify-end space-x-2">
           <button
             @click="cancel"
-            class="rounded border px-4 py-2 text-gray-800 focus:outline-none hover:bg-gray-100"
+            class="rounded-md border px-4 py-2 text-gray-800 focus:outline-none hover:bg-gray-50"
           >
             Cancel
           </button>
           <button
             v-if="filter.id > 0"
             @click="askRemove"
-            class="rounded border px-4 py-2 text-red-600 border-red-400 bg-red-300 focus:outline-none hover:bg-red-200"
+            class="rounded-md border px-4 py-2 text-red-700 border-red-300 bg-red-100 focus:outline-none hover:bg-red-200"
           >
             Remove
           </button>
           <button
             @click="save"
-            class="rounded border px-4 py-2 text-green-600 border-green-400 bg-green-300 focus:outline-none hover:bg-green-200"
+            class="rounded-md border px-4 py-2 text-green-700 border-green-300 bg-green-100 focus:outline-none hover:bg-green-200"
           >
             {{ filter.id > 0 ? 'Save' : 'Create' }}
           </button>
@@ -113,6 +124,7 @@
 </template>
 
 <script>
+import store from '@/store'
 import axios from 'axios'
 import { mapState, mapMutations } from 'vuex'
 
@@ -128,7 +140,8 @@ import {
 } from '@heroicons/vue/outline'
 import {
   PlusIcon,
-  ChevronRightIcon
+  ChevronRightIcon,
+  ExclamationCircleIcon
 } from '@heroicons/vue/solid'
 
 export default {
@@ -141,7 +154,8 @@ export default {
     SelectorIcon,
     Chip,
     NotificationAutomation,
-    RemoveDialog
+    RemoveDialog,
+    ExclamationCircleIcon
   },
   data: () => ({
     open: false,
@@ -149,6 +163,7 @@ export default {
     title: '',
     labels: [],
     staff: [],
+    errors: {},
     conditionNames: {
       'title': 'Title',
       'content': 'Content',
@@ -212,37 +227,72 @@ export default {
         this.$emit('update')
       })
     },
-    save () {
+    async save () {
       const { inboxId } = this.$route.params
 
+      /* Make sure elements for a filter are present. */
+      if (!this.filter.name) this.errors.name = 'You need to give this filter a name.'
+      else delete this.errors.name
+      if (this.filter.conditions.length === 0) this.errors.conditions = 'You need to add at least one condition.'
+      else delete this.errors.conditions
+      if (!this.filter.action_value || this.filter.action_value === '') this.errors.action = 'You need to add an action.'
+      else delete this.errors.action
+
+      /* Check each condition for validity. */
+      for (const condition of this.filter.conditions) {
+        if (!condition.evaluation_value)
+          this.errors.conditions = 'You need to add a value for each condition.'
+        if (!condition.evaluation_func)
+          this.errors.conditions = 'You need to add an operator for each condition.'
+        if (!condition.field_name)
+          this.errors.conditions = 'You need to choose a field for each condition.'
+      }
+      if (Object.keys(this.errors).length > 0) return
+
       
-      let updateAutomation = null;
-      if (this.filter.id < 0) updateAutomation = axios.post(`/api/inboxes/${inboxId}/automation/create`, {
-        ...this.filter
-      })
-      else updateAutomation = axios.put(`/api/inboxes/${inboxId}/automation/${this.filter.id}`, {
-        ...this.filter
-      })
-      const updateConditions = this.filter.conditions.map((condition) => {
-        if (condition.id > 0) return axios.put(`/api/inboxes/${inboxId}/automation/${this.filter.id}/condition/${condition.id}`, {
-          ...condition
+      if (this.filter.id < 0) {
+        await axios.post(`/api/inboxes/${inboxId}/automation/create`, {
+          ...this.filter
+        }).then(response => {
+          const createConditions = this.filter.conditions.map((condition) => {
+            return axios.post(`/api/inboxes/${inboxId}/automation/${response.data.id}/condition/create`, {
+              ...condition
+            })
+          })
+          Promise.all([createConditions]).then(() => {
+            this.showNotification = true
+            this.open = false
+            this.$emit('update')
+            setTimeout(() => {
+              this.showNotification = false
+            }, 3000)
+          })
         })
-        else return axios.post(`/api/inboxes/${inboxId}/automation/${this.filter.id}/condition/create`, {
-          ...condition
+      } else {
+        const updateAutomation = axios.put(`/api/inboxes/${inboxId}/automation/${this.filter.id}`, {
+          ...this.filter
         })
-      })
-      const removeConditions = this.removeConditions.map((condition) => {
-        if (condition < 0) return
-        return axios.delete(`/api/inboxes/${inboxId}/automation/${this.filter.id}/condition/${condition}`)
-      })
-      Promise.all([updateAutomation, updateConditions, removeConditions]).then(() => {
-        this.showNotification = true
-        this.open = false
-        this.$emit('update')
-        setTimeout(() => {
-          this.showNotification = false
-        }, 3000)
-      })
+        const updateConditions = this.filter.conditions.map((condition) => {
+          if (condition.id > 0) return axios.put(`/api/inboxes/${inboxId}/automation/${this.filter.id}/condition/${condition.id}`, {
+            ...condition
+          })
+          else return axios.post(`/api/inboxes/${inboxId}/automation/${this.filter.id}/condition/create`, {
+            ...condition
+          })
+        })
+        const removeConditions = this.removeConditions.map((condition) => {
+          if (condition < 0) return
+          return axios.delete(`/api/inboxes/${inboxId}/automation/${this.filter.id}/condition/${condition}`)
+        })
+        Promise.all([updateAutomation, updateConditions, removeConditions]).then(() => {
+          this.showNotification = true
+          this.open = false
+          this.$emit('update')
+          setTimeout(() => {
+            this.showNotification = false
+          }, 3000)
+        })
+      }
       
     }
   },

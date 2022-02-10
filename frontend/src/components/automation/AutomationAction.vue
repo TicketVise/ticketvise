@@ -1,6 +1,6 @@
 <template>
-  <div class="grid grid-cols-2 gap-2 w-full">
-    <SelectInput v-model="selectedAction" :data="actions" emptyLabel="Choose field" />
+  <div class="grid sm:grid-cols-2 gap-2 w-full">
+    <SelectInput v-model="selectedAction" :data="actions" emptyLabel="Choose action" />
     <SelectInput v-if="selectedAction?.input === 'labels'" v-model="selectedValue" :data="labels" :emptyLabel="!selectedAction ? 'First choose action' : 'Choose value'" :disabled="!selectedAction" multiple />
     <SelectInput v-if="selectedAction?.input === 'staff'" v-model="selectedValue" :data="staff" :emptyLabel="!selectedAction ? 'First choose action' : 'Choose value'" :disabled="!selectedAction" multiple />
   </div>
@@ -10,11 +10,18 @@
 import { mapState } from 'vuex'
 import axios from 'axios'
 
+import {
+  BookmarkIcon,
+  UserAddIcon
+} from '@heroicons/vue/solid'
+
 import SelectInput from '@/components/inputs/SelectInput'
 
 export default {
   name: 'AutomationAction',
   components: {
+    BookmarkIcon,
+    UserAddIcon,
     SelectInput
   },
   props: {
@@ -30,12 +37,14 @@ export default {
       {
         name: 'Add label',
         value: 'add_label',
-        input: 'labels'
+        input: 'labels',
+        icon: BookmarkIcon
       },
       {
         name: 'Assign to',
         value: 'assign_to',
-        input: 'staff'
+        input: 'staff',
+        icon: UserAddIcon
       }
     ]
   }),

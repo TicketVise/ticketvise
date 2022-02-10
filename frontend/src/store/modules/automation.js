@@ -34,6 +34,9 @@ const mutations = {
   removeFilterCondition (state, { filterId, conditionId }) {
     const index = state.filters.find(f => f.id === filterId).conditions.findIndex(c => c.id === conditionId)
     state.filters.find(f => f.id === filterId).conditions.splice(index, 1)
+  },
+  updateFilterId (state, { filterId }) {
+    state.filters.find(f => f.id === -1).id = filterId
   }
 }
 

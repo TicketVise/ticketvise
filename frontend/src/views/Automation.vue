@@ -6,7 +6,7 @@
         <h2 class="text-gray-700 text-xl font-bold leading-6">Filters</h2>
         <span class="text-gray-400">Apply filters to incoming tickets and perform actions based on conditions.</span>
       </div>
-      <div class="flex flex-col space-y-2 mb-4">
+      <div class="flex flex-col space-y-2">
         <!-- <draggable
           :animation="200"
           ghost-class="moving-card"
@@ -25,7 +25,7 @@
       </div>
 
       <!-- Default header -->
-      <div class="mb-1">
+      <div class="mb-1 mt-12">
         <h2 class="text-gray-700 text-xl font-bold leading-6">Default</h2>
         <span class="text-gray-400">What to do with a ticket if no filter applies.</span>
       </div>

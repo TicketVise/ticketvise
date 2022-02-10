@@ -14,6 +14,7 @@
             alt=""
             class="flex-shrink-0 h-5 w-5 rounded-full"
           />
+          <component class="flex-shrink-0 h-4 w-4 mr-2 text-gray-700" v-if="selected?.icon" :is="selected?.icon" />
           <span :class="[selected?.avatar ? 'ml-3' : '', 'block truncate']">{{ selected?.name || emptyLabel }}</span>
         </span>
         <span
@@ -44,7 +45,7 @@
                 'cursor-pointer select-none relative py-2 pl-3 pr-9'
               ]"
             >
-              <div class="flex items-center">
+              <div class="flex items-center pr-2">
                 <span v-if="element.color" class="flex-shrink-0 inline-block h-2 w-2 rounded-full mr-3" :style="`background-color: ${element.color}`" />
                 <img
                   v-if="element.avatar"
@@ -52,6 +53,7 @@
                   alt=""
                   class="flex-shrink-0 h-6 w-6 rounded-full"
                 />
+                <component class="flex-shrink-0 h-4 w-4 mr-2" v-if="element.icon" :is="element.icon" />
                 <span
                   :class="[
                     selected ? 'font-semibold' : 'font-normal',

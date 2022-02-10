@@ -1,12 +1,12 @@
 <template>
-  <div class="grid grid-cols-3 gap-2 w-full">
-    <SelectInput v-model="selectedType" :data="types" emptyLabel="Choose field" />
-    <SelectInput v-model="selectedOption" :data="options" :emptyLabel="!selectedType ? 'First choose field' : 'Choose option'" :disabled="!selectedType" />
-    <SelectInput v-if="selectedType?.input === 'labels'" v-model="selectedValue" :data="labels" :emptyLabel="!selectedType ? 'First choose field' : 'Choose value'" :disabled="!selectedType" />
-    <div v-else-if="selectedType?.input === 'datetime'" class="mt-1">
+  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2 w-full">
+    <SelectInput class="col-span-1" v-model="selectedType" :data="types" emptyLabel="Choose field" />
+    <SelectInput class="col-span-1" v-model="selectedOption" :data="options" :emptyLabel="!selectedType ? 'First choose field' : 'Choose option'" :disabled="!selectedType" />
+    <SelectInput class="col-span-1 sm:col-span-2 lg:col-span-1" v-if="selectedType?.input === 'labels'" v-model="selectedValue" :data="labels" :emptyLabel="!selectedType ? 'First choose field' : 'Choose value'" :disabled="!selectedType" />
+    <div v-else-if="selectedType?.input === 'datetime'" class="mt-1 col-span-1 sm:col-span-2 lg:col-span-1">
       <input v-model="selectedValue" datepicker :id="`datepicker_${id}`" type="text" class="focus:ring-primary focus:border-primary block w-full sm:text-sm border-gray-300 rounded-md" placeholder="Select date">
     </div>
-    <div v-else-if="selectedType?.input !== 'none'" class="mt-1">
+    <div v-else-if="selectedType?.input !== 'none'" class="mt-1 col-span-1 sm:col-span-2 lg:col-span-1">
       <label for="value" class="sr-only">Value</label>
       <input required v-model="selectedValue" type="text" name="value" id="value" class="focus:ring-primary focus:border-primary block w-full sm:text-sm border-gray-300 rounded-md" :placeholder="!selectedType ? 'First choose field' : 'Choose value'" :disabled="!selectedType" />
     </div>
@@ -55,20 +55,20 @@ const types = [
     name: 'Is public',
     value: 'is_public',
     options: [
-      { name: 'True', value: 'true' },
-      { name: 'False', value: 'false' }
+      { name: 'True', value: 'is_set' },
+      { name: 'False', value: 'is_set' }
     ],
     input: 'none'
   },
   {
-    name: 'Created at',
+    name: 'Created',
     value: 'date_created',
     options: [
-      { name: 'Greater than', value: 'gt' },
-      { name: 'Greater than or equal', value: 'ge' },
-      { name: 'Less than', value: 'lt' },
-      { name: 'Less than or equal', value: 'le' },
-      { name: 'Equals', value: 'eq' }
+      { name: 'After', value: 'gt' },
+      { name: 'At or after', value: 'ge' },
+      { name: 'Before', value: 'lt' },
+      { name: 'Before or at', value: 'le' },
+      { name: 'At', value: 'eq' }
     ],
     input: 'datetime'
   }
@@ -131,7 +131,7 @@ export default {
         if (!newOption) return
 
         if (this.selectedType.value === 'is_public')
-          this.selectedValue = newOption.value === 'true' ? true : false
+          this.selectedValue = newOption.name
       }
     }
   },
