@@ -13,15 +13,30 @@
       <div v-if="filter.name" class="items-center hidden sm:flex">
         <div class="flex space-x-1">
           <template v-for="(condition, index) in filter.conditions" :key="index">
-            <chip v-if="condition.field_name === 'title'">{{ conditionNames[condition.field_name] }} = {{ condition.evaluation_value }}</chip>
-            <chip v-if="condition.field_name === 'content'">{{ conditionNames[condition.field_name] }} = {{ condition.evaluation_value }}</chip>
-            <chip v-if="condition.field_name === 'date_created'">{{ conditionNames[condition.field_name] }} {{ condition.evaluation_func === 'lt' || condition.evaluation_func === 'le' ? 'before' : 'after' }} {{ condition.evaluation_value }}</chip>
-            <chip v-if="condition.field_name === 'labels'" :background="labels.find(l => parseInt(l.id) === parseInt(condition.evaluation_value))?.color">{{ labels.find(l => parseInt(l.id) === parseInt(condition.evaluation_value))?.name }}</chip>
+            <chip v-if="condition.field_name === 'title'">
+              <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img" class="w-4 h-4 text-gray-700 mr-1 flex justify-center items-center" preserveAspectRatio="xMidYMid meet" viewBox="0 0 24 24"><path d="M5 4v3h5.5v12h3V7H19V4H5z" fill="currentColor"></path></svg>
+              <span class="text-sm leading-3">{{ condition.evaluation_value }}</span>
+            </chip>
+            <chip v-if="condition.field_name === 'content'">
+              <DocumentTextIcon class="w-4 h-4 text-gray-700 mr-1" />
+              <span class="text-sm leading-3">{{ condition.evaluation_value }}</span>
+            </chip>
+            <chip v-if="condition.field_name === 'date_created'">
+              <ClockIcon class="w-4 h-4 text-gray-700 mr-1" />
+              <span class="text-sm leading-3">{{ conditionNames[condition.field_name] }} {{ condition.evaluation_func === 'lt' || condition.evaluation_func === 'le' ? 'before' : 'after' }} {{ moment(condition.evaluation_value) }}</span>
+            </chip>
+            <chip v-if="condition.field_name === 'labels'">
+              <BookmarkIcon class="w-4 h-4 text-gray-700 mr-1" :style="`color: ${labels.find(l => parseInt(l.id) === parseInt(condition.evaluation_value))?.color}`" />
+              <span class="text-sm leading-3">{{ labels.find(l => parseInt(l.id) === parseInt(condition.evaluation_value))?.name }}</span>
+            </chip>
             <chip v-if="condition.field_name === 'is_public'">{{ condition.evaluation_value === 'True' ? 'Public' : 'Private' }}</chip>
           </template>
         </div>
         <chevron-right-icon class="h-6 w-6" />
-        <chip v-if="filter.action_func === 'add_label'" :background="labels.find(l => parseInt(l.id) === parseInt(filter.action_value))?.color">{{ labels.find(l => parseInt(l.id) === parseInt(filter.action_value))?.name }}</chip>
+        <chip v-if="filter.action_func === 'add_label'">
+          <BookmarkIcon class="w-4 h-4 text-gray-700 mr-1" :style="`color: ${labels.find(l => parseInt(l.id) === parseInt(filter.action_value))?.color}`" />
+          <span class="text-sm leading-3">{{ labels.find(l => parseInt(l.id) === parseInt(filter.action_value))?.name }}</span>
+        </chip>
         <chip v-else-if="filter.action_func === 'assign_to'">
           <img :src="staff.find(s => s.id === parseInt(filter.action_value))?.avatar" class="w-4 h-4 rounded-full mr-1">
           {{ staff.find(s => s.id === parseInt(filter.action_value))?.name }}
@@ -124,7 +139,7 @@
 </template>
 
 <script>
-import store from '@/store'
+import moment from 'moment'
 import axios from 'axios'
 import { mapState, mapMutations } from 'vuex'
 
@@ -141,18 +156,24 @@ import {
 import {
   PlusIcon,
   ChevronRightIcon,
-  ExclamationCircleIcon
+  ExclamationCircleIcon,
+  DocumentTextIcon,
+  ClockIcon,
+  BookmarkIcon
 } from '@heroicons/vue/solid'
 
 export default {
   components: {
     AutomationAction,
     AutomationCondition,
+    BookmarkIcon,
+    DocumentTextIcon,
     PlusIcon,
     ChevronRightIcon,
     TrashIcon,
     SelectorIcon,
     Chip,
+    ClockIcon,
     NotificationAutomation,
     RemoveDialog,
     ExclamationCircleIcon
@@ -200,6 +221,9 @@ export default {
   },
   methods: {
     ...mapMutations('automation', ['removeFilterCondition']),
+    moment: (date) => {
+      return moment(date).calendar()
+    },
     cancel () {
       this.open = false
       this.$emit('update')

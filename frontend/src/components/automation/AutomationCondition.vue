@@ -4,7 +4,7 @@
     <SelectInput class="col-span-1" v-model="selectedOption" :data="options" :emptyLabel="!selectedType ? 'First choose field' : 'Choose option'" :disabled="!selectedType" />
     <SelectInput class="col-span-1 sm:col-span-2 lg:col-span-1" v-if="selectedType?.input === 'labels'" v-model="selectedValue" :data="labels" :emptyLabel="!selectedType ? 'First choose field' : 'Choose value'" :disabled="!selectedType" />
     <div v-else-if="selectedType?.input === 'datetime'" class="mt-1 col-span-1 sm:col-span-2 lg:col-span-1">
-      <input v-model="selectedValue" datepicker :id="`datepicker_${id}`" type="text" class="focus:ring-primary focus:border-primary block w-full sm:text-sm border-gray-300 rounded-md" placeholder="Select date">
+      <input v-model="selectedValue" type="datetime-local" class="focus:ring-primary focus:border-primary block w-full sm:text-sm border-gray-300 rounded-md" placeholder="Select date">
     </div>
     <div v-else-if="selectedType?.input !== 'none'" class="mt-1 col-span-1 sm:col-span-2 lg:col-span-1">
       <label for="value" class="sr-only">Value</label>
@@ -17,8 +17,6 @@
 import { mapState } from 'vuex'
 import axios from 'axios'
 import SelectInput from '@/components/inputs/SelectInput'
-
-import Datepicker from '@themesberg/tailwind-datepicker/dist/js/datepicker'
 
 const types = [
   {
@@ -99,19 +97,11 @@ export default {
     return { types }
   },
   async mounted () {
+    if (this.selectedType) this.options = this.selectedType.options
+
     await axios.get(`/api/inboxes/${this.inbox_id}/labels/all`).then(response => {
       this.labels = response.data
     })
-
-    /* Set random id */
-    // this.id = Math.random().toString(36).substr(2, 9)
-
-    /* Initialize datepicker */
-    // const datepickerEl = document.getElementById(`datepicker_${this.id}`)
-    // if (datepickerEl) {
-    //   console.log('test')
-    //   new Datepicker(datepickerEl)
-    // }
   },
   watch: {
     selectedType: {
@@ -169,11 +159,14 @@ export default {
       get () {
         if (this.selectedType?.input === 'labels')
           return this.labels.find(label => parseInt(label.id) === parseInt(this.condition?.evaluation_value))
+        if (this.selectedType?.input === 'datetime' && this.condition?.evaluation_value)
+          return new Date(this.condition?.evaluation_value)?.toISOString()?.split('.')[0]
 
         return this.condition?.evaluation_value
       },
       set (value) {
         if (this.selectedType?.input === 'labels') value = value.id
+        if (this.selectedType?.input === 'datetime' && value) value = new Date(value).toISOString()
         this.$store.commit('automation/setConditionEvaluationValue', {
           filterId: this.filterId,
           condition: this.condition,
