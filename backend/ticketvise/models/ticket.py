@@ -18,7 +18,6 @@ from django.dispatch import receiver
 from django.utils.translation import gettext_lazy as _
 from model_utils.managers import InheritanceManager
 
-from ticketvise import settings
 from ticketvise.middleware import CurrentUserMiddleware
 from ticketvise.models.label import Label
 from ticketvise.models.notification.assigned import TicketAssignedNotification
@@ -66,6 +65,7 @@ class Ticket(models.Model):
     is_pinned = models.DateTimeField(auto_now_add=False, null=True, default=None)
     pin_initiator = models.ForeignKey("User", on_delete=models.CASCADE, blank=True, null=True,
                                       related_name="pin_initiator")
+    email_message = models.TextField(null=True, blank=True)
     date_edited = models.DateTimeField(auto_now=True)
     date_created = models.DateTimeField(auto_now_add=True)
 
@@ -109,7 +109,7 @@ class Ticket(models.Model):
             self.status = Status.PENDING
         else:
             self.status = Status.ASSIGNED
-
+    
     @transaction.atomic
     def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
         """
@@ -201,7 +201,7 @@ def ticket_directory_path(instance, filename):
     return f"inboxes/{instance.ticket.inbox.id}/tickets/{instance.ticket.ticket_inbox_id}/attachments/{token_urlsafe(64)}/{filename}"
 
 class TicketAttachment(models.Model):
-    ticket = models.ForeignKey(Ticket, on_delete=models.CASCADE, related_name="attachments")
+    ticket = models.ForeignKey("Ticket", on_delete=models.CASCADE, related_name="attachments")
     file = models.FileField(upload_to=ticket_directory_path, max_length=1000)
     uploader = models.ForeignKey("User", on_delete=models.CASCADE, null=True)
     date_edited = models.DateTimeField(auto_now=True)
@@ -221,7 +221,7 @@ class TicketAttachment(models.Model):
 
 class TicketEvent(models.Model):
     objects = InheritanceManager()
-    ticket = models.ForeignKey(Ticket, on_delete=models.CASCADE)
+    ticket = models.ForeignKey("Ticket", on_delete=models.CASCADE)
     initiator = models.ForeignKey("User", on_delete=models.CASCADE, null=True)
     date_edited = models.DateTimeField(auto_now=True)
     date_created = models.DateTimeField(auto_now_add=True)

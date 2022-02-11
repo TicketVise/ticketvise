@@ -8,7 +8,6 @@ import random
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.response import Response
 
-
 def random_preselected_color():
     """Randomly selected a color from a pre-defined list. The colors are the 500 colors from tailwind."""
 
