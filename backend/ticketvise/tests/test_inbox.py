@@ -12,7 +12,7 @@ from ticketvise.models.user import User, Role
 class InboxTestCase(TransactionTestCase):
     def setUp(self):
         self.client = APIClient()
-        self.inbox = Inbox.objects.create(name="TestInbox", code="TestCode", color="#FF6600")
+        self.inbox = Inbox.objects.create(name="TestInbox", lti_context_label="TestCode", color="#FF6600")
 
         self.student = User.objects.create(username="student", password="test12345", email="student@ticketvise.com")
         self.student.add_inbox(self.inbox)

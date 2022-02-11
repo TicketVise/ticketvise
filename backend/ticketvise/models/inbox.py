@@ -51,7 +51,8 @@ class Inbox(models.Model):
                         * **users** -- Set of :class:`User` s belonging to the inbox.
     """
 
-    code = models.CharField(max_length=50, unique=True)
+    lti_context_label = models.CharField(max_length=255, null=True, blank=True)
+    lti_context_id = models.CharField(max_length=255, null=True, blank=True)
     name = models.CharField(max_length=100)
     color = models.CharField(max_length=7, validators=[validate_hex_color], default=random_preselected_color)
     image = models.ImageField(upload_to=inbox_directory_path, max_length=1000, null=True, blank=True)
@@ -89,6 +90,9 @@ class Inbox(models.Model):
     inbound_email_username = models.EmailField(null=True, blank=True)
     inbound_email_password = models.CharField(max_length=255, null=True, blank=True)
     inbound_email_use_oauth2 = models.BooleanField(default=False)
+
+    class Meta:
+        unique_together = ("lti_context_label", "lti_context_id")
 
     def round_robin_parameter_increase(self):
         """

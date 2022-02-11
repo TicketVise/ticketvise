@@ -31,7 +31,7 @@ class TicketTestCase(TransactionTestCase):
         :return: None.
         """
         self.client = APIClient()
-        self.inbox = Inbox.objects.create(name="TestInbox", code="TestCode", color="#FF6600")
+        self.inbox = Inbox.objects.create(name="TestInbox", lti_context_label="TestCode", color="#FF6600")
         self.student = User.objects.create(username="student", password="test12345", email="student@ticketvise.com")
         self.student.add_inbox(self.inbox)
         self.student.set_role_for_inbox(self.inbox, Role.GUEST)

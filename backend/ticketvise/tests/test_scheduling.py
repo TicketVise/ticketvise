@@ -20,7 +20,7 @@ class TicketTestCase(TestCase):
         """
         self.client = APIClient()
 
-        self.inbox = Inbox.objects.create(name="TestInbox", code="TestCode", color="#FF6600")
+        self.inbox = Inbox.objects.create(name="TestInbox", lti_context_label="TestCode", color="#FF6600")
 
         self.section1 = InboxSection.objects.create(code="1111", inbox=self.inbox)
         self.section2 = InboxSection.objects.create(code="2222", inbox=self.inbox)
