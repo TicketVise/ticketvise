@@ -7,7 +7,7 @@
     </div>
 
     <div class="flex-grow overflow-y-auto">
-      <div class="pt-2 space-y-2" :id="`${title}-tickets`">
+      <div class="pt-2 space-y-2 pb-2" :id="`${title}-tickets`">
         <ticket-card
           :key="ticket.id"
           :ticket="ticket"
@@ -43,7 +43,7 @@
 <style>
   .ticket-column {
     min-width: calc(100vw - 64px - 32px) !important;
-    height: calc((100vh - 216px) - 3rem);
+    /* height: calc((100vh - 216px) - 3rem); */
     scroll-snap-align: start;
   }
 
@@ -55,7 +55,7 @@
 
   @media screen and (min-width: 768px) {
     .ticket-column {
-      height: calc((100vh - 92px - 16px) - 3rem);
+      /* height: calc((100vh - 92px - 16px) - 3rem); */
     }
   }
 </style>
