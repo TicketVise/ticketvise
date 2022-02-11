@@ -7,7 +7,7 @@
     </div>
 
     <div class="flex-grow overflow-y-auto">
-      <div class="pt-2 space-y-2" :id="`${title}-tickets`">
+      <div class="pt-2 space-y-2 pb-2" :id="`${title}-tickets`">
         <ticket-card
           :key="ticket.id"
           :ticket="ticket"

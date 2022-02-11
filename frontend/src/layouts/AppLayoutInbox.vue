@@ -470,9 +470,7 @@
                         Staff only
                       </h3>
                       <div class="space-y-1">
-
-
-                                                <router-link
+                        <router-link
                           :to="'/inboxes/' + $route.params.inboxId + '/users'"
                           exact
                           class="text-gray-600 hover:bg-gray-50 hover:text-gray-900 dark:hover:bg-gray-700 dark:hover:text-white group flex items-center px-2 py-2 text-sm font-medium rounded-md"
