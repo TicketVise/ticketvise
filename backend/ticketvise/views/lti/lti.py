@@ -68,10 +68,11 @@ class LtiView(View):
                 inboxes = Inbox.objects.filter(lti_context_label=context_label)
                 if inboxes.count() > 1:
                     raise Exception("Multiple courses with the same LTI context label found. Please contact your network administrator.")
+                
                 inbox = inboxes.first()
-
                 inbox.lti_context_id = context_id
                 inbox.save()
+
                 logging.info(f"Migrated course {inbox.name} ({inbox.lti_context_label}) without lti_context_id to {inbox.lti_context_id}")
             elif "instructor" in user_roles:
                 inbox_name = form.cleaned_data["custom_course_name"]
