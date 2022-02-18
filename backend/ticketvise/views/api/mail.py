@@ -1,5 +1,4 @@
 import logging
-from pickle import TRUE
 import socket
 from django.shortcuts import redirect
 from rest_framework import serializers
