@@ -1,4 +1,5 @@
 import logging
+from pickle import TRUE
 import socket
 from django.shortcuts import redirect
 from rest_framework import serializers
@@ -48,6 +49,8 @@ class EmailSetupApiView(APIView):
     def delete(self, request, inbox_id):
         inbox = get_object_or_404(Inbox, pk=inbox_id)
 
+        inbox.enable_create_new_ticket_by_email = False
+        inbox.enable_reply_by_email = True # default
         inbox.email_enabled = False
         inbox.email_login_state = None
         inbox.email_access_token = None
@@ -92,6 +95,8 @@ class EmailCallbackApiView(APIView):
             return Response(status=status.HTTP_400_BAD_REQUEST)
 
         inbox.email_enabled = True
+        inbox.enable_create_new_ticket_by_email = True
+        inbox.enable_reply_by_email = True
         inbox.email_login_state = None
         inbox.inbound_email_server = "outlook.office365.com"
         inbox.inbound_email_use_oauth2 = True
