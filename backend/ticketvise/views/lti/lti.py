@@ -75,10 +75,10 @@ class LtiView(View):
 
         user_role = Role.GUEST
 
-        if any("instructor" in s for s in user_roles):
+        if any(s.lower() in ["instructor", "administrator"] for s in user_roles):
             user_role = Role.MANAGER
 
-        if any("teachingassistant" in s for s in user_roles):
+        if any("teachingassistant" in s.lower() for s in user_roles):
             user_role = Role.AGENT
 
         relation = UserInbox.objects.filter(user=user, inbox=inbox).first()
