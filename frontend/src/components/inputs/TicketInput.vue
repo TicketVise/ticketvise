@@ -11,6 +11,8 @@ import '@toast-ui/editor-plugin-code-syntax-highlight/dist/toastui-editor-plugin
 
 import codeSyntaxHighlight from '@toast-ui/editor-plugin-code-syntax-highlight/dist/toastui-editor-plugin-code-syntax-highlight-all.js'
 
+import {HTMLRenderer} from './render'
+
 export default {
   props: {
     modelValue: {
@@ -41,7 +43,8 @@ export default {
           ['ul', 'ol', 'task', 'indent', 'outdent'],
           ['table', 'link'],
           ['code', 'codeblock']
-        ]
+        ],
+        customHTMLRenderer: HTMLRenderer
       })
     })
 
