@@ -11,7 +11,7 @@ import '@toast-ui/editor-plugin-code-syntax-highlight/dist/toastui-editor-plugin
 
 import codeSyntaxHighlight from '@toast-ui/editor-plugin-code-syntax-highlight/dist/toastui-editor-plugin-code-syntax-highlight-all.js'
 
-import {HTMLRenderer} from './render'
+import {LatexPlugin} from './latex'
 
 export default {
   props: {
@@ -33,7 +33,7 @@ export default {
         usageStatistics: false,
         initialEditType: 'wysiwyg',
         previewStyle: 'vertical',
-        plugins: [[codeSyntaxHighlight, { highlighter: Prism }]],
+        plugins: [[codeSyntaxHighlight, { highlighter: Prism }], LatexPlugin],
         events: {
           change: () => emit('update:modelValue', e.getMarkdown())
         },
@@ -43,8 +43,7 @@ export default {
           ['ul', 'ol', 'task', 'indent', 'outdent'],
           ['table', 'link'],
           ['code', 'codeblock']
-        ],
-        customHTMLRenderer: HTMLRenderer
+        ]
       })
     })
 
