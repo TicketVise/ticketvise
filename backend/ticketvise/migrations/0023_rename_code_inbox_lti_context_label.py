@@ -18,7 +18,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='inbox',
             name='lti_context_id',
-            field=models.CharField(blank=True, max_length=255, null=True),
+            field=models.CharField(blank=True, max_length=255, null=True, unique=True),
         ),
         migrations.AlterField(
             model_name='inbox',

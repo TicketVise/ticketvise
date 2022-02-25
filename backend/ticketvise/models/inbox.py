@@ -7,6 +7,7 @@ Contains all entity sets for the inbox database.
 * :class:`Inbox`
 """
 import logging
+from re import T
 from secrets import token_urlsafe
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django.db import models
@@ -52,7 +53,7 @@ class Inbox(models.Model):
     """
 
     lti_context_label = models.CharField(max_length=255, null=True, blank=True)
-    lti_context_id = models.CharField(max_length=255, null=True, blank=True)
+    lti_context_id = models.CharField(max_length=255, null=True, blank=True, unique=True)
     name = models.CharField(max_length=100)
     color = models.CharField(max_length=7, validators=[validate_hex_color], default=random_preselected_color)
     image = models.ImageField(upload_to=inbox_directory_path, max_length=1000, null=True, blank=True)
