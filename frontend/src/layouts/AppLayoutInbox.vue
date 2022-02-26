@@ -107,7 +107,7 @@
                   exact
                   class="text-gray-600 group flex items-center justify-center h-12 w-12 p-3 text-sm font-medium rounded-full focus:ring ring-primary"
                   active-class="bg-gray-100 text-gray-900 dark:bg-gray-800 dark:text-gray-700"
-                  :title="is_staff ? 'Overview' : 'Your questions'"
+                  :title="is_staff ? 'Private questions' : 'Your questions'"
                 >
                   <!-- Heroicon name: outline/home -->
                   <svg
@@ -420,7 +420,8 @@
 
                   <nav class="flex-1 px-2 bg-white dark:bg-gray-900 space-y-1">
                     <router-link
-                      :to="`/inboxes/${$route.params.inboxId}/tickets`"
+                      v-if="is_staff"
+                      :to="`/inboxes/${$route.params.inboxId}/overview`"
                       exact
                       class="text-gray-600 hover:bg-gray-50 hover:text-gray-900 dark:hover:bg-gray-700 dark:hover:text-white group flex items-center px-2 py-2 text-sm font-medium rounded-md"
                       active-class="bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-white"
@@ -441,7 +442,20 @@
                           d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"
                         />
                       </svg>
-                      {{ is_staff ? 'Overview' : 'Your tickets' }}
+                      Overview
+                    </router-link>
+
+                    <router-link
+                      :to="`/inboxes/${$route.params.inboxId}/tickets`"
+                      exact
+                      class="text-gray-600 hover:bg-gray-50 hover:text-gray-900 dark:hover:bg-gray-700 dark:hover:text-white group flex items-center px-2 py-2 text-sm font-medium rounded-md"
+                      active-class="bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-white"
+                    >
+                      <!-- Heroicon name: outline/lock -->
+                      <svg xmlns="http://www.w3.org/2000/svg" class="text-gray-400 group-hover:text-gray-500 dark:group-hover:text-gray-400 mr-3 h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                      </svg>
+                      {{ is_staff ? 'Private tickets' : 'Your tickets' }}
                     </router-link>
 
                     <router-link
@@ -472,7 +486,6 @@
                       <div class="space-y-1">
                         <router-link
                           :to="'/inboxes/' + $route.params.inboxId + '/users'"
-                          exact
                           class="text-gray-600 hover:bg-gray-50 hover:text-gray-900 dark:hover:bg-gray-700 dark:hover:text-white group flex items-center px-2 py-2 text-sm font-medium rounded-md"
                           active-class="bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-white"
                         >
