@@ -26,12 +26,12 @@
                   <TicketInputViewer v-if="item" :content="item.comment" />
                 </div>
                 <div class="mt-2 text-sm flex space-x-2">
-                  <button @click="helpful(item.id)" class="inline-flex items-center px-3 py-0.5 rounded-full text-sm border text-primary" :class="item?.helpful === 'helpful' ? 'font-medium' : ''">
+                  <button @click="helpful(item.id)" class="inline-flex items-center px-3 py-0.5 rounded-full text-sm border text-primary hover:bg-primary-50" :class="item?.helpful === 'helpful' ? 'font-medium border-primary' : ''">
                     <ThumbUpSolidIcon v-if="item?.helpful === 'helpful'" class="h-4 w-4 text-primary mr-1" />
                     <ThumbUpOutlineIcon v-else class="h-4 w-4 text-primary mr-1" />
                     Helpful
                   </button>
-                  <button @click="notHelpful(item.id)" class="inline-flex items-center px-3 py-0.5 rounded-full text-sm border text-primary" :class="item?.helpful === 'notHelpful' ? 'font-medium' : ''">
+                  <button @click="notHelpful(item.id)" class="inline-flex items-center px-3 py-0.5 rounded-full text-sm border text-primary hover:bg-primary-50" :class="item?.helpful === 'notHelpful' ? 'font-medium border-primary' : ''">
                     <ThumbDownSolidIcon v-if="item?.helpful === 'notHelpful'" class="h-4 w-4 text-primary mr-1" />
                     <ThumbDownOutlineIcon v-else class="h-4 w-4 text-primary mr-1" />
                     Not Helpful

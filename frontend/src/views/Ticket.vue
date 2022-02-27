@@ -658,7 +658,7 @@ export default {
     helpful (helpful, id) {
       for (let i = 0; i < this.ticket.activity.length; i++) {
         if (this.ticket.activity[i].id === id) {
-          this.ticket.activity[i].helpful = helpful
+          this.ticket.activity[i].helpful = this.ticket.activity[i].helpful === helpful ? !helpful : helpful
         }
       }
     }
