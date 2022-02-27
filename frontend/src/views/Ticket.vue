@@ -148,7 +148,7 @@
               <div class="pb-2 border-b mb-4 xl:pb-0 xl:border-b-0 xl:mb-0">
                 <!-- Activity feed -->
                 <activity-feed :ticket="ticket" :permissions="isStaffOrAuthor" v-if="tabs.find(t => t.current).name === 'Activity' && ticket"
-                               v-on:post="loadTicketData" v-on:helpful="helpful"/>
+                               v-on:post="loadTicketData" v-on:helpful="helpful" v-on:unfold="unfold"/>
                 <!-- Staff discussion -->
                 <staff-discussion :ticket="ticket" v-if="tabs.find(t => t.current).name === 'Staff discussion'"
                                   v-on:post="loadTicketData"/>
@@ -366,6 +366,7 @@ import {
 } from '@heroicons/vue/outline'
 
 export default {
+  name: 'Ticket',
   components: {
     ActivityFeed,
     Attachments,
@@ -537,6 +538,9 @@ export default {
           this.tabs.find(t => t.name === 'Staff discussion').count = this.ticket.comments.length
           this.tabs.find(t => t.name === 'Attachments').count = this.ticket.attachments.length
 
+          /* Hide too many system messages. Make sure the focus is on the comments. */
+          this.ticket.activity = this.crampActivities(this.ticket.activity)
+
           /* Check list of tags. */
           this.ticket.inbox.labels = this.ticket.inbox.labels.map(l => {
             if (l.name in this.ticket.labels.map(l => l.name)) l.selected = true
@@ -566,6 +570,41 @@ export default {
       })
 
       if (lastActivity) newActivities.push(lastActivity)
+
+      return newActivities
+    },
+    crampActivities (activities) {
+      const newActivities = []
+      let groupActivities = []
+
+      activities.forEach(activity => {
+        if (activity && activity.type === 'comment') {
+          if (groupActivities.length === 1) {
+            newActivities.push(groupActivities[0])
+            groupActivities = []
+          } else if (groupActivities.length > 1) {
+            newActivities.push({
+              id: groupActivities[0].id,
+              type: 'group',
+              activities: groupActivities
+            })
+            groupActivities = []
+          }
+          newActivities.push(activity)
+        } else {
+          groupActivities.push(activity)
+        }
+      })
+
+      if (groupActivities.length === 1) {
+        newActivities.push(groupActivities[0])
+      } else if (groupActivities.length > 1) {
+        newActivities.push({
+          id: groupActivities[0].id,
+          type: 'group',
+          activities: groupActivities
+        })
+      }
 
       return newActivities
     },
@@ -661,6 +700,10 @@ export default {
           this.ticket.activity[i].helpful = this.ticket.activity[i].helpful === helpful ? !helpful : helpful
         }
       }
+    },
+    unfold (activity) {
+      const index = this.ticket.activity.findIndex(a => a.id === activity.id)
+      this.ticket.activity.splice(index, 1, ...activity.activities)
     }
   },
   computed: {

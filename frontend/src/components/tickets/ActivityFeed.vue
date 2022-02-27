@@ -1,7 +1,7 @@
 <template>
   <div class="flow-root">
     <ul class="-mb-8">
-      <li v-for="(item, itemIdx) in ticket?.activity" :key="item.id">
+      <li v-for="(item, itemIdx) in ticket?.activity" :key="item">
         <div class="relative pb-8">
           <span v-if="(itemIdx !== ticket.activity.length - 1)"
                 class="absolute top-5 left-5 -ml-px h-full w-0.5 bg-gray-200" aria-hidden="true"/>
@@ -151,6 +151,20 @@
                     <p class="block text-sm font-medium text-gray-500 pointer-events-none">{{ readableBytes(attachment.size) }}</p>
                   </li>
                 </ul>
+              </div>
+            </template>
+            <template v-else-if="item.type === 'group'" condition="item.type === 'group'">
+              <div>
+                <div class="relative px-1">
+                  <div class="h-8 w-8 bg-gray-100 rounded-full ring-8 ring-white flex items-center justify-center">
+                    <CollectionIcon class="h-5 w-5 text-gray-500" aria-hidden="true"/>
+                  </div>
+                </div>
+              </div>
+              <div class="min-w-0 flex-1 py-0">
+                <div class="text-sm leading-8 text-gray-500">
+                  <button @click="$emit('unfold', item)" class="font-medium hover:underline">View {{ item.activities.length }} grouped changes</button>
+                </div>
               </div>
             </template>
           </div>
