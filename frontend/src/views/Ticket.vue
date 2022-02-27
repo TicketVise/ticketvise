@@ -148,7 +148,7 @@
               <div class="pb-2 border-b mb-4 xl:pb-0 xl:border-b-0 xl:mb-0">
                 <!-- Activity feed -->
                 <activity-feed :ticket="ticket" :permissions="isStaffOrAuthor" v-if="tabs.find(t => t.current).name === 'Activity' && ticket"
-                               v-on:post="loadTicketData"/>
+                               v-on:post="loadTicketData" v-on:helpful="helpful"/>
                 <!-- Staff discussion -->
                 <staff-discussion :ticket="ticket" v-if="tabs.find(t => t.current).name === 'Staff discussion'"
                                   v-on:post="loadTicketData"/>
@@ -654,6 +654,13 @@ export default {
     },
     assignUser () {
       this.updateAssignee(this.user)
+    },
+    helpful (helpful, id) {
+      for (let i = 0; i < this.ticket.activity.length; i++) {
+        if (this.ticket.activity[i].id === id) {
+          this.ticket.activity[i].helpful = helpful
+        }
+      }
     }
   },
   computed: {
