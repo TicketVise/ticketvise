@@ -150,9 +150,9 @@ import { mapState } from 'vuex'
 import _ from 'lodash'
 import moment from 'moment'
 
-import SearchBar from '@/components/searchbar/SearchBar'
-import TicketColumn from '@/components/tickets/TicketColumn'
-import LabelDropdown from '@/components/dropdown/LabelDropdown'
+import SearchBar from '@/components/searchbar/SearchBar.vue'
+import TicketColumn from '@/components/tickets/TicketColumn.vue'
+import LabelDropdown from '@/components/dropdown/LabelDropdown.vue'
 
 import {
   ChevronRightIcon

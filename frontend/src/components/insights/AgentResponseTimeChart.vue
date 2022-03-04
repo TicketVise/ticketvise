@@ -7,7 +7,7 @@
 
 <script>
 import axios from 'axios'
-import HorizontalBarChart from './HorizontalBarChart'
+import HorizontalBarChart from './HorizontalBarChart.vue'
 import moment from 'moment'
 
 export default {

@@ -122,7 +122,7 @@ import { BellIcon, ExternalLinkIcon } from '@heroicons/vue/outline'
 
 import DevelopPanel from '@/components/devpanel/DevelopPanel.vue'
 
-const logo = require('@/assets/logo/logo.svg')
+import Logo from '@/assets/logo/logo.svg'
 
 export default {
   name: 'AppLayoutGeneral',
@@ -137,14 +137,14 @@ export default {
   },
   setup () {
     return {
-      logo
+      Logo
     }
   },
   computed: {
     ...mapState({
       user: state => state.user
     }),
-    development: () => process.env.NODE_ENV !== 'production'
+    development: () => import.meta.env.DEV
   },
   methods: {
     logout () {

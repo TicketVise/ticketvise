@@ -56,12 +56,12 @@
 
 <script>
   import axios from 'axios'
-  import WelcomeModal from './WelcomeModal'
-  import FinishedModal from './FinishedModal'
-  import StatisticsModal from './StatisticsModal'
-  import LabelsModal from './LabelsModal'
-  import SchedulingModal from './SchedulingModal'
-  import OverviewModal from './OverviewModal'
+  import WelcomeModal from './WelcomeModal.vue'
+  import FinishedModal from './FinishedModal.vue'
+  import StatisticsModal from './StatisticsModal.vue'
+  import LabelsModal from './LabelsModal.vue'
+  import SchedulingModal from './SchedulingModal.vue'
+  import OverviewModal from './OverviewModal.vue'
 
   export default {
     name: 'GettingStarted',

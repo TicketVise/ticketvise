@@ -77,7 +77,7 @@ import {
   ChatAltIcon
 } from '@heroicons/vue/solid'
 
-const Relax = require('@/assets/img/svg/relax.svg')
+import Relax from '@/assets/img/svg/relax.svg'
 
 export default {
   components: { ChatAltIcon },

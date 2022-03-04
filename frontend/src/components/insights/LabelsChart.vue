@@ -7,7 +7,7 @@
 
 <script>
 import axios from 'axios'
-import DoughnutChart from './DoughnutChart'
+import DoughnutChart from './DoughnutChart.vue'
 
 export default {
   components: { DoughnutChart },

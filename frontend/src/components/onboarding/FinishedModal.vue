@@ -29,12 +29,12 @@
 </template>
 
 <script>
-const image = require('@/assets/img/svg/celebration.svg')
+import Celebration from '@/assets/img/svg/celebration.svg'
 
 export default {
   name: 'FinishedModal',
   setup () {
-    return { image }
+    return { Celebration }
   }
 }
 </script>
