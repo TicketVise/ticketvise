@@ -74,7 +74,7 @@
 import axios from 'axios'
 import { XCircleIcon } from '@heroicons/vue/solid'
 
-import Mailbox from '@/assets/img/svg/mailbox.svg'
+import Mailbox from '@/assets/img/svg/mailbox.svg?url'
 
   export default {
     name: 'EmailConnectModal',

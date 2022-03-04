@@ -360,8 +360,8 @@ import {
   TrashIcon
 } from '@heroicons/vue/outline'
 
-import Empty from '@/assets/img/svg/empty.svg'
-import BlankCanvas from '@/assets/img/svg/blank_canvas.svg'
+import Empty from '@/assets/img/svg/empty.svg?url'
+import BlankCanvas from '@/assets/img/svg/blank_canvas.svg?url'
 
 export default {
   name: 'Users',

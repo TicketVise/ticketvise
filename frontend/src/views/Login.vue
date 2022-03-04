@@ -121,9 +121,9 @@
 <script>
 import { ExclamationIcon } from '@heroicons/vue/solid'
 
-import Logo from '@/assets/logo/logo.svg'
+import Logo from '@/assets/logo/logo.svg?url'
 import SurfConext from '@/assets/img/ext/surfconext.png'
-import Canvas from '@/assets/img/ext/canvas.svg'
+import Canvas from '@/assets/img/ext/canvas.svg?url'
 
 export default {
   name: 'Login',

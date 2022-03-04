@@ -751,7 +751,7 @@ import {
   ExternalLinkIcon
 } from '@heroicons/vue/outline'
 
-import Logo from '@/assets/logo/logo.svg'
+import Logo from '@/assets/logo/logo.svg?url'
 
 export default {
   components: {

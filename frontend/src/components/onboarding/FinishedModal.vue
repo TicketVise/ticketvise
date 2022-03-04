@@ -29,7 +29,7 @@
 </template>
 
 <script>
-import Celebration from '@/assets/img/svg/celebration.svg'
+import Celebration from '@/assets/img/svg/celebration.svg?url'
 
 export default {
   name: 'FinishedModal',

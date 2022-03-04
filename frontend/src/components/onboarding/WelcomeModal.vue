@@ -30,7 +30,7 @@
 </template>
 
 <script>
-import Options from '@/assets/img/svg/options.svg'
+import Options from '@/assets/img/svg/options.svg?url'
 
 export default {
   name: 'WelcomeModal',
