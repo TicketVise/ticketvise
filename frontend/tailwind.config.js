@@ -6,7 +6,6 @@ module.exports = {
     "./src/**/*.{vue,js,ts,jsx,tsx}",
   ],
   mode: 'jit',
-  purge: { content: ['./public/**/*.html', './src/**/*.vue'] },
   darkMode: false, // 'class'
   theme: {
     extend: {
@@ -37,6 +36,7 @@ module.exports = {
   plugins: [
     require('@tailwindcss/forms'),
     require('@tailwindcss/line-clamp'),
-    require('@tailwindcss/aspect-ratio')
+    require('@tailwindcss/aspect-ratio'),
+    require('@tailwindcss/typography')
   ]
 }
