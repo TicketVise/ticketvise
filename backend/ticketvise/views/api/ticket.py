@@ -227,7 +227,7 @@ class InboxTicketsApiView(ListAPIView):
         return JsonResponse(data=columns, safe=False)
 
     def search_tickets(self, q, inbox):
-        query = SearchQuery(q)
+        query = SearchQuery(f"'{q}' & '{q}':*", search_type="raw")
 
         # Load comments and replies if permissions are right, else load only replies.
         is_reply = [True]
