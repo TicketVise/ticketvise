@@ -44,7 +44,7 @@ services:
       SMTP_OUTBOUND_PASSWORD: ${EMAIL_PASSWORD}
       SQL_HOST: database
       SQL_DATABASE: ticketvise
-      SQL_ENGINE: django.db.backends
+      SQL_ENGINE: django.db.backends.postgresql
       SQL_USER: ${SQL_USER}
       SQL_PASSWORD: ${SQL_PASSWORD}
       LTI_KEY: ${LTI_KEY}
