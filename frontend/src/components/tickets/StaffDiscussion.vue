@@ -75,8 +75,8 @@ import axios from 'axios'
 import {
   ChatAltIcon
 } from '@heroicons/vue/solid'
-import TicketInput from '@/components/inputs/TicketInput'
-import TicketInputViewer from '@/components/inputs/TicketInputViewer'
+import TicketInput from '@/components/inputs/TicketInput.vue'
+import TicketInputViewer from '@/components/inputs/TicketInputViewer.vue'
 
 import Relax from '@/assets/img/svg/relax.svg?url'
 
