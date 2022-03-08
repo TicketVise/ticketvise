@@ -194,7 +194,7 @@ class LtiTestCase(TestCase):
                                      content_type="application/x-www-form-urlencoded")
         self.assertEqual(response1.status_code, 302)
 
-        inbox = Inbox.objects.get(code=self.data["context_label"])
+        inbox = Inbox.objects.get(lti_context_label=self.data["context_label"])
         user = User.objects.get(lti_id=self.data["user_id"])
 
         section = InboxSection.objects.get(code="1234", inbox=inbox)
@@ -224,3 +224,24 @@ class LtiTestCase(TestCase):
         self.assertIsNotNone(section)
         inbox_user_section = InboxUserSection.objects.get(section=section, user=user)
         self.assertIsNotNone(inbox_user_section)
+
+    def test_lti_migrate_context_id(self):
+        """
+        Tests if the LTI context id is 
+
+        :return: None.
+        """
+        # Initial inbox creation.
+        Inbox.objects.create(lti_context_label=self.data["context_label"],
+                             lti_context_id=None,
+                             name=self.data["context_title"])
+
+        # Try to migrate the context id.
+        signed_data = self.sign_data("POST", "/lti", self.data)
+        response = self.client.post("/lti", signed_data,
+                                     content_type="application/x-www-form-urlencoded")
+        self.assertEqual(response.status_code, 302)
+
+        # Inbx should be migrated.
+        inbox = Inbox.objects.filter(lti_context_label=self.data["context_label"]).first()
+        self.assertEqual(inbox.lti_context_id, self.data["context_id"])

@@ -12,7 +12,7 @@ from ticketvise.models.user import User, Role
 class InboxTestCase(TransactionTestCase):
     def setUp(self):
         self.client = APIClient()
-        self.inbox = Inbox.objects.create(name="TestInbox", code="TestCode", color="#FF6600")
+        self.inbox = Inbox.objects.create(name="TestInbox", lti_context_label="TestCode", color="#FF6600")
 
         self.student = User.objects.create(username="student", password="test12345", email="student@ticketvise.com")
         self.student.add_inbox(self.inbox)
@@ -65,3 +65,13 @@ class InboxTestCase(TransactionTestCase):
 
         self.assertFalse(data["has_next"])
         self.assertEqual(len(data["results"]), 1)
+
+    def test_can_create_multiple_without_lti_info(self):
+        # Test to see what happens when the unique columns are NULL.
+        inbox_1 = Inbox.objects.create(name="1")
+        inbox_2 = Inbox.objects.create(name="2")
+
+        self.assertIsNone(inbox_1.lti_context_id)
+        self.assertIsNone(inbox_1.lti_context_label)
+        self.assertIsNone(inbox_2.lti_context_id)
+        self.assertIsNone(inbox_2.lti_context_label)
