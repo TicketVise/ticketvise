@@ -355,7 +355,6 @@ import SearchBar from '@/components/searchbar/SearchBar.vue'
 import axios from 'axios'
 import { debounce } from 'lodash'
 import { Menu, MenuButton, MenuItem, MenuItems, Switch, SwitchDescription, SwitchGroup, SwitchLabel } from '@headlessui/vue'
-
 import {
   TrashIcon
 } from '@heroicons/vue/outline'
