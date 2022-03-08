@@ -27,7 +27,8 @@ export default {
     onMounted(() => {
       e = new Editor({
         el: editor.value,
-        height: '300px',
+        minHeight: '300px',
+        height: 'auto',
         usageStatistics: false,
         initialEditType: 'wysiwyg',
         previewStyle: 'vertical',
