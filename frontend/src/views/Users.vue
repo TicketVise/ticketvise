@@ -350,8 +350,8 @@
 </template>
 
 <script>
-import TicketCard from '@/components/tickets/TicketCard'
-import SearchBar from '@/components/searchbar/SearchBar'
+import TicketCard from '@/components/tickets/TicketCard.vue'
+import SearchBar from '@/components/searchbar/SearchBar.vue'
 import axios from 'axios'
 import { debounce } from 'lodash'
 import { Menu, MenuButton, MenuItem, MenuItems, Switch, SwitchDescription, SwitchGroup, SwitchLabel } from '@headlessui/vue'
