@@ -106,16 +106,16 @@ class Command(BaseCommand):
 
         # Creating Courses
         inbox_pse = Inbox.objects.create(
-            code="5062STRE6Y", name="Project Software Engineering", round_robin_parameter=4, inbound_email_username="pse@ticketvise.com",
+            lti_context_label="5062STRE6Y", name="Project Software Engineering", round_robin_parameter=4, inbound_email_username="pse@ticketvise.com",
             enable_create_new_ticket_by_email=True, enable_reply_by_email=True
         )
-        inbox_ip = Inbox.objects.create(code="5062BEST6Y", name="Inleiding Programmeren")
-        inbox_ds = Inbox.objects.create(code="2020DS1864", name="Datastructuren")
+        inbox_ip = Inbox.objects.create(lti_context_label="5062BEST6Y", name="Inleiding Programmeren")
+        inbox_ds = Inbox.objects.create(lti_context_label="2020DS1864", name="Datastructuren")
 
-        inbox_pt = Inbox.objects.create(code="5061DAVI5Y", name="Programmeertalen")
-        inbox_mp = Inbox.objects.create(code="5061GAVI5Y", name="Master's Project")
+        inbox_pt = Inbox.objects.create(lti_context_label="5061DAVI5Y", name="Programmeertalen")
+        inbox_mp = Inbox.objects.create(lti_context_label="5061GAVI5Y", name="Master's Project")
         inbox_pmpse = Inbox.objects.create(
-            code="5061VEVI5Y", name="Preparation Master's Project Software Engineering"
+            lti_context_label="5061VEVI5Y", name="Preparation Master's Project Software Engineering"
         )
 
         # Creating Labels

@@ -65,7 +65,7 @@ def create_inbox(name="", code="", color=""):
     code = code or random_string()
     color = color or random_color()
 
-    return Inbox.objects.create(name=name, code=code, color=color)
+    return Inbox.objects.create(name=name, lti_context_label=code, color=color)
 
 
 def create_label(inbox=None, name="", color="", is_visible_to_guest=True, is_active=True):
