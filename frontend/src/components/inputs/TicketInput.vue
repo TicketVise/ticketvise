@@ -11,6 +11,8 @@ import '@toast-ui/editor-plugin-code-syntax-highlight/dist/toastui-editor-plugin
 
 import codeSyntaxHighlight from '@toast-ui/editor-plugin-code-syntax-highlight/dist/toastui-editor-plugin-code-syntax-highlight-all.js'
 
+import {LatexPlugin, createFormulaButton} from './latex'
+
 export default {
   props: {
     modelValue: {
@@ -32,7 +34,7 @@ export default {
         usageStatistics: false,
         initialEditType: 'wysiwyg',
         previewStyle: 'vertical',
-        plugins: [[codeSyntaxHighlight, { highlighter: Prism }]],
+        plugins: [[codeSyntaxHighlight, { highlighter: Prism }], LatexPlugin],
         events: {
           change: () => emit('update:modelValue', e.getMarkdown())
         },
@@ -44,6 +46,13 @@ export default {
           ['code', 'codeblock']
         ]
       })
+
+      e.insertToolbarItem({ groupIndex: 1, itemIndex: 2 }, {
+        el: createFormulaButton(e),
+        tooltip: 'Insert formula block',
+        className: 'katex mathnormal',
+      });
+      
     })
 
     expose({
