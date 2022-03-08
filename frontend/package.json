@@ -21,6 +21,7 @@
     "@toast-ui/editor-plugin-code-syntax-highlight": "^3.0.0",
     "axios": "^0.26.0",
     "chart.js": "^3.7.1",
+    "katex": "^0.15.2",
     "moment": "^2.29.1",
     "prismjs": "^1.27.0",
     "register-service-worker": "^1.7.2",
