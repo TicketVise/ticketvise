@@ -6,7 +6,7 @@ module.exports = {
     "./src/**/*.{vue,js,ts,jsx,tsx}",
   ],
   mode: 'jit',
-  darkMode: false, // 'class'
+  darkMode: 'class',
   theme: {
     extend: {
       colors: {
