@@ -122,7 +122,7 @@ import { BellIcon, ExternalLinkIcon } from '@heroicons/vue/outline'
 
 import DevelopPanel from '@/components/devpanel/DevelopPanel.vue'
 
-import Logo from '@/assets/logo/logo.svg?url'
+import logo from '@/assets/logo/logo.svg?url'
 
 export default {
   name: 'AppLayoutGeneral',
@@ -137,7 +137,7 @@ export default {
   },
   setup () {
     return {
-      Logo
+      logo
     }
   },
   computed: {

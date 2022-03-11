@@ -29,12 +29,12 @@
 </template>
 
 <script>
-import Celebration from '@/assets/img/svg/celebration.svg?url'
+import image from '@/assets/img/svg/celebration.svg?url'
 
 export default {
   name: 'FinishedModal',
   setup () {
-    return { Celebration }
+    return { image }
   }
 }
 </script>

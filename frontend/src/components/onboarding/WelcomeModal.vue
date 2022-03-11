@@ -30,12 +30,12 @@
 </template>
 
 <script>
-import Options from '@/assets/img/svg/options.svg?url'
+import image from '@/assets/img/svg/options.svg?url'
 
 export default {
   name: 'WelcomeModal',
   setup () {
-    return { Options }
+    return { image }
   }
 }
 </script>
