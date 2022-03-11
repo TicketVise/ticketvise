@@ -1,8 +1,9 @@
 <template>
-  <doughnut-chart
+  <DoughnutChart
     v-if="data"
     :data="data"
-    :options="options" />
+    :options="options"
+    :height="this.height ? this.height : 400" />
 </template>
 
 <script>
