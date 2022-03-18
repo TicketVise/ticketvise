@@ -1,12 +1,9 @@
-const colors = require('tailwindcss/colors')
-
 module.exports = {
   content: [
     "./index.html",
     "./src/**/*.{vue,js,ts,jsx,tsx}",
   ],
-  mode: 'jit',
-  darkMode: 'class',
+  // darkMode: 'class',
   theme: {
     extend: {
       colors: {
@@ -19,11 +16,6 @@ module.exports = {
         'primary-500': '#dd6b20',
         'primary-600': '#CF651E',
         'primary-700': '#BF5D1B',
-        'light-blue': colors.lightBlue,
-        teal: colors.teal,
-        cyan: colors.cyan,
-        rose: colors.rose,
-        sky: colors.sky
       },
       fontFamily: {
         'ticketvise': ['Raleway', 'sans-serif']
