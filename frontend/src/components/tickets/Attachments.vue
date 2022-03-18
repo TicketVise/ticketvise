@@ -23,7 +23,7 @@ import axios from 'axios'
 import FileUpload from '@/components/inputs/FileInput.vue'
 import Error from '@/components/inputs/Error.vue'
 import Attachment from './Attachment.vue'
-import Upload from '@/assets/img/svg/upload.svg?url'
+import Upload from '@/assets/img/svg/upload.svg'
 
 export default {
   components: {
