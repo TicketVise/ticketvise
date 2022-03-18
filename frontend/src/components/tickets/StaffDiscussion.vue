@@ -78,7 +78,7 @@ import {
 import TicketInput from '@/components/inputs/TicketInput.vue'
 import TicketInputViewer from '@/components/inputs/TicketInputViewer.vue'
 
-import Relax from '@/assets/img/svg/relax.svgl'
+import Relax from '@/assets/img/svg/relax.svg'
 
 export default {
   components: { 
