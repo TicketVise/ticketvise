@@ -240,6 +240,6 @@ REST_FRAMEWORK = {
         'ticketvise.security.token.ExpiringTokenAuthentication',
     ),
     'DEFAULT_PERMISSION_CLASSES': (
-        'rest_framework.permissions.IsAuthenticated',
+        'rest_framework.permissions.IsAuthenticatedOrReadOnly',
     )
 }

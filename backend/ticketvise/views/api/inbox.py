@@ -261,9 +261,10 @@ class InboxMaterialSerializer(ModelSerializer):
 
 class InboxMaterialApiView(ListCreateAPIView):
     serializer_class = InboxMaterialSerializer
-    permission_classes = [UserIsInInboxPermission]
+    # permission_classes = [UserIsInInboxPermission]
 
     def get_queryset(self):
+        # return Response()
         return InboxMaterial.objects.filter(inbox=self.kwargs["inbox_id"])
 
     def post(self, request, *args, **kwargs):

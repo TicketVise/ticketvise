@@ -2,7 +2,7 @@
   <div class="w-full border border-gray-200 rounded pl-3 pr-4 py-3 flex text-sm leading-5 items-center">
     <documentIcon class="w-5 h-5 text-primary group-hover:text-primary-600" />
     <span class="w-full ml-2 flex-1 truncate text-gray-900">
-      {{ getFilename(attachment.file) }}<span class="text-gray-400">.{{ getExtension(attachment.file) }}</span>
+      {{ attachment ? getFilename(attachment.file) : '' }}<span class="text-gray-400">.{{ attachment ? getExtension(attachment.file) : '' }}</span>
     </span>
 
     <!-- More menu -->
