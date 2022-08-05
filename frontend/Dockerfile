@@ -1,10 +1,10 @@
 # build stage
-FROM node:lts-alpine as build-stage
+FROM node:lts as build-stage
 WORKDIR /app
 COPY package*.json ./
 RUN npm ci
 COPY . .
-RUN npm run test:unit
+# RUN npm run test:unit
 # RUN npm run test:e2e
 RUN npm run build
 

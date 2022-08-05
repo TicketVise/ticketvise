@@ -34,7 +34,7 @@
                     </span>
                   </label>
                   <div class="mt-1 flex">
-                    <input disabled v-model="inbox.code" type="text" name="code" id="code" autocomplete="name" class="cursor-not-allowed border rounded-md focus:ring-primary focus:border-primary flex-grow block w-full min-w-0 sm:text-sm border-gray-300" />
+                    <input disabled v-model="inbox.lti_context_label" type="text" name="code" id="code" autocomplete="name" class="cursor-not-allowed border rounded-md focus:ring-primary focus:border-primary flex-grow block w-full min-w-0 sm:text-sm border-gray-300" />
                   </div>
                 </div>
               </div>
@@ -196,6 +196,10 @@
               </button>
             </div>
           </div>
+
+          <div class="mt-4 py-4 px-4">
+            <Email :connected="inbox.is_email_setup" />
+          </div>
         </form>
       </div>
     </div>
@@ -251,6 +255,7 @@ import {
 } from '@headlessui/vue'
 import { CheckIcon, SelectorIcon, XIcon } from '@heroicons/vue/solid'
 import { CheckCircleIcon } from '@heroicons/vue/outline'
+import Email from '../components/settings/Email.vue'
 
 const closeTicketsOptions = [
   { name: 'Disabled', value: 0 },
@@ -286,7 +291,8 @@ export default {
     CheckIcon,
     SelectorIcon,
     CheckCircleIcon,
-    XIcon
+    XIcon,
+    Email
   },
   data () {
     return {

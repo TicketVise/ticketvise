@@ -29,7 +29,7 @@
 </template>
 
 <script>
-const image = require('@/assets/img/svg/celebration.svg')
+import image from '@/assets/img/svg/celebration.svg'
 
 export default {
   name: 'FinishedModal',

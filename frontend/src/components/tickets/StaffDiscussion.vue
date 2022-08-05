@@ -28,7 +28,7 @@
                   </div>
                   <div class="mt-2 text-sm text-gray-700">
                     <p>
-                      {{ item?.comment }}
+                      <TicketInputViewer v-if="item" :content="item.comment" />
                     </p>
                   </div>
                 </div>
@@ -56,8 +56,7 @@
         <div class="min-w-0 flex-1">
           <form @submit.prevent="submit">
             <div>
-              <label for="comment" class="sr-only">Comment</label>
-              <textarea v-model="comment" id="comment" name="comment" rows="3" class="block w-full focus:ring-gray-900 focus:border-gray-900 sm:text-sm border-gray-300 rounded-md" placeholder="Send a message"></textarea>
+              <TicketInput v-model="comment" ref="commentStaffInput" />
             </div>
             <div class="mt-6 flex items-center justify-end space-x-4">
               <button type="submit" class="inline-flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-primary hover:bg-orange-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-600">
@@ -76,11 +75,17 @@ import axios from 'axios'
 import {
   ChatAltIcon
 } from '@heroicons/vue/solid'
+import TicketInput from '@/components/inputs/TicketInput.vue'
+import TicketInputViewer from '@/components/inputs/TicketInputViewer.vue'
 
-const Relax = require('@/assets/img/svg/relax.svg')
+import Relax from '@/assets/img/svg/relax.svg'
 
 export default {
-  components: { ChatAltIcon },
+  components: { 
+    ChatAltIcon,
+    TicketInput,
+    TicketInputViewer,
+   },
   props: {
     ticket: {
       type: Object,
@@ -100,6 +105,7 @@ export default {
         .then(() => {
           this.$emit('post')
           this.comment = ''
+          this.$refs.commentStaffInput.setMarkdown('')
         })
     }
   },

@@ -43,9 +43,18 @@ class CustomUserAdmin(UserAdmin):
 class NotificationAdmin(admin.ModelAdmin):
     list_display = ('id', 'receiver', 'is_read', 'email_message_id', 'date_edited', 'date_created')
 
+
+@admin.action(description='Force sync email')
+def sync_inbox_email(modeladmin, request, queryset):
+    for inbox in queryset:
+        inbox.sync_email()
+class InboxAdmin(admin.ModelAdmin):
+    actions = [sync_inbox_email]
+
+
 # Register all models in the admin panel.
 admin.site.register(User, CustomUserAdmin)
-admin.site.register(Inbox)
+admin.site.register(Inbox, InboxAdmin)
 admin.site.register(InboxSection)
 admin.site.register(InboxUserSection)
 admin.site.register(UserInbox)

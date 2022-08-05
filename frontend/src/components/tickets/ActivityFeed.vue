@@ -206,9 +206,9 @@
 import axios from 'axios'
 import VueEasyLightbox from 'vue-easy-lightbox'
 
-import Chip from '@/components/chip/Chip'
-import TicketInput from '@/components/inputs/TicketInput'
-import TicketInputViewer from '@/components/inputs/TicketInputViewer'
+import Chip from '@/components/chip/Chip.vue'
+import TicketInput from '@/components/inputs/TicketInput.vue'
+import TicketInputViewer from '@/components/inputs/TicketInputViewer.vue'
 
 import {
   ChatAltIcon,

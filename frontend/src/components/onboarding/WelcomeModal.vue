@@ -30,7 +30,7 @@
 </template>
 
 <script>
-const image = require('@/assets/img/svg/options.svg')
+import image from '@/assets/img/svg/options.svg'
 
 export default {
   name: 'WelcomeModal',

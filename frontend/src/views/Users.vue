@@ -350,18 +350,17 @@
 </template>
 
 <script>
-import TicketCard from '@/components/tickets/TicketCard'
-import SearchBar from '@/components/searchbar/SearchBar'
+import TicketCard from '@/components/tickets/TicketCard.vue'
+import SearchBar from '@/components/searchbar/SearchBar.vue'
 import axios from 'axios'
 import { debounce } from 'lodash'
 import { Menu, MenuButton, MenuItem, MenuItems, Switch, SwitchDescription, SwitchGroup, SwitchLabel } from '@headlessui/vue'
-
 import {
   TrashIcon
 } from '@heroicons/vue/outline'
 
-const Empty = require('@/assets/img/svg/empty.svg')
-const BlankCanvas = require('@/assets/img/svg/blank_canvas.svg')
+import Empty from '@/assets/img/svg/empty.svg'
+import BlankCanvas from '@/assets/img/svg/blank_canvas.svg'
 
 export default {
   name: 'Users',

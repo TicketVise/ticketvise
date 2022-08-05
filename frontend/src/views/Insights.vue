@@ -125,11 +125,11 @@
 
 <script>
 import axios from 'axios'
-import TicketsChart from '@/components/insights/TicketsChart'
-import TicketsTimeChart from '@/components/insights/TicketsTimeChart'
-import AgentResponseTimeChart from '@/components/insights/AgentResponseTimeChart'
-import LabelsChart from '@/components/insights/LabelsChart'
-import IncreaseLabel from '@/components/chip/IncreaseLabel'
+import TicketsChart from '@/components/insights/TicketsChart.vue'
+import TicketsTimeChart from '@/components/insights/TicketsTimeChart.vue'
+import AgentResponseTimeChart from '@/components/insights/AgentResponseTimeChart.vue'
+import LabelsChart from '@/components/insights/LabelsChart.vue'
+import IncreaseLabel from '@/components/chip/IncreaseLabel.vue'
 
 export default {
   components: { IncreaseLabel, TicketsChart, TicketsTimeChart, AgentResponseTimeChart, LabelsChart },
