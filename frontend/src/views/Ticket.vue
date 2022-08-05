@@ -453,7 +453,7 @@ export default {
               return {
                 id: c.id,
                 date: this.date(c.date_created),
-                person: c.author ? { name: c.author.first_name + ' ' + c.author.last_name, href: '#' } : null,
+                person: c.author ? { username: c.author.username, name: c.author.first_name + ' ' + c.author.last_name, href: '#' } : null,
                 imageUrl: c.author.avatar_url,
                 comment: c.content
               }
@@ -474,12 +474,14 @@ export default {
               date: this.date(event.date_created),
               datetime: event.date_created,
               person: event.initiator ? {
+                username: event.initiator.username,
                 name: event.initiator.first_name + ' ' + event.initiator.last_name,
                 href: '#'
               } : null,
               tags: type === 'tags' ? [{ name: event.label.name, href: '#', color: event.label.color }] : null,
               is_added: type === 'tags' ? event.is_added : null,
               assigned: event.assignee ? {
+                username: event.assignee.username,
                 name: event.assignee.first_name + ' ' + event.assignee.last_name,
                 href: '#'
               } : null,
@@ -490,11 +492,14 @@ export default {
 
           /* Add the replies to the activities timeline. */
           this.ticket.activity.push(...response.data.replies.map(reply => {
+            const helpful = reply.helpful.find(h => h.user === this.user.id)
+
             return {
               id: reply.id,
               date: this.date(reply.date_created),
               datetime: reply.date_created,
-              person: { name: reply.author.first_name + ' ' + reply.author.last_name, href: '#' },
+              person: { username: reply.author.username, name: reply.author.first_name + ' ' + reply.author.last_name, href: '#' },
+              helpful: helpful ? (helpful.is_helpful ? 'helpful' : 'notHelpful') : undefined,
               imageUrl: reply.author.avatar_url,
               comment: reply.content,
               type: 'comment'
@@ -656,11 +661,30 @@ export default {
       this.updateAssignee(this.user)
     },
     helpful (helpful, id) {
-      for (let i = 0; i < this.ticket.activity.length; i++) {
-        if (this.ticket.activity[i].id === id) {
-          this.ticket.activity[i].helpful = helpful
-        }
+      const activity = this.ticket.activity.find(a => a.id === id)
+
+      const formData = new FormData()
+      formData.append('comment', id)
+      formData.append('user', this.user.id)
+      formData.append('is_helpful', helpful === 'helpful' ? true : false)
+
+      if (helpful == undefined) {
+        axios.delete(`/api/inboxes/${ this.$route.params.inboxId }/tickets/${ this.$route.params.ticketInboxId }/helpful/${ id }`, formData)
+          .then(_ => {
+            this.loadTicketData()
+          })
+      } else if (activity.helpful == undefined) {
+        axios.post(`/api/inboxes/${ this.$route.params.inboxId }/tickets/${ this.$route.params.ticketInboxId }/helpful/${ id }`, formData)
+          .then(_ => {
+            this.loadTicketData()
+          })
+      } else {
+        axios.put(`/api/inboxes/${ this.$route.params.inboxId }/tickets/${ this.$route.params.ticketInboxId }/helpful/${ id }`, formData)
+          .then(_ => {
+            this.loadTicketData()
+          })
       }
+      
     }
   },
   computed: {

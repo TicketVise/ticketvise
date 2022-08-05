@@ -82,3 +82,9 @@ class Comment(models.Model):
             return content
         else:
             return content[:MAX_COMMENT_CHAR_LENGTH] + "..."
+
+
+class CommentHelpful(models.Model):
+    comment = models.ForeignKey(Comment, on_delete=models.CASCADE, related_name="comment")
+    user = models.ForeignKey("User", on_delete=models.CASCADE, related_name="helpfulness_from")
+    is_helpful = models.BooleanField(default=True)

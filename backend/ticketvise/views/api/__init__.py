@@ -2,7 +2,7 @@ from rest_framework import serializers
 from rest_framework.serializers import ModelSerializer
 
 from ticketvise.middleware import CurrentUserMiddleware
-from ticketvise.models.comment import Comment
+from ticketvise.models.comment import Comment, CommentHelpful
 from ticketvise.models.label import Label
 from ticketvise.models.ticket import Ticket, TicketEvent, TicketAttachment, TicketSharedUser
 from ticketvise.models.user import User, UserInbox, Role
@@ -147,14 +147,26 @@ class TicketSerializer(DynamicFieldsModelSerializer):
 class CommentSerializer(DynamicFieldsModelSerializer):
     author = UserSerializer(read_only=True, fields=(["first_name", "last_name", "username", "avatar_url", "id"]))
     role = serializers.SerializerMethodField()
+    helpful = serializers.SerializerMethodField()
 
     def get_role(self, obj):
         role = UserInbox.objects.get(user=obj.author, inbox=obj.ticket.inbox).role
         return RoleSerializer(role).data
+    
+    def get_helpful(self, obj):
+        commentHelpful = CommentHelpful.objects.filter(comment=obj)
+        return CommentHelpfulSerializer(commentHelpful, many=True).data
+        # return 1
 
     class Meta:
         model = Comment
-        fields = ["author", "content", "id", "date_created", "role", "is_approved"]
+        fields = ["author", "content", "id", "date_created", "role", "is_approved", "helpful"]
+        
+        
+class CommentHelpfulSerializer(ModelSerializer):
+    class Meta:
+        model = CommentHelpful
+        fields = ["id", "comment", "user", "is_helpful"]
 
 
 class LabelSerializer(ModelSerializer):
