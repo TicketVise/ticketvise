@@ -34,12 +34,13 @@
 </template>
 
 <script>
-import axios from 'axios'
-import TicketsChart from '@/components/insights/TicketsChart.vue'
-import TicketsTimeChart from '@/components/insights/TicketsTimeChart.vue'
-import AgentResponseTimeChart from '@/components/insights/AgentResponseTimeChart.vue'
-import LabelsChart from '@/components/insights/LabelsChart.vue'
-import IncreaseLabel from '@/components/chip/IncreaseLabel.vue'
+import { mapState } from 'vuex'
+import { BookmarkIcon, TemplateIcon, TicketIcon, UserIcon, UsersIcon } from '@heroicons/vue/solid'
+import InsightsGeneral from '@/components/insights/InsightsGeneral.vue'
+import InsightsTickets from '@/components/insights/InsightsTickets.vue'
+import InsightsLabels from '@/components/insights/InsightsLabels.vue'
+import InsightsStudents from '@/components/insights/InsightsStudents.vue'
+import InsightsStaff from '@/components/insights/InsightsStaff.vue'
 
 export default {
   components: {

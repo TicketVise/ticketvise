@@ -723,7 +723,10 @@ export default {
             this.loadTicketData()
           })
       }
-      
+    },
+    unfold (activity) {
+      const index = this.ticket.activity.findIndex(a => a.id === activity.id)
+      this.ticket.activity.splice(index, 1, ...activity.activities)
     }
   },
   computed: {

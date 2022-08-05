@@ -52,8 +52,8 @@
 import axios from 'axios'
 import { ArrowSmDownIcon, ArrowSmUpIcon } from '@heroicons/vue/solid'
 
-import LineChart from '@/components/insights/LineChart'
-import DoughnutChart from '@/components/insights/DoughnutChart'
+import LineChart from '@/components/insights/LineChart.vue'
+import DoughnutChart from '@/components/insights/DoughnutChart.vue'
 
 export default {
   name: 'InsightsGeneral',
