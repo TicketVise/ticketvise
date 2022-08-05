@@ -156,7 +156,6 @@ class CommentSerializer(DynamicFieldsModelSerializer):
     def get_helpful(self, obj):
         commentHelpful = CommentHelpful.objects.filter(comment=obj)
         return CommentHelpfulSerializer(commentHelpful, many=True).data
-        # return 1
 
     class Meta:
         model = Comment
