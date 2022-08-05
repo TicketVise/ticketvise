@@ -138,7 +138,7 @@ dmypy.json
 cython_debug/
 
 # SQLite
-.sqlite3
+*.sqlite3
 
 # Django
 static

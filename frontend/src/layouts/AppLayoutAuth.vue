@@ -1,7 +1,6 @@
 <template>
   <div>
     <slot />
-
     <develop-panel v-if="development" />
   </div>
 </template>
@@ -13,7 +12,7 @@ export default {
   name: 'AppLayoutAuth',
   components: { DevelopPanel },
   computed: {
-    development: () => process.env.NODE_ENV !== 'production'
+    development: () => import.meta.env.DEV
   }
 }
 </script>

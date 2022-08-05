@@ -60,7 +60,7 @@
 </template>
 
 <script>
-import TicketsChart from '@/components/insights/TicketsChart'
+import TicketsChart from '@/components/insights/TicketsChart.vue'
 import axios from 'axios'
 import moment from 'moment'
 

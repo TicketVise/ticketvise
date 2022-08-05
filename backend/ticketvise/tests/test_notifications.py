@@ -28,7 +28,7 @@ class NotificationsTestCase(TestCase):
         :return: None.
         """
         self.client = APIClient()
-        self.inbox = Inbox.objects.create(code="ABC", name="how to code",
+        self.inbox = Inbox.objects.create(lti_context_label="ABC", name="how to code",
                                           scheduling_algorithm=SchedulingAlgorithm.FIXED)
 
         self.student = User.objects.create_user(

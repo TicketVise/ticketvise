@@ -127,11 +127,11 @@ import axios from 'axios'
 import router from '@/router'
 import { mapState } from 'vuex'
 
-import FileUpload from '@/components/inputs/FileInput'
-import TicketInput from '@/components/inputs/TicketInput'
-import LabelDropdown from '@/components/dropdown/LabelDropdown'
-import FormTextFieldWithSuggestions from '@/components/form/FormTextFieldWithSuggestions'
-import Error from '@/components/inputs/Error'
+import FileUpload from '@/components/inputs/FileInput.vue'
+import TicketInput from '@/components/inputs/TicketInput.vue'
+import LabelDropdown from '@/components/dropdown/LabelDropdown.vue'
+import FormTextFieldWithSuggestions from '@/components/form/FormTextFieldWithSuggestions.vue'
+import Error from '@/components/inputs/Error.vue'
 
 import { ref } from 'vue'
 import {

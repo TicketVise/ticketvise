@@ -67,8 +67,8 @@
 <script>
 // import Draggable from 'vuedraggable'
 
-import AutomationDefault from '@/components/automation/AutomationDefault'
-// import AutomationFilter from '@/components/automation/AutomationFilter'
+import AutomationDefault from '@/components/automation/AutomationDefault.vue'
+// import AutomationFilter from '@/components/automation/AutomationFilter.vue'
 
 import {
   ExclamationIcon

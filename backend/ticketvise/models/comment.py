@@ -33,6 +33,7 @@ class Comment(models.Model):
     content = models.TextField()
     is_reply = models.BooleanField(default=False)
     is_approved = models.DateTimeField(auto_now=False, null=True, default=None)
+    email_message = models.TextField(null=True, blank=True)
     date_edited = models.DateTimeField(auto_now=True)
     date_created = models.DateTimeField(auto_now_add=True)
 
@@ -81,3 +82,9 @@ class Comment(models.Model):
             return content
         else:
             return content[:MAX_COMMENT_CHAR_LENGTH] + "..."
+
+
+class CommentHelpful(models.Model):
+    comment = models.ForeignKey(Comment, on_delete=models.CASCADE, related_name="comment")
+    user = models.ForeignKey("User", on_delete=models.CASCADE, related_name="helpfulness_from")
+    is_helpful = models.BooleanField(default=True)

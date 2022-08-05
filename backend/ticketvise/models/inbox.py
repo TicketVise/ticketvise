@@ -6,13 +6,16 @@ Contains all entity sets for the inbox database.
 **Table of contents**
 * :class:`Inbox`
 """
+import logging
 from secrets import token_urlsafe
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django.db import models
 
+from ticketvise import settings
+from ticketvise.models.utils import InboundMailProtocol, MailSecurity
+from ticketvise.mail.retrieve import retrieve_emails, submit_email_ticket
 from ticketvise.models.user import User, Role
 from ticketvise.models.validators import validate_hex_color
-from ticketvise.settings import DEFAULT_INBOX_IMAGE_PATH
 from ticketvise.utils import random_preselected_color
 
 
@@ -32,15 +35,6 @@ class SchedulingAlgorithm(models.TextChoices):
     FIXED = ("fixed", "Fixed")
 
 
-class MailSecurity(models.TextChoices):
-    NONE = ('NONE', 'None')
-    STARTTLS = ('STARTTLS', 'STARTTLS')
-    TLS = ('TLS', 'TLS')
-
-
-class InboundMailProtocol(models.TextChoices):
-    POP3 = 'POP3'
-    IMAP = 'IMAP'
 
 def inbox_directory_path(instance, filename):
     return f"inboxes/{instance.id}/images/{token_urlsafe(64)}/{filename}"
@@ -57,11 +51,11 @@ class Inbox(models.Model):
                         * **users** -- Set of :class:`User` s belonging to the inbox.
     """
 
-    code = models.CharField(max_length=50, unique=True)
+    lti_context_label = models.CharField(max_length=255, null=True, blank=True)
+    lti_context_id = models.CharField(max_length=255, null=True, blank=True, unique=True)
     name = models.CharField(max_length=100)
     color = models.CharField(max_length=7, validators=[validate_hex_color], default=random_preselected_color)
-    image = models.ImageField(upload_to=inbox_directory_path, max_length=1000, blank=True, null=True)
-    image_old = models.URLField(default=DEFAULT_INBOX_IMAGE_PATH, max_length=255)
+    image = models.ImageField(upload_to=inbox_directory_path, max_length=1000, null=True, blank=True)
     scheduling_algorithm = models.CharField(choices=SchedulingAlgorithm.choices, max_length=255,
                                             default=SchedulingAlgorithm.LEAST_ASSIGNED_FIRST)
     round_robin_parameter = models.PositiveIntegerField(default=0)
@@ -76,18 +70,29 @@ class Inbox(models.Model):
     date_created = models.DateTimeField(auto_now_add=True)
 
     email_enabled = models.BooleanField(default=False)
-    smtp_server = models.CharField(blank=True, max_length=100)
+    email_login_state = models.CharField(max_length=255, null=True, blank=True)
+    email_access_token = models.TextField(null=True, blank=True)
+    email_refresh_token = models.TextField(null=True, blank=True)
+
+    smtp_server = models.CharField(max_length=255, null=True, blank=True)
     smtp_port = models.IntegerField(validators=[MinValueValidator(1), MaxValueValidator(65535)], default=587)
     smtp_security = models.CharField(choices=MailSecurity.choices, default=MailSecurity.TLS, max_length=8)
-    smtp_username = models.EmailField(blank=True)
-    smtp_password = models.CharField(blank=True, max_length=100)
+    smtp_username = models.EmailField(null=True, blank=True)
+    smtp_sender = models.EmailField(null=True, blank=True)
+    smtp_password = models.CharField(max_length=255, null=True, blank=True)
+    smtp_use_oauth2 = models.BooleanField(default=False)
+
     inbound_email_protocol = models.CharField(choices=InboundMailProtocol.choices, default=InboundMailProtocol.IMAP,
                                               max_length=4)
-    inbound_email_server = models.CharField(blank=True, max_length=100)
+    inbound_email_server = models.CharField(max_length=255, null=True, blank=True)
     inbound_email_port = models.IntegerField(validators=[MinValueValidator(1), MaxValueValidator(65535)], default=993)
     inbound_email_security = models.CharField(choices=MailSecurity.choices, default=MailSecurity.TLS, max_length=8)
-    inbound_email_username = models.EmailField(blank=True)
-    inbound_email_password = models.CharField(blank=True, max_length=100)
+    inbound_email_username = models.EmailField(null=True, blank=True)
+    inbound_email_password = models.CharField(max_length=255, null=True, blank=True)
+    inbound_email_use_oauth2 = models.BooleanField(default=False)
+
+    class Meta:
+        unique_together = ("lti_context_label", "lti_context_id")
 
     def round_robin_parameter_increase(self):
         """
@@ -164,6 +169,51 @@ class Inbox(models.Model):
             return self.tickets.filter(author=author)
 
         return self.tickets.filter(author=author, status=status)
+
+    def is_classic_email_setup(self):
+        return self.inbound_email_server is not None and \
+            self.inbound_email_username is not None and \
+            self.inbound_email_password is not None and \
+            self.smtp_server is not None and \
+            self.smtp_username is not None and \
+            self.smtp_password is not None
+
+    def is_email_setup(self):
+        # if SMTP and IMAP are enabled, we consider the inbox setup
+        return self.email_enabled and ((self.is_classic_email_setup()) \
+                or (self.email_access_token is not None and self.email_refresh_token is not None))
+
+    def get_email_access_token(self):
+        if not self.email_enabled or not (self.smtp_use_oauth2 and self.inbound_email_use_oauth2):
+            return None
+
+        accounts = [a for a in settings.MICROSOFT_AUTH.get_accounts() if a["username"] in [self.inbound_email_username, self.smtp_username]]
+        if accounts:
+            result = settings.MICROSOFT_AUTH.acquire_token_silent_with_error(scopes=settings.MICROSOFT_EMAIL_SCOPES, account=accounts[0])
+        else:
+            result = settings.MICROSOFT_AUTH.acquire_token_by_refresh_token(self.email_refresh_token, settings.MICROSOFT_EMAIL_SCOPES)
+        
+        return result.get('access_token')
+
+    def sync_email(self):
+        if not self.email_enabled:
+            logging.info(f"Skipping retrieving email for inbox: {self.name} ({self.id})")
+            return
+
+        logging.info(f"Retrieving email for inbox: {self.name} ({self.id})")
+        email_password = self.inbound_email_password
+        if self.inbound_email_use_oauth2:
+            email_password = self.get_email_access_token()
+
+        emails = retrieve_emails(self.inbound_email_protocol,
+                           self.inbound_email_server,
+                           self.inbound_email_port,
+                           self.inbound_email_username,
+                           email_password,
+                           self.inbound_email_security == MailSecurity.TLS,
+                           self.inbound_email_use_oauth2)
+        for message, raw_message in emails:
+            submit_email_ticket(message, self, raw_message=raw_message)
 
     def __str__(self):
         return self.name

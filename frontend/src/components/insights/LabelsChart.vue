@@ -1,13 +1,14 @@
 <template>
-  <doughnut-chart
+  <DoughnutChart
     v-if="data"
     :data="data"
-    :options="options" />
+    :options="options"
+    :height="this.height ? this.height : 400" />
 </template>
 
 <script>
 import axios from 'axios'
-import DoughnutChart from './DoughnutChart'
+import DoughnutChart from './DoughnutChart.vue'
 
 export default {
   components: { DoughnutChart },

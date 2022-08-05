@@ -33,6 +33,7 @@ class LtiLaunchForm(forms.Form):
     #: The name of the inbox of the user.
     custom_course_name = forms.CharField()
     #: The code of the inbox.
+    context_id = forms.CharField()
     context_label = forms.CharField()
     #: The role of user in the inbox.
     roles = forms.CharField()

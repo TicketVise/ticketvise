@@ -16,22 +16,28 @@
                 </span>
               </div>
               <div class="min-w-0 flex-1">
-                <div>
-                  <div class="text-sm">
-                    <span class="font-medium text-gray-900">{{ item?.person?.name }}</span>
+                <div class="flex justify-between">
+                  <div>
+                    <div class="text-sm">
+                      <span class="font-medium text-gray-900">{{ item?.person?.name }}</span>
+                    </div>
+                    <p class="mt-0.5 text-sm text-gray-500">Commented {{ item?.date }}</p>
                   </div>
-                  <p class="mt-0.5 text-sm text-gray-500">Commented {{ item?.date }}</p>
+                  <div v-if="ticket.is_public && isMostHelpful(item.id)" class="inline-flex items-center text-sm text-primary font-medium">
+                    <ThumbUpSolidIcon class="h-4 w-4 text-primary mr-1" />
+                    <span class="hidden sm:flex">Most Helpful</span>
+                  </div>
                 </div>
                 <div class="mt-2 text-sm text-gray-700">
                   <TicketInputViewer v-if="item" :content="item.comment" />
                 </div>
-                <div class="mt-2 text-sm flex space-x-2">
-                  <button @click="helpful(item.id)" class="inline-flex items-center px-3 py-0.5 rounded-full text-sm border text-primary hover:bg-primary-50" :class="item?.helpful === 'helpful' ? 'font-medium border-primary' : ''">
+                <div v-if="item?.person.username != user.username" class="mt-2 text-sm flex space-x-2">
+                  <button @click="item?.helpful === 'helpful' ? clearHelpful(item.id) : helpful(item.id)" class="inline-flex items-center px-3 py-0.5 rounded-full text-sm border text-primary" :class="item?.helpful === 'helpful' ? 'font-medium' : ''">
                     <ThumbUpSolidIcon v-if="item?.helpful === 'helpful'" class="h-4 w-4 text-primary mr-1" />
                     <ThumbUpOutlineIcon v-else class="h-4 w-4 text-primary mr-1" />
                     Helpful
                   </button>
-                  <button @click="notHelpful(item.id)" class="inline-flex items-center px-3 py-0.5 rounded-full text-sm border text-primary hover:bg-primary-50" :class="item?.helpful === 'notHelpful' ? 'font-medium border-primary' : ''">
+                  <button @click="item?.helpful === 'notHelpful' ? clearHelpful(item.id) : notHelpful(item.id)" class="inline-flex items-center px-3 py-0.5 rounded-full text-sm border text-primary" :class="item?.helpful === 'notHelpful' ? 'font-medium' : ''">
                     <ThumbDownSolidIcon v-if="item?.helpful === 'notHelpful'" class="h-4 w-4 text-primary mr-1" />
                     <ThumbDownOutlineIcon v-else class="h-4 w-4 text-primary mr-1" />
                     Not Helpful
@@ -220,9 +226,9 @@
 import axios from 'axios'
 import VueEasyLightbox from 'vue-easy-lightbox'
 
-import Chip from '@/components/chip/Chip'
-import TicketInput from '@/components/inputs/TicketInput'
-import TicketInputViewer from '@/components/inputs/TicketInputViewer'
+import Chip from '@/components/chip/Chip.vue'
+import TicketInput from '@/components/inputs/TicketInput.vue'
+import TicketInputViewer from '@/components/inputs/TicketInputViewer.vue'
 
 import {
   ChatAltIcon,
@@ -333,6 +339,28 @@ export default {
     },
     notHelpful (id) {
       this.$emit('helpful', 'notHelpful', id)
+    },
+    clearHelpful (id) {
+      this.$emit('helpful', undefined, id)
+    },
+    helpfulScore (helpful) {
+      if (!helpful) return 0
+      return helpful.reduce((sum, helpful) => sum + (helpful.is_helpful ? 1 : -1), 0)
+    },
+    isMostHelpful (id) {
+      if (!this.ticket.is_public) return false
+      const replies = this.ticket.replies
+      const mostHelpfulReply = replies.reduce((mostHelpful, reply) => {
+        if (!mostHelpful) return reply
+
+        if (this.helpfulScore(reply.helpful) > this.helpfulScore(mostHelpful.helpful)) {
+          return reply
+        }
+
+        return mostHelpful
+      }, undefined)
+
+      return mostHelpfulReply.helpful.length == 0 || this.helpfulScore(mostHelpfulReply.helpful) <= 0 ? false : mostHelpfulReply.id === id
     }
   },
   computed: {
