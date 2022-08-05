@@ -16,11 +16,17 @@
                 </span>
               </div>
               <div class="min-w-0 flex-1">
-                <div>
-                  <div class="text-sm">
-                    <span class="font-medium text-gray-900">{{ item?.person?.name }}</span>
+                <div class="flex justify-between">
+                  <div>
+                    <div class="text-sm">
+                      <span class="font-medium text-gray-900">{{ item?.person?.name }}</span>
+                    </div>
+                    <p class="mt-0.5 text-sm text-gray-500">Commented {{ item?.date }}</p>
                   </div>
-                  <p class="mt-0.5 text-sm text-gray-500">Commented {{ item?.date }}</p>
+                  <div v-if="ticket.is_public && isMostHelpful(item.id)" class="inline-flex items-center text-sm text-primary font-medium">
+                    <ThumbUpSolidIcon class="h-4 w-4 text-primary mr-1" />
+                    <span class="hidden sm:flex">Most Helpful</span>
+                  </div>
                 </div>
                 <div class="mt-2 text-sm text-gray-700">
                   <TicketInputViewer v-if="item" :content="item.comment" />
@@ -322,6 +328,25 @@ export default {
     },
     clearHelpful (id) {
       this.$emit('helpful', undefined, id)
+    },
+    helpfulScore (helpful) {
+      if (!helpful) return 0
+      return helpful.reduce((sum, helpful) => sum + (helpful.is_helpful ? 1 : -1), 0)
+    },
+    isMostHelpful (id) {
+      if (!this.ticket.is_public) return false
+      const replies = this.ticket.replies
+      const mostHelpfulReply = replies.reduce((mostHelpful, reply) => {
+        if (!mostHelpful) return reply
+
+        if (this.helpfulScore(reply.helpful) > this.helpfulScore(mostHelpful.helpful)) {
+          return reply
+        }
+
+        return mostHelpful
+      }, undefined)
+
+      return mostHelpfulReply.helpful.length == 0 || this.helpfulScore(mostHelpfulReply.helpful) <= 0 ? false : mostHelpfulReply.id === id
     }
   },
   computed: {
