@@ -737,7 +737,7 @@ import axios from 'axios'
 import store from '@/store'
 import { mapState } from 'vuex'
 
-import GettingStarted from '@/components/onboarding/GettingStarted'
+import GettingStarted from '@/components/onboarding/GettingStarted.vue'
 import DevelopPanel from '@/components/devpanel/DevelopPanel.vue'
 
 import {
@@ -751,7 +751,7 @@ import {
   ExternalLinkIcon
 } from '@heroicons/vue/outline'
 
-const logo = require('@/assets/logo/logo.svg')
+import logo from '@/assets/logo/logo.svg'
 
 export default {
   components: {
@@ -815,7 +815,7 @@ export default {
         (role && (role === 'AGENT' || role === 'MANAGER'))
       )
     },
-    development: () => process.env.NODE_ENV !== 'production'
+    development: () => import.meta.env.DEV
   },
   watch: {
     inbox: async function (newVal) {

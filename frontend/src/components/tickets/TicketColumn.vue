@@ -30,7 +30,7 @@
 </template>
 
 <script>
-  import TicketCard from '@/components/tickets/TicketCard'
+  import TicketCard from '@/components/tickets/TicketCard.vue'
   // import SubmitButton from '../elements/buttons/SubmitButton'
 
   export default {

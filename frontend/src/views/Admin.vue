@@ -66,7 +66,7 @@
 </template>
 
 <script>
-import InboxStats from '@/components/admin/InboxStats'
+import InboxStats from '@/components/admin/InboxStats.vue'
 import axios from 'axios'
 
 import {

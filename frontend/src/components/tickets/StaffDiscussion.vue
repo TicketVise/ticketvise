@@ -75,10 +75,10 @@ import axios from 'axios'
 import {
   ChatAltIcon
 } from '@heroicons/vue/solid'
-import TicketInput from '@/components/inputs/TicketInput'
-import TicketInputViewer from '@/components/inputs/TicketInputViewer'
+import TicketInput from '@/components/inputs/TicketInput.vue'
+import TicketInputViewer from '@/components/inputs/TicketInputViewer.vue'
 
-const Relax = require('@/assets/img/svg/relax.svg')
+import Relax from '@/assets/img/svg/relax.svg'
 
 export default {
   components: { 
