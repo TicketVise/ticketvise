@@ -294,6 +294,11 @@ export default {
         return store.getters.inbox(this.$route.params.inboxId)?.tickets
       }
     })
+  },
+  watch: {
+    $route: async function () {
+      this.get_tickets()
+    }
   }
 }
 </script>

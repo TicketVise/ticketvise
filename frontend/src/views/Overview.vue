@@ -77,14 +77,14 @@ import axios from 'axios'
 import store from '@/store'
 import { mapState } from 'vuex'
 
-import Chip from '@/components/chip/Chip'
+import Chip from '@/components/chip/Chip.vue'
 
 import {
   BellIcon,
   ExclamationCircleIcon
 } from '@heroicons/vue/outline'
 
-const HighFive = require('@/assets/img/svg/highfive.svg')
+// const HighFive = require('@/assets/img/svg/highfive.svg')
 
 const tabs = [
   { name: 'Urgent', href: '#', count: '2', current: true },
@@ -100,7 +100,7 @@ export default {
   },
   setup() {
     return {
-      HighFive,
+      // HighFive,
       tabs
     }
   },
