@@ -381,7 +381,7 @@
                             d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"
                           ></path>
                         </svg>
-                        <span v-if="inbox">{{ inbox.inbox.code }}</span>
+                        <span v-if="inbox">{{ inbox.inbox.lti_context_label }}</span>
                         <div v-else class="h-5 w-24 bg-gray-200 rounded"/>
                       </div>
                       <div class="pt-2 w-full">
@@ -696,7 +696,7 @@
                   d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"
                 ></path>
               </svg>
-              <span v-if="inbox">{{ inbox.inbox.code }}</span>
+              <span v-if="inbox">{{ inbox.inbox.lti_context_label }}</span>
               <div v-else class="h-5 w-24 bg-gray-200 rounded"/>
             </div>
             <div class="flex items-center text-xs text-gray-500">
@@ -750,7 +750,7 @@ import axios from 'axios'
 import store from '@/store'
 import { mapState } from 'vuex'
 
-import GettingStarted from '@/components/onboarding/GettingStarted'
+import GettingStarted from '@/components/onboarding/GettingStarted.vue'
 import DevelopPanel from '@/components/devpanel/DevelopPanel.vue'
 
 import {
@@ -764,7 +764,7 @@ import {
   ExternalLinkIcon
 } from '@heroicons/vue/outline'
 
-const logo = require('@/assets/logo/logo.svg')
+import logo from '@/assets/logo/logo.svg'
 
 export default {
   components: {
@@ -828,7 +828,7 @@ export default {
         (role && (role === 'AGENT' || role === 'MANAGER'))
       )
     },
-    development: () => process.env.NODE_ENV !== 'production'
+    development: () => import.meta.env.DEV
   },
   watch: {
     inbox: async function (newVal) {

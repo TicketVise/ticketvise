@@ -34,7 +34,7 @@
                     </span>
                   </label>
                   <div class="mt-1 flex">
-                    <input disabled v-model="inbox.code" type="text" name="code" id="code" autocomplete="name" class="cursor-not-allowed border rounded-md focus:ring-primary focus:border-primary flex-grow block w-full min-w-0 sm:text-sm border-gray-300" />
+                    <input disabled v-model="inbox.lti_context_label" type="text" name="code" id="code" autocomplete="name" class="cursor-not-allowed border rounded-md focus:ring-primary focus:border-primary flex-grow block w-full min-w-0 sm:text-sm border-gray-300" />
                   </div>
                 </div>
               </div>

@@ -126,10 +126,10 @@
 </template>
 
 <script>
-import AutomationFilterLabel from '@/components/automation/AutomationFilterLabel'
-import AutomationFilterText from '@/components/automation/AutomationFilterText'
-import AutomationAction from '@/components/automation/AutomationAction'
-import Chip from '@/components/chip/Chip'
+import AutomationFilterLabel from '@/components/automation/AutomationFilterLabel.vue'
+import AutomationFilterText from '@/components/automation/AutomationFilterText.vue'
+import AutomationAction from '@/components/automation/AutomationAction.vue'
+import Chip from '@/components/chip/Chip.vue'
 
 import {
   TrashIcon,

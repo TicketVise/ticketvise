@@ -40,7 +40,7 @@ class InboxSerializer(DynamicFieldsModelSerializer):
     class Meta:
         model = Inbox
         fields = [
-            "name", "id", "color", "labels", "image", "scheduling_algorithm", "code", "show_assignee_to_guest",
+            "name", "id", "color", "labels", "image", "scheduling_algorithm", "lti_context_label", "show_assignee_to_guest",
             "fixed_scheduling_assignee", "is_active", "date_created", "close_answered_weeks",
             "alert_coordinator_unanswered_days", "coordinator", "is_email_setup"
         ]
@@ -49,7 +49,7 @@ class InboxEmailSerializer(ModelSerializer):
     class Meta:
         model = Inbox
         fields = [
-            "name", "id", "color", "labels", "image", "scheduling_algorithm", "code", "show_assignee_to_guest",
+            "name", "id", "color", "labels", "image", "scheduling_algorithm", "lti_context_label", "show_assignee_to_guest",
             "fixed_scheduling_assignee", "is_active", "date_created", "close_answered_weeks",
             "alert_coordinator_unanswered_days", "coordinator"
         ]
@@ -187,7 +187,7 @@ class InboxSettingsApiView(RetrieveUpdateAPIView):
 
     def get_serializer(self, *args, **kwargs):
         return InboxSerializer(*args, **kwargs, fields=(
-            "name", "id", "color", "image", "scheduling_algorithm", "code", "show_assignee_to_guest",
+            "name", "id", "color", "image", "scheduling_algorithm", "lti_context_label", "show_assignee_to_guest",
             "fixed_scheduling_assignee", "close_answered_weeks", "alert_coordinator_unanswered_days", "is_email_setup"))
 
     def retrieve(self, request, *args, **kwargs):
@@ -209,7 +209,7 @@ class InboxSettingsApiView(RetrieveUpdateAPIView):
         return super().update(request, *args, **kwargs)
 
 class CurrentUserInboxSerializer(ModelSerializer):
-    inbox = InboxSerializer(fields=["name", "id", "color", "labels", "image", "code", "coordinator", "is_email_setup"])
+    inbox = InboxSerializer(fields=["name", "id", "color", "labels", "image", "lti_context_label", "coordinator", "is_email_setup"])
     role_label = serializers.SerializerMethodField()
 
     def get_role_label(self, user_inbox):

@@ -17,7 +17,7 @@ class EmailTestCase(TestCase):
 
     def setUp(self):
         # setup test data
-        self.inbox = Inbox.objects.create(code="test", name="test-inbox",
+        self.inbox = Inbox.objects.create(lti_context_label="test", name="test-inbox",
                                           email_enabled=True,
                                           inbound_email_username="ticket@" + settings.DOMAIN,
                                           enable_create_new_ticket_by_email=True,

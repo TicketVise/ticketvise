@@ -48,7 +48,7 @@
           <div class="absolute bottom-0 bg-gray-800 bg-opacity-50 w-full text-white flex flex-col py-2 px-4 rounded-br-lg rounded-bl-lg shadow-lg"
               style="overflow: hidden; text-overflow: ellipsis;">
             <div class="font-bold truncate">{{ inbox.name }}</div>
-            <span class="text-sm">{{ inbox.code }}</span>
+            <span class="text-sm">{{ inbox.lti_context_label }}</span>
           </div>
         </router-link>
       </div>

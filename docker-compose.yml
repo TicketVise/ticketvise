@@ -20,7 +20,7 @@ services:
       EMAIL_PASSWORD: Welkom01
       SQL_HOST: database
       SQL_DATABASE: ticketvise
-      SQL_ENGINE: django.db.backends.postgresql_psycopg2
+      SQL_ENGINE: django.db.backends.postgresql
       SQL_USER: ticketvise
       SQL_PASSWORD: Welkom01
       LTI_KEY: LtiKey01

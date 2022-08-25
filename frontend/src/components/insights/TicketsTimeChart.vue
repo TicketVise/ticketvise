@@ -7,7 +7,7 @@
 </template>
 
 <script>
-  import VerticalBarChart from './VerticalBarChart'
+  import VerticalBarChart from './VerticalBarChart.vue'
   import axios from 'axios'
 
   export default {

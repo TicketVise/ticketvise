@@ -11,7 +11,7 @@ class SettingsTestCase(InboxTestCase):
 
         data = {
             "name": "Andere naam",
-            "code": "5062STRE6Y22",
+            "lti_context_label": "5062STRE6Y22",
             "color": "#1c7225",
             "close_answered_weeks": "1",
             "alert_coordinator_unanswered_days": "2",
@@ -30,7 +30,7 @@ class SettingsTestCase(InboxTestCase):
 
         data = {
             "name": "Andere naam",
-            "code": "5062STRE6Y22",
+            "lti_context_label": "5062STRE6Y22",
             "color": "#1c7225",
             "close_answered_weeks": "1",
             "alert_coordinator_unanswered_days": "2",
@@ -49,7 +49,7 @@ class SettingsTestCase(InboxTestCase):
 
         data = {
             "name": "Andere naam",
-            "code": "5062STRE6Y22",
+            "lti_context_label": "5062STRE6Y22",
             "color": "#1c7225",
             "close_answered_weeks": "1",
             "alert_coordinator_unanswered_days": "2",
@@ -68,7 +68,7 @@ class SettingsTestCase(InboxTestCase):
 
         data = {
             "name": "Andere naam",
-            "code": "5062STRE6Y22",
+            "lti_context_label": "5062STRE6Y22",
             "color": "#1c7225",
             "close_answered_weeks": "1",
             "alert_coordinator_unanswered_days": "2",
