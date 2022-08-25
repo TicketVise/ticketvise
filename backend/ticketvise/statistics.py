@@ -8,9 +8,9 @@ from datetime import timedelta
 
 from django.db.models import Count, Avg, Subquery, OuterRef, F
 
-from ticketvise.models.comment import Comment
+from ticketvise.models.comment import Comment, CommentHelpful
 from ticketvise.models.label import Label
-from ticketvise.models.ticket import Ticket
+from ticketvise.models.ticket import Ticket, TicketLabel
 
 
 def calculate_timedelta_hours(time):
@@ -451,3 +451,31 @@ def get_amount_responses_days(inbox, assistant):
         return comments_by_date
 
     return []
+
+
+def get_most_answered_label_ta(inbox, ta):
+    """
+    Get the most answered label for the given TA in an inbox.
+    """
+    tickets = TicketLabel.objects.filter(ticket__inbox=inbox, ticket__assignee=ta, ticket__comments__author=ta, ticket__comments__is_reply=True).distinct()
+    
+    return tickets[0].label if tickets.count() > 0 else None
+
+
+def get_amount_of_helpful_reacted_comments(inbox, ta):
+    """
+    Get the number of comments of the given TA that were reacted with helpful or not helpful.
+    """
+    amount = CommentHelpful.objects.filter(comment__ticket__inbox=inbox, comment__author=ta, comment__is_reply=True).count()
+
+    return amount
+
+
+def get_helpfulness(inbox, ta):
+    """
+    Get the helpfulness of the given TA in an inbox.
+    """
+    total = get_amount_of_helpful_reacted_comments(inbox, ta)
+    amount = CommentHelpful.objects.filter(comment__ticket__inbox=inbox, comment__author=ta, comment__is_reply=True, is_helpful=True).count()
+
+    return (amount / total) * 100 if total > 0 else 0

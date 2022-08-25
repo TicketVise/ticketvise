@@ -26,7 +26,7 @@
 
     <!-- Some general graphs here -->
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mt-4">
-      <div class="col-span-2 border rounded-lg p-4 pt-2">
+      <div class="col-span-3 border rounded-lg p-4 pt-2">
         <h2 class="text-lg font-semibold text-primary-600">Tickets over time</h2>
         <LineChart v-if="ticketsData" :data="ticketsData" :options="ticketsOptions" :height="400" />
       </div>
@@ -35,14 +35,6 @@
         <DoughnutChart v-if="labelsData" :data="labelsData" :options="labelsOptions" />
       </div>
       <div class="col-span-1 flex flex-col space-y-4">
-        <div class="border rounded-lg px-4 py-3">
-          <h2 class="text-base font-normal text-gray-900">Average time before first anwser</h2>
-          <div class="flex items-baseline text-2xl font-semibold text-primary-600">5h</div>
-        </div>
-        <div class="border rounded-lg px-4 py-3">
-          <h2 class="text-base font-normal text-gray-900">Average times of ticket is closed</h2>
-          <div class="flex items-baseline text-2xl font-semibold text-primary-600">5h</div>
-        </div>
       </div>
     </div>
   </section>

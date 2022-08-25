@@ -4,29 +4,29 @@
 
     <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
       <!-- Imformation about the staff. -->
-      <div class="col-span-1 sm:col-span-2 border rounded-lg p-4 pt-2">
+      <div class="col-span-1 sm:col-span-2 border rounded-lg px-4 py-2">
         <h2 class="text-lg font-semibold text-primary-600">Staff overview</h2>
         <ul role="list" class="divide-y divide-gray-200">
-          <li v-for="member in staff.sort((a, b) => b.helpfulness.percentage - a.helpfulness.percentage)" :key="member.id">
+          <li v-for="member in statsData.staff?.sort((a, b) => b.helpfulness - a.helpfulness)" :key="member">
             <div class="p-3">
-              <div class="grid grid-cols-8 gap-2 items-center justify-between">
+              <div class="grid grid-cols-8 gap-2 items-center justify-between w-full">
                 <span class="col-span-4 inline-flex items-center px-2 rounded-full text-sm text-gray-800 truncate space-x-2">
-                  <img class="inline-block h-8 w-8 rounded-full mr-2" :src="member.image" alt="" />
+                  <img class="inline-block h-8 w-8 rounded-full mr-2" :src="member.avatar_url" alt="" />
                   <div class="flex flex-col">
-                    <span class="truncate text-base font-semibold leading-none">{{ member.name }}</span>
+                    <span class="truncate text-base font-semibold leading-none">{{ member.first_name }} {{ member.last_name }}</span>
                     <div class="space-x-2">
-                      <span class="text-gray-600 leading-none">Tickets: {{ member.helpfulness.count + Math.floor(Math.random() * 10) }}</span>
-                      <span class="text-gray-600 leading-none">Response time: {{ (Math.random() * 10).toPrecision(2) }}h</span>
+                      <span class="text-gray-600 leading-none">Tickets: {{ member.tickets_count }}</span>
+                      <span v-if="member.tickets_count > 0" class="text-gray-600 leading-none">Response time: {{ member.avg_response_time }}h</span>
                     </div>
                   </div>
                 </span>
-                <span class="col-span-2 inline-flex ml-auto items-center px-2 py-0.5 rounded text-xs font-medium bg-primary-100 text-primary-700 w-full">
-                  <BookmarkIcon class="w-4 h-4 mr-1" />
-                  <span class="flex-shrink-0 truncate">{{ member.mainTopic }}</span>
+                <span v-if="member.tickets_count > 0" class="relative col-span-2 inline-flex mr-auto items-center px-2 py-0.5 rounded text-xs font-medium bg-primary-100 text-primary-700 max-w-full">
+                  <BookmarkIcon class="flex-shrink-0 w-4 h-4 mr-1" />
+                  <span class="truncate">{{ member.most_answered_label.name }}</span>
                 </span>
-                <p class="col-span-2 px-2 inline-flex ml-auto leading-5 font-medium rounded-full text-primary text-xl items-baseline">
-                  <span>{{ member.helpfulness.percentage }}%</span>
-                  <span class="text-gray-400 text-xs font-normal">/{{ member.helpfulness.count }}</span>
+                <p v-if="member.tickets_count > 0" class="col-span-2 px-2 inline-flex ml-auto leading-5 font-medium rounded-full text-primary text-xl items-baseline">
+                  <span>{{ parseInt(member.helpfulness) }}%</span>
+                  <span class="text-gray-400 text-xs font-normal">/{{ member.amount_of_helpful_comments }}</span>
                   <ThumbUpIcon class="w-5 h-5 ml-1 self-end" />
                 </p>
               </div>
@@ -64,11 +64,6 @@
 import axios from 'axios'
 import { ArrowSmDownIcon, ArrowSmUpIcon, BookmarkIcon, ThumbUpIcon } from '@heroicons/vue/solid'
 
-const stats = [
-  { name: 'Average time to respond', stat: '2.3h', previousStat: '2.4h', change: '3.15%', changeDirection: 'down', changeType: 'increase' },
-  { name: 'Average Tickets per user', stat: '2.4', previousStat: '', change: '', changeDirection: '', changeType: 'decrease' }
-]
-
 export default {
   name: 'InsightsStaff',
   components: {
@@ -77,32 +72,24 @@ export default {
     BookmarkIcon,
     ThumbUpIcon
   },
-  setup () {
-    return {
-      stats
-    }
-  },
   data: () => ({
+    statsData: [],
     staff: []
   }),
   async mounted () {
     const { inboxId } = this.$route.params
 
-    const testTopics = ['Assignment 1 van het boek over meganica', 'Lecture', 'Slides', 'Code']
-
-    /* Getting the staff data. */
-    const staffResponse = await axios.get(`/api/inboxes/${inboxId}/staff`)
-    this.staff = staffResponse.data.map(member => {
-      return {
-        name: member.first_name + ' ' + member.last_name,
-        helpfulness: {
-          percentage: (Math.random() * 50 + 50).toPrecision(3),
-          count: Math.floor(Math.random() * 90)
-        },
-        image: member.avatar_url,
-        mainTopic: testTopics[Math.floor(Math.random() * testTopics.length)]
-      }
-    })
+    /* Gettings general statistics. */
+    const statsResponse = await axios.get(`/api/inboxes/${inboxId}/statistics/staff`)
+    this.statsData = statsResponse.data
+  },
+  computed: {
+    stats () {
+      return [
+        { name: 'Average time to respond', stat: (this.statsData?.avg_response_time || 0) + 'h', previousStat: '', change: '', changeType: 'increase' },
+        { name: 'Average Tickets per staff', stat: this.statsData?.avg_tickets_per_staff || 0, previousStat: '', change: '', changeType: 'increase' }
+      ]
+    }
   }
 }
 </script>

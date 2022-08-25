@@ -46,7 +46,6 @@ export default {
 
     /* Gettings general statistics. */
     const statsResponse = await axios.get(`/api/inboxes/${inboxId}/statistics`)
-    console.log(statsResponse.data)
     this.statsData = statsResponse.data
   },
   computed: {
