@@ -48,7 +48,7 @@
 import axios from 'axios'
 import { mapState } from 'vuex'
 import moment from 'moment'
-import Chip from '@/components/chip/Chip'
+import Chip from '@/components/chip/Chip.vue'
 
 import { GlobeIcon } from '@heroicons/vue/outline'
 

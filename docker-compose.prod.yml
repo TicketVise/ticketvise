@@ -44,7 +44,7 @@ services:
       SMTP_OUTBOUND_PASSWORD: ${EMAIL_PASSWORD}
       SQL_HOST: database
       SQL_DATABASE: ticketvise
-      SQL_ENGINE: django.db.backends.postgresql_psycopg2
+      SQL_ENGINE: django.db.backends.postgresql
       SQL_USER: ${SQL_USER}
       SQL_PASSWORD: ${SQL_PASSWORD}
       LTI_KEY: ${LTI_KEY}
@@ -54,6 +54,8 @@ services:
       S3_USE_HTTPS: 0
       S3_ACCESS_KEY: ${S3_ACCESS_KEY}
       S3_SECRET_KEY: ${S3_SECRET_KEY}
+      MICROSOFT_CLIENT_ID: ${MICROSOFT_CLIENT_ID}
+      MICROSOFT_CLIENT_SECRET: ${MICROSOFT_CLIENT_SECRET}
 
   frontend:
     image: "ticketvise/frontend:sha-${GIT_DIGEST}"

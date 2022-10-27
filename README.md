@@ -39,3 +39,4 @@ View the cronjob logs.
 ```shell script
 cat /var/log/cron.log
 ```
+ 

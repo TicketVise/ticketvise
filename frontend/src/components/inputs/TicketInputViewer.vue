@@ -10,6 +10,7 @@ import 'prismjs/themes/prism.css'
 import '@toast-ui/editor-plugin-code-syntax-highlight/dist/toastui-editor-plugin-code-syntax-highlight.css'
 
 import codeSyntaxHighlight from '@toast-ui/editor-plugin-code-syntax-highlight/dist/toastui-editor-plugin-code-syntax-highlight-all.js'
+import {LatexPlugin} from './latex'
 
 export default {
   props: {
@@ -32,10 +33,10 @@ export default {
         el: viewer.value,
         initialValue: props.content,
         usageStatistics: false,
-        plugins: [[codeSyntaxHighlight, { highlighter: Prism }]],
+        plugins: [[codeSyntaxHighlight, { highlighter: Prism }], LatexPlugin],
         events: {
           change: () => emit('update:modelValue', e.getMarkdown())
-        }
+        },
       })
     })
 

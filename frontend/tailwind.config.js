@@ -1,9 +1,9 @@
-const colors = require('tailwindcss/colors')
-
 module.exports = {
-  mode: 'jit',
-  purge: { content: ['./public/**/*.html', './src/**/*.vue'] },
-  darkMode: false, // 'class'
+  content: [
+    "./index.html",
+    "./src/**/*.{vue,js,ts,jsx,tsx}",
+  ],
+  darkMode: 'class',
   theme: {
     extend: {
       colors: {
@@ -16,11 +16,6 @@ module.exports = {
         'primary-500': '#dd6b20',
         'primary-600': '#CF651E',
         'primary-700': '#BF5D1B',
-        sky: colors.sky,
-        teal: colors.teal,
-        cyan: colors.cyan,
-        rose: colors.rose,
-        sky: colors.sky
       },
       fontFamily: {
         'ticketvise': ['Raleway', 'sans-serif']
@@ -36,6 +31,7 @@ module.exports = {
   plugins: [
     require('@tailwindcss/forms'),
     require('@tailwindcss/line-clamp'),
-    require('@tailwindcss/aspect-ratio')
+    require('@tailwindcss/aspect-ratio'),
+    require('@tailwindcss/typography')
   ]
 }

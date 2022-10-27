@@ -143,11 +143,11 @@ import moment from 'moment'
 import axios from 'axios'
 import { mapState, mapMutations } from 'vuex'
 
-import Chip from '@/components/chip/Chip'
-import AutomationAction from '@/components/automation/AutomationAction'
-import AutomationCondition from '@/components/automation/AutomationCondition'
-import NotificationAutomation from '@/components/notifications/NotificationAutomation'
-import RemoveDialog from '@/components/automation/RemoveDialog'
+import Chip from '@/components/chip/Chip.vue'
+import AutomationAction from '@/components/automation/AutomationAction.vue'
+import AutomationCondition from '@/components/automation/AutomationCondition.vue'
+import NotificationAutomation from '@/components/notifications/NotificationAutomation.vue'
+import RemoveDialog from '@/components/automation/RemoveDialog.vue'
 
 import {
   TrashIcon,

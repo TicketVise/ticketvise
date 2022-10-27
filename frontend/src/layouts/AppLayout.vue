@@ -5,7 +5,10 @@
 </template>
 
 <script>
-import AppLayoutDefault from './AppLayoutDefault'
+import AppLayoutDefault from './AppLayoutDefault.vue'
+import AppLayoutAuth from './AppLayoutAuth.vue'
+import AppLayoutGeneral from './AppLayoutGeneral.vue'
+import AppLayoutInbox from './AppLayoutInbox.vue'
 import { shallowRef, watch } from 'vue'
 import { useRoute } from 'vue-router'
 
@@ -17,11 +20,23 @@ export default {
     watch(
       () => route.meta,
       async meta => {
-        try {
-          const component = await require(`@/layouts/${meta.layout}.vue`)
-          layout.value = component?.default || AppLayoutDefault
-        } catch (e) {
-          layout.value = AppLayoutDefault
+        switch (meta.layout) {
+          case 'AppLayoutAuth':
+            layout.value = AppLayoutAuth
+            break
+          case 'AppLayoutGeneral':
+            layout.value = AppLayoutGeneral
+            break
+          case 'AppLayoutInbox':
+            layout.value = AppLayoutInbox
+            break
+          case 'AppLayoutDefault':
+            layout.value = AppLayoutDefault
+            break
+          default:
+            console.error(`could not find layout: ${meta.layout}, defaulting to AppLayoutDefault`)
+            layout.value = AppLayoutDefault
+            break
         }
       }
     )

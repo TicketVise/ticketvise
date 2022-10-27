@@ -92,8 +92,7 @@ import { mapState } from 'vuex'
 import moment from 'moment'
 
 import { ArrowNarrowLeftIcon, ArrowNarrowRightIcon } from '@heroicons/vue/solid'
-
-const CompleteTask = require('@/assets/img/svg/completeTask.svg')
+import CompleteTask from '@/assets/img/svg/completeTask.svg'
 
 export default {
   name: 'Notifications',

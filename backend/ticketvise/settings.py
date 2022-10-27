@@ -6,6 +6,8 @@ some custom.
 """
 import os
 
+from msal.application import ConfidentialClientApplication
+
 #: Project base directory.
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -20,6 +22,15 @@ SEND_MAIL = int(os.environ.get("SEND_MAIL", False))
 
 DOMAIN = os.environ.get("DOMAIN", "localhost")
 HOST = os.environ.get("HOST", DOMAIN)
+
+MICROSOFT_CLIENT_ID = os.environ.get("MICROSOFT_CLIENT_ID")
+MICROSOFT_CLIENT_SECRET = os.environ.get("MICROSOFT_CLIENT_SECRET")
+MICROSOFT_EMAIL_SCOPES = ["https://outlook.office.com/IMAP.AccessAsUser.All",
+                          "https://outlook.office.com/POP.AccessAsUser.All", 
+                          "https://outlook.office.com/SMTP.Send"]
+MICROSOFT_AUTH = None
+if MICROSOFT_CLIENT_ID and MICROSOFT_CLIENT_SECRET:
+    MICROSOFT_AUTH = ConfidentialClientApplication(MICROSOFT_CLIENT_ID, MICROSOFT_CLIENT_SECRET)
 
 ALLOWED_HOSTS = ["*"]
 
@@ -190,7 +201,7 @@ STATIC_ROOT = os.path.join(BASE_DIR, "static")
 #: Email settings
 #: ~~~~~~~~~~~~~~~~~~~
 if SEND_MAIL:
-    EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+    EMAIL_BACKEND = 'ticketvise.mail.send.OAuthCompatibleEmailBackend'
 else:
     EMAIL_BACKEND = 'django.core.mail.backends.locmem.EmailBackend'
 
@@ -201,7 +212,7 @@ EMAIL_HOST_PASSWORD = os.getenv("SMTP_OUTBOUND_PASSWORD", "Welkom01")
 EMAIL_USE_TLS = os.getenv("SMTP_TLS", True)
 EMAIL_USE_SSL = os.getenv("SMTP_SSL", False)
 DEFAULT_FROM_EMAIL = os.getenv("SMTP_OUTBOUND_FROM", "TicketVise <ticket@{}>".format(DOMAIN))
- 
+
 PAGE_SIZE = 25
 
 ROLE_GUEST_DISPLAY_NAME = os.getenv("ROLE_GUEST_DISPLAY_NAME", "Student")

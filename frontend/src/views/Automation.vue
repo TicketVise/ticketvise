@@ -42,18 +42,18 @@
 import store from '@/store'
 import { mapState } from 'vuex'
 
-import axios from 'axios'
-import Draggable from "vuedraggable";
-import AutomationDefault from "@/components/automation/AutomationDefault";
-import AutomationFilter from "@/components/automation/AutomationFilter";
+import axios from 'axios.vue'
+import Draggable from 'vuedraggable.vue'
+import AutomationDefault from '@/components/automation/AutomationDefault.vue'
+import AutomationFilter from '@/components/automation/AutomationFilter.vue'
 
 import {
   ExclamationIcon,
   PlusIcon
-} from "@heroicons/vue/solid";
+} from '@heroicons/vue/solid';
 
 export default {
-  name: "Automation",
+  name: 'Automation',
   components: {
     PlusIcon,
     AutomationDefault,
