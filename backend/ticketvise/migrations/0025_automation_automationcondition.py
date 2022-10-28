@@ -7,7 +7,7 @@ import django.db.models.deletion
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('ticketvise', '0021_alter_inbox_image'),
+        ('ticketvise', '0024_commenthelpful'),
     ]
 
     operations = [

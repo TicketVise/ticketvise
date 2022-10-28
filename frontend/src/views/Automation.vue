@@ -42,8 +42,8 @@
 import store from '@/store'
 import { mapState } from 'vuex'
 
-import axios from 'axios.vue'
-import Draggable from 'vuedraggable.vue'
+import axios from 'axios'
+import Draggable from 'vuedraggable'
 import AutomationDefault from '@/components/automation/AutomationDefault.vue'
 import AutomationFilter from '@/components/automation/AutomationFilter.vue'
 
