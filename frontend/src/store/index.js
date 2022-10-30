@@ -1,4 +1,5 @@
 import { createStore } from 'vuex'
+import automation from '@/store/modules/automation'
 import router from '@/router'
 import axios from 'axios'
 
@@ -111,6 +112,7 @@ const store = createStore({
     inbox: (state) => (id) => state.inboxes.find(i => i.id === parseInt(id))
   },
   modules: {
+    automation
   }
 })
 
