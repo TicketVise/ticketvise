@@ -1,14 +1,34 @@
 <template>
   <div class="w-full h-full overflow-y-auto">
     <div class="relative w-full max-w-screen-lg mx-auto bg-white">
-      <div class="divide-y divide-gray-200 lg:divide-y-0 lg:divide-x">
-        <form
-          class="divide-y divide-gray-200"
-          @submit.prevent="onSave"
-          method="POST"
-        >
+      <div class="pt-10 pb-4">
+        <div class="px-4 sm:px-6 md:px-0">
+          <h1 class="text-3xl font-extrabold text-gray-900">Settings</h1>
+        </div>
+        <div class="px-4 sm:px-6 md:px-0">
+          <div class="py-6">
+            <!-- Tabs -->
+            <div class="lg:hidden">
+              <label for="selected-tab" class="sr-only">Select a tab</label>
+              <select id="selected-tab" name="selected-tab" class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-primary focus:border-primary sm:text-sm rounded-md">
+                <option v-for="tab in tabs" :key="tab.name" :selected="tab.current">{{ tab.name }}</option>
+              </select>
+            </div>
+            <div class="hidden lg:block">
+              <div class="border-b border-gray-200">
+                <nav class="-mb-px flex space-x-8">
+                  <button @click="tabs.forEach(t => t.current = false); tab.current = true" v-for="tab in tabs" :key="tab.name" :class="[tab.current ? 'border-primary text-primary-600' : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700', 'whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm']">
+                    {{ tab.name }}
+                  </button>
+                </nav>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <form v-if="tabs.find(t => t.name == 'General').current" class="divide-y divide-gray-200" @submit.prevent="onSave" method="POST">
           <!-- Inbox section -->
-          <div class="p-4">
+          <div>
             <div>
               <h2 class="text-lg leading-6 font-medium text-gray-900">Inbox</h2>
               <p class="mt-1 text-sm text-gray-500">
@@ -140,7 +160,7 @@
 
           <!-- Privacy section -->
           <div class="pt-6 divide-y divide-gray-200">
-            <div class="px-4">
+            <div>
               <div>
                 <h2 class="text-lg leading-6 font-medium text-gray-900">
                   General
@@ -436,11 +456,30 @@
               </button>
             </div>
           </div>
-
-          <div class="mt-4 py-4 px-4">
-            <Email :connected="inbox.is_email_setup || false" />
-          </div>
         </form>
+
+        <div v-if="tabs.find(t => t.name == 'Intelligence').current">
+          <h2 class="text-lg leading-6 font-medium text-gray-900">Context</h2>
+          <p class="mt-1 text-sm text-gray-500">
+            You can give your inbox context material which will be used to search for answers within those material before a ticket gets created. This way some questions can be answered without creating a ticket.
+          </p>
+
+          <label for="attachments" class="block text-sm font-medium text-gray-700 mt-4">
+            Files
+          </label>
+          <div v-if="documents.length > 0" class="w-full grid grid-cols-1 sm:grid-cols-2 gap-4 mt-1">
+            <attachment v-for="(document, index) in documents" :key="index" :attachment="document"
+                        @remove="$emit('uploaded')" show-delete/>
+          </div>
+          <div class="flex flex-col justify-center w-full mt-2">
+            <Error class="mb-2" v-for="error in errors.attachments" :key="error" :message="error" />
+            <FileUpload ref="upload" v-on:input="setFiles" class="w-full" />
+          </div>
+        </div>
+
+        <div v-if="tabs.find(t => t.name == 'Email').current">
+          <Email :connected="inbox.is_email_setup" />
+        </div>
       </div>
     </div>
   </div>
@@ -500,7 +539,9 @@
 <script>
 import axios from "axios";
 // import SelectInput from '@/components/inputs/SelectInput'
-// import Error from '@/components/inputs/Error'
+import Error from '@/components/inputs/Error.vue'
+import FileUpload from '@/components/inputs/FileInput.vue'
+import Attachment from '@/components/tickets/Attachment.vue'
 
 import {
   Listbox,
@@ -541,7 +582,9 @@ const sendAlertOptions = [
 export default {
   name: "InboxSettings",
   components: {
-    // Error,
+    Attachment,
+    Error,
+    FileUpload,
     Switch,
     SwitchDescription,
     SwitchGroup,
@@ -564,12 +607,19 @@ export default {
       staff: [],
       scheduling_options: [],
       errors: [],
+      documents: [],
+      files: [],
       saved: false,
       user: this.$store.state.user,
       close_answered_weeks: null,
       alert_coordinator_unanswered_days: null,
       show_saved_notification: false,
-    };
+      tabs: [
+        { name: 'General', current: true },
+        { name: 'Intelligence', current: false },
+        { name: 'Email', current: false }
+      ]
+    }
   },
   setup() {
     return {
@@ -590,6 +640,9 @@ export default {
         this.alert_coordinator_unanswered_days =
           this.sendAlertOptions[this.inbox.alert_coordinator_unanswered_days];
       });
+  },
+  mounted () {
+    this.getDocuments()
   },
   methods: {
     onSave() {
@@ -642,12 +695,40 @@ export default {
       if (event) {
         this.inbox.image = event.target.files[0];
       }
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        this.im_url = e.target.result;
-      };
-      reader.readAsDataURL(this.inbox.image);
+      const reader = new FileReader()
+      reader.onload = e => {
+        this.im_url = e.target.result
+      }
+      reader.readAsDataURL(this.inbox.image)
     },
-  },
-};
+    uploadFiles () {
+      const formData = new FormData()
+      const { inboxId } = this.$route.params
+
+      this.files.forEach(file => formData.append('files', file))
+
+      axios.post(`/api/inboxes/${inboxId}/intelligence/material`, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
+      }).then(() => {
+        this.$refs.upload.clear()
+      }).catch(error => {
+        if (error.response && error.response.status === 413)
+          this.errors.attachments = ['Filesize too large, max filesize is 25MB.']
+        this.$refs.upload.clear()
+      })
+    },
+    setFiles (files) {
+      this.files = files
+      this.uploadFiles()
+      this.getDocuments()
+    },
+    getDocuments () {
+      axios.get(`/api/inboxes/${this.$route.params.inboxId}/intelligence/material`).then(response => {
+        this.documents = response.data
+      })
+    }
+  }
+}
 </script>

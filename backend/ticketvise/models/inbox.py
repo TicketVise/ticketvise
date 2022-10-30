@@ -12,6 +12,7 @@ from django.core.validators import MinValueValidator, MaxValueValidator
 from django.db import models
 
 from ticketvise import settings
+from ticketvise.middleware import CurrentUserMiddleware
 from ticketvise.models.utils import InboundMailProtocol, MailSecurity
 from ticketvise.mail.retrieve import retrieve_emails, submit_email_ticket
 from ticketvise.models.user import User, Role
@@ -237,3 +238,26 @@ class InboxUserSection(models.Model):
 
     class Meta:
         unique_together = ("user", "section")
+
+
+def inbox_directory_path(instance, filename):
+    return f"inboxes/{instance.inbox.id}/material/{token_urlsafe(64)}/{filename}"
+
+
+class InboxMaterial(models.Model):
+    inbox = models.ForeignKey(Inbox, related_name="inbox_material", on_delete=models.CASCADE)
+    file = models.FileField(upload_to=inbox_directory_path, max_length=1000)
+    uploader = models.ForeignKey("User", on_delete=models.CASCADE, null=True)
+    date_edited = models.DateTimeField(auto_now=True)
+    date_created = models.DateTimeField(auto_now_add=True)
+
+    def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
+        if not self.id:
+            self.uploader = CurrentUserMiddleware.get_current_user()
+
+        super().save(force_insert, force_update, using, update_fields)
+
+    def delete(self, *args, **kwargs):
+        # Set save to false to remove file from s3 storage
+        self.file.delete(save=False)
+        super().delete()

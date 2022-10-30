@@ -7,7 +7,7 @@ from ticketvise.views.api.comment import CreateCommentApiView, CreateReplyApiVie
 from ticketvise.views.api.inbox import InboxLabelsApiView, InboxesApiView, InboxGuestsAPIView, InboxUsersApiView, \
     UserInboxApiView, InboxSettingsApiView, CurrentUserInboxesApiView
 from ticketvise.views.api.inbox import InboxStaffApiView, InboxLabelApiView, AllInboxLabelsApiView, \
-    CurrentUserInboxApiView
+    CurrentUserInboxApiView, InboxMaterialApiView
 from ticketvise.views.api.notification import NotificationsAPIView, NotificationFlipRead, NotificationsReadAll, \
     NotificationUnreadCountAPI
 from ticketvise.views.api.statistics import InboxTicketsPerDateTypeStatisticsApiView, \
@@ -73,6 +73,7 @@ urlpatterns = [
          InboxAverageAgentResponseTimeStatisticsApiView.as_view()),
     path("inboxes/<int:inbox_id>/statistics/close/avg", InboxAverageTimeToCloseStatisticsApiView.as_view()),
     path("inboxes/<int:inbox_id>/statistics/labels/count", LabelsCountStatisticsApiView.as_view()),
+    path("inboxes/<int:inbox_id>/intelligence/material", InboxMaterialApiView.as_view()),
     path("inboxes/<int:inbox_id>/comments/<int:comment_id>/approve", ApproveCommentAPIView.as_view()),
     path("admin/statistics/users/count", UsersApiView.as_view()),
     path("admin/statistics/tickets/count", TicketsApiView.as_view()),

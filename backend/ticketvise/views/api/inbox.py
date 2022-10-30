@@ -1,13 +1,13 @@
 from django.db.models import Case, BooleanField, When, Q
 from django.shortcuts import get_object_or_404
 from rest_framework import serializers
-from rest_framework.generics import ListAPIView, RetrieveUpdateDestroyAPIView, ListCreateAPIView, RetrieveAPIView, UpdateAPIView
+from rest_framework.generics import ListAPIView, RetrieveUpdateDestroyAPIView, ListCreateAPIView, CreateAPIView, RetrieveAPIView, UpdateAPIView
 from rest_framework.generics import RetrieveUpdateAPIView
 from rest_framework.response import Response
 from rest_framework.serializers import ModelSerializer
 
 from ticketvise.middleware import CurrentUserMiddleware
-from ticketvise.models.inbox import Inbox, SchedulingAlgorithm
+from ticketvise.models.inbox import Inbox, SchedulingAlgorithm, InboxMaterial
 from ticketvise.models.label import Label
 from ticketvise.models.user import User, Role, UserInbox
 from ticketvise.utils import StandardResultsSetPagination
@@ -251,3 +251,26 @@ class CurrentUserInboxApiView(RetrieveAPIView):
             return UserInbox(user=self.request.user, inbox=inbox, role=Role.MANAGER)
 
         return get_object_or_404(UserInbox, inbox=inbox, user=self.request.user)
+
+
+class InboxMaterialSerializer(ModelSerializer):
+    class Meta:
+        model = InboxMaterial
+        fields = ["inbox", "file"]
+
+
+class InboxMaterialApiView(ListCreateAPIView):
+    serializer_class = InboxMaterialSerializer
+    # permission_classes = [UserIsInInboxPermission]
+
+    def get_queryset(self):
+        # return Response()
+        return InboxMaterial.objects.filter(inbox=self.kwargs["inbox_id"])
+
+    def post(self, request, *args, **kwargs):
+        inbox = get_object_or_404(Inbox, pk=self.kwargs["inbox_id"])
+
+        for file in self.request.FILES.getlist('files'):
+            InboxMaterial(inbox=inbox, file=file).save()
+
+        return Response()
