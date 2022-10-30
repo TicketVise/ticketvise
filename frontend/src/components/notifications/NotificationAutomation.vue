@@ -27,7 +27,7 @@
 </template>
 
 <script>
-import { CheckCircleIcon } from '@heroicons/vue/outline'
+import { CheckCircleIcon } from '@heroicons/vue/24/outline'
 
 export default {
   components: {

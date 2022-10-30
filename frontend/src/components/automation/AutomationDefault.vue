@@ -31,7 +31,7 @@
     <div v-else class="py-3 px-4 space-y-2">
       <div class="flex justify-between w-full">
         <span class="font-medium">Default ticket assignment</span>
-        <x-icon @click="cancel()" class="h-4 w-4 cursor-pointer" />
+        <XMarkIcon @click="cancel()" class="h-4 w-4 cursor-pointer" />
       </div>
       <div class="space-y-2">
         <div>

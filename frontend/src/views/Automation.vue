@@ -48,16 +48,16 @@ import AutomationDefault from '@/components/automation/AutomationDefault.vue'
 import AutomationFilter from '@/components/automation/AutomationFilter.vue'
 
 import {
-  ExclamationIcon,
+  ExclamationCircleIcon,
   PlusIcon
-} from '@heroicons/vue/solid';
+} from '@heroicons/vue/24/solid';
 
 export default {
   name: "Automation",
   components: {
     PlusIcon,
     AutomationDefault,
-    ExclamationIcon,
+    ExclamationCircleIcon,
     AutomationFilter,
     Draggable,
   },
