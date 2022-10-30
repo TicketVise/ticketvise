@@ -14,13 +14,13 @@
 </template>
 
 <script>
-import { XCircleIcon } from '@heroicons/vue/solid'
+import { XCircleIcon } from "@heroicons/vue/24/solid";
 
 export default {
-  name: 'Error',
+  name: "Error",
   components: {
-    XCircleIcon
+    XCircleIcon,
   },
-  props: ['message']
-}
+  props: ["message"],
+};
 </script>

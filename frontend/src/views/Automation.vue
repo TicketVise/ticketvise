@@ -16,7 +16,7 @@
           handle=".handle"
           class="space-y-2"
         > -->
-          <!-- <automation-filter v-for="i of items" :key="i" /> -->
+        <!-- <automation-filter v-for="i of items" :key="i" /> -->
         <!-- </draggable> -->
         <!-- <button
           @click="items.push(items.length)"
@@ -29,15 +29,18 @@
         <div class="rounded-md bg-yellow-50 p-4">
           <div class="flex">
             <div class="flex-shrink-0">
-              <ExclamationIcon class="h-5 w-5 text-yellow-400" aria-hidden="true" />
+              <ExclamationCircleIcon
+                class="h-5 w-5 text-yellow-400"
+                aria-hidden="true"
+              />
             </div>
             <div class="ml-3">
-              <h3 class="text-sm font-medium text-yellow-800">
-                Coming soon
-              </h3>
+              <h3 class="text-sm font-medium text-yellow-800">Coming soon</h3>
               <div class="mt-2 text-sm text-yellow-700">
                 <p>
-                  Automation is currently under development and will be available soon so you can start filtering tickets on different criteria.
+                  Automation is currently under development and will be
+                  available soon so you can start filtering tickets on different
+                  criteria.
                 </p>
               </div>
             </div>
@@ -64,24 +67,24 @@
 <script>
 // import Draggable from 'vuedraggable'
 
-import AutomationDefault from '@/components/automation/AutomationDefault.vue'
+import AutomationDefault from "@/components/automation/AutomationDefault.vue";
 // import AutomationFilter from '@/components/automation/AutomationFilter.vue'
 
 import {
-  ExclamationIcon
+  ExclamationCircleIcon,
   // PlusIcon
-} from '@heroicons/vue/solid'
+} from "@heroicons/vue/24/solid";
 
 export default {
-  name: 'Automation',
+  name: "Automation",
   components: {
     // PlusIcon,
     AutomationDefault,
-    ExclamationIcon
+    ExclamationCircleIcon,
     // AutomationFilter
-    },
+  },
   data: () => ({
-    items: []
-  })
-}
+    items: [],
+  }),
+};
 </script>

@@ -12,48 +12,75 @@
       {{ value }}
     </span>
   </span> -->
-  <div :class="[value === 0 ? 'bg-gray-100 text-gray-800' : value > 0 ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800', 'inline-flex items-baseline px-2.5 py-0.5 rounded-full text-sm font-medium md:mt-2 lg:mt-0']">
-    <MinusIcon v-if="value === 0" class="-ml-1 mr-0.5 flex-shrink-0 self-center h-5 w-5 text-gray-500" aria-hidden="true" />
-    <ArrowSmUpIcon v-else-if="value > 0" class="-ml-1 mr-0.5 flex-shrink-0 self-center h-5 w-5 text-green-500" aria-hidden="true" />
-    <ArrowSmDownIcon v-else class="-ml-1 mr-0.5 flex-shrink-0 self-center h-5 w-5 text-red-500" aria-hidden="true" />
-    <span class="sr-only"> {{ value > 0 ? 'Increased' : 'Decreased' }} by </span>
+  <div
+    :class="[
+      value === 0
+        ? 'bg-gray-100 text-gray-800'
+        : value > 0
+        ? 'bg-green-100 text-green-800'
+        : 'bg-red-100 text-red-800',
+      'inline-flex items-baseline px-2.5 py-0.5 rounded-full text-sm font-medium md:mt-2 lg:mt-0',
+    ]"
+  >
+    <MinusIcon
+      v-if="value === 0"
+      class="-ml-1 mr-0.5 flex-shrink-0 self-center h-5 w-5 text-gray-500"
+      aria-hidden="true"
+    />
+    <ArrowSmallUpIcon
+      v-else-if="value > 0"
+      class="-ml-1 mr-0.5 flex-shrink-0 self-center h-5 w-5 text-green-500"
+      aria-hidden="true"
+    />
+    <ArrowSmallDownIcon
+      v-else
+      class="-ml-1 mr-0.5 flex-shrink-0 self-center h-5 w-5 text-red-500"
+      aria-hidden="true"
+    />
+    <span class="sr-only">
+      {{ value > 0 ? "Increased" : "Decreased" }} by
+    </span>
     {{ value }}%
   </div>
 </template>
 
 <script>
-import { ArrowSmDownIcon, ArrowSmUpIcon, MinusIcon } from '@heroicons/vue/solid'
+import {
+  ArrowSmallDownIcon,
+  ArrowSmallUpIcon,
+  MinusIcon,
+} from "@heroicons/vue/24/solid";
 
 export default {
-  name: 'IncreaseLabel',
+  name: "IncreaseLabel",
   components: {
-    ArrowSmDownIcon,
-    ArrowSmUpIcon,
-    MinusIcon
+    ArrowSmallDownIcon,
+    ArrowSmallUpIcon,
+    MinusIcon,
   },
   props: {
     a: {
       required: true,
-      type: Number
+      type: Number,
     },
     b: {
       required: true,
-      type: Number
-    }
+      type: Number,
+    },
   },
   computed: {
-    value () {
+    value() {
       if (this.a === this.b) {
-        return 0
+        return 0;
       }
       if (this.b === 0) {
-        return '100.00'
+        return "100.00";
       }
 
-      const increase = this.a - this.b
+      const increase = this.a - this.b;
 
-      return ((increase / this.b) * 100).toFixed(2)
-    }
-  }
-}
+      return ((increase / this.b) * 100).toFixed(2);
+    },
+  },
+};
 </script>

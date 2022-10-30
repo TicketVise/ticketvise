@@ -3,7 +3,11 @@
     class="rounded-md border select-none"
     :class="open ? 'ring-primary border-primary-400' : 'hover:bg-gray-100'"
   >
-    <div v-if="!open" @click="open = true" class="group py-3 px-4 flex flex-col space-y-1 cursor-pointer rounded">
+    <div
+      v-if="!open"
+      @click="open = true"
+      class="group py-3 px-4 flex flex-col space-y-1 cursor-pointer rounded"
+    >
       <div class="flex space-x-2 items-center justify-between">
         <span class="font-medium">{{ title }}</span>
         <selector-icon class="h-6 w-6 handle text-primary cursor-move" />
@@ -44,7 +48,7 @@
           <div
             class="flex w-22 justify-center items-center rounded px-4 py-2 space-x-2 text-blue-500 focus:outline-none"
           >
-            <span>{{ index === 0 ? 'IF' : 'AND' }}</span>
+            <span>{{ index === 0 ? "IF" : "AND" }}</span>
           </div>
 
           <component :is="filter" />
@@ -74,7 +78,11 @@
           <div class="h-1 border-b w-1/2"></div>
         </div>
         <!-- Place for the thens actions -->
-        <div v-for="(filter, index) in thens" :key="index" class="flex space-x-2">
+        <div
+          v-for="(filter, index) in thens"
+          :key="index"
+          class="flex space-x-2"
+        >
           <component :is="filter" />
 
           <button
@@ -126,46 +134,40 @@
 </template>
 
 <script>
-import AutomationFilterLabel from '@/components/automation/AutomationFilterLabel.vue'
-import AutomationFilterText from '@/components/automation/AutomationFilterText.vue'
-import AutomationAction from '@/components/automation/AutomationAction.vue'
-import Chip from '@/components/chip/Chip.vue'
+import AutomationFilterLabel from "@/components/automation/AutomationFilterLabel.vue";
+import AutomationFilterText from "@/components/automation/AutomationFilterText.vue";
+import AutomationAction from "@/components/automation/AutomationAction.vue";
+import Chip from "@/components/chip/Chip.vue";
 
-import {
-  TrashIcon,
-  SelectorIcon
-} from '@heroicons/vue/outline'
-import {
-  PlusIcon,
-  ChevronRightIcon
-} from '@heroicons/vue/solid'
+import { TrashIcon, ChevronUpDownIcon } from "@heroicons/vue/24/outline";
+import { PlusIcon, ChevronRightIcon } from "@heroicons/vue/24/solid";
 
 export default {
   components: {
     PlusIcon,
     ChevronRightIcon,
     TrashIcon,
-    SelectorIcon,
+    ChevronUpDownIcon,
     AutomationFilterLabel,
     AutomationFilterText,
     AutomationAction,
-    Chip
+    Chip,
   },
   data: () => ({
     open: false,
-    title: 'Lecture tickets to teacher',
+    title: "Lecture tickets to teacher",
     addIf: false,
     addThen: false,
     ifs: [],
-    thens: []
+    thens: [],
   }),
   methods: {
-    cancel () {
-      this.open = false
+    cancel() {
+      this.open = false;
     },
-    remove (index) {
-      this.ifs.splice(index, 1)
-    }
-  }
-}
+    remove(index) {
+      this.ifs.splice(index, 1);
+    },
+  },
+};
 </script>
