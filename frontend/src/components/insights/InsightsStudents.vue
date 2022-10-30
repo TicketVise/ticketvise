@@ -15,8 +15,8 @@
           </div>
 
           <div v-if="item.change" :class="[item.changeType === 'increase' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800', 'inline-flex items-baseline px-2.5 py-0.5 rounded-full text-sm font-medium md:mt-2 lg:mt-0']">
-            <ArrowSmUpIcon v-if="item.changeDirection === 'up'" class="-ml-1 mr-0.5 flex-shrink-0 self-center h-5 w-5" :class="[item.changeType === 'increase' ? 'text-green-500' : 'text-red-500']" aria-hidden="true" />
-            <ArrowSmDownIcon v-else class="-ml-1 mr-0.5 flex-shrink-0 self-center h-5 w-5" :class="[item.changeType === 'increase' ? 'text-green-500' : 'text-red-500']" aria-hidden="true" />
+            <ArrowSmallUpIcon v-if="item.changeDirection === 'up'" class="-ml-1 mr-0.5 flex-shrink-0 self-center h-5 w-5" :class="[item.changeType === 'increase' ? 'text-green-500' : 'text-red-500']" aria-hidden="true" />
+            <ArrowSmallDownIcon v-else class="-ml-1 mr-0.5 flex-shrink-0 self-center h-5 w-5" :class="[item.changeType === 'increase' ? 'text-green-500' : 'text-red-500']" aria-hidden="true" />
             <span class="sr-only"> {{ item.changeType === 'increase' ? 'Increased' : 'Decreased' }} by </span>
             {{ item.change }}
           </div>
@@ -29,7 +29,7 @@
 </template>
 
 <script>
-import { ArrowSmDownIcon, ArrowSmUpIcon } from '@heroicons/vue/solid'
+import { ArrowSmallDownIcon, ArrowSmallUpIcon } from '@heroicons/vue/24/solid'
 
 const stats = [
   { name: 'Total Students', stat: '125', previousStat: '', change: '', changeDirection: '', changeType: 'increase' },
@@ -41,8 +41,8 @@ const stats = [
 export default {
   name: 'InsightsStudents',
   components: {
-    ArrowSmDownIcon,
-    ArrowSmUpIcon
+    ArrowSmallDownIcon,
+    ArrowSmallUpIcon
   },
   setup () {
     return {

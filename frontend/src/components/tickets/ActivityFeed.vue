@@ -42,7 +42,7 @@
                     v-if="ticket.is_public && isMostHelpful(item.id)"
                     class="inline-flex items-center text-sm text-primary font-medium"
                   >
-                    <ThumbUpSolidIcon class="h-4 w-4 text-primary mr-1" />
+                    <HandThumbUpSolidIcon class="h-4 w-4 text-primary mr-1" />
                     <span class="hidden sm:flex">Most Helpful</span>
                   </div>
                 </div>
@@ -62,11 +62,11 @@
                     class="inline-flex items-center px-3 py-0.5 rounded-full text-sm border text-primary"
                     :class="item?.helpful === 'helpful' ? 'font-medium' : ''"
                   >
-                    <ThumbUpSolidIcon
+                    <HandThumbUpSolidIcon
                       v-if="item?.helpful === 'helpful'"
                       class="h-4 w-4 text-primary mr-1"
                     />
-                    <ThumbUpOutlineIcon
+                    <HandThumbUpOutlineIcon
                       v-else
                       class="h-4 w-4 text-primary mr-1"
                     />
@@ -81,11 +81,11 @@
                     class="inline-flex items-center px-3 py-0.5 rounded-full text-sm border text-primary"
                     :class="item?.helpful === 'notHelpful' ? 'font-medium' : ''"
                   >
-                    <ThumbDownSolidIcon
+                    <HandThumbDownSolidIcon
                       v-if="item?.helpful === 'notHelpful'"
                       class="h-4 w-4 text-primary mr-1"
                     />
-                    <ThumbDownOutlineIcon
+                    <HandThumbDownOutlineIcon
                       v-else
                       class="h-4 w-4 text-primary mr-1"
                     />
@@ -303,17 +303,30 @@
                 </ul>
               </div>
             </template>
-            <template v-else-if="item.type === 'group'" condition="item.type === 'group'">
+            <template
+              v-else-if="item.type === 'group'"
+              condition="item.type === 'group'"
+            >
               <div>
                 <div class="relative px-1">
-                  <div class="h-8 w-8 bg-gray-100 rounded-full ring-8 ring-white flex items-center justify-center">
-                    <CollectionIcon class="h-5 w-5 text-gray-500" aria-hidden="true"/>
+                  <div
+                    class="h-8 w-8 bg-gray-100 rounded-full ring-8 ring-white flex items-center justify-center"
+                  >
+                    <CollectionIcon
+                      class="h-5 w-5 text-gray-500"
+                      aria-hidden="true"
+                    />
                   </div>
                 </div>
               </div>
               <div class="min-w-0 flex-1 py-0">
                 <div class="text-sm leading-8 text-gray-500">
-                  <button @click="$emit('unfold', item)" class="font-medium hover:underline">View {{ item.activities.length }} grouped changes</button>
+                  <button
+                    @click="$emit('unfold', item)"
+                    class="font-medium hover:underline"
+                  >
+                    View {{ item.activities.length }} grouped changes
+                  </button>
                 </div>
               </div>
             </template>
@@ -408,12 +421,12 @@ import {
   TagIcon,
   UserCircleIcon as UserCircleIconSolid,
   ExclamationCircleIcon,
-  ThumbUpIcon as ThumbUpSolidIcon,
-  ThumbDownIcon as ThumbDownSolidIcon,
+  HandThumbUpIcon as HandThumbUpSolidIcon,
+  HandThumbDownIcon as HandThumbDownSolidIcon,
 } from "@heroicons/vue/24/solid";
 import {
-  ThumbUpIcon as ThumbUpOutlineIcon,
-  ThumbDownIcon as ThumbDownOutlineIcon,
+  HandThumbUpIcon as HandThumbUpOutlineIcon,
+  HandThumbDownIcon as HandThumbDownOutlineIcon,
 } from "@heroicons/vue/24/outline";
 
 const statusses = {
@@ -448,10 +461,10 @@ export default {
     TicketInput,
     TicketInputViewer,
     VueEasyLightbox,
-    ThumbUpSolidIcon,
-    ThumbDownSolidIcon,
-    ThumbUpOutlineIcon,
-    ThumbDownOutlineIcon,
+    HandThumbUpSolidIcon,
+    HandThumbDownSolidIcon,
+    HandThumbUpOutlineIcon,
+    HandThumbDownOutlineIcon,
   },
   props: {
     ticket: {

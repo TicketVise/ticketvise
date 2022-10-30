@@ -39,7 +39,7 @@ class Command(BaseCommand):
             username="e.dijkstra",
             first_name="Edsger",
             last_name="W. Dijkstra",
-            avatar_url="https://upload.wikimedia.org/wikipedia/commons/thumb/d/d9/Edsger_Wybe_Dijkstra.jpg/800px-Edsger_Wybe_Dijkstra.jpg",
+            avatar_url="https://upload.wikimedia.org/wikipedia/commons/HandThumb/d/d9/Edsger_Wybe_Dijkstra.jpg/800px-Edsger_Wybe_Dijkstra.jpg",
             password=password,
             email="Edsger@ticketvise.com",
             is_staff=False,
