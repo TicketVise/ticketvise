@@ -2,7 +2,7 @@
   <div class="overflow-y-auto">
     <div>
       <!-- Tabs -->
-      <div class="p-4 pb-0">
+      <div class="p-4 sm:p-0 pb-0">
         <div class="sm:hidden">
           <label for="tabs" class="sr-only">Select a tab</label>
           <!-- Use an "onChange" listener to redirect the user to the selected tab URL. -->
