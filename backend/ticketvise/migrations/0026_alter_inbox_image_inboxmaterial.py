@@ -9,7 +9,7 @@ import ticketvise.models.inbox
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('ticketvise', '0023_rename_code_inbox_lti_context_label'),
+        ('ticketvise', '0025_automation_automationcondition'),
     ]
 
     operations = [
