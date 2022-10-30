@@ -602,6 +602,7 @@ class Command(BaseCommand):
         )
         ticket_31.add_label(label_pse_assignment)
         ticket_31.status = Status.PENDING
+        ticket_31.assignee = None
         ticket_31.date_created = timezone.now() - datetime.timedelta(minutes=5)
         ticket_31.date_edited = timezone.now() - datetime.timedelta(minutes=5)
         ticket_31.save()
