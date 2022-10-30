@@ -456,7 +456,7 @@ import axios from "axios";
 import store from "@/store";
 
 import {
-  CollectionIcon,
+  RectangleStackIcon,
   GlobeIcon,
   InboXMarkIcon,
 } from "@heroicons/vue/24/outline";
@@ -473,7 +473,7 @@ export default {
     settings: [],
     stats: [
       { label: "Inboxes", value: "#", icon: InboXMarkIcon },
-      { label: "Tickets", value: "#", icon: CollectionIcon },
+      { label: "Tickets", value: "#", icon: RectangleStackIcon },
       { label: "Public tickets", value: "#", icon: GlobeIcon },
     ],
   }),

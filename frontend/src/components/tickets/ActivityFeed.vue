@@ -20,7 +20,7 @@
                 <span
                   class="absolute -bottom-0.5 -right-1 bg-white rounded-tl px-0.5 py-px"
                 >
-                  <ChatAltIcon
+                  <ChatBubbleLeftEllipsisIcon
                     class="h-5 w-5 text-gray-400"
                     aria-hidden="true"
                   />
@@ -178,7 +178,7 @@
                   <div
                     class="h-8 w-8 bg-gray-100 rounded-full ring-8 ring-white flex items-center justify-center"
                   >
-                    <CollectionIcon
+                    <RectangleStackIcon
                       class="h-5 w-5 text-gray-500"
                       aria-hidden="true"
                     />
@@ -312,7 +312,7 @@
                   <div
                     class="h-8 w-8 bg-gray-100 rounded-full ring-8 ring-white flex items-center justify-center"
                   >
-                    <CollectionIcon
+                    <RectangleStackIcon
                       class="h-5 w-5 text-gray-500"
                       aria-hidden="true"
                     />
@@ -349,7 +349,10 @@
             <span
               class="absolute -bottom-0.5 -right-1 bg-white rounded-tl px-0.5 py-px"
             >
-              <ChatAltIcon class="h-5 w-5 text-gray-400" aria-hidden="true" />
+              <ChatBubbleLeftEllipsisIcon
+                class="h-5 w-5 text-gray-400"
+                aria-hidden="true"
+              />
             </span>
           </div>
         </div>
@@ -414,9 +417,9 @@ import TicketInput from "@/components/inputs/TicketInput.vue";
 import TicketInputViewer from "@/components/inputs/TicketInputViewer.vue";
 
 import {
-  ChatAltIcon,
+  ChatBubbleLeftEllipsisIcon,
   CheckCircleIcon,
-  CollectionIcon,
+  RectangleStackIcon,
   DocumentIcon,
   TagIcon,
   UserCircleIcon as UserCircleIconSolid,
@@ -450,10 +453,10 @@ const statusses = {
 
 export default {
   components: {
-    ChatAltIcon,
+    ChatBubbleLeftEllipsisIcon,
     CheckCircleIcon,
     Chip,
-    CollectionIcon,
+    RectangleStackIcon,
     DocumentIcon,
     TagIcon,
     UserCircleIconSolid,

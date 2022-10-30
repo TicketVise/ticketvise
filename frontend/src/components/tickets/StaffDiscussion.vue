@@ -32,7 +32,7 @@
                   <span
                     class="absolute -bottom-0.5 -right-1 bg-white rounded-tl px-0.5 py-px"
                   >
-                    <ChatAltIcon
+                    <ChatBubbleLeftEllipsisIcon
                       class="h-5 w-5 text-gray-400"
                       aria-hidden="true"
                     />
@@ -116,7 +116,7 @@
 
 <script>
 import axios from "axios";
-import { ChatAltIcon } from "@heroicons/vue/24/solid";
+import { ChatBubbleLeftEllipsisIcon } from "@heroicons/vue/24/solid";
 import TicketInput from "@/components/inputs/TicketInput.vue";
 import TicketInputViewer from "@/components/inputs/TicketInputViewer.vue";
 
@@ -124,7 +124,7 @@ import Relax from "@/assets/img/svg/relax.svg";
 
 export default {
   components: {
-    ChatAltIcon,
+    ChatBubbleLeftEllipsisIcon,
     TicketInput,
     TicketInputViewer,
   },

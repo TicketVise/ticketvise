@@ -40,7 +40,7 @@
                   'flex px-4 py-2 text-sm',
                 ]"
               >
-                <DocumentDownloadIcon
+                <DocumentArrowDownIcon
                   class="mr-3 h-5 w-5 text-gray-400"
                   aria-hidden="true"
                 />
@@ -73,7 +73,7 @@
                   'flex w-full px-4 py-2 text-sm',
                 ]"
               >
-                <DocumentRemoveIcon
+                <DocumentMinusIcon
                   class="mr-3 h-5 w-5 text-gray-400"
                   aria-hidden="true"
                 />
@@ -95,16 +95,16 @@ import { EllipsisVerticalIcon } from "@heroicons/vue/24/solid";
 
 import {
   DocumentIcon,
-  DocumentDownloadIcon,
-  DocumentRemoveIcon,
+  DocumentArrowDownIcon,
+  DocumentMinusIcon,
   EyeIcon,
 } from "@heroicons/vue/24/outline";
 
 export default {
   components: {
     DocumentIcon,
-    DocumentDownloadIcon,
-    DocumentRemoveIcon,
+    DocumentArrowDownIcon,
+    DocumentMinusIcon,
     EyeIcon,
     Menu,
     MenuButton,

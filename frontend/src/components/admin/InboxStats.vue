@@ -33,7 +33,7 @@
             {{ date(inbox.date_created) }}
           </span>
           <span class="text-gray-800 flex items-center">
-            <ClipboardListIcon class="mr-1 w-4 h-4" />
+            <ClipboardDocumentListIcon class="mr-1 w-4 h-4" />
             <span>{{ inbox.scheduling_algorithm }}</span>
           </span>
         </div>
@@ -83,7 +83,7 @@ import moment from "moment";
 import {
   ChevronDownIcon,
   ChevronUpIcon,
-  ClipboardListIcon,
+  ClipboardDocumentListIcon,
   UserIcon,
 } from "@heroicons/vue/24/outline";
 
@@ -91,7 +91,7 @@ export default {
   components: {
     ChevronDownIcon,
     ChevronUpIcon,
-    ClipboardListIcon,
+    ClipboardDocumentListIcon,
     UserIcon,
     TicketsChart,
   },
