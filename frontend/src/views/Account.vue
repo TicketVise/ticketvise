@@ -458,7 +458,7 @@ import store from "@/store";
 import {
   RectangleStackIcon,
   GlobeIcon,
-  InboXMarkIcon,
+  InboxStackIcon,
 } from "@heroicons/vue/24/outline";
 import { InformationCircleIcon } from "@heroicons/vue/24/solid";
 
@@ -472,7 +472,7 @@ export default {
     user: store.state.user,
     settings: [],
     stats: [
-      { label: "Inboxes", value: "#", icon: InboXMarkIcon },
+      { label: "Inboxes", value: "#", icon: InboxStackIcon },
       { label: "Tickets", value: "#", icon: RectangleStackIcon },
       { label: "Public tickets", value: "#", icon: GlobeIcon },
     ],
