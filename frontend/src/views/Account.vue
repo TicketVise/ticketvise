@@ -457,7 +457,7 @@ import store from "@/store";
 
 import {
   RectangleStackIcon,
-  GlobeIcon,
+  GlobeEuropeAfricaIcon,
   InboxStackIcon,
 } from "@heroicons/vue/24/outline";
 import { InformationCircleIcon } from "@heroicons/vue/24/solid";
@@ -474,7 +474,7 @@ export default {
     stats: [
       { label: "Inboxes", value: "#", icon: InboxStackIcon },
       { label: "Tickets", value: "#", icon: RectangleStackIcon },
-      { label: "Public tickets", value: "#", icon: GlobeIcon },
+      { label: "Public tickets", value: "#", icon: GlobeEuropeAfricaIcon },
     ],
   }),
   mounted() {
