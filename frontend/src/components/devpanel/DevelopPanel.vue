@@ -90,6 +90,23 @@
                         </MenuItem>
                         <MenuItem v-slot="{ active }">
                           <button
+                            @click="selectAssistant()"
+                            :class="[
+                              active
+                                ? 'bg-gray-100 text-gray-900'
+                                : 'text-gray-700',
+                              'group flex items-center px-4 py-2 text-sm w-full',
+                            ]"
+                          >
+                            <UsersIcon
+                              class="mr-3 h-5 w-5 text-gray-400 group-hover:text-gray-500"
+                              aria-hidden="true"
+                            />
+                            Assistant
+                          </button>
+                        </MenuItem>
+                        <MenuItem v-slot="{ active }">
+                          <button
                             @click="selectStudent()"
                             :class="[
                               active
@@ -332,6 +349,16 @@ export default {
     selectCoordinator() {
       const payload = {
         username: "c.mcauliffe",
+        password: "admin193",
+      };
+
+      this.$store
+        .dispatch("login", payload)
+        .catch((_) => (this.error = "Incorrect username or password."));
+    },
+    selectAssistant() {
+      const payload = {
+        username: "jelleassistant",
         password: "admin193",
       };
 

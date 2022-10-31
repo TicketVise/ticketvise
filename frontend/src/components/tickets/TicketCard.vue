@@ -24,7 +24,7 @@
         <span class="font-medium"
           >{{ ticket.author?.first_name }} {{ ticket.author?.last_name }}</span
         >・{{ date(ticket.date_created)
-        }}<span v-if="!assignee?.first_name"
+        }}<span v-if="!assignee?.first_name && assignee_show"
           >・<button
             @click="assignUser(ticket.ticket_inbox_id)"
             class="text-primary-600 no-underline font-medium"

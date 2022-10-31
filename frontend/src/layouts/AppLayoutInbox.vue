@@ -220,7 +220,7 @@
     @update="user.give_introduction = false"
     v-if="is_staff && user && user.give_introduction"
   />
-  <develop-panel v-if="development" />
+  <develop-panel v-if="true || development" />
 
   <SearchPopup :show="search" v-on:close="search = false" />
 </template>

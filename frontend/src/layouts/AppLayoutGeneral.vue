@@ -123,7 +123,7 @@
     </footer>
   </div>
 
-  <develop-panel v-if="development" />
+  <develop-panel v-if="true || development" />
 </template>
 
 <script>
