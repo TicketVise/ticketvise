@@ -27,13 +27,13 @@ import TicketColumn from "@/components/tickets/TicketColumn.vue";
 import LabelDropdown from "@/components/dropdown/LabelDropdown.vue";
 
 import { ChevronRightIcon } from "@heroicons/vue/24/solid";
-import { GlobeIcon } from "@heroicons/vue/24/outline";
+import { GlobeEuropeAfricaIcon } from "@heroicons/vue/24/outline";
 
 export default {
   name: "Agents",
   components: {
     ChevronRightIcon,
-    GlobeIcon,
+    GlobeEuropeAfricaIcon,
     TicketColumn,
     LabelDropdown,
     SearchBar,
