@@ -3,7 +3,7 @@ import datetime
 from django.core.management import BaseCommand
 from django.db import IntegrityError, transaction
 from django.utils import timezone
-
+from ticketvise.models.automation import Automation, AutomationCondition
 from ticketvise.models.comment import Comment
 from ticketvise.models.inbox import Inbox
 from ticketvise.models.label import Label
@@ -39,7 +39,7 @@ class Command(BaseCommand):
             username="e.dijkstra",
             first_name="Edsger",
             last_name="W. Dijkstra",
-            avatar_url="https://upload.wikimedia.org/wikipedia/commons/thumb/d/d9/Edsger_Wybe_Dijkstra.jpg/800px-Edsger_Wybe_Dijkstra.jpg",
+            avatar_url="https://upload.wikimedia.org/wikipedia/commons/HandThumb/d/d9/Edsger_Wybe_Dijkstra.jpg/800px-Edsger_Wybe_Dijkstra.jpg",
             password=password,
             email="Edsger@ticketvise.com",
             is_staff=False,
@@ -602,6 +602,7 @@ class Command(BaseCommand):
         )
         ticket_31.add_label(label_pse_assignment)
         ticket_31.status = Status.PENDING
+        ticket_31.assignee = None
         ticket_31.date_created = timezone.now() - datetime.timedelta(minutes=5)
         ticket_31.date_edited = timezone.now() - datetime.timedelta(minutes=5)
         ticket_31.save()
@@ -884,3 +885,38 @@ class Command(BaseCommand):
         comment_41 = Comment.objects.create(author=user_coordinator, ticket=ticket_43, is_reply=True,
                                             content="This ticket is indeed public, and all replies can be seen too")
         add_date_to_comment(comment_41, datetime.timedelta(days=0, hours=22))
+
+        automation1 = Automation.objects.create(
+           name="Ticket about exam",
+           inbox=inbox_pse,
+           action_func="add_label",
+           action_value=label_pse_lecture.id
+        )
+
+        AutomationCondition.objects.create(
+           automation=automation1,
+           field_name="title",
+           evaluation_func="contains",
+           evaluation_value="exam",
+        )
+
+        automation1 = Automation.objects.create(
+           name="Ticket before deadline about assignment 2",
+           inbox=inbox_pse,
+           action_func="add_label",
+           action_value=label_pse_lecture.id
+        )
+
+        AutomationCondition.objects.create(
+           automation=automation1,
+           field_name="title",
+           evaluation_func="contains",
+           evaluation_value="exam",
+        )
+
+        AutomationCondition.objects.create(
+           automation=automation1,
+           field_name="date_created",
+           evaluation_func="lt",
+           evaluation_value="3000-08-27T09:32:21+02:00",
+        )

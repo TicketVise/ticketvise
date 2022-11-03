@@ -42,20 +42,13 @@
 
 <style>
   .ticket-column {
-    min-width: calc(100vw - 64px - 32px) !important;
-    /* height: calc((100vh - 216px) - 3rem); */
+    min-width: calc(100vw - 32px) !important;
     scroll-snap-align: start;
   }
 
   @media screen and (min-width: 500px) {
     .ticket-column {
       min-width: 300px !important;
-    }
-  }
-
-  @media screen and (min-width: 768px) {
-    .ticket-column {
-      /* height: calc((100vh - 92px - 16px) - 3rem); */
     }
   }
 </style>

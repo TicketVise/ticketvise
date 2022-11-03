@@ -53,6 +53,14 @@ const routes = [
     }
   },
   {
+    path: '/inboxes/:inboxId/overview',
+    name: 'Overview',
+    component: () => import(/* webpackChunkName: "overview" */ '@/views/Overview.vue'),
+    meta: {
+      layout: 'AppLayoutInbox'
+    }
+  },
+  {
     path: '/inboxes/:inboxId/tickets',
     name: 'Tickets',
     component: () => import(/* webpackChunkName: "tickets" */ '@/views/Inbox.vue'),

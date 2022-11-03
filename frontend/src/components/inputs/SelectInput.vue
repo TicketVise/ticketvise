@@ -5,21 +5,26 @@
       {{ label }}
     </ListboxLabel>
     <div class="mt-1 relative">
-      <ListboxButton class="relative w-full bg-white border border-gray-300 rounded-md pl-3 pr-10 py-2 text-left cursor-pointer focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary sm:text-sm">
+      <ListboxButton :disabled="disabled" class="relative w-full bg-white border border-gray-300 rounded-md pl-3 pr-10 py-2 text-left focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary sm:text-sm" :class="disabled ? 'cursor-not-allowed text-gray-400' : 'cursor-pointer'">
         <span class="flex items-center">
-          <span v-if="selected?.color" class="flex-shrink-0 inline-block h-2 w-2 rounded-full mr-3" :style="`background-color: ${selected?.color}`" />
+          <span
+            v-if="selected?.color"
+            class="flex-shrink-0 inline-block h-2 w-2 rounded-full mr-3"
+            :style="`background-color: ${selected?.color}`"
+          />
           <img
             v-if="selected?.avatar"
             :src="selected.avatar"
             alt=""
             class="flex-shrink-0 h-5 w-5 rounded-full"
           />
+          <component class="flex-shrink-0 h-4 w-4 mr-2 text-gray-700" v-if="selected?.icon" :is="selected?.icon" />
           <span :class="[selected?.avatar ? 'ml-3' : '', 'block truncate']">{{ selected?.name || emptyLabel }}</span>
         </span>
         <span
           class="ml-3 absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none"
         >
-          <SelectorIcon class="h-5 w-5 text-gray-400" aria-hidden="true" />
+          <ChevronUpDownIcon class="h-5 w-5 text-gray-400" aria-hidden="true" />
         </span>
       </ListboxButton>
 
@@ -29,7 +34,7 @@
         leave-to-class="opacity-0"
       >
         <ListboxOptions
-          class="absolute z-20 mt-1 bg-white shadow-lg max-h-56 rounded-md py-1 text-base ring-1 ring-black ring-opacity-5 overflow-auto focus:outline-none sm:text-sm "
+          class="absolute z-20 mt-1 bg-white shadow-lg max-h-56 rounded-md py-1 text-base ring-1 ring-black ring-opacity-5 overflow-auto focus:outline-none sm:text-sm"
         >
           <ListboxOption
             as="template"
@@ -41,10 +46,10 @@
             <li
               :class="[
                 active ? 'text-white bg-primary-600' : 'text-gray-900',
-                'cursor-pointer select-none relative py-2 pl-3 pr-9'
+                'cursor-pointer select-none relative py-2 pl-3 pr-9',
               ]"
             >
-              <div class="flex items-center">
+              <div class="flex items-center pr-2">
                 <span v-if="element.color" class="flex-shrink-0 inline-block h-2 w-2 rounded-full mr-3" :style="`background-color: ${element.color}`" />
                 <img
                   v-if="element.avatar"
@@ -52,11 +57,12 @@
                   alt=""
                   class="flex-shrink-0 h-6 w-6 rounded-full"
                 />
+                <component class="flex-shrink-0 h-4 w-4 mr-2" v-if="element.icon" :is="element.icon" />
                 <span
                   :class="[
                     selected ? 'font-semibold' : 'font-normal',
                     element.avatar ? 'ml-3' : '',
-                    'block truncate'
+                    'block truncate',
                   ]"
                 >
                   {{ element.name }}
@@ -67,7 +73,7 @@
                 v-if="selected"
                 :class="[
                   active ? 'text-white' : 'text-primary-600',
-                  'absolute inset-y-0 right-0 flex items-center pr-4'
+                  'absolute inset-y-0 right-0 flex items-center pr-4',
                 ]"
               >
                 <CheckIcon class="h-5 w-5" aria-hidden="true" />
@@ -88,11 +94,12 @@ import {
   ListboxButton,
   ListboxLabel,
   ListboxOption,
-  ListboxOptions
-} from '@headlessui/vue'
-import { CheckIcon, SelectorIcon } from '@heroicons/vue/solid'
+  ListboxOptions,
+} from "@headlessui/vue";
+import { CheckIcon, ChevronUpDownIcon } from "@heroicons/vue/24/solid";
 
 export default {
+  name: 'SelectInput',
   components: {
     Listbox,
     ListboxButton,
@@ -100,48 +107,54 @@ export default {
     ListboxOption,
     ListboxOptions,
     CheckIcon,
-    SelectorIcon
+    ChevronUpDownIcon,
   },
   props: {
     label: {
       required: false,
-      type: String
+      type: String,
     },
     data: {
-      required: true,
-      type: Array
+      required: false,
+      type: Array,
+      default: () => []
     },
     init: {
       required: false,
-      type: Object
+      type: Object,
     },
     multiple: {
       required: false,
-      type: Boolean
+      type: Boolean,
     },
     emptyLabel: {
       required: false,
-      type: String
+      type: String,
     },
     modelValue: {
-      default: '',
-      required: false
+      required: false,
+      type: Object
+    },
+    disabled: {
+      default: false,
+      required: false,
+      type: Boolean
     }
   },
   data: () => ({
-    selected: null
+    selected: null,
   }),
   watch: {
     modelValue: {
       immediate: true,
       handler (value) {
-        this.selected = this.data.find(element => element.value === value)
+        this.selected = value
       }
     },
     selected: {
-      immediate: true,
       handler (value) {
-        this.$emit('modelValue', this.selected?.value)
+        this.$emit('update:modelValue', value)
+        this.$emit('update', value)
       }
     }
   }

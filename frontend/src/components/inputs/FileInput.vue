@@ -10,7 +10,7 @@
         v-for="(file, index) in this.files"
       >
         <div class="w-0 flex-1 flex items-center text-left">
-          <DocumentAddIcon class="flex-shrink-0 h-5 w-5 text-gray-500" />
+          <DocumentPlusIcon class="flex-shrink-0 h-5 w-5 text-gray-500" />
           <span class="ml-2 flex-1 w-0 truncate">
             {{ file.name }}
           </span>
@@ -22,7 +22,7 @@
             title="Remove file"
             type="button"
           >
-            <XIcon class="h-5 w-5 text-gray-400" />
+            <XMarkIcon class="h-5 w-5 text-gray-400" />
           </button>
         </div>
       </li>
@@ -45,7 +45,10 @@
         type="file"
       />
 
-      <label class="inset-0 w-full h-16 cursor-pointer flex justify-center items-center" for="attachment">
+      <label
+        class="inset-0 w-full h-16 cursor-pointer flex justify-center items-center"
+        for="attachment"
+      >
         <div><span class="underline">Browse</span> or drop your files here</div>
       </label>
     </div>
@@ -53,60 +56,60 @@
 </template>
 
 <script>
-import { DocumentAddIcon } from '@heroicons/vue/outline'
-import { XIcon } from '@heroicons/vue/solid'
+import { DocumentPlusIcon } from "@heroicons/vue/24/outline";
+import { XMarkIcon } from "@heroicons/vue/24/solid";
 
 export default {
-  name: 'FileUpload',
-  components: { DocumentAddIcon, XIcon },
+  name: "FileUpload",
+  components: { DocumentPlusIcon, XMarkIcon },
   props: {
     accepted: {
       type: String,
       required: false,
-      default: ''
+      default: "",
     },
     preview: {
       type: Boolean,
       required: false,
-      default: true
-    }
+      default: true,
+    },
   },
-  data () {
+  data() {
     return {
-      files: []
-    }
+      files: [],
+    };
   },
   methods: {
-    onChange () {
-      this.files.push(...this.$refs.file.files)
-      this.$refs.file.value = ''
+    onChange() {
+      this.files.push(...this.$refs.file.files);
+      this.$refs.file.value = "";
 
-      this.$emit('input', this.files)
+      this.$emit("input", this.files);
     },
-    remove (i) {
-      this.files.splice(i, 1)
+    remove(i) {
+      this.files.splice(i, 1);
     },
-    dragover (event) {
-      event.preventDefault()
-      if (!event.currentTarget.classList.contains('bg-orange-300')) {
-        event.currentTarget.classList.remove('bg-gray-100')
-        event.currentTarget.classList.add('bg-orange-300')
+    dragover(event) {
+      event.preventDefault();
+      if (!event.currentTarget.classList.contains("bg-orange-300")) {
+        event.currentTarget.classList.remove("bg-gray-100");
+        event.currentTarget.classList.add("bg-orange-300");
       }
     },
-    dragleave (event) {
-      event.currentTarget.classList.add('bg-gray-100')
-      event.currentTarget.classList.remove('bg-orange-300')
+    dragleave(event) {
+      event.currentTarget.classList.add("bg-gray-100");
+      event.currentTarget.classList.remove("bg-orange-300");
     },
-    drop (event) {
-      event.preventDefault()
-      this.files.push(...event.dataTransfer.files)
+    drop(event) {
+      event.preventDefault();
+      this.files.push(...event.dataTransfer.files);
 
-      this.onChange()
-      this.dragleave(event)
+      this.onChange();
+      this.dragleave(event);
     },
-    clear () {
-      this.files = []
-    }
-  }
-}
+    clear() {
+      this.files = [];
+    },
+  },
+};
 </script>

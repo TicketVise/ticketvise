@@ -1,16 +1,18 @@
 from django.urls import path
+from ticketvise.views.api.automation import AutomationApiView, ListAutomationApiView, CreateAutomationConditionApiView, \
+    AutomationConditionApiView, CreateAutomationApiView
 
 from ticketvise.views.api.auth import LoginApiView
 from ticketvise.views.api.comment import CreateCommentApiView, CreateReplyApiView, ApproveCommentAPIView
 from ticketvise.views.api.inbox import InboxLabelsApiView, InboxesApiView, InboxGuestsAPIView, InboxUsersApiView, \
     UserInboxApiView, InboxSettingsApiView, CurrentUserInboxesApiView
 from ticketvise.views.api.inbox import InboxStaffApiView, InboxLabelApiView, AllInboxLabelsApiView, \
-    CurrentUserInboxApiView
+    CurrentUserInboxApiView, InboxMaterialApiView
 from ticketvise.views.api.notification import NotificationsAPIView, NotificationFlipRead, NotificationsReadAll, \
     NotificationUnreadCountAPI
 from ticketvise.views.api.statistics import InboxTicketsPerDateTypeStatisticsApiView, \
     InboxAverageAgentResponseTimeStatisticsApiView, InboxAverageTimeToCloseStatisticsApiView, \
-    LabelsCountStatisticsApiView, InboxStatisticsApiView, UserStatisticsApiView
+    LabelsCountStatisticsApiView, InboxStatisticsApiView, UserStatisticsApiView, StaffInboxStatisticsAPIView
 from ticketvise.views.api.ticket import TicketApiView, TicketUpdateAssignee, \
     TicketAttachmentsApiView, AttachmentViewApiView, UserTicketsApiView, UserAverageApiView, \
     RecentTicketApiView, InboxTicketsApiView, TicketLabelApiView, TicketCreateApiView, TicketSharedAPIView, \
@@ -50,6 +52,11 @@ urlpatterns = [
     path("inboxes/<int:inbox_id>/tickets/<int:ticket_inbox_id>/subscribe", SubscribeToTicketAPIView.as_view()),
     path("inboxes/<int:inbox_id>/tickets/<int:ticket_inbox_id>/unsubscribe", UnsubscribeFromTicketAPIView.as_view()),
     path("inboxes/<int:inbox_id>/users/<int:user_id>/tickets/recent", RecentTicketApiView.as_view()),
+    path("inboxes/<int:inbox_id>/automations", ListAutomationApiView.as_view(), name="automation_list"),
+    path("inboxes/<int:inbox_id>/automation/create", CreateAutomationApiView.as_view(), name="create_automation"),
+    path("inboxes/<int:inbox_id>/automation/<int:automation_id>", AutomationApiView.as_view(), name="update_retrieve_automation"),
+    path("inboxes/<int:inbox_id>/automation/<int:automation_id>/condition/create", CreateAutomationConditionApiView.as_view(), name="create_automation_condition"),
+    path("inboxes/<int:inbox_id>/automation/<int:automation_id>/condition/<int:condition_id>", AutomationConditionApiView.as_view(), name="update_retrieve_automation_condition"),
     path("inboxes/<int:inbox_id>/role", UserRoleApiView.as_view()),
     path("inboxes/<int:inbox_id>/guests", InboxGuestsAPIView.as_view()),
     path("inboxes/<int:inbox_id>/users", InboxUsersApiView.as_view(), name="api_inbox_users"),
@@ -60,11 +67,13 @@ urlpatterns = [
     path("inboxes/<int:inbox_id>/labels/new", InboxLabelsApiView.as_view(), name="api_new_inbox_label"),
     path("inboxes/<int:inbox_id>/labels/<int:label_id>", InboxLabelApiView.as_view(), name="api_inbox_label"),
     path("inboxes/<int:inbox_id>/statistics", InboxStatisticsApiView.as_view(), name="api_inbox_statistics"),
+    path("inboxes/<int:inbox_id>/statistics/staff", StaffInboxStatisticsAPIView.as_view(), name="api_inbox_statistics"),
     path("inboxes/<int:inbox_id>/statistics/tickets/count", InboxTicketsPerDateTypeStatisticsApiView.as_view()),
     path("inboxes/<int:inbox_id>/statistics/agent/response/avg",
          InboxAverageAgentResponseTimeStatisticsApiView.as_view()),
     path("inboxes/<int:inbox_id>/statistics/close/avg", InboxAverageTimeToCloseStatisticsApiView.as_view()),
     path("inboxes/<int:inbox_id>/statistics/labels/count", LabelsCountStatisticsApiView.as_view()),
+    path("inboxes/<int:inbox_id>/intelligence/material", InboxMaterialApiView.as_view()),
     path("inboxes/<int:inbox_id>/comments/<int:comment_id>/approve", ApproveCommentAPIView.as_view()),
     path("admin/statistics/users/count", UsersApiView.as_view()),
     path("admin/statistics/tickets/count", TicketsApiView.as_view()),

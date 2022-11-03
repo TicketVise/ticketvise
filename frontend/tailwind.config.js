@@ -19,6 +19,9 @@ module.exports = {
       },
       fontFamily: {
         'ticketvise': ['Raleway', 'sans-serif']
+      },
+      width: {
+        '22': '5.5rem'
       }
     }
   },
