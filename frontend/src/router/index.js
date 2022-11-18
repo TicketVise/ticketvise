@@ -141,7 +141,7 @@ const routes = [
     }
   },
   {
-    path: '/inboxes/:inboxId/settings',
+    path: '/inboxes/:inboxId/settings/:tab?/:itemId?', 
     name: 'Settings',
     component: () => import(/* webpackChunkName: "settings" */ '@/views/Settings.vue'),
     meta: {

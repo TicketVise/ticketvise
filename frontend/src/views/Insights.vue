@@ -1,76 +1,40 @@
 <template>
   <div class="overflow-y-auto">
-    <div>
-      <!-- Tabs -->
-      <div class="p-4 sm:p-0 pb-0">
-        <div class="sm:hidden">
-          <label for="tabs" class="sr-only">Select a tab</label>
-          <!-- Use an "onChange" listener to redirect the user to the selected tab URL. -->
-          <select
-            id="tabs"
-            name="tabs"
-            @change="
-              switchTab();
-              tabs.find((t) => t.name === $event.target.value).current = true;
-            "
-            class="block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-primary focus:border-primary sm:text-sm rounded-md"
-          >
-            <option v-for="tab in tabs" :key="tab.name" :selected="tab.current">
-              {{ tab.name }}
-            </option>
-          </select>
-        </div>
-        <div class="hidden sm:block">
-          <div class="flex items-center border-b border-gray-200">
-            <nav
-              class="flex-1 -mb-px flex space-x-6 xl:space-x-8 px-4"
-              aria-label="Tabs"
-            >
-              <a
-                v-for="tab in tabs"
-                :key="tab.name"
-                :aria-current="tab.current ? 'page' : undefined"
-                @click="
-                  switchTab();
-                  tabs.find((t) => t.name === tab.name).current = true;
-                "
-                :class="[
-                  tab.current
-                    ? 'border-primary text-primary-600'
-                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300',
-                  'cursor-pointer group inline-flex items-center py-4 px-1 border-b-2 font-medium text-sm',
-                ]"
-              >
-                <component
-                  :is="tab.icon"
-                  :class="[
-                    tab.current
-                      ? 'text-primary'
-                      : 'text-gray-400 group-hover:text-gray-500',
-                    '-ml-0.5 mr-2 h-5 w-5',
-                  ]"
-                  aria-hidden="true"
-                />
-                <span>{{ tab.name }}</span>
-              </a>
-            </nav>
-          </div>
+    <!-- Tabs -->
+    <div class="p-4 sm:p-0 pb-0">
+      <div class="sm:hidden">
+        <label for="tabs" class="sr-only">Select a tab</label>
+        <!-- Use an "onChange" listener to redirect the user to the selected tab URL. -->
+        <select id="tabs" name="tabs" @change="switchTab(); tabs.find((t) => t.name === $event.target.value).current = true;" class="block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-primary focus:border-primary sm:text-sm rounded-md">
+          <option v-for="tab in tabs" :key="tab.name" :selected="tab.current">
+            {{ tab.name }}
+          </option>
+        </select>
+      </div>
+      <div class="hidden sm:block">
+        <div class="flex items-center border-b border-gray-200">
+          <nav class="flex-1 -mb-px flex space-x-6 xl:space-x-8 px-4" aria-label="Tabs">
+            <a v-for="tab in tabs" :key="tab.name" :aria-current="tab.current ? 'page' : undefined" @click="switchTab(); tabs.find((t) => t.name === tab.name).current = true;" :class="[tab.current ? 'border-primary text-primary-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300', 'cursor-pointer group inline-flex items-center py-4 px-1 border-b-2 font-medium text-sm']">
+              <component :is="tab.icon" :class="[tab.current ? 'text-primary' : 'text-gray-400 group-hover:text-gray-500', '-ml-0.5 mr-2 h-5 w-5']" aria-hidden="true" />
+              <span>{{ tab.name }}</span>
+            </a>
+          </nav>
         </div>
       </div>
+    </div>
 
-      <div class="p-4">
-        <InsightsGeneral
-          v-if="tabs.find((t) => t.current).name === 'General'"
-        />
-        <InsightsTickets
-          v-if="tabs.find((t) => t.current).name === 'Tickets'"
-        />
-        <InsightsLabels v-if="tabs.find((t) => t.current).name === 'Labels'" />
-        <InsightsStudents
-          v-if="tabs.find((t) => t.current).name === 'Students'"
-        />
-        <InsightsStaff v-if="tabs.find((t) => t.current).name === 'Staff'" />
-      </div>
+    <div class="p-4">
+      <InsightsGeneral
+        v-if="tabs.find((t) => t.current).name === 'General'"
+      />
+      <InsightsTickets
+        v-if="tabs.find((t) => t.current).name === 'Tickets'"
+      />
+      <InsightsLabels v-if="tabs.find((t) => t.current).name === 'Labels'" />
+      <InsightsStudents
+        v-if="tabs.find((t) => t.current).name === 'Students'"
+      />
+      <InsightsStaff v-if="tabs.find((t) => t.current).name === 'Staff'" />
     </div>
   </div>
 </template>

@@ -38,7 +38,7 @@
 
       <!-- Inboxes grid -->
       <div class="sm:px-0 grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
-        <router-link :to="`/inboxes/${inbox.id}/tickets`" v-for="inbox in inboxes" :key="inbox.id" class="group bg-white relative rounded-lg">
+        <router-link :to="`/inboxes/${inbox.id}/overview`" v-for="inbox in inboxes" :key="inbox.id" class="group bg-white relative rounded-lg">
           <div class="" aria-label="more options">
             <div class="h-64 w-full rounded-lg group-hover:shadow-2xl transition-shadow ease-in-out duration-100 bg-gray-400">
               <img class="h-64 w-full rounded-lg object-cover opacity-75" :src="inbox.image || '/img/default-inbox.png'" :alt="inbox.name">
