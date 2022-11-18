@@ -205,7 +205,7 @@
         /> -->
 
         <main
-          class="flex-1 relative overflow-hidden focus:outline-none flex flex-col pb-16 md:pb-0"
+          class="flex-1 relative overflow-y-auto focus:outline-none flex flex-col pb-16 md:pb-0"
         >
           <slot />
         </main>
@@ -257,7 +257,7 @@ export default {
   },
   setup() {
     return {
-      logo,
+      logo
     }
   },
   data: () => ({

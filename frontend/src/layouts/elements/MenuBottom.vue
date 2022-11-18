@@ -1,6 +1,6 @@
 <template>
   <div
-    class="py-2 h-16 absolute bottom-0 w-full border-t border-primary grid grid-cols-5 gap-2 px-2 bg-white"
+    class="py-2 h-16 fixed bottom-0 w-full border-t border-primary grid grid-cols-5 gap-2 px-2 bg-white"
   >
     <router-link :to="`/inboxes/${$route.params.inboxId}/overview`" exact class="menu-item" active-class="active">
       <HomeIcon class="h-5 w-5" />
