@@ -257,7 +257,7 @@ export default {
   },
   setup() {
     return {
-      logo
+      logo,
     }
   },
   data: () => ({
