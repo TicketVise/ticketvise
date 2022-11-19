@@ -202,7 +202,6 @@
               </div>
             </div>
           </div>
-        </div>
 
           <div class="overflow-hidden rounded-lg bg-white border">
             <div class="p-2 px-4">
@@ -321,10 +320,11 @@
                 :to="`/inboxes/${$route.params.inboxId}/tickets/${ticket.ticket_inbox_id}`"
                 class="group flex items-center justify-between py-3 hover:bg-gray-50 sm:px-6"
               >
-                <span class="flex items-center truncate space-x-2">
+                <span class="flex flex-col items-start truncate space-y-1">
                   <span class="font-medium truncate text-sm leading-4">
                     {{ ticket.title }}
                   </span>
+                  <chip>{{ Math.random() > 0.5 ? 'Response' : 'Waiting' }}</chip>
                 </span>
                 <ChevronRightIcon
                   class="ml-4 h-5 w-5 text-gray-400 group-hover:text-gray-500"
