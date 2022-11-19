@@ -7,57 +7,59 @@
           <span class="text-gray-400">Here you find the most important information for you</span>
         </div>
 
-        <div class="overflow-hidden rounded-lg bg-white border">
-          <div class="p-2 px-4">
-            <div class="flex items-center">
-              <div class="flex-shrink-0">
-                <InboxStackIcon class="w-6 h-6 text-gray-400" />
-              </div>
-              <div class="ml-5 w-0 flex-1">
-                <dl>
-                  <dt class="truncate text-sm font-medium text-gray-500">Tickets</dt>
-                  <dd class="flex justify-between items-center">
-                    <div class="text-xl font-medium text-primary">
-                      4
-                      <span class="ml-1 text-sm font-medium text-gray-500"> from 3 last week </span>
-                    </div>
+        <div class="grid grid-cols-2 gap-2">
+          <div class="overflow-hidden rounded-lg bg-white border">
+            <div class="p-2 px-4">
+              <div class="flex items-center">
+                <div class="hidden sm:flex flex-shrink-0">
+                  <InboxStackIcon class="w-6 h-6 text-gray-400" />
+                </div>
+                <div class="sm:ml-5 w-0 flex-1">
+                  <dl>
+                    <dt class="truncate text-sm font-medium text-gray-500">Tickets this week</dt>
+                    <dd class="flex justify-between items-center">
+                      <div class="text-xl font-medium text-primary">
+                        4
+                        <span class="hidden lg:inline ml-1 text-sm font-medium text-gray-500"> from 3 last week </span>
+                      </div>
 
-                    <div :class="['increase' === 'increase' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800', 'inline-flex items-baseline px-2.5 py-0.5 rounded-full text-sm font-medium md:mt-2 lg:mt-0']">
-                      <ArrowSmallUpIcon v-if="'up' === 'up'" class="-ml-1 mr-0.5 flex-shrink-0 self-center h-5 w-5" :class="['increase' === 'increase' ? 'text-green-500' : 'text-red-500']" aria-hidden="true" />
-                      <ArrowSmallDownIcon v-else class="-ml-1 mr-0.5 flex-shrink-0 self-center h-5 w-5" :class="['increase' === 'increase' ? 'text-green-500' : 'text-red-500']" aria-hidden="true" />
-                      <span class="sr-only"> {{ 'increase' === 'increase' ? 'Increased' : 'Decreased' }} by </span>
-                      33%
-                    </div>
-                  </dd>
-                </dl>
+                      <div :class="['increase' === 'increase' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800', 'inline-flex items-baseline px-2.5 py-0.5 rounded-full text-sm font-medium md:mt-2 lg:mt-0']">
+                        <ArrowSmallUpIcon v-if="'up' === 'up'" class="-ml-1 mr-0.5 flex-shrink-0 self-center h-5 w-5" :class="['increase' === 'increase' ? 'text-green-500' : 'text-red-500']" aria-hidden="true" />
+                        <ArrowSmallDownIcon v-else class="-ml-1 mr-0.5 flex-shrink-0 self-center h-5 w-5" :class="['increase' === 'increase' ? 'text-green-500' : 'text-red-500']" aria-hidden="true" />
+                        <span class="sr-only"> {{ 'increase' === 'increase' ? 'Increased' : 'Decreased' }} by </span>
+                        33%
+                      </div>
+                    </dd>
+                  </dl>
+                </div>
               </div>
             </div>
           </div>
-        </div>
 
-        <div class="overflow-hidden rounded-lg bg-white border">
-          <div class="p-2 px-4">
-            <div class="flex items-center">
-              <div class="flex-shrink-0">
-                <ChatBubbleLeftRightIcon class="w-6 h-6 text-gray-400" />
-              </div>
-              <div class="ml-5 w-0 flex-1">
-                <dl>
-                  <dt class="truncate text-sm font-medium text-gray-500">Response time</dt>
-                  <dd class="flex justify-between items-center">
-                    <div class="text-xl font-medium text-primary">
-                      7.9h
-                      <span class="ml-1 text-sm font-medium text-gray-500"> from 6.2h last week </span>
-                    </div>
+          <div class="overflow-hidden rounded-lg bg-white border">
+            <div class="p-2 px-4">
+              <div class="flex items-center">
+                <div class="hidden sm:flex flex-shrink-0">
+                  <ChatBubbleLeftRightIcon class="w-6 h-6 text-gray-400" />
+                </div>
+                <div class="sm:ml-5 w-0 flex-1">
+                  <dl>
+                    <dt class="truncate text-sm font-medium text-gray-500">Average response time</dt>
+                    <dd class="flex justify-between items-center">
+                      <div class="text-xl font-medium text-primary">
+                        7.9h
+                        <span class="hidden lg:inline ml-1 text-sm font-medium text-gray-500"> from 6.2h last week </span>
+                      </div>
 
-                    <div :class="['decrease' === 'increase' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800', 'inline-flex items-baseline px-2.5 py-0.5 rounded-full text-sm font-medium md:mt-2 lg:mt-0']">
-                      <ArrowSmallUpIcon v-if="'up' === 'up'" class="-ml-1 mr-0.5 flex-shrink-0 self-center h-5 w-5" :class="['decrease' === 'increase' ? 'text-green-500' : 'text-red-500']" aria-hidden="true" />
-                      <ArrowSmallDownIcon v-else class="-ml-1 mr-0.5 flex-shrink-0 self-center h-5 w-5" :class="['increase' === 'increase' ? 'text-green-500' : 'text-red-500']" aria-hidden="true" />
-                      <span class="sr-only"> {{ 'increase' === 'increase' ? 'Increased' : 'Decreased' }} by </span>
-                      27%
-                    </div>
-                  </dd>
-                </dl>
+                      <div :class="['decrease' === 'increase' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800', 'inline-flex items-baseline px-2.5 py-0.5 rounded-full text-sm font-medium md:mt-2 lg:mt-0']">
+                        <ArrowSmallUpIcon v-if="'up' === 'up'" class="-ml-1 mr-0.5 flex-shrink-0 self-center h-5 w-5" :class="['decrease' === 'increase' ? 'text-green-500' : 'text-red-500']" aria-hidden="true" />
+                        <ArrowSmallDownIcon v-else class="-ml-1 mr-0.5 flex-shrink-0 self-center h-5 w-5" :class="['increase' === 'increase' ? 'text-green-500' : 'text-red-500']" aria-hidden="true" />
+                        <span class="sr-only"> {{ 'increase' === 'increase' ? 'Increased' : 'Decreased' }} by </span>
+                        27%
+                      </div>
+                    </dd>
+                  </dl>
+                </div>
               </div>
             </div>
           </div>
@@ -92,6 +94,74 @@
             </div>
           </div>
         </div>
+
+        <h2 v-if="tickets.length > 0" class="text-gray-700 text-lg font-semibold leading-4 pt-2">Tickets</h2>
+        
+        <div v-if="tickets.length > 0" class="flex flex-col space-y-2">
+          <router-link
+            :to="`/inboxes/1/tickets/1`"
+            class="group border rounded-lg flex flex-col p-3"
+          >
+            <div class="flex justify-between">
+              <div class="flex space-x-2 text-orange-600">
+                <ExclamationCircleIcon class="w-5 h-5" />
+                <span class="font-medium text-sm">MEDIUM</span>
+              </div>
+              <span
+                class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-green-100 text-green-800"
+                >Response</span
+              >
+            </div>
+  
+            <h2
+              class="font-semibold text-lg group-hover:underline mt-1 leading-6"
+            >
+              When is the deadline of the individual report?
+            </h2>
+  
+            <div class="flex justify-between items-center">
+              <h3 class="text-xs text-gray-500 dark:text-gray-400">
+                <span class="font-medium">Ruben Jonk</span>・Today at 00:35
+              </h3>
+            </div>
+  
+            <div class="flex mt-2">
+              <chip background="#FF0000">Assignment</chip>
+            </div>
+          </router-link>
+
+          <router-link
+            :to="`/inboxes/1/tickets/1`"
+            class="group border rounded-lg flex flex-col p-3"
+          >
+            <div class="flex justify-between">
+              <div class="flex space-x-2 text-green-600">
+                <ExclamationCircleIcon class="w-5 h-5" />
+                <span class="font-medium text-sm">LOW</span>
+              </div>
+              <span
+                class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-green-100 text-green-800"
+                >Closing</span
+              >
+            </div>
+  
+            <h2
+              class="font-semibold text-lg group-hover:underline mt-1 leading-6"
+            >
+              I can't find the assignment material
+            </h2>
+  
+            <div class="flex justify-between items-center">
+              <h3 class="text-xs text-gray-500 dark:text-gray-400">
+                <span class="font-medium">Tom J. Wassing</span>・Today at 01:45
+              </h3>
+            </div>
+  
+            <div class="flex mt-2">
+              <chip background="#FF0000">Assignment</chip>
+            </div>
+          </router-link>
+        </div>
       </div>
     </div>
   </div>
@@ -104,57 +174,75 @@
           <span class="text-gray-400">Here you find the most important information for you</span>
         </div>
 
-        <div class="overflow-hidden rounded-lg bg-white border">
-          <div class="p-2 px-4">
-            <div class="flex items-center">
-              <div class="flex-shrink-0">
-                <InboxStackIcon class="w-6 h-6 text-gray-400" />
-              </div>
-              <div class="ml-5 w-0 flex-1">
-                <dl>
-                  <dt class="truncate text-sm font-medium text-gray-500">Tickets</dt>
-                  <dd class="flex justify-between items-center">
-                    <div class="text-xl font-medium text-primary">
-                      4
-                      <span class="ml-1 text-sm font-medium text-gray-500"> from 3 last week </span>
-                    </div>
+        <div class="grid grid-cols-2 gap-2">
+          <div class="overflow-hidden rounded-lg bg-white border">
+            <div class="p-2 px-4">
+              <div class="flex items-center">
+                <div class="hidden sm:flex flex-shrink-0">
+                  <InboxStackIcon class="w-6 h-6 text-gray-400" />
+                </div>
+                <div class="sm:ml-5 w-0 flex-1">
+                  <dl>
+                    <dt class="truncate text-sm font-medium text-gray-500">Tickets this week</dt>
+                    <dd class="flex justify-between items-center">
+                      <div class="text-xl font-medium text-primary">
+                        4
+                        <span class="hidden lg:inline ml-1 text-sm font-medium text-gray-500"> from 3 last week </span>
+                      </div>
 
-                    <div :class="['increase' === 'increase' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800', 'inline-flex items-baseline px-2.5 py-0.5 rounded-full text-sm font-medium md:mt-2 lg:mt-0']">
-                      <ArrowSmallUpIcon v-if="'up' === 'up'" class="-ml-1 mr-0.5 flex-shrink-0 self-center h-5 w-5" :class="['increase' === 'increase' ? 'text-green-500' : 'text-red-500']" aria-hidden="true" />
-                      <ArrowSmallDownIcon v-else class="-ml-1 mr-0.5 flex-shrink-0 self-center h-5 w-5" :class="['increase' === 'increase' ? 'text-green-500' : 'text-red-500']" aria-hidden="true" />
-                      <span class="sr-only"> {{ 'increase' === 'increase' ? 'Increased' : 'Decreased' }} by </span>
-                      33%
-                    </div>
-                  </dd>
-                </dl>
+                      <div :class="['increase' === 'increase' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800', 'inline-flex items-baseline px-2.5 py-0.5 rounded-full text-sm font-medium md:mt-2 lg:mt-0']">
+                        <ArrowSmallUpIcon v-if="'up' === 'up'" class="-ml-1 mr-0.5 flex-shrink-0 self-center h-5 w-5" :class="['increase' === 'increase' ? 'text-green-500' : 'text-red-500']" aria-hidden="true" />
+                        <ArrowSmallDownIcon v-else class="-ml-1 mr-0.5 flex-shrink-0 self-center h-5 w-5" :class="['increase' === 'increase' ? 'text-green-500' : 'text-red-500']" aria-hidden="true" />
+                        <span class="sr-only"> {{ 'increase' === 'increase' ? 'Increased' : 'Decreased' }} by </span>
+                        33%
+                      </div>
+                    </dd>
+                  </dl>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="overflow-hidden rounded-lg bg-white border">
+            <div class="p-2 px-4">
+              <div class="flex items-center">
+                <div class="hidden sm:flex flex-shrink-0">
+                  <ChatBubbleLeftRightIcon class="w-6 h-6 text-gray-400" />
+                </div>
+                <div class="sm:ml-5 w-0 flex-1">
+                  <dl>
+                    <dt class="truncate text-sm font-medium text-gray-500">Your response time</dt>
+                    <dd class="flex justify-between items-center">
+                      <div class="text-xl font-medium text-primary">
+                        7.9h
+                        <span class="hidden lg:inline ml-1 text-sm font-medium text-gray-500"> from 6.2h last week </span>
+                      </div>
+
+                      <div :class="['decrease' === 'increase' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800', 'inline-flex items-baseline px-2.5 py-0.5 rounded-full text-sm font-medium md:mt-2 lg:mt-0']">
+                        <ArrowSmallUpIcon v-if="'up' === 'up'" class="-ml-1 mr-0.5 flex-shrink-0 self-center h-5 w-5" :class="['decrease' === 'increase' ? 'text-green-500' : 'text-red-500']" aria-hidden="true" />
+                        <ArrowSmallDownIcon v-else class="-ml-1 mr-0.5 flex-shrink-0 self-center h-5 w-5" :class="['increase' === 'increase' ? 'text-green-500' : 'text-red-500']" aria-hidden="true" />
+                        <span class="sr-only"> {{ 'increase' === 'increase' ? 'Increased' : 'Decreased' }} by </span>
+                        27%
+                      </div>
+                    </dd>
+                  </dl>
+                </div>
               </div>
             </div>
           </div>
         </div>
 
-        <div class="overflow-hidden rounded-lg bg-white border">
-          <div class="p-2 px-4">
-            <div class="flex items-center">
-              <div class="flex-shrink-0">
-                <ChatBubbleLeftRightIcon class="w-6 h-6 text-gray-400" />
-              </div>
-              <div class="ml-5 w-0 flex-1">
-                <dl>
-                  <dt class="truncate text-sm font-medium text-gray-500">Response time</dt>
-                  <dd class="flex justify-between items-center">
-                    <div class="text-xl font-medium text-primary">
-                      7.9h
-                      <span class="ml-1 text-sm font-medium text-gray-500"> from 6.2h last week </span>
-                    </div>
+        <h2 class="text-gray-700 text-lg font-semibold leading-4 pt-2">Updates</h2>
 
-                    <div :class="['decrease' === 'increase' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800', 'inline-flex items-baseline px-2.5 py-0.5 rounded-full text-sm font-medium md:mt-2 lg:mt-0']">
-                      <ArrowSmallUpIcon v-if="'up' === 'up'" class="-ml-1 mr-0.5 flex-shrink-0 self-center h-5 w-5" :class="['decrease' === 'increase' ? 'text-green-500' : 'text-red-500']" aria-hidden="true" />
-                      <ArrowSmallDownIcon v-else class="-ml-1 mr-0.5 flex-shrink-0 self-center h-5 w-5" :class="['increase' === 'increase' ? 'text-green-500' : 'text-red-500']" aria-hidden="true" />
-                      <span class="sr-only"> {{ 'increase' === 'increase' ? 'Increased' : 'Decreased' }} by </span>
-                      27%
-                    </div>
-                  </dd>
-                </dl>
+        <div class="rounded-md bg-blue-50 p-4">
+          <div class="flex">
+            <div class="flex-shrink-0">
+              <ClockIcon class="h-5 w-5 text-blue-400" aria-hidden="true" />
+            </div>
+            <div class="ml-3">
+              <h3 class="text-sm font-medium text-blue-700">Good you are here</h3>
+              <div class="mt-2 text-sm text-blue-700">
+                <p>But most tickets come around <strong>15:00</strong>, so try to come back then to answer tickets quickly</p>
               </div>
             </div>
           </div>
@@ -282,7 +370,7 @@ import Chip from "@/components/chip/Chip.vue"
 import TicketCard from "@/components/tickets/TicketCard.vue"
 
 import { BellIcon, ChatBubbleLeftRightIcon, ExclamationCircleIcon, InboxStackIcon } from "@heroicons/vue/24/outline"
-import { ArrowSmallDownIcon, ArrowSmallUpIcon, ChevronRightIcon } from '@heroicons/vue/24/solid'
+import { ArrowSmallDownIcon, ArrowSmallUpIcon, ChevronRightIcon, ClockIcon } from '@heroicons/vue/24/solid'
 import { ArrowRightIcon, ExclamationTriangleIcon } from "@heroicons/vue/20/solid"
 
 import report from "@/assets/img/svg/report.svg"
@@ -301,6 +389,7 @@ export default {
     ArrowSmallUpIcon,
     BellIcon,
     Chip,
+    ClockIcon,
     ExclamationCircleIcon,
     InboxStackIcon,
     ChatBubbleLeftRightIcon,
