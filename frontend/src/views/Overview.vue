@@ -202,6 +202,7 @@
               </div>
             </div>
           </div>
+        </div>
 
           <div class="overflow-hidden rounded-lg bg-white border">
             <div class="p-2 px-4">
