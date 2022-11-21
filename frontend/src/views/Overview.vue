@@ -65,7 +65,7 @@
           </div>
         </div>
 
-        <h2 class="text-gray-700 text-lg font-semibold leading-4 pt-2">Updates</h2>
+        <h2 class="text-gray-700 text-lg font-semibold leading-4 pt-4">Updates</h2>
 
         <div v-if="updates.length == 0" class="border rounded-lg flex p-2">
           <img :src="awesome" class="w-1/3 md:w-1/5" />
@@ -95,9 +95,9 @@
           </div>
         </div>
 
-        <h2 v-if="tickets.length > 0" class="text-gray-700 text-lg font-semibold leading-4 pt-2">Tickets</h2>
+        <h2 v-if="tickets?.length > 0" class="text-gray-700 text-lg font-semibold leading-4 pt-4">Tickets</h2>
         
-        <div v-if="tickets.length > 0" class="flex flex-col space-y-2">
+        <div v-if="tickets?.length > 0" class="flex flex-col space-y-2">
           <router-link
             :to="`/inboxes/1/tickets/1`"
             class="group border rounded-lg flex flex-col p-3"
@@ -183,11 +183,11 @@
                 </div>
                 <div class="sm:ml-5 w-0 flex-1">
                   <dl>
-                    <dt class="truncate text-sm font-medium text-gray-500">Tickets this week</dt>
+                    <dt class="truncate text-sm font-medium text-gray-500">Helpfulness</dt>
                     <dd class="flex justify-between items-center">
                       <div class="text-xl font-medium text-primary">
-                        4
-                        <span class="hidden lg:inline ml-1 text-sm font-medium text-gray-500"> from 3 last week </span>
+                        85%
+                        <span class="hidden lg:inline ml-1 text-sm font-medium text-gray-500"> from 71% last week </span>
                       </div>
 
                       <div :class="['increase' === 'increase' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800', 'inline-flex items-baseline px-2.5 py-0.5 rounded-full text-sm font-medium md:mt-2 lg:mt-0']">
@@ -232,7 +232,7 @@
           </div>
         </div>
 
-        <h2 class="text-gray-700 text-lg font-semibold leading-4 pt-2">Updates</h2>
+        <h2 class="text-gray-700 text-lg font-semibold leading-4 pt-4">Updates</h2>
 
         <div class="rounded-md bg-blue-50 p-4">
           <div class="flex">
@@ -248,9 +248,9 @@
           </div>
         </div>
 
-        <h2 class="text-gray-700 text-lg font-semibold leading-4 pt-2">Tickets</h2>
+        <h2 class="text-gray-700 text-lg font-semibold leading-4 pt-4">Tickets</h2>
 
-        <div v-if="tickets.length == 0" class="border rounded-lg flex p-2">
+        <div v-if="tickets?.length == 0" class="border rounded-lg flex p-2">
           <img :src="awesome" class="w-1/3 md:w-1/5" />
           <div class="flex flex-col px-4">
             <h2 class="font-bold text-primary text-xl">Well done!</h2>
@@ -320,8 +320,8 @@
                 :to="`/inboxes/${$route.params.inboxId}/tickets/${ticket.ticket_inbox_id}`"
                 class="group flex items-center justify-between py-3 hover:bg-gray-50 sm:px-6"
               >
-                <span class="flex flex-col items-start truncate space-y-1">
-                  <span class="font-medium truncate text-sm leading-4">
+                <span class="flex flex-col items-start space-y-1">
+                  <span class="font-medium text-sm leading-4">
                     {{ ticket.title }}
                   </span>
                   <chip>{{ Math.random() > 0.5 ? 'Response' : 'Waiting' }}</chip>
