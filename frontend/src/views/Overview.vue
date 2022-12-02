@@ -19,16 +19,16 @@
                     <dt class="truncate text-sm font-medium text-gray-500">Tickets this week</dt>
                     <dd class="flex justify-between items-center">
                       <div class="text-xl font-medium text-primary">
-                        4
-                        <span class="hidden lg:inline ml-1 text-sm font-medium text-gray-500"> from 3 last week </span>
+                        {{ statsData.total_tickets }}
+                        <span class="hidden lg:inline ml-1 text-sm font-medium text-gray-500"> from {{ statsData.last_week_total_tickets }} last week </span>
                       </div>
 
-                      <div :class="['increase' === 'increase' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800', 'inline-flex items-baseline px-2.5 py-0.5 rounded-full text-sm font-medium md:mt-2 lg:mt-0']">
+                      <!-- <div :class="['increase' === 'increase' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800', 'inline-flex items-baseline px-2.5 py-0.5 rounded-full text-sm font-medium md:mt-2 lg:mt-0']">
                         <ArrowSmallUpIcon v-if="'up' === 'up'" class="-ml-1 mr-0.5 flex-shrink-0 self-center h-5 w-5" :class="['increase' === 'increase' ? 'text-green-500' : 'text-red-500']" aria-hidden="true" />
                         <ArrowSmallDownIcon v-else class="-ml-1 mr-0.5 flex-shrink-0 self-center h-5 w-5" :class="['increase' === 'increase' ? 'text-green-500' : 'text-red-500']" aria-hidden="true" />
                         <span class="sr-only"> {{ 'increase' === 'increase' ? 'Increased' : 'Decreased' }} by </span>
                         33%
-                      </div>
+                      </div> -->
                     </dd>
                   </dl>
                 </div>
@@ -47,16 +47,16 @@
                     <dt class="truncate text-sm font-medium text-gray-500">Average response time</dt>
                     <dd class="flex justify-between items-center">
                       <div class="text-xl font-medium text-primary">
-                        7.9h
+                        {{ statsData.avg_response_time }}h
                         <span class="hidden lg:inline ml-1 text-sm font-medium text-gray-500"> from 6.2h last week </span>
                       </div>
 
-                      <div :class="['decrease' === 'increase' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800', 'inline-flex items-baseline px-2.5 py-0.5 rounded-full text-sm font-medium md:mt-2 lg:mt-0']">
+                      <!-- <div :class="['decrease' === 'increase' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800', 'inline-flex items-baseline px-2.5 py-0.5 rounded-full text-sm font-medium md:mt-2 lg:mt-0']">
                         <ArrowSmallUpIcon v-if="'up' === 'up'" class="-ml-1 mr-0.5 flex-shrink-0 self-center h-5 w-5" :class="['decrease' === 'increase' ? 'text-green-500' : 'text-red-500']" aria-hidden="true" />
                         <ArrowSmallDownIcon v-else class="-ml-1 mr-0.5 flex-shrink-0 self-center h-5 w-5" :class="['increase' === 'increase' ? 'text-green-500' : 'text-red-500']" aria-hidden="true" />
                         <span class="sr-only"> {{ 'increase' === 'increase' ? 'Increased' : 'Decreased' }} by </span>
                         27%
-                      </div>
+                      </div> -->
                     </dd>
                   </dl>
                 </div>
@@ -67,7 +67,19 @@
 
         <h2 class="text-gray-700 text-lg font-semibold leading-4 pt-4">Updates</h2>
 
-        <div v-if="updates.length == 0" class="border rounded-lg flex p-2">
+        <div v-if="onboarding.active" class="border border-primary rounded-lg flex px-4 py-3">
+          <div class="flex flex-col text-gray-800">
+            <h2 class="font-bold text-primary text-xl">Hi There! 👋</h2>
+            <p class="text-sm mt-1 text-justify">This is the <strong>overview page</strong>. Here you will find the necessary information relevant for you. We will show you important insights about the inbox and show you the tickets that are relevant for you. Like the example ticket you see below!</p>
+            <div class="flex justify-end text-sm mt-2">
+              <button @click="nextStep()">
+                <span class="text-primary uppercase font-medium">Got it!</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div v-else-if="updates.length == 0" class="border rounded-lg flex p-2">
           <img :src="awesome" class="w-1/3 md:w-1/5" />
           <div class="flex flex-col px-4">
             <h2 class="font-bold text-primary text-xl">All good</h2>
@@ -95,14 +107,44 @@
           </div>
         </div>
 
-        <h2 v-if="tickets?.length > 0" class="text-gray-700 text-lg font-semibold leading-4 pt-4">Tickets</h2>
+        <div v-if="onboarding.active">
+          <h2 class="text-gray-700 text-lg font-semibold leading-4 pt-4">Tickets</h2>
+          
+          <div class="group border rounded-lg flex flex-col p-3 mt-2">
+            <div class="flex justify-between mb-1">
+              <div class="flex space-x-2 text-red-600">
+                <ExclamationCircleIcon class="w-5 h-5" />
+                <span class="font-medium text-sm">HIGH</span>
+              </div>
+              <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-green-100 text-green-800">Created</span>
+            </div>
+  
+            <h2 class="font-semibold text-lg group-hover:underline leading-6">
+              This is an example ticket
+            </h2>
+  
+            <div class="flex justify-between items-center">
+              <h3 class="text-xs text-gray-500 dark:text-gray-400">
+                <span class="font-medium">John Doe</span>・{{ moment().calendar() }}
+              </h3>
+            </div>
+  
+            <div class="flex mt-2 space-x-1 select-none items-center">
+              <chip :background="'#dd6b20'">Lectures</chip>
+            </div>
+          </div>
+        </div>
+
+        <h2 v-if="ticketsFlattened?.filter(t => t.open)?.length > 0" class="text-gray-700 text-lg font-semibold leading-4 pt-4">Tickets</h2>
         
-        <div v-if="tickets?.length > 0" class="flex flex-col space-y-2">
+        <div v-if="ticketsFlattened?.filter(t => t.open)?.length > 0" class="flex flex-col space-y-2">
           <router-link
-            :to="`/inboxes/1/tickets/1`"
+            v-for="ticket in ticketsFlattened?.filter(t => t.open)"
+            :key="ticket.id"
+            :to="`/inboxes/${1}/tickets/${ticket.ticket_inbox_id}`"
             class="group border rounded-lg flex flex-col p-3"
           >
-            <div class="flex justify-between">
+            <div v-if="false" class="flex justify-between mb-1">
               <div class="flex space-x-2 text-orange-600">
                 <ExclamationCircleIcon class="w-5 h-5" />
                 <span class="font-medium text-sm">MEDIUM</span>
@@ -113,52 +155,27 @@
               >
             </div>
   
-            <h2
-              class="font-semibold text-lg group-hover:underline mt-1 leading-6"
-            >
-              When is the deadline of the individual report?
+            <h2 class="font-semibold text-lg group-hover:underline leading-6">
+              {{ ticket.title }}
             </h2>
   
             <div class="flex justify-between items-center">
               <h3 class="text-xs text-gray-500 dark:text-gray-400">
-                <span class="font-medium">Ruben Jonk</span>・Today at 00:35
+                <span class="font-medium">{{ ticket.author.first_name + ' ' + ticket.author.last_name }}</span>・{{ moment(ticket.created_at).calendar() }}
               </h3>
             </div>
   
-            <div class="flex mt-2">
-              <chip background="#FF0000">Assignment</chip>
-            </div>
-          </router-link>
-
-          <router-link
-            :to="`/inboxes/1/tickets/1`"
-            class="group border rounded-lg flex flex-col p-3"
-          >
-            <div class="flex justify-between">
-              <div class="flex space-x-2 text-green-600">
-                <ExclamationCircleIcon class="w-5 h-5" />
-                <span class="font-medium text-sm">LOW</span>
-              </div>
-              <span
-                class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-green-100 text-green-800"
-                >Closing</span
+            <div class="flex mt-2 space-x-1 select-none items-center">
+              <chip
+                :background="label.color"
+                :key="label.id"
+                v-for="label in ticket.labels.slice(0, 1)"
               >
-            </div>
-  
-            <h2
-              class="font-semibold text-lg group-hover:underline mt-1 leading-6"
-            >
-              I can't find the assignment material
-            </h2>
-  
-            <div class="flex justify-between items-center">
-              <h3 class="text-xs text-gray-500 dark:text-gray-400">
-                <span class="font-medium">Tom J. Wassing</span>・Today at 01:45
-              </h3>
-            </div>
-  
-            <div class="flex mt-2">
-              <chip background="#FF0000">Assignment</chip>
+                {{ label.name }}
+              </chip>
+              <span v-if="ticket.labels.length > 1" class="text-gray-600 text-xs"
+                >+{{ ticket.labels.length - 1 }}</span
+              >
             </div>
           </router-link>
         </div>
@@ -365,7 +382,8 @@
 <script>
 import axios from "axios"
 import store from "@/store"
-import { mapState } from "vuex"
+import { mapState, mapActions } from "vuex"
+import moment from "moment"
 
 import Chip from "@/components/chip/Chip.vue"
 import TicketCard from "@/components/tickets/TicketCard.vue"
@@ -405,7 +423,8 @@ export default {
     inbox_labels: [],
     report,
     awesome,
-    updates: []
+    updates: [],
+    statsData: {}
   }),
   created() {
     axios
@@ -424,7 +443,21 @@ export default {
 
     this.get_tickets()
   },
+  setup() {
+    return { moment }
+  },
+  async mounted () {
+    const { inboxId } = this.$route.params
+
+    /* Gettings general statistics. */
+    const statsResponse = await axios.get(`/api/inboxes/${inboxId}/statistics`)
+    this.statsData = statsResponse.data
+  },
   methods: {
+    ...mapActions('onboarding', {
+      nextStep: 'next',
+      prevStep: 'prev'
+    }),
     get_tickets() {
       // Call this function by using callDebounceGetTickets
       const labelsIds = [];
@@ -465,8 +498,11 @@ export default {
       user: (state) => state.user,
       tickets() {
         return store.getters.inbox(this.$route.params.inboxId)?.tickets
-      },
+      }
     }),
-  },
+    ...mapState('onboarding', {
+      onboarding: (state) => state.status
+    })
+  }
 }
 </script>

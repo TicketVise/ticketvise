@@ -218,7 +218,7 @@
 
   <getting-started
     @update="user.give_introduction = false"
-    v-if="is_staff && user && user.give_introduction"
+    v-if="onboarding.active && onboarding.popup"
   />
   <develop-panel v-if="true || development" />
 
@@ -293,6 +293,9 @@ export default {
   computed: {
     ...mapState({
       user: (state) => state.user,
+    }),
+    ...mapState('onboarding', {
+      onboarding: (state) => state.status
     }),
     is_staff() {
       if (!this.inbox) {

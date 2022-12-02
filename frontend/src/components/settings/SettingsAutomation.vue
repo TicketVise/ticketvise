@@ -1,5 +1,5 @@
 <template>
-  <div class="flex h-full overflow-y-auto w-full">
+  <div class="flex h-full w-full">
     <div class="w-screen max-w-screen-lg mx-auto">
       <!-- Actions header -->
       <div class="mb-1">
@@ -26,7 +26,7 @@
 
       <!-- Default header -->
       <div class="mb-1 mt-12">
-        <h2 class="text-gray-700 text-xl font-bold leading-6">Default</h2>
+        <h2 class="text-gray-700 text-xl font-bold leading-6">Default action</h2>
         <span class="text-gray-400">What to do with a ticket if no filter applies.</span>
       </div>
 

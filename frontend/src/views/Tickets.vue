@@ -27,10 +27,9 @@
     <div class="flex justify-between w-full items-center">
       <div class="p-4 flex flex-col items-start space-y-2 w-full">
         <div class="flex justify-between items-center w-full">
-          <button
-            class="inline-flex items-center rounded-full bg-gray-100 py-1 px-3 text-sm font-medium text-gray-700"
-          >
-            FILTERS
+          <Popover class="relative">
+            <PopoverButton class="inline-flex items-center rounded-full bg-gray-100 py-1 px-3 text-sm font-medium text-gray-700">
+              <span>FILTERS</span>
             <span
               class="ml-2 inline-flex h-5 w-5 flex-shrink-0 items-center justify-center rounded-full text-gray-600"
             >
@@ -49,9 +48,35 @@
                 />
               </svg>
             </span>
-          </button>
+            </PopoverButton>
 
-          <div class="flex md:hidden items-center rounded-lg bg-gray-100 p-0.5">
+            <PopoverPanel class="absolute z-10 bg-white shadow-lg p-4 rounded-md">
+              <h3 class="font-medium text-gray-600">Filters</h3>
+
+              <div class="flex flex-col w-max text-gray-800">
+                <div class="py-1 flex space-x-2 items-center">
+                  <UserIcon class="h-4 w-4" />
+                  <span class="">Your tickets</span>
+                </div>
+                <hr />
+                <div class="py-1 flex space-x-2 items-center">
+                  <UserIcon class="h-4 w-4" />
+                  <span class="">Public</span>
+                </div>
+                <div class="py-1 flex space-x-2 items-center">
+                  <UserIcon class="h-4 w-4" />
+                  <span class="">Private</span>
+                </div>
+                <hr />
+                <div class="py-1 flex space-x-2 items-center">
+                  <UserIcon class="h-4 w-4" />
+                  <span class="">Today</span>
+                </div>
+              </div>
+            </PopoverPanel>
+          </Popover>
+
+          <!-- <div class="flex md:hidden items-center rounded-lg bg-gray-100 p-0.5">
             <button type="button" class="rounded-md p-1.5 text-gray-400 hover:bg-white hover:shadow-sm focus:outline-none focus:ring-2 focus:ring-inset focus:ring-primary-500">
               <Bars4Icon class="h-5 w-5" aria-hidden="true" />
               <span class="sr-only">Use list view</span>
@@ -60,7 +85,7 @@
               <ViewColumnsIcon class="h-5 w-5" aria-hidden="true" />
               <span class="sr-only">Use grid view</span>
             </button>
-          </div>
+          </div> -->
         </div>
   
         <div class="flex flex-1 overflow-x-auto space-x-2">
@@ -136,7 +161,7 @@
         </div>
       </div>
 
-      <div class="mr-4 hidden md:flex items-center rounded-lg bg-gray-100 p-0.5">
+      <!-- <div class="mr-4 hidden md:flex items-center rounded-lg bg-gray-100 p-0.5">
         <button type="button" class="rounded-md p-1.5 text-gray-400 hover:bg-white hover:shadow-sm focus:outline-none focus:ring-2 focus:ring-inset focus:ring-primary-500">
           <Bars4Icon class="h-5 w-5" aria-hidden="true" />
           <span class="sr-only">Use list view</span>
@@ -145,6 +170,18 @@
           <ViewColumnsIcon class="h-5 w-5" aria-hidden="true" />
           <span class="sr-only">Use grid view</span>
         </button>
+      </div> -->
+    </div>
+
+    <div v-if="onboarding.active" class="mx-4 border border-primary rounded-lg flex px-4 py-3 max-w-lg">
+      <div class="flex flex-col text-gray-800">
+        <h2 class="font-bold text-primary text-xl">The tickets</h2>
+        <p class="text-sm mt-1 text-justify">This is the <strong>tickets page</strong>. Here you will find every ticket in the inbox. They are organized by their status.</p>
+        <div class="flex justify-end text-sm mt-2">
+          <button @click="nextStep()">
+            <span class="text-primary uppercase font-medium">Got it!</span>
+          </button>
+        </div>
       </div>
     </div>
 
@@ -311,7 +348,7 @@
 <script>
 import axios from "axios";
 import store from "@/store";
-import { mapState } from "vuex";
+import { mapState, mapActions } from "vuex";
 import _ from "lodash";
 import moment from "moment";
 
@@ -319,8 +356,9 @@ import SearchBar from "@/components/searchbar/SearchBar.vue";
 import TicketColumn from "@/components/tickets/TicketColumn.vue";
 import LabelDropdown from "@/components/dropdown/LabelDropdown.vue";
 
-import { ChevronRightIcon } from "@heroicons/vue/24/solid";
+import { ChevronRightIcon, UserIcon } from "@heroicons/vue/24/solid";
 import { GlobeEuropeAfricaIcon, Bars4Icon, ViewColumnsIcon } from "@heroicons/vue/24/outline";
+import { Popover, PopoverButton, PopoverPanel } from "@headlessui/vue";
 
 const UNLABELLED_LABEL = {
   id: 0,
@@ -337,7 +375,11 @@ export default {
     TicketColumn,
     LabelDropdown,
     SearchBar,
-    ViewColumnsIcon
+    ViewColumnsIcon,
+    Popover,
+    PopoverButton,
+    PopoverPanel,
+    UserIcon
   },
   data: () => ({
     colors: {
@@ -356,6 +398,10 @@ export default {
     return { moment };
   },
   methods: {
+    ...mapActions('onboarding', {
+      nextStep: 'next',
+      prevStep: 'prev'
+    }),
     get_tickets() {
       // Call this function by using callDebounceGetTickets
       const labelsIds = [];
@@ -467,6 +513,9 @@ export default {
         return store.getters.inbox(this.$route.params.inboxId)?.tickets;
       },
     }),
+    ...mapState('onboarding', {
+      onboarding: (state) => state.status
+    })
   },
   watch: {
     $route: async function () {

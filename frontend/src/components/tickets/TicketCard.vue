@@ -123,7 +123,9 @@ export default {
           formData
         )
         .then((_) => {
-          this.$emit("refresh");
+          this.$router.push({
+            path: `/inboxes/${this.$route.params.inboxId}/tickets/${ticketId}`,
+          });
         });
     },
   },

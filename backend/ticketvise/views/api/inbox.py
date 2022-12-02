@@ -37,6 +37,9 @@ class InboxSerializer(DynamicFieldsModelSerializer):
 
     def get_is_email_setup(self, obj):
         return obj.is_email_setup()
+    
+    # def get_automations(self, obj):
+    #     return AutomationSerializer(obj.automations, many=True, read_only=False).data
     class Meta:
         model = Inbox
         fields = [

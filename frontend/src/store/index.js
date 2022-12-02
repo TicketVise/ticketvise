@@ -1,7 +1,9 @@
 import { createStore } from 'vuex'
-import automation from '@/store/modules/automation'
 import router from '@/router'
 import axios from 'axios'
+
+import automation from '@/store/modules/automation'
+import onboarding from '@/store/modules/onboarding'
 
 const TOKEN_KEY = 'token'
 const urlQueryParams = new URLSearchParams(window.location.search)
@@ -156,7 +158,8 @@ const store = createStore({
     inbox: (state) => (id) => state.inboxes.find(i => i.id === parseInt(id))
   },
   modules: {
-    automation
+    automation,
+    onboarding
   }
 })
 

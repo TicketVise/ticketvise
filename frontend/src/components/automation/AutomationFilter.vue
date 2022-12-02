@@ -156,27 +156,32 @@
           <div class="h-1 border-b w-1/2"></div>
         </div>
         <!-- Place for the conditions -->
-        <div v-for="(condition, index) in filter.conditions" :key="condition">
-          <div class="flex space-x-2 w-full">
-            <div
-              class="flex w-22 justify-center items-center rounded px-4 py-2 space-x-2 text-blue-500 focus:outline-none"
+        <div class="flex flex-col sm:flex-row space-x-2 w-full" v-for="(condition, index) in filter.conditions" :key="condition">
+          <div
+            class="flex sm:w-22 w-full justify-between sm:justify-center items-center rounded px-4 py-2 space-x-2 text-blue-500 focus:outline-none"
+          >
+            <span>{{ index === 0 ? "IF" : "AND" }}</span>
+
+            <button
+              @click="removeCondition(condition)"
+              class="sm:hidden p-2 focus:outline-none"
             >
-              <span>{{ index === 0 ? "IF" : "AND" }}</span>
-            </div>
+              <trash-icon class="h-6 w-6 text-red-600" />
+            </button>
+          </div>
 
-            <AutomationCondition
-              :filterId="filter.id"
-              :conditionId="condition.id"
-            />
+          <AutomationCondition
+            :filterId="filter.id"
+            :conditionId="condition.id"
+          />
 
-            <div class="flex items-center">
-              <button
-                @click="removeCondition(condition)"
-                class="p-2 focus:outline-none"
-              >
-                <trash-icon class="h-6 w-6 text-red-600" />
-              </button>
-            </div>
+          <div class="hidden sm:flex items-center">
+            <button
+              @click="removeCondition(condition)"
+              class="p-2 focus:outline-none"
+            >
+              <trash-icon class="h-6 w-6 text-red-600" />
+            </button>
           </div>
         </div>
         <p
