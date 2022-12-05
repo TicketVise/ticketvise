@@ -11,7 +11,7 @@
         <ticket-card
           :key="ticket.id"
           :ticket="ticket"
-          :assignee_show="title !== 'Pending'"
+          :assignee_show="true"
           v-for="ticket in ticketList"
           v-on:refresh="$emit('refresh')" />
 

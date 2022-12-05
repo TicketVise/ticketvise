@@ -165,6 +165,7 @@ export default {
         return this.condition?.evaluation_value
       },
       set (value) {
+        console.log(value)
         if (this.selectedType?.input === 'labels') value = value.id
         if (this.selectedType?.input === 'datetime' && value) value = new Date(value).toISOString()
         this.$store.commit('automation/setConditionEvaluationValue', {

@@ -3,7 +3,7 @@
     <h2 id="tickets-heading" class="sr-only">General insights</h2>
 
     <!-- Some basic stats first -->
-    <dl class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+    <!-- <dl class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
       <div v-for="item in stats" :key="item.name" class="px-4 py-3 rounded-lg border">
         <dt class="text-base font-normal text-gray-900">
           {{ item.name }}
@@ -22,19 +22,17 @@
           </div>
         </dd>
       </div>
-    </dl>
+    </dl> -->
 
     <!-- Some general graphs here -->
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mt-4">
-      <div class="col-span-3 border rounded-lg p-4 pt-2">
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 w-full">
+      <div class="col-span-1 border rounded-lg p-4 pt-2">
         <h2 class="text-lg font-semibold text-primary-600">Tickets over time</h2>
-        <LineChart v-if="ticketsData" :data="ticketsData" :options="ticketsOptions" :height="400" />
+        <LineChart v-if="ticketsData" :data="ticketsData" :options="ticketsOptions" :height="200" />
       </div>
       <div class="col-span-1 border rounded-lg p-4 pt-2">
         <h2 class="text-lg font-semibold text-primary-600">Label usage</h2>
         <DoughnutChart v-if="labelsData" :data="labelsData" :options="labelsOptions" />
-      </div>
-      <div class="col-span-1 flex flex-col space-y-4">
       </div>
     </div>
   </section>

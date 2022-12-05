@@ -6,19 +6,23 @@
       <HomeIcon class="h-5 w-5" />
       <span>Overview</span>
     </router-link>
-    <router-link :to="`/inboxes/${$route.params.inboxId}/tickets`" exact class="menu-item" active-class="active">
+    <router-link v-if="is_staff" :to="`/inboxes/${$route.params.inboxId}/tickets`" exact class="menu-item" active-class="active">
       <InboxStackIcon class="h-5 w-5" />
       <span>Tickets</span>
+    </router-link>
+    <router-link v-else :to="`/inboxes/${$route.params.inboxId}/public`" exact class="menu-item" active-class="active">
+      <GlobeEuropeAfricaIcon class="h-5 w-5" />
+      <span>Public</span>
     </router-link>
     <router-link :to="`/inboxes/${$route.params.inboxId}/tickets/new`" exact class="menu-item emphasized">
       <PlusIcon class="h-5 w-5" />
       <span>New</span>
     </router-link>
-    <router-link :to="`/inboxes/${$route.params.inboxId}/insights`" exact class="menu-item" active-class="active">
+    <router-link v-if="is_staff" :to="`/inboxes/${$route.params.inboxId}/insights`" exact class="menu-item" active-class="active">
       <ChartBarIcon class="h-5 w-5" />
       <span>Insights</span>
     </router-link>
-    <router-link :to="`/inboxes/${$route.params.inboxId}/settings`" exact class="menu-item" active-class="active">
+    <router-link v-if="is_staff" :to="`/inboxes/${$route.params.inboxId}/settings`" exact class="menu-item" active-class="active">
       <Cog8ToothIcon class="h-5 w-5" />
       <span>Settings</span>
     </router-link>
@@ -26,7 +30,9 @@
 </template>
 
 <script>
-import { HomeIcon, InboxStackIcon, PlusIcon, Cog8ToothIcon, ChartBarIcon } from "@heroicons/vue/24/outline";
+import axios from "axios"
+import { mapState } from "vuex"
+import { HomeIcon, InboxStackIcon, PlusIcon, Cog8ToothIcon, ChartBarIcon, GlobeEuropeAfricaIcon } from "@heroicons/vue/24/outline";
 
 export default {
   name: "MenuBottom",
@@ -35,8 +41,34 @@ export default {
     InboxStackIcon,
     PlusIcon,
     Cog8ToothIcon,
-    ChartBarIcon
+    ChartBarIcon,
+    GlobeEuropeAfricaIcon
   },
+  data: () => ({
+    inbox: null
+  }),
+  async mounted() {
+    const response = await axios.get(
+      `/api/me/inboxes/${this.$route.params.inboxId}`
+    )
+    this.inbox = response.data
+  },
+  computed: {
+    ...mapState({
+      user: (state) => state.user,
+    }),
+    is_staff() {
+      if (!this.inbox) {
+        return false
+      }
+
+      const role = this.inbox.role
+      return (
+        (this.user && this.user.is_superuser) ||
+        (role && (role === "AGENT" || role === "MANAGER"))
+      )
+    }
+  }
 };
 </script>
 

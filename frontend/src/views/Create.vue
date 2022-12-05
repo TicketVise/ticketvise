@@ -8,7 +8,7 @@
               Create a new ticket
             </h1>
             <p class="mt-1 text-sm text-gray-500">
-              Let’s get started by filling in the information below to create
+              Let's get started by filling in the information below to create
               your new ticket.
             </p>
           </div>

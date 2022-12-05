@@ -9,6 +9,7 @@ from django.contrib.auth.admin import UserAdmin
 
 from ticketvise.models.comment import Comment
 from ticketvise.models.inbox import Inbox, InboxSection, InboxUserSection
+from ticketvise.models.automation import Automation
 from ticketvise.models.label import Label
 from ticketvise.models.notification import Notification
 from ticketvise.models.notification.assigned import TicketAssignedNotification
@@ -55,6 +56,7 @@ class InboxAdmin(admin.ModelAdmin):
 # Register all models in the admin panel.
 admin.site.register(User, CustomUserAdmin)
 admin.site.register(Inbox, InboxAdmin)
+admin.site.register(Automation)
 admin.site.register(InboxSection)
 admin.site.register(InboxUserSection)
 admin.site.register(UserInbox)

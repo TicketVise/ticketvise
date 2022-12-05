@@ -63,7 +63,7 @@ const routes = [
   {
     path: '/inboxes/:inboxId/tickets',
     name: 'Tickets',
-    component: () => import(/* webpackChunkName: "tickets" */ '@/views/Inbox.vue'),
+    component: () => import(/* webpackChunkName: "tickets" */ '@/views/Tickets.vue'),
     meta: {
       layout: 'AppLayoutInbox'
     }

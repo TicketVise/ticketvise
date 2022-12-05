@@ -130,9 +130,13 @@ class Ticket(models.Model):
                                     .aggregate(Max('ticket_inbox_id'))["ticket_inbox_id__max"] or 0) + 1
             if not self.assignee:
                 schedule_ticket(self)
+                
 
             try:
+                print("try")
+                print(self.inbox.automations)
                 for automation in self.inbox.automations:
+                    print('here!')
                     automation.execute(self)
             except Exception as e:
                 logging.error(e)

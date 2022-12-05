@@ -3,7 +3,7 @@
     <div>
       <div class="mt-3 sm:mt-5">
         <h3 class="text-lg text-center leading-6 font-medium text-gray-900" id="modal-headline">
-          Overview page
+          Tickets page
         </h3>
         <div class="mt-2">
           <p v-if="!assigned" class="text-sm text-gray-500 text-justify">
