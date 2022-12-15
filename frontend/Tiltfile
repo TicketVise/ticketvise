@@ -1,0 +1,12 @@
+docker_build(
+  'frontend',
+  context='.',
+  dockerfile='Dockerfile.dev',
+  live_update=[
+    sync('.', '/app')
+  ]
+)
+
+k8s_yaml('dev.frontend.yaml')
+
+# k8s_resource('frontend', port_forwards=3000, labels=['frontend'])

@@ -2,7 +2,7 @@
   <div class="flow-root">
     <ul class="-mb-8">
       <li v-for="(item, itemIdx) in ticket?.activity" :key="item">
-        <div class="relative pb-8">
+        <div class="relative pb-4">
           <span
             v-if="itemIdx !== ticket.activity.length - 1"
             class="absolute top-5 left-5 -ml-px h-full w-0.5 bg-gray-200"
@@ -51,7 +51,7 @@
                 </div>
                 <div
                   v-if="item?.person.username != user.username"
-                  class="mt-2 text-sm flex space-x-2"
+                  class="mt-2 text-sm flex space-x-2 mb-4"
                 >
                   <button
                     @click="

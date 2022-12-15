@@ -1,5 +1,5 @@
 <template>
-  <div class="flex-1 relative overflow-y-auto focus:outline-none pb-16">
+  <div class="flex-1 relative overflow-y-auto focus:outline-none">
     <PublishConfirmation
       @click="requestPublish"
       @cancel="publishConfirmationModal = false"
@@ -10,176 +10,324 @@
       @cancel="privateConfirmationModal = false"
       v-if="privateConfirmationModal"
     />
-    <div class="py-4">
-      <div
-        class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 xl:max-w-5xl xl:grid xl:grid-cols-3"
-      >
-        <div class="xl:col-span-2 xl:pr-8 xl:border-r xl:border-gray-200">
-          <div>
+    <div class="pb-4">
+      <div class="max-w-3xl mx-auto px-4">
+        <div class="">
+          <div
+            class="md:flex md:items-center md:justify-between md:space-x-4 xl:border-b xl:pb-6"
+          >
             <div>
-              <div
-                class="md:flex md:items-center md:justify-between md:space-x-4 xl:border-b xl:pb-6"
+              <h1 class="text-2xl font-bold text-gray-900">
+                {{ ticket?.title }}
+              </h1>
+              <p class="text-sm text-gray-500">
+                <span
+                  v-if="ticket?.author"
+                  class="font-medium"
+                >
+                  {{ ticket?.author?.first_name }}
+                  {{ ticket?.author?.last_name }}
+                </span>
+                <span v-else class="font-medium"
+                  >Someone in this inbox</span
+                >
+              </p>
+            </div>
+            <!-- <div class="flex space-x-3 md:mt-0">
+              <button
+                @click="publishConfirmationModal = true"
+                v-if="
+                  isStaff(role, user) &&
+                  !ticket?.publish_request_created &&
+                  !ticket?.is_public
+                "
+                type="button"
+                class="inline-flex justify-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary"
               >
-                <div>
-                  <h1 class="text-2xl font-bold text-gray-900">
-                    {{ ticket?.title }}
-                  </h1>
-                  <p class="mt-2 text-sm text-gray-500">
-                    #{{ ticket?.ticket_inbox_id }} opened by
-                    {{ " " }}
-                    <span
-                      v-if="ticket?.author"
-                      class="font-medium text-gray-900"
-                    >
-                      {{ ticket?.author?.first_name }}
-                      {{ ticket?.author?.last_name }}
-                    </span>
-                    <span v-else class="font-medium text-gray-900"
-                      >Someone in this inbox</span
-                    >
+                <CloudIcon
+                  class="-ml-1 mr-2 h-5 w-5 text-primary-400"
+                  aria-hidden="true"
+                />
+                <span>Publish</span>
+              </button>
+              <button
+                @click="privateConfirmationModal = true"
+                v-if="isStaff(role, user) && ticket?.is_public"
+                type="button"
+                class="inline-flex justify-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary"
+              >
+                <LockIcon
+                  class="-ml-1 mr-2 h-5 w-5 text-primary-400"
+                  aria-hidden="true"
+                />
+                <span>Private</span>
+              </button>
+              <button type="button" class="inline-flex justify-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-900">
+                <svg class="-ml-1 mr-2 h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                  <path d="M10 2a6 6 0 00-6 6v3.586l-.707.707A1 1 0 004 14h12a1 1 0 00.707-1.707L16 11.586V8a6 6 0 00-6-6zM10 18a3 3 0 01-3-3h6a3 3 0 01-3 3z" />
+                </svg>
+                <span>Subscribe</span>
+              </button>
+            </div> -->
+          </div>
+
+          <!-- Pending publish request -->
+          <!-- <div
+            v-if="
+              !ticket?.is_public &&
+              ticket?.publish_request_created &&
+              isStaff(role, user)
+            "
+            class="rounded-md bg-blue-50 p-4 mt-4"
+          >
+            <div class="flex">
+              <div class="flex-shrink-0">
+                <InformationCircleIcon
+                  class="h-5 w-5 text-blue-400"
+                  aria-hidden="true"
+                />
+              </div>
+              <div class="ml-3">
+                <h3 class="text-sm font-medium text-blue-800">
+                  Publish request pending
+                </h3>
+                <div class="mt-2 text-sm text-blue-700">
+                  <p>
+                    The request to publish this ticket is currently pending.
+                    Once the author of the ticket has accepted the request,
+                    this ticket will be public.
                   </p>
                 </div>
-                <div class="mt-4 flex space-x-3 md:mt-0">
-                  <button
-                    @click="publishConfirmationModal = true"
-                    v-if="
-                      isStaff(role, user) &&
-                      !ticket?.publish_request_created &&
-                      !ticket?.is_public
-                    "
-                    type="button"
-                    class="inline-flex justify-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary"
-                  >
-                    <CloudIcon
-                      class="-ml-1 mr-2 h-5 w-5 text-primary-400"
-                      aria-hidden="true"
-                    />
-                    <span>Publish</span>
-                  </button>
-                  <button
-                    @click="privateConfirmationModal = true"
-                    v-if="isStaff(role, user) && ticket?.is_public"
-                    type="button"
-                    class="inline-flex justify-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary"
-                  >
-                    <LockIcon
-                      class="-ml-1 mr-2 h-5 w-5 text-primary-400"
-                      aria-hidden="true"
-                    />
-                    <span>Private</span>
-                  </button>
-                  <!-- Future feature of subscribing to a ticket to get notifications. -->
-                  <!-- <button type="button" class="inline-flex justify-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-900">
-                    <svg class="-ml-1 mr-2 h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-                      <path d="M10 2a6 6 0 00-6 6v3.586l-.707.707A1 1 0 004 14h12a1 1 0 00.707-1.707L16 11.586V8a6 6 0 00-6-6zM10 18a3 3 0 01-3-3h6a3 3 0 01-3 3z" />
-                    </svg>
-                    <span>Subscribe</span>
-                  </button> -->
-                </div>
-              </div>
-
-              <!-- Pending publish request -->
-              <div
-                v-if="
-                  !ticket?.is_public &&
-                  ticket?.publish_request_created &&
-                  isStaff(role, user)
-                "
-                class="rounded-md bg-blue-50 p-4 mt-4"
-              >
-                <div class="flex">
-                  <div class="flex-shrink-0">
-                    <InformationCircleIcon
-                      class="h-5 w-5 text-blue-400"
-                      aria-hidden="true"
-                    />
-                  </div>
-                  <div class="ml-3">
-                    <h3 class="text-sm font-medium text-blue-800">
-                      Publish request pending
-                    </h3>
-                    <div class="mt-2 text-sm text-blue-700">
-                      <p>
-                        The request to publish this ticket is currently pending.
-                        Once the author of the ticket has accepted the request,
-                        this ticket will be public.
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <!-- Accept publish request as student -->
-              <div
-                v-if="
-                  !ticket?.is_public &&
-                  ticket?.publish_request_initiator &&
-                  ticket?.author.id == user.id
-                "
-                class="rounded-md bg-green-50 p-4 mt-4"
-              >
-                <div class="flex">
-                  <div class="">
-                    <h3 class="text-sm font-medium text-green-800">
-                      Sharing is caring
-                    </h3>
-                    <div class="mt-2 text-sm text-green-700">
-                      <p class="mb-2">
-                        {{ ticket.publish_request_initiator.first_name }}
-                        {{ ticket.publish_request_initiator.last_name }} has
-                        requested that this ticket is made public. Public
-                        tickets are visible to everyone in this inbox, helping
-                        them with questions before they need to ask them.
-                      </p>
-                      <div class="relative flex items-start">
-                        <div class="flex items-center h-5">
-                          <input
-                            v-model="ticket.is_anonymous"
-                            id="anonymize"
-                            aria-describedby="anonymize-description"
-                            name="anonymize"
-                            type="checkbox"
-                            class="focus:ring-green-500 h-4 w-4 text-green-600 border-gray-300 rounded"
-                          />
-                        </div>
-                        <div class="ml-2 text-sm">
-                          <label
-                            for="anonymize"
-                            class="font-medium text-green-700"
-                            >Anonymize before publish</label
-                          >
-                          <p id="comments-description" class="text-green-700">
-                            An anonymous ticket does not show the author or its
-                            role, but does show the conversation and
-                            attachments.
-                          </p>
-                        </div>
-                      </div>
-                    </div>
-                    <div class="mt-4">
-                      <div class="-mx-2 -my-1.5 flex">
-                        <button
-                          @click="publishTicket"
-                          type="button"
-                          class="bg-green-50 px-2 py-1.5 rounded-md text-sm font-medium text-green-800 hover:bg-green-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-green-50 focus:ring-green-600"
-                        >
-                          Publish ticket
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <div class="py-3 xl:pt-6 xl:pb-0">
-                <h2 class="sr-only">Description</h2>
-                <TicketInputViewer v-if="ticket" :content="ticket.content" />
               </div>
             </div>
+          </div> -->
+
+          <!-- Accept publish request as student -->
+          <!-- <div
+            v-if="
+              !ticket?.is_public &&
+              ticket?.publish_request_initiator &&
+              ticket?.author.id == user.id
+            "
+            class="rounded-md bg-green-50 p-4 mt-4"
+          >
+            <div class="flex">
+              <div class="">
+                <h3 class="text-sm font-medium text-green-800">
+                  Sharing is caring
+                </h3>
+                <div class="mt-2 text-sm text-green-700">
+                  <p class="mb-2">
+                    {{ ticket.publish_request_initiator.first_name }}
+                    {{ ticket.publish_request_initiator.last_name }} has
+                    requested that this ticket is made public. Public
+                    tickets are visible to everyone in this inbox, helping
+                    them with questions before they need to ask them.
+                  </p>
+                  <div class="relative flex items-start">
+                    <div class="flex items-center h-5">
+                      <input
+                        v-model="ticket.is_anonymous"
+                        id="anonymize"
+                        aria-describedby="anonymize-description"
+                        name="anonymize"
+                        type="checkbox"
+                        class="focus:ring-green-500 h-4 w-4 text-green-600 border-gray-300 rounded"
+                      />
+                    </div>
+                    <div class="ml-2 text-sm">
+                      <label
+                        for="anonymize"
+                        class="font-medium text-green-700"
+                        >Anonymize before publish</label
+                      >
+                      <p id="comments-description" class="text-green-700">
+                        An anonymous ticket does not show the author or its
+                        role, but does show the conversation and
+                        attachments.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+                <div class="mt-4">
+                  <div class="-mx-2 -my-1.5 flex">
+                    <button
+                      @click="publishTicket"
+                      type="button"
+                      class="bg-green-50 px-2 py-1.5 rounded-md text-sm font-medium text-green-800 hover:bg-green-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-green-50 focus:ring-green-600"
+                    >
+                      Publish ticket
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div> -->
+
+          <!-- Status chips -->
+          <div class="flex flex-wrap mt-3">
+            <Listbox v-if="ticket?.assignee" as="span" class="relative block mb-2 pr-2 sm:pr-0 sm:mr-2 w-1/2 sm:w-48">
+              <ListboxButton @click="listboxAlignment('publicListbox')" class="relative flex items-center w-full text-sm font-medium focus:outline-none">
+                <span class="flex justify-between items-center rounded-full bg-white border py-1 pl-3 pr-2 text-xs w-full font-medium text-gray-700">
+                  <div class="flex space-x-1">
+                    <LockOpenIcon
+                      v-if="ticket?.is_public"
+                      class="h-4 w-4 text-green-500"
+                      aria-hidden="true"
+                    />
+                    <LockClosedIcon
+                      v-else
+                      class="h-4 w-4 text-red-500"
+                      aria-hidden="true"
+                    />
+                    <span
+                      :class="[
+                        ticket?.is_public ? 'text-green-700' : 'text-red-700',
+                        'text-xs font-medium',
+                      ]"
+                    >
+                      {{ ticket?.is_public ? "PUBLIC" : "PRIVATE" }}
+                    </span>
+                  </div>
+                  <ChevronDownIcon class="h-4 w-4 text-gray-400" aria-hidden="true" />
+                </span>
+              </ListboxButton>
+              <transition
+                leave-active-class="transition ease-in duration-100"
+                leave-from-class="opacity-100"
+                leave-to-class="opacity-0"
+              >
+                <ListboxOptions ref="publicListbox" class="absolute z-10 mt-2 bg-white shadow-xl max-h-56 w-full rounded-md py-1 text-xs ring-1 ring-black ring-opacity-5 overflow-auto focus:outline-none sm:text-sm">
+                  <ListboxOption as="template" v-slot="{ active }">
+                    <li :class="[active ? 'text-white bg-primary' : 'text-gray-900', 'cursor-pointer select-none relative py-2 pl-3 pr-9']">
+                      <span class="block truncate">Make ticket private</span>
+
+                      <span :class="[active ? 'text-white' : 'text-primary-600', 'absolute inset-y-0 right-0 flex items-center pr-4']">
+                        <CheckIcon class="h-5 w-5" aria-hidden="true" />
+                      </span>
+                    </li>
+                  </ListboxOption>
+                  <ListboxOption as="template" v-slot="{ active }">
+                    <li :class="[active ? 'text-white bg-primary' : 'text-gray-900', 'cursor-pointer select-none relative py-2 pl-3 pr-9']">
+                      <span class="block truncate">Make ticket public</span>
+
+                      <span :class="[active ? 'text-white' : 'text-primary-600', 'absolute inset-y-0 right-0 flex items-center pr-4']">
+                        <CheckIcon class="h-5 w-5" aria-hidden="true" />
+                      </span>
+                    </li>
+                  </ListboxOption>
+                </ListboxOptions>
+              </transition>
+            </Listbox>
+
+            <Listbox v-if="ticket?.assignee.first_name" as="span" class="relative block mb-2 sm:mr-2 w-1/2 sm:w-48">
+              <ListboxButton @click="listboxAlignment('staffListbox')" class="relative flex items-center w-full text-sm font-medium focus:outline-none">
+                <span class="flex justify-between items-center rounded-full bg-white border py-1 pl-3 pr-2 text-xs w-full font-medium text-gray-700">
+                  <div class="flex space-x-1">
+                    <img
+                      class="h-4 w-4 rounded-full mr-1"
+                      :src="ticket?.assignee.avatar_url"
+                      alt=""
+                    />
+                    <span class="text-gray-900 text-xs font-medium">
+                      {{ ticket?.assignee.first_name + ' ' + ticket?.assignee.last_name }}
+                    </span>
+                  </div>
+                  <ChevronDownIcon class="h-4 w-4 text-gray-400" aria-hidden="true" />
+                </span>
+              </ListboxButton>
+              <transition
+                leave-active-class="transition ease-in duration-100"
+                leave-from-class="opacity-100"
+                leave-to-class="opacity-0"
+              >
+                <ListboxOptions ref="staffListbox" class="absolute z-10 mt-2 bg-white shadow-xl max-h-56 w-full rounded-md py-1 text-xs ring-1 ring-black ring-opacity-5 overflow-auto focus:outline-none sm:text-sm">
+                  <ListboxOption
+                    as="template"
+                    v-for="assignee in staff"
+                    :key="assignee.id"
+                    :value="assignee"
+                    v-slot="{ active }"
+                  >
+                    <li
+                      @click="updateAssignee(assignee)"
+                      :class="[
+                        active ? 'text-white bg-primary' : 'text-gray-900',
+                        'cursor-pointer select-none relative py-2 pl-3 pr-9',
+                      ]"
+                    >
+                      <div class="flex items-center space-x-2">
+                        <div class="flex-shrink-0">
+                          <img
+                            class="h-4 w-4 rounded-full"
+                            :src="assignee.avatar_url"
+                            alt=""
+                          />
+                        </div>
+                        <span class="block truncate"
+                          >{{ assignee.first_name }}
+                          {{ assignee.last_name }}</span
+                        >
+                      </div>
+
+                      <span
+                        v-if="assignee.id === ticket?.assignee.id"
+                        :class="[
+                          active ? 'text-white' : 'text-primary-600',
+                          'absolute inset-y-0 right-0 flex items-center pr-4',
+                        ]"
+                      >
+                        <CheckIcon class="h-5 w-5" aria-hidden="true" />
+                      </span>
+                    </li>
+                  </ListboxOption>
+                </ListboxOptions>
+              </transition>
+            </Listbox>
+            <button v-else @click="updateAssignee(user)" class="flex space-x-1 items-center rounded-full bg-white border py-1 px-3 text-xs font-medium text-gray-700 mb-2 mr-2">
+              <UserCircleIcon class="h-4 w-4 text-primary" aria-hidden="true" />
+              <span class="text-primary text-xs font-medium uppercase">Assign Yourself</span>
+            </button>
+
+            <span class="flex space-x-1 items-center rounded-full bg-white border py-1 px-3 text-xs font-medium text-gray-700 mb-2 mr-2">
+              <CalendarIcon class="h-4 w-4 text-gray-400" aria-hidden="true" />
+              <span class="text-gray-900 text-xs font-medium">
+                <time :datetime="ticket?.date_created">{{ date(ticket?.date_created) }}</time>
+              </span>
+            </span>
+            
+            <span class="flex space-x-1 items-center rounded-full bg-white border py-1 px-3 text-xs font-medium text-gray-700 mb-2 mr-2">
+              <ClipboardDocumentCheckIcon
+                v-if="ticket?.status === 'CLSD'"
+                class="h-4 w-4 text-gray-400"
+                aria-hidden="true"
+              />
+              <ClipboardDocumentListIcon
+                v-else
+                class="h-4 w-4 text-gray-400"
+                aria-hidden="true"
+              />
+              <span v-if="ticket?.status != 'CLSD' && role == 'GUEST'" class="text-gray-900 text-xs font-medium">OPEN</span>
+              <span v-else-if="ticket?.status === 'ASGD'" class="text-gray-900 text-xs font-medium">ASSIGNED</span>
+              <span v-else-if="ticket?.status === 'ANSD'" class="text-gray-900 text-xs font-medium">AWAITING RESPONSE</span>
+              <span v-else-if="ticket?.status === 'PNDG' || !ticket" class="text-gray-900 text-xs font-medium">PENDING</span>
+              <span v-else-if="ticket?.status === 'CLSD'" class="text-gray-900 text-xs font-medium">CLOSED</span>
+            </span>
+            <span class="flex space-x-1 items-center rounded-full bg-white border py-1 pl-3 pr-2 text-xs font-medium text-gray-700 mb-2 mr-2">
+              <div :style="`background-color: ${ticket?.labels?.[0].color}`" class="w-2 h-2 rounded-full flex-col mr-1" v-if="ticket?.labels?.[0].color"></div>
+              <span>{{ ticket?.labels?.[0].name }}</span>
+              <ChevronDownIcon class="h-4 w-4 text-gray-400" aria-hidden="true" />
+            </span>
           </div>
+
+          <div class="xl:pt-6 xl:pb-0">
+            <h2 class="sr-only">Description</h2>
+            <TicketInputViewer v-if="ticket" :content="ticket.content" />
+          </div>
+
           <section aria-labelledby="activity-title" class="mt-8 xl:mt-10">
             <div>
-              <div class="pb-4">
+              <!-- <div class="pb-4">
                 <div class="sm:hidden">
                   <label for="tabs" class="sr-only">Select a tab</label>
                   <select
@@ -238,36 +386,35 @@
                     </nav>
                   </div>
                 </div>
-              </div>
-              <div class="pb-2 border-b mb-4 xl:pb-0 xl:border-b-0 xl:mb-0">
-                <!-- Activity feed -->
-                <activity-feed
-                  :ticket="ticket"
-                  :permissions="isStaffOrAuthor"
-                  v-if="
-                    tabs.find((t) => t.current).name === 'Activity' && ticket
-                  "
-                  v-on:post="loadTicketData"
-                  v-on:helpful="helpful"
-                  v-on:unfold="unfold"
-                />
-                <!-- Staff discussion -->
-                <staff-discussion
-                  :ticket="ticket"
-                  v-if="tabs.find((t) => t.current).name === 'Staff discussion'"
-                  v-on:post="loadTicketData"
-                />
-                <!-- Attachments -->
-                <attachments
-                  :ticket="ticket"
-                  v-if="tabs.find((t) => t.current).name === 'Attachments'"
-                  v-on:uploaded="loadTicketData"
-                />
-              </div>
+              </div> -->
+
+              <!-- Activity feed -->
+              <activity-feed
+                :ticket="ticket"
+                :permissions="isStaffOrAuthor"
+                v-if="
+                  tabs.find((t) => t.current).name === 'Activity' && ticket
+                "
+                v-on:post="loadTicketData"
+                v-on:helpful="helpful"
+                v-on:unfold="unfold"
+              />
+              <!-- Staff discussion -->
+              <staff-discussion
+                :ticket="ticket"
+                v-if="tabs.find((t) => t.current).name === 'Staff discussion'"
+                v-on:post="loadTicketData"
+              />
+              <!-- Attachments -->
+              <attachments
+                :ticket="ticket"
+                v-if="tabs.find((t) => t.current).name === 'Attachments'"
+                v-on:uploaded="loadTicketData"
+              />
             </div>
           </section>
         </div>
-        <div class="xl:pl-8">
+        <!-- <div class="xl:pl-8">
           <h2 class="sr-only">Details</h2>
           <div class="space-y-5">
             <div class="flex items-center space-x-2">
@@ -440,7 +587,6 @@
               </span>
             </div>
 
-            <!--Labels-->
             <div>
               <div class="relative">
                 <h2
@@ -613,7 +759,7 @@
               </ul>
             </div>
           </div>
-        </div>
+        </div> -->
       </div>
     </div>
   </div>
@@ -652,6 +798,8 @@ import {
   PlusIcon as PlusIconSolid,
   ClipboardDocumentListIcon,
   ClipboardDocumentCheckIcon,
+  UserCircleIcon,
+  ChevronDownIcon
 } from "@heroicons/vue/24/solid";
 
 import {
@@ -686,6 +834,8 @@ export default {
     ClipboardDocumentListIcon,
     ClipboardDocumentCheckIcon,
     TicketInputViewer,
+    UserCircleIcon,
+    ChevronDownIcon
   },
   data: () => ({
     publishConfirmationModal: false,
@@ -968,16 +1118,16 @@ export default {
             newActivities.push(groupActivities[0]);
             groupActivities = [];
           } else if (groupActivities.length > 1) {
-            newActivities.push({
-              id: groupActivities[0].id,
-              type: "group",
-              activities: groupActivities,
-            });
+            // newActivities.push({
+            //   id: groupActivities[0].id,
+            //   type: "group",
+            //   activities: groupActivities,
+            // });
             groupActivities = [];
           }
           newActivities.push(activity);
         } else {
-          groupActivities.push(activity);
+          // groupActivities.push(activity);
         }
       });
 
@@ -994,14 +1144,15 @@ export default {
       return newActivities;
     },
     date(date) {
-      return moment.parseZone(date).calendar(null, {
-        lastDay: "[Yesterday at] HH:mm",
-        sameDay: "[Today at] HH:mm",
-        nextDay: "[Tomorrow at] HH:mm",
-        lastWeek: "[Last] dddd [at] HH:mm",
-        nextWeek: "dddd [at] HH:mm",
-        sameElse: "L [at] HH:mm",
-      });
+      return moment.parseZone(date).fromNow()
+      // return moment.parseZone(date).calendar(null, {
+      //   lastDay: "[Yesterday]",
+      //   sameDay: "HH:mm",
+      //   nextDay: "[Tomorrow]",
+      //   lastWeek: "[Last] dddd",
+      //   nextWeek: "dddd",
+      //   sameElse: "L [at] HH:mm",
+      // });
     },
     isStaff(role, user) {
       return (
@@ -1157,6 +1308,16 @@ export default {
       const index = this.ticket.activity.findIndex((a) => a.id === activity.id);
       this.ticket.activity.splice(index, 1, ...activity.activities);
     },
+    listboxAlignment(e) {
+      if (this.$refs[e].el == null) return
+      
+      setTimeout(() => {
+        if (this.$refs[e].el == null) return
+        if (this.$refs[e].el.getBoundingClientRect().right > window.innerWidth - 16) {
+          this.$refs[e].el.style.right = 0
+        }
+      }, 10)
+    }
   },
   computed: {
     ...mapState({

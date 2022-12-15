@@ -9,6 +9,7 @@ import AppLayoutDefault from './AppLayoutDefault.vue'
 import AppLayoutAuth from './AppLayoutAuth.vue'
 import AppLayoutGeneral from './AppLayoutGeneral.vue'
 import AppLayoutInbox from './AppLayoutInbox.vue'
+import AppLayoutTicket from './AppLayoutTicket.vue'
 import { shallowRef, watch } from 'vue'
 import { useRoute } from 'vue-router'
 
@@ -29,6 +30,9 @@ export default {
             break
           case 'AppLayoutInbox':
             layout.value = AppLayoutInbox
+            break
+          case 'AppLayoutTicket':
+            layout.value = AppLayoutTicket
             break
           case 'AppLayoutDefault':
             layout.value = AppLayoutDefault

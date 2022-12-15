@@ -73,7 +73,7 @@ const routes = [
     name: 'Ticket',
     component: () => import(/* webpackChunkName: "ticket" */ '@/views/Ticket.vue'),
     meta: {
-      layout: 'AppLayoutInbox'
+      layout: 'AppLayoutTicket'
     }
   },
   {
@@ -81,7 +81,7 @@ const routes = [
     name: 'Create',
     component: () => import(/* webpackChunkName: "create" */ '@/views/Create.vue'),
     meta: {
-      layout: 'AppLayoutInbox'
+      layout: 'AppLayoutTicket'
     }
   },
   {

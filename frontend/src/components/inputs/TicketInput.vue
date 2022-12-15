@@ -29,7 +29,7 @@ export default {
     onMounted(() => {
       e = new Editor({
         el: editor.value,
-        minHeight: '300px',
+        minHeight: '100px',
         height: 'auto',
         usageStatistics: false,
         initialEditType: 'wysiwyg',
