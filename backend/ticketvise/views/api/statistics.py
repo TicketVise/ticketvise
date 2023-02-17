@@ -2,7 +2,7 @@ from datetime import datetime, timedelta
 
 from django.db.models import F, Count, OuterRef, Subquery, Avg
 from django.db.models.functions import TruncDate, TruncMonth, TruncYear, TruncWeek, \
-    ExtractHour
+    ExtractHour, ExtractWeekDay
 from django.http import JsonResponse
 from rest_framework import serializers
 from rest_framework.generics import get_object_or_404
@@ -24,7 +24,7 @@ from ticketvise.views.api.user import UserSerializer
 class InboxTicketsPerDateTypeStatisticsApiView(APIView):
     permission_classes = [UserIsInboxStaffPermission]
     truncaters = [TruncYear, TruncMonth, TruncWeek, TruncDate]
-    extracters = [ExtractHour]
+    extracters = [ExtractHour, ExtractWeekDay]
 
     def get_date_modifier(self, request):
         date_type = request.GET.get("date_type")
@@ -49,13 +49,20 @@ class InboxTicketsPerDateTypeStatisticsApiView(APIView):
                     "total": next((result["total"] for result in results if result["date"] == hour), 0)
                 } for hour in range(24)
             ]
+        elif date_type == "week_day":
+            return [
+                {
+                    "date": weekday,
+                    "total": next((result["total"] for result in results if result["date"] == weekday), 0)
+                } for weekday in range(1, 8)
+            ]
         elif date_type == "date":
             base = results[0]["date"]
             end = list(results)[-1]["date"]
             date_list = [base + timedelta(days=i) for i in range((end - base).days + 1)]
             return [
                 {
-                    "date": date,
+                    "date": datetime.strftime(date, "%d-%m-%Y"),
                     "total": next((result["total"] for result in results if result["date"] == date), 0),
                     "public": next((result["public"] for result in results if result["date"] == date), 0)
                 } for date in date_list

@@ -14,11 +14,11 @@
       <PlusIcon class="h-5 w-5" />
       <span>New</span>
     </router-link>
-    <router-link v-if="is_staff" :to="`/inboxes/${$route.params.inboxId}/insights`" exact class="menu-item" active-class="active">
+    <router-link v-if="is_staff" :to="`/inboxes/${$route.params.inboxId}/insights`" class="menu-item" active-class="active">
       <ChartBarIcon class="h-5 w-5" />
       <span>Insights</span>
     </router-link>
-    <router-link v-if="is_staff" :to="`/inboxes/${$route.params.inboxId}/settings`" exact class="menu-item" active-class="active">
+    <router-link v-if="is_staff" :to="`/inboxes/${$route.params.inboxId}/settings`" class="menu-item" active-class="active">
       <Cog8ToothIcon class="h-5 w-5" />
       <span>Settings</span>
     </router-link>

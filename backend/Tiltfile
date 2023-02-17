@@ -3,10 +3,13 @@ docker_build(
   context='.',
   dockerfile='Dockerfile.dev',
   live_update=[
-    sync('.', '/app')
+    sync('./ticketvise', '/backend/ticketvise')
   ]
 )
 
 k8s_yaml('dev.backend.yaml')
 
-k8s_resource('backend', port_forwards=8000, labels=['backend'])
+k8s_resource('backend', labels=['backend'], links=[link('ivan.ticketvise.com/api/admin/django', 'admin')])
+k8s_resource('database', labels=['backend'])
+
+k8s_resource('s3', port_forwards=9001, labels=['storage'])

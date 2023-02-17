@@ -9,4 +9,4 @@ docker_build(
 
 k8s_yaml('dev.frontend.yaml')
 
-# k8s_resource('frontend', port_forwards=3000, labels=['frontend'])
+k8s_resource('frontend', labels=['frontend'], links=[link('ivan.ticketvise.com', 'interface')])

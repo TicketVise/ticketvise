@@ -10,7 +10,7 @@
       <div class="py-3 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
         <dt class="flex items-center text-sm font-medium leading-5 text-gray-700">Name</dt>
         <dd class="mt-1 text-sm leading-5 text-gray-900 sm:col-span-2 sm:mt-0">
-          <input type="text" v-model="label.name" class="block w-full appearance-none rounded border border-gray-400 bg-white px-4 py-2 pr-8 leading-tight shadow-sm hover:border-gray-500 focus:outline-none" :class="{ 'mb-2 border-red-600 hover:border-red-700 ': !label.name && this.$route.params.itemId != 'new' }" autofocus />
+          <input type="text" v-model="label.name" class="block w-full appearance-none rounded border border-gray-400 bg-white px-4 py-2 pr-8 leading-tight shadow-sm hover:border-gray-500 focus:outline-none" :class="{ 'mb-2 border-red-600 hover:border-red-700 ': !label.name && this.$route.params.itemId != 'new' }" />
 
           <p v-if="!label.name && this.$route.params.itemId != 'new'" class="text-sm text-red-600">Omschrijving is verplicht</p>
         </dd>

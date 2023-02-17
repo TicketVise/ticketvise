@@ -34,6 +34,7 @@ export default {
         usageStatistics: false,
         initialEditType: 'wysiwyg',
         previewStyle: 'vertical',
+        autofocus: false,
         plugins: [[codeSyntaxHighlight, { highlighter: Prism }], LatexPlugin],
         events: {
           change: () => emit('update:modelValue', e.getMarkdown())

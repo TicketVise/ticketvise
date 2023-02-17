@@ -3,6 +3,38 @@
     <h2 id="tickets-heading" class="sr-only">Label insights</h2>
 
     <!-- Some basic stats first -->
+    <div class="grid w-full grid-cols-2 gap-2 mb-4">
+      <div class="flex items-center overflow-hidden rounded-lg border bg-white p-2 px-4">
+        <div class="hidden flex-shrink-0 sm:flex">
+          <TicketIcon class="h-6 w-6 text-gray-400" />
+        </div>
+        <dl class="w-0 flex-1 sm:ml-5">
+          <dt class="truncate text-sm font-medium text-gray-500">Most used label</dt>
+          <dd class="flex items-center justify-between">
+            <div class="text-xl font-medium text-primary truncate">
+              {{ this.labels[0]?.name || '' }}
+            </div>
+          </dd>
+        </dl>
+      </div>
+
+      <div class="flex items-center overflow-hidden rounded-lg border bg-white p-2 px-4">
+        <div class="hidden flex-shrink-0 sm:flex">
+          <TicketIcon class="h-6 w-6 text-gray-400" />
+        </div>
+        <dl class="w-0 flex-1 sm:ml-5">
+          <dt class="truncate text-sm font-medium text-gray-500">Tickets without a label</dt>
+          <dd class="flex items-center justify-between">
+            <div class="text-xl font-medium text-primary truncate">
+              {{ 12 }}
+            </div>
+            <span class="ml-2 text-sm font-medium text-gray-500"> from {{ item.previousStat }} </span>
+          </dd>
+        </dl>
+      </div>
+    </div>
+
+    <!-- Some basic stats first -->
     <dl class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
       <div v-for="item in stats" :key="item.name" class="px-4 py-3 rounded-lg border">
         <dt class="text-base font-normal text-gray-900">

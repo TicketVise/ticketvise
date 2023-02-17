@@ -44,7 +44,7 @@ spec:
           - name: SQL_HOST
             value: database
           - name: HOST
-            value: app.localhost
+            value: ivan.ticketvise.com
           - name: S3_USE_HTTPS
             value: "0"
           - name: S3_ACCESS_KEY
@@ -186,7 +186,7 @@ data:
    MINIO_ROOT_USER: minio
    MINIO_ROOT_PASSWORD: Welkom01
    S3_BUCKET_NAME: ticketvise
-   S3_ENDPOINT_URL: http://app.localhost/s3/
+   S3_ENDPOINT_URL: http://ivan.ticketvise.com/s3/
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim

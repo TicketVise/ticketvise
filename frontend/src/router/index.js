@@ -133,7 +133,7 @@ const routes = [
     }
   },
   {
-    path: '/inboxes/:inboxId/insights',
+    path: '/inboxes/:inboxId/insights/:tab?/:itemId?',
     name: 'Insights',
     component: () => import(/* webpackChunkName: "insights" */ '@/views/Insights.vue'),
     meta: {
@@ -141,7 +141,7 @@ const routes = [
     }
   },
   {
-    path: '/inboxes/:inboxId/settings/:tab?/:itemId?', 
+    path: '/inboxes/:inboxId/settings/:tab?/:itemId?',
     name: 'Settings',
     component: () => import(/* webpackChunkName: "settings" */ '@/views/Settings.vue'),
     meta: {

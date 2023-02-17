@@ -1,5 +1,5 @@
 <template>
-  <div class="fixed z-10 inset-0 overflow-y-auto">
+  <div class="fixed z-40 inset-0 overflow-y-auto">
     <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
 
       <div class="fixed inset-0 transition-opacity" aria-hidden="true">
@@ -14,10 +14,9 @@
             <h3 class="text-lg leading-6 font-medium text-gray-900" id="modal-headline">
               Publish Ticket
             </h3>
-            <div class="mt-2">
-              <p class="text-sm text-gray-500">
-                Publishing a ticket will make it visible to all users in this inbox. This helps students and prevents duplicate questions. Before publishing, the author of the ticket will need to approve the request to make this ticket public.
-              </p>
+            <div class="mt-2 text-sm text-gray-500 text-justify">
+              <p class="mb-2">Hey! Just a heads up, publishing this ticket will make it visible to everyone in this inbox. This can be really helpful for other students who might have the same question and helps prevent duplicate tickets.</p>
+              <p>Just a reminder that the author of the ticket will need to approve the request to make it public before it goes live.</p>
             </div>
           </div>
         </div>

@@ -17,7 +17,7 @@
           <dd class="mt-1 text-sm leading-5 text-gray-900 sm:mt-0 sm:col-span-2">
             <input type="text" v-model="label.name"
                   class="block appearance-none w-full bg-white border border-gray-400 hover:border-gray-500 px-4 py-2 pr-8 rounded shadow-sm leading-tight focus:outline-none focus:ring"
-                  :class="{'mb-2 border-red-600 hover:border-red-700 ' : !label.name }" autofocus>
+                  :class="{'mb-2 border-red-600 hover:border-red-700 ' : !label.name }">
 
             <p v-if="!label.name && !window.location.hash.includes('new')" class="text-sm text-red-600">Omschrijving is verplicht</p>
           </dd>

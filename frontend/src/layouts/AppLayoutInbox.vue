@@ -190,10 +190,10 @@
                   d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
                 ></path>
               </svg>
-              <span class="w-full truncate" v-if="inbox"
-                >{{ inbox.inbox.coordinator.first_name }}
-                {{ inbox.inbox.coordinator.last_name }}</span
-              >
+              <span class="w-full truncate" v-if="inbox">
+                {{ inbox.inbox.coordinator.first_name }} {{ inbox.inbox.coordinator.last_name }}
+                <span v-if="inbox.inbox.coordinator.id == user.id">(you)</span>
+              </span>
               <div v-else class="h-5 w-24 bg-gray-200 rounded" />
             </div>
           </div>

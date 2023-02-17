@@ -1,45 +1,94 @@
 <template>
-  <section aria-labelledby="tickets-heading">
-    <h2 id="tickets-heading" class="sr-only">Ticket insights</h2>
-
+  <section aria-labelledby="tickets-heading" class="mx-auto flex max-w-3xl flex-col space-y-4 overflow-y-auto">
     <!-- Some basic stats first -->
-    <dl class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-      <div v-for="item in stats" :key="item.name" class="px-4 py-3 rounded-lg border">
-        <dt class="text-base font-normal text-gray-900">
-          {{ item.name }}
-        </dt>
-        <dd class="flex justify-between items-baseline md:block lg:flex">
-          <div class="flex items-baseline text-2xl font-semibold text-primary-600">
-            {{ item.stat }}
-            <span v-if="item.previousStat" class="ml-2 text-sm font-medium text-gray-500"> from {{ item.previousStat }} </span>
-          </div>
-
-          <div v-if="item.change" :class="[item.changeType === 'increase' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800', 'inline-flex items-baseline px-2.5 py-0.5 rounded-full text-sm font-medium md:mt-2 lg:mt-0']">
-            <ArrowSmallUpIcon v-if="item.changeDirection === 'up'" class="-ml-1 mr-0.5 flex-shrink-0 self-center h-5 w-5" :class="[item.changeType === 'increase' ? 'text-green-500' : 'text-red-500']" aria-hidden="true" />
-            <ArrowSmallDownIcon v-else class="-ml-1 mr-0.5 flex-shrink-0 self-center h-5 w-5" :class="[item.changeType === 'increase' ? 'text-green-500' : 'text-red-500']" aria-hidden="true" />
-            <span class="sr-only"> {{ item.changeType === 'increase' ? 'Increased' : 'Decreased' }} by </span>
-            {{ item.change }}
-          </div>
-        </dd>
+    <div class="grid w-full grid-cols-2 gap-2">
+      <div class="flex items-center overflow-hidden rounded-lg border bg-white p-2 px-4">
+        <div class="hidden flex-shrink-0 sm:flex">
+          <TicketIcon class="h-6 w-6 text-gray-400" />
+        </div>
+        <dl class="w-0 flex-1 sm:ml-5">
+          <dt class="truncate text-sm font-medium text-gray-500">Tickets</dt>
+          <dd class="flex items-center justify-between">
+            <div class="text-xl font-medium text-primary">
+              {{ this.statsData?.total_tickets || 0 }}
+            </div>
+          </dd>
+        </dl>
       </div>
-    </dl>
+
+      <div class="flex items-center overflow-hidden rounded-lg border bg-white p-2 px-4">
+        <div class="hidden flex-shrink-0 sm:flex">
+          <GlobeEuropeAfricaIcon class="h-6 w-6 text-gray-400" />
+        </div>
+        <div class="w-0 flex-1 sm:ml-5">
+          <dl>
+            <dt class="truncate text-sm font-medium text-gray-500">Public tickets</dt>
+            <dd class="flex items-center justify-between">
+              <div class="text-xl font-medium text-primary">
+                {{ this.statsData?.total_public_tickets || 0 }}
+              </div>
+            </dd>
+          </dl>
+        </div>
+      </div>
+    </div>
 
     <!-- Some general graphs here -->
+    <div>
+      <div class="flex justify-between items-center mb-1">
+        <h2 class="text-lg font-semibold text-primary-600">Tickets</h2>
+        <span class="isolate inline-flex rounded-md">
+          <button @click="ticketChartType = 'date'" type="button" :class="[ticketChartType == 'date' ? 'text-primary bg-gray-100' : 'text-gray-700 bg-white', 'relative inline-flex items-center rounded-l-md border border-gray-300 px-2 py-1 text-sm font-medium hover:bg-gray-50 focus:z-10 focus:outline-none']">
+            Days
+          </button>
+          <button @click="ticketChartType = 'week_day'" type="button" :class="[ticketChartType == 'week_day' ? 'text-primary bg-gray-100' : 'text-gray-700 bg-white', 'relative -ml-px inline-flex items-center border border-gray-300 px-2 py-1 text-sm font-medium hover:bg-gray-50 focus:z-10 focus:outline-none']">
+            Week day
+          </button>
+          <button @click="ticketChartType = 'hour'" type="button" :class="[ticketChartType == 'hour' ? 'text-primary bg-gray-100' : 'text-gray-700 bg-white', 'relative -ml-px inline-flex items-center rounded-r-md border border-gray-300 px-2 py-1 text-sm font-medium hover:bg-gray-50 focus:z-10 focus:outline-none']">
+            Hours
+          </button>
+        </span>
+      </div>
+      <TicketsTimeChart :inbox-id="$route.params.inboxId" :height="200" :type="ticketChartType" />
+    </div>
+
+    <div class="rounded-md bg-blue-50 p-4">
+      <div class="flex">
+        <div class="flex-shrink-0">
+          <ClockIcon class="h-5 w-5 text-blue-400" aria-hidden="true" />
+        </div>
+        <div class="ml-3">
+          <h3 class="text-sm font-medium text-blue-700">Best times</h3>
+          <div class="mt-1 text-sm text-blue-700">
+            <p>Based on the times the tickets come in, we advise you check your page at the following times to optimize the shortest response time: <strong>13h</strong> and <strong>21h</strong>.</p>
+          </div>
+        </div>
+      </div>
+    </div>
   </section>
 </template>
 
 <script>
 import axios from 'axios'
-import { ArrowSmallDownIcon, ArrowSmallUpIcon } from '@heroicons/vue/24/solid'
+import { ArrowSmallDownIcon, ArrowSmallUpIcon, CalendarDaysIcon, ClockIcon } from '@heroicons/vue/24/solid'
+import { GlobeEuropeAfricaIcon, TicketIcon } from '@heroicons/vue/24/outline'
+
+import TicketsTimeChart from '@/components/insights/TicketsTimeChart.vue'
 
 export default {
   name: 'InsightsTickets',
   components: {
     ArrowSmallDownIcon,
-    ArrowSmallUpIcon
-  },
+    ArrowSmallUpIcon,
+    TicketIcon,
+    TicketsTimeChart,
+    CalendarDaysIcon,
+    ClockIcon,
+    GlobeEuropeAfricaIcon
+},
   data: () => ({
-    statsData: null
+    statsData: null,
+    ticketChartType: 'hour'
   }),
   async mounted () {
     const { inboxId } = this.$route.params

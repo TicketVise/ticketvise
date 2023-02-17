@@ -1,8 +1,8 @@
 <template>
   <div class="flow-root">
-    <ul class="-mb-8">
+    <ul>
       <li v-for="(item, itemIdx) in ticket?.activity" :key="item">
-        <div class="relative pb-4">
+        <div class="relative pb-2">
           <span
             v-if="itemIdx !== ticket.activity.length - 1"
             class="absolute top-5 left-5 -ml-px h-full w-0.5 bg-gray-200"
@@ -336,7 +336,7 @@
     </ul>
 
     <!-- Box to make a new comment. -->
-    <div class="mt-6">
+    <div>
       <div class="flex space-x-3">
         <div class="flex-shrink-0">
           <div class="relative">
