@@ -15,7 +15,7 @@ import {
   UserAddIcon
 } from '@heroicons/vue/solid'
 
-import SelectInput from '@/components/inputs/SelectInput'
+import SelectInput from '@/components/inputs/SelectInput.vue'
 
 export default {
   name: 'AutomationAction',

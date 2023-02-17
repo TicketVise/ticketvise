@@ -16,7 +16,7 @@
 <script>
 import { mapState } from 'vuex'
 import axios from 'axios'
-import SelectInput from '@/components/inputs/SelectInput'
+import SelectInput from '@/components/inputs/SelectInput.vue'
 
 const types = [
   {
