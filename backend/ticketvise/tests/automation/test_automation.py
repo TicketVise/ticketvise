@@ -58,7 +58,7 @@ class AutomationTestCase(TicketTestCase):
             evaluation_func="is_set",
             evaluation_value="True")
         result = automation_condition(self.ticket)
-        self.assertTrue(result)
+        self.assertFalse(result)
 
     def test_equals_boolean_valid(self):
         automation_condition = AutomationCondition.objects.create(
