@@ -1,6 +1,7 @@
 from datetime import datetime
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from django.db import models
+from django.utils import dateparse
 
 from ticketvise.models.label import Label
 from ticketvise.models.ticket import Ticket
@@ -86,10 +87,12 @@ class AutomationCondition(models.Model):
 
     def __call__(self, ticket):
         field = ticket._meta.get_field(self.field_name)
+        # does this do anything?
         value = self.evaluation_value
 
         if self.evaluation_func == "is_set":
-            return self.is_set(field, value)
+            value = "True" if getattr(ticket, self.field_name) else "False"
+            return value == self.evaluation_value
 
         if isinstance(field, models.ForeignKey):
             try:
@@ -107,11 +110,14 @@ class AutomationCondition(models.Model):
             if self.evaluation_func == "eq":
                 value = [value]
         elif isinstance(field, models.DateTimeField):
-            field = getattr(ticket, self.field_name)
-            value = self.parse_iso(self.evaluation_value)
+            value = dateparse.parse_datetime(self.evaluation_value)
+            attr = dateparse.parse_datetime(str(getattr(ticket, self.field_name)))
+
+            field = datetime.fromisoformat(str(attr))
+            value = datetime.fromisoformat(str(value))
         else:
-            field = str(getattr(ticket, self.field_name))
-            value = str(value)
+            field = str(getattr(ticket, self.field_name)).lower()
+            value = str(value).lower()
 
         evaluation = getattr(self, self.evaluation_func)(field, value)
 
