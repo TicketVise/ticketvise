@@ -20,7 +20,6 @@ from model_utils.managers import InheritanceManager
 from ticketvise.middleware import CurrentUserMiddleware
 from ticketvise.models.label import Label
 from ticketvise.models.notification.assigned import TicketAssignedNotification
-from ticketvise.models.notification.new import NewTicketNotification
 from ticketvise.scheduling import schedule_ticket
 
 
@@ -131,12 +130,6 @@ class Ticket(models.Model):
             if not self.assignee:
                 schedule_ticket(self)
 
-            try:
-                for automation in self.inbox.automations:
-                    automation.execute(self)
-            except Exception as e:
-                logging.error(e)
-
         super().save(force_insert, force_update, using, update_fields)
 
         if old_ticket and old_ticket.status != self.status:
@@ -149,9 +142,6 @@ class Ticket(models.Model):
                                                initiator=current_user)
             if current_user != self.assignee:
                 TicketAssignedNotification.objects.create(ticket=self, receiver=self.assignee)
-        elif not self.assignee:
-            for user in self.inbox.get_assistants_and_coordinators():
-                NewTicketNotification.objects.create(ticket=self, receiver=user)
 
         if old_ticket and old_ticket.title != self.title:
             TicketTitleEvent.objects.create(ticket=self, initiator=CurrentUserMiddleware.get_current_user(),
