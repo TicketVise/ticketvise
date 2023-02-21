@@ -25,7 +25,7 @@ const types = [
     options: [
       { name: 'Contains', value: 'contains' },
       { name: 'Contains not', value: 'contains_not' },
-      { name: 'Equals', value: 'equals' }
+      { name: 'Equals', value: 'eq' }
     ],
     input: 'text'
   },
@@ -35,7 +35,7 @@ const types = [
     options: [
       { name: 'Contains', value: 'contains' },
       { name: 'Contains not', value: 'contains_not' },
-      { name: 'Equals', value: 'equals' }
+      { name: 'Equals', value: 'eq' }
     ],
     input: 'text'
   },
@@ -45,7 +45,7 @@ const types = [
     options: [
       { name: 'Contains', value: 'contains' },
       { name: 'Contains not', value: 'contains_not' },
-      { name: 'Equals', value: 'equals' }
+      { name: 'Equals', value: 'eq' }
     ],
     input: 'labels'
   },
