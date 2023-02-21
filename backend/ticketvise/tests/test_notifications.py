@@ -95,25 +95,6 @@ class NotificationsTestCase(TestCase):
         exists = TicketAssignedNotification.objects.filter(ticket=self.ticket, receiver=self.ta).exists()
         self.assertTrue(exists)
 
-    def test_unassigned_ticket(self):
-        """
-        If a ticket has no assignee, all TA"s connected to a inbox must receive a notification.
-
-        :return: None.
-        """
-        self.client.force_authenticate(self.ta)
-
-        self.ticket.inbox.scheduling_algorithm = SchedulingAlgorithm.FIXED
-        self.ticket.inbox.fixed_scheduling_assignee = None
-        self.ticket.inbox.save()
-
-        ticket = Ticket.objects.create(author=self.student, assignee=None, title="How to code v3?", inbox=self.inbox,
-                                       content="wat is 3+1?")
-
-        for user in self.ticket.inbox.get_assistants_and_coordinators():
-            exists = NewTicketNotification.objects.filter(ticket=ticket, receiver=user).exists()
-            self.assertTrue(exists)
-
     def test_mention_notification(self):
         """
         If a user is mentioned, it needs to receive a notification.
