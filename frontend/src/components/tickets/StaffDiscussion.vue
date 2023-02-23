@@ -1,7 +1,7 @@
 <template>
   <div class="flex flex-column flex-wrap w-full pr-4">
     <div class="w-full">
-      <div class="text-center mb-8" v-if="ticket?.comments.length === 0">
+      <div class="text-center" v-if="ticket?.comments.length === 0">
         <img alt="Nothing here" class="w-1/2 md:w-1/4 mx-auto mb-8" :src="relax">
         <span class="text-sm leading-8 text-gray-500">There are no messages here yet...</span>
       </div>
