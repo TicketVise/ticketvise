@@ -56,7 +56,8 @@
         <div class="min-w-0 flex-1">
           <form @submit.prevent="submit">
             <div>
-              <TicketInput v-model="comment" ref="commentStaffInput" />
+              <TicketInput v-model="comment" ref="commentStaffInput" :staff="staff" />
+              <p class="mt-1 text-sm text-gray-500">Type @ to mention a team member</p>
             </div>
             <div class="mt-6 flex items-center justify-end space-x-4">
               <button type="submit" class="inline-flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-primary hover:bg-orange-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-600">
@@ -94,19 +95,33 @@ export default {
   },
   data: () => ({
     relax: Relax,
-    comment: ''
+    comment: '',
+    staff: []
   }),
+  mounted () {
+    const { inboxId } = this.$route.params
+
+    axios.get(`/api/inboxes/${inboxId}/staff`).then(response => {
+      this.staff = response.data
+      this.staff.forEach(c => {
+        c.name = c.first_name + ' ' + c.last_name
+        c.avatar = c.avatar_url
+        c.username = c.username
+      })
+
+      this.$refs.commentStaffInput.registerKeyUp(this.staff)
+    })
+  },
   methods: {
     submit () {
-      const inboxId = this.$route.params.inboxId
-      const ticketInboxId = this.$route.params.ticketInboxId
+    const { inboxId, ticketInboxId } = this.$route.params
 
-      axios.post(`/api/inboxes/${inboxId}/tickets/${ticketInboxId}/comments/post`, { content: this.comment })
-        .then(() => {
-          this.$emit('post')
-          this.comment = ''
-          this.$refs.commentStaffInput.setMarkdown('')
-        })
+    axios.post(`/api/inboxes/${inboxId}/tickets/${ticketInboxId}/comments/post`, { content: this.comment })
+      .then(() => {
+        this.$emit('post')
+        this.comment = ''
+        this.$refs.commentStaffInput.setMarkdown('')
+      })
     }
   },
   computed: {
