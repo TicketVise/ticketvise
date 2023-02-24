@@ -1,6 +1,6 @@
 <template>
-  <div class="rounded-md border">
-    <div v-if="!open" @click="open = true" class="py-3 px-4 flex space-x-2 items-center cursor-pointer rounded hover:bg-gray-100">
+  <div class="rounded-md border hover:border-gray-300">
+    <div v-if="!open" @click="open = true" class="py-3 px-4 flex space-x-2 items-center cursor-pointer rounded-md hover:bg-gray-50">
       <i class="h-4 w-4 rounded bg-gray-600"></i>
       <span class="font-medium">{{ selected[1] }}</span>
       <span v-if="selected[0] === 'fixed'" class="flex items-center">

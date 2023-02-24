@@ -17,6 +17,7 @@
     "@tailwindcss/forms": "^0.5.0",
     "@tailwindcss/line-clamp": "^0.3.1",
     "@tailwindcss/typography": "^0.5.2",
+    "@themesberg/tailwind-datepicker": "^1.1.0",
     "@toast-ui/editor": "^3.1.3",
     "@toast-ui/editor-plugin-code-syntax-highlight": "^3.0.0",
     "axios": "^0.26.0",
@@ -24,12 +25,12 @@
     "katex": "^0.15.2",
     "moment": "^2.29.1",
     "prismjs": "^1.27.0",
-    "reactjs": "^1.0.0",
     "tailwindcss": "^3.0.23",
     "vue": "^3.2.31",
     "vue-easy-lightbox": "^1.3.0",
     "vue-router": "^4.0.12",
     "vue3-chart-v2": "garstikaitis/vue3-chart-v2#vite-fix",
+    "vuedraggable": "^2.24.3",
     "vuex": "^4.0.2"
   },
   "devDependencies": {
