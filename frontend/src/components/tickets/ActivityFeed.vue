@@ -12,7 +12,7 @@
                      :src="item?.imageUrl" alt=""/>
 
                 <span class="absolute -bottom-0.5 -right-1 bg-white rounded-tl px-0.5 py-px">
-                  <ChatAltIcon class="h-5 w-5 text-gray-400" aria-hidden="true"/>
+                  <ChatBubbleLeftEllipsisIcon class="h-5 w-5 text-gray-400" aria-hidden="true"/>
                 </span>
               </div>
               <div class="min-w-0 flex-1">
@@ -97,7 +97,7 @@
               <div>
                 <div class="relative px-1">
                   <div class="h-8 w-8 bg-gray-100 rounded-full ring-8 ring-white flex items-center justify-center">
-                    <CollectionIcon class="h-5 w-5 text-gray-500" aria-hidden="true"/>
+                    <RectangleStackIcon class="h-5 w-5 text-gray-500" aria-hidden="true"/>
                   </div>
                 </div>
               </div>
@@ -173,7 +173,7 @@
                  :src="user.avatar_url" alt=""/>
 
             <span class="absolute -bottom-0.5 -right-1 bg-white rounded-tl px-0.5 py-px">
-              <ChatAltIcon class="h-5 w-5 text-gray-400" aria-hidden="true"/>
+              <ChatBubbleLeftEllipsisIcon class="h-5 w-5 text-gray-400" aria-hidden="true"/>
             </span>
           </div>
         </div>
@@ -216,21 +216,24 @@ import Chip from '@/components/chip/Chip.vue'
 import TicketInput from '@/components/inputs/TicketInput.vue'
 import TicketInputViewer from '@/components/inputs/TicketInputViewer.vue'
 
+
+import { Menu, MenuButton, MenuItem, MenuItems } from '@headlessui/vue'
+import { EllipsisVerticalIcon } from '@heroicons/vue/20/solid'
 import {
-  ChatAltIcon,
+  ChatBubbleLeftEllipsisIcon,
   CheckCircleIcon,
-  CollectionIcon,
+  RectangleStackIcon,
   DocumentIcon,
   TagIcon,
   UserCircleIcon as UserCircleIconSolid,
   ExclamationCircleIcon,
-  ThumbUpIcon as ThumbUpSolidIcon,
-  ThumbDownIcon as ThumbDownSolidIcon
-} from '@heroicons/vue/solid'
+  HandThumbUpIcon as ThumbUpSolidIcon,
+  HandThumbDownIcon as ThumbDownSolidIcon
+} from '@heroicons/vue/24/solid'
 import {
-  ThumbUpIcon as ThumbUpOutlineIcon,
-  ThumbDownIcon as ThumbDownOutlineIcon
-} from '@heroicons/vue/outline'
+  HandThumbUpIcon as ThumbUpOutlineIcon,
+  HandThumbDownIcon as ThumbDownOutlineIcon
+} from '@heroicons/vue/24/outline'
 
 const statusses = {
   PNDG: {
@@ -253,10 +256,11 @@ const statusses = {
 
 export default {
   components: {
-    ChatAltIcon,
+    EllipsisVerticalIcon,
+    ChatBubbleLeftEllipsisIcon,
     CheckCircleIcon,
     Chip,
-    CollectionIcon,
+    RectangleStackIcon,
     DocumentIcon,
     TagIcon,
     UserCircleIconSolid,
