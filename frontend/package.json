@@ -40,6 +40,6 @@
     "eslint": "^8.5.0",
     "eslint-plugin-vue": "^8.2.0",
     "postcss": "^8.4.7",
-    "vite": "^2.8.4"
+    "vite": "^2.9.13"
   }
 }
