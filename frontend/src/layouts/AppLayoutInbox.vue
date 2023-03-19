@@ -600,7 +600,7 @@
                         </router-link>
                       </div>
                     </div>
-                    <!-- <div>
+                    <div>
                       <hr class="border-t border-gray-200 my-4" aria-hidden="true" />
                       <h3 class="text-gray-600 text-xs pl-4 pb-1 font-bold uppercase">
                         Other inboxes
@@ -613,7 +613,7 @@
                       >
                         <span class="truncate">{{ inbox.inbox.name }}</span>
                       </a>
-                    </div> -->
+                    </div>
                   </nav>
                 </div>
                 <div class="flex-shrink-0 flex border-t border-gray-200 p-4">
@@ -784,7 +784,7 @@ export default {
     async goto (index) {
       this.$router.push('/inboxes/' + index + '/tickets')
       const response = await axios.get(
-        `/api/me/inboxes/${ this.$route.params.inboxId }`
+        `/api/me/inboxes/${ index }`
       )
       this.inbox = response.data
     },
