@@ -147,7 +147,7 @@
               </div>
               <div class="pb-2 border-b mb-4 xl:pb-0 xl:border-b-0 xl:mb-0">
                 <!-- Activity feed -->
-                <activity-feed :ticket="ticket" :permissions="isStaffOrAuthor" v-if="tabs.find(t => t.current).name === 'Activity' && ticket"
+                <activity-feed :ticket="ticket" :permissions="isStaffOrAuthor" :staff="isStaff(this.role, this.user)" v-if="tabs.find(t => t.current).name === 'Activity' && ticket"
                                v-on:post="loadTicketData" v-on:helpful="helpful"/>
                 <!-- Staff discussion -->
                 <staff-discussion :ticket="ticket" v-if="tabs.find(t => t.current).name === 'Staff discussion'"
@@ -453,7 +453,7 @@ export default {
               return {
                 id: c.id,
                 date: this.date(c.date_created),
-                person: c.author ? { username: c.author.username, name: c.author.first_name + ' ' + c.author.last_name, href: '#' } : null,
+                person: c.author ? { id: c.author.id, username: c.author.username, name: c.author.first_name + ' ' + c.author.last_name, href: '#' } : null,
                 imageUrl: c.author.avatar_url,
                 comment: c.content
               }
@@ -474,6 +474,7 @@ export default {
               date: this.date(event.date_created),
               datetime: event.date_created,
               person: event.initiator ? {
+                id: event.initiator.id, 
                 username: event.initiator.username,
                 name: event.initiator.first_name + ' ' + event.initiator.last_name,
                 href: '#'
@@ -498,7 +499,7 @@ export default {
               id: reply.id,
               date: this.date(reply.date_created),
               datetime: reply.date_created,
-              person: { username: reply.author.username, name: reply.author.first_name + ' ' + reply.author.last_name, href: '#' },
+              person: { id: reply.author.id, username: reply.author.username, name: reply.author.first_name + ' ' + reply.author.last_name, href: '#' },
               helpful: helpful ? (helpful.is_helpful ? 'helpful' : 'notHelpful') : undefined,
               imageUrl: reply.author.avatar_url,
               comment: reply.content,
@@ -512,7 +513,7 @@ export default {
               id: attachment.id,
               date: this.date(attachment.date_created),
               datetime: attachment.date_created,
-              person: { name: attachment.uploader.first_name + ' ' + attachment.uploader.last_name, href: '#' },
+              person: { id: attachment.uploader.id, name: attachment.uploader.first_name + ' ' + attachment.uploader.last_name, href: '#' },
               imageUrl: attachment.uploader.avatar_url,
               attachment: [{
                 name: attachment.file.substring(attachment.file.lastIndexOf('/') + 1, attachment.file.lastIndexOf('.')),

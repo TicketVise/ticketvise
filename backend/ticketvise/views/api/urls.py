@@ -3,7 +3,7 @@ from ticketvise.views.api.automation import AutomationApiView, ListAutomationApi
     AutomationConditionApiView, CreateAutomationApiView
 
 from ticketvise.views.api.auth import LoginApiView
-from ticketvise.views.api.comment import CreateCommentApiView, CreateReplyApiView, ApproveCommentAPIView
+from ticketvise.views.api.comment import CreateCommentApiView, CreateReplyApiView, ApproveCommentAPIView, SplitCommentApiView
 from ticketvise.views.api.inbox import InboxLabelsApiView, InboxesApiView, InboxGuestsAPIView, InboxUsersApiView, \
     UserInboxApiView, InboxSettingsApiView, CurrentUserInboxesApiView
 from ticketvise.views.api.inbox import InboxStaffApiView, InboxLabelApiView, AllInboxLabelsApiView, \
@@ -35,6 +35,7 @@ urlpatterns = [
     path("inboxes/<int:inbox_id>/tickets/<int:ticket_inbox_id>/attachments", TicketAttachmentsApiView.as_view()),
     path("inboxes/<int:inbox_id>/tickets/<int:ticket_inbox_id>/attachments/<int:pk>", AttachmentViewApiView.as_view()),
     path("inboxes/<int:inbox_id>/tickets/<int:ticket_inbox_id>/comments/post", CreateCommentApiView.as_view()),
+    path("inboxes/<int:inbox_id>/tickets/<int:ticket_inbox_id>/comments/<int:comment_id>/split", SplitCommentApiView.as_view()),
     path("inboxes/<int:inbox_id>/tickets/<int:ticket_inbox_id>/labels", TicketLabelApiView.as_view()),
     path("inboxes/<int:inbox_id>/tickets/<int:ticket_inbox_id>/assignee", TicketUpdateAssignee.as_view()),
     path("inboxes/<int:inbox_id>/tickets/<int:ticket_inbox_id>/status/open", OpenTicketApiView.as_view()),
