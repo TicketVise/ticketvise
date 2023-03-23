@@ -14,7 +14,7 @@
     <div v-else class="py-3 px-4 space-y-2">
       <div class="flex justify-between w-full">
         <span class="font-medium">Default ticket assignment</span>
-        <x-icon @click="cancel()" class="h-4 w-4 cursor-pointer" />
+        <XMarkIcon @click="cancel()" class="h-4 w-4 cursor-pointer" />
       </div>
       <div class="space-y-2">
         <div>
@@ -108,12 +108,10 @@
 <script>
 import axios from 'axios'
 
-import {
-  XIcon
-} from '@heroicons/vue/solid'
+import { XMarkIcon } from '@heroicons/vue/24/solid'
 
 export default {
-  components: { XIcon },
+  components: { XMarkIcon },
   data: () => ({
     open: false,
     dropdown_algorithm: false,
@@ -144,7 +142,7 @@ export default {
 
         if (this.inbox.scheduling_algorithm === 'fixed' && !this.inbox.fixed_scheduling_assignee) {
           this.selected = ['nothing', 'Nothing']
-        }
+          }
       })
 
       await axios.get(`/api/inboxes/${this.$route.params.inboxId}/staff`).then(response => {
@@ -153,7 +151,7 @@ export default {
 
         if (this.selected[0] === 'fixed' && this.inbox.fixed_scheduling_assignee) {
           this.fixed_user = this.staff.find(item => item.id === this.inbox.fixed_scheduling_assignee) || this.staff[0]
-        }
+          }
       })
     },
     save () {

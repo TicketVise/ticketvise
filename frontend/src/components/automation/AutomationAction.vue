@@ -10,10 +10,7 @@
 import { mapState } from 'vuex'
 import axios from 'axios'
 
-import {
-  BookmarkIcon,
-  UserAddIcon
-} from '@heroicons/vue/solid'
+import { BookmarkIcon, UserPlusIcon } from '@heroicons/vue/24/solid'
 
 import SelectInput from '@/components/inputs/SelectInput.vue'
 
@@ -21,7 +18,7 @@ export default {
   name: 'AutomationAction',
   components: {
     BookmarkIcon,
-    UserAddIcon,
+    UserPlusIcon,
     SelectInput
   },
   props: {
@@ -44,16 +41,16 @@ export default {
         name: 'Assign to',
         value: 'assign_to',
         input: 'staff',
-        icon: UserAddIcon
+        icon: UserPlusIcon
       }
     ]
   }),
-  async mounted () {
-    await axios.get(`/api/inboxes/${this.$route.params.inboxId}/labels/all`).then(response => {
+  async mounted() {
+    await axios.get(`/api/inboxes/${this.$route.params.inboxId}/labels/all`).then((response) => {
       this.labels = response.data
     })
-    await axios.get(`/api/inboxes/${this.$route.params.inboxId}/staff`).then(response => {
-      this.staff = response.data.map(staff => {
+    await axios.get(`/api/inboxes/${this.$route.params.inboxId}/staff`).then((response) => {
+      this.staff = response.data.map((staff) => {
         return {
           id: staff.id,
           name: staff.first_name + ' ' + staff.last_name,
@@ -64,7 +61,7 @@ export default {
   },
   watch: {
     selectedAction: {
-      handler (newType, oldType) {
+      handler(newType, oldType) {
         if (oldType === newType) return
 
         if (newType.input === 'labels') this.selectedValue = this.labels[0]
@@ -75,15 +72,15 @@ export default {
   },
   computed: {
     ...mapState('automation', {
-      filter (state) {
-        return state.filters?.find(filter => parseInt(filter.id) === parseInt(this.filterId))
+      filter(state) {
+        return state.filters?.find((filter) => parseInt(filter.id) === parseInt(this.filterId))
       }
     }),
     selectedAction: {
-      get () {
-        return this.actions.find(action => action.value === this.filter.action_func)
+      get() {
+        return this.actions.find((action) => action.value === this.filter.action_func)
       },
-      set (value) {
+      set(value) {
         this.$store.commit('automation/setActionFunc', {
           filterId: this.filterId,
           actionFunc: value.value
@@ -91,13 +88,11 @@ export default {
       }
     },
     selectedValue: {
-      get () {
-        if (this.filter.action_func === 'add_label')
-          return this.labels.find(label => parseInt(label.id) === parseInt(this.filter.action_value))
-        if (this.filter.action_func === 'assign_to')
-          return this.staff.find(staff => parseInt(staff.id) === parseInt(this.filter.action_value))
+      get() {
+        if (this.filter.action_func === 'add_label') return this.labels.find((label) => parseInt(label.id) === parseInt(this.filter.action_value))
+        if (this.filter.action_func === 'assign_to') return this.staff.find((staff) => parseInt(staff.id) === parseInt(this.filter.action_value))
       },
-      set (value) {
+      set(value) {
         this.$store.commit('automation/setActionValue', {
           filterId: this.filterId,
           actionValue: value.id

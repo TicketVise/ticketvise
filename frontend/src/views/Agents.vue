@@ -4,7 +4,9 @@
       <ticket-column
         v-for="tickets in ticketsPerAssignee"
         :key="tickets[0].assignee.id"
-        :title="tickets[0].assignee.first_name + ' ' + tickets[0].assignee.last_name"
+        :title="
+          tickets[0].assignee.first_name + ' ' + tickets[0].assignee.last_name
+        "
         :ticket-list="tickets"
         :has_next="false"
         :length="tickets.length"
@@ -13,53 +15,50 @@
       />
     </div>
   </section>
-
 </template>
 
 <script>
-import axios from 'axios'
-import _ from 'lodash'
-import moment from 'moment'
+import axios from "axios";
+import _ from "lodash";
+import moment from "moment";
 
-import SearchBar from '@/components/searchbar/SearchBar.vue'
-import TicketColumn from '@/components/tickets/TicketColumn.vue'
-import LabelDropdown from '@/components/dropdown/LabelDropdown.vue'
+import SearchBar from "@/components/searchbar/SearchBar.vue";
+import TicketColumn from "@/components/tickets/TicketColumn.vue";
+import LabelDropdown from "@/components/dropdown/LabelDropdown.vue";
 
-import {
-  ChevronRightIcon
-} from '@heroicons/vue/solid'
-import {
-  GlobeIcon
-} from '@heroicons/vue/outline'
+import { ChevronRightIcon } from "@heroicons/vue/24/solid";
+import { GlobeEuropeAfricaIcon } from "@heroicons/vue/24/outline";
 
 export default {
-  name: 'Agents',
+  name: "Agents",
   components: {
     ChevronRightIcon,
-    GlobeIcon,
+    GlobeEuropeAfricaIcon,
     TicketColumn,
     LabelDropdown,
-    SearchBar
+    SearchBar,
   },
   data: () => ({
-    ticketsPerAssignee: []
+    ticketsPerAssignee: [],
   }),
-  setup () {
-    return { moment }
+  setup() {
+    return { moment };
   },
   methods: {
     async loadTickets() {
-      const { inboxId } = this.$route.params
-      const response = await axios.get(`/api/inboxes/${inboxId}/tickets`)
-      const tickets = _.flatten(response.data.map(column => column.tickets))
-      const ticketsPerAssignee = Object.values(_.groupBy(tickets, 'assignee.id'))
-      this.ticketsPerAssignee = ticketsPerAssignee
+      const { inboxId } = this.$route.params;
+      const response = await axios.get(`/api/inboxes/${inboxId}/tickets`);
+      const tickets = _.flatten(response.data.map((column) => column.tickets));
+      const ticketsPerAssignee = Object.values(
+        _.groupBy(tickets, "assignee.id")
+      );
+      this.ticketsPerAssignee = ticketsPerAssignee;
     },
   },
-  created () {
-    this.loadTickets()
-  }
-}
+  created() {
+    this.loadTickets();
+  },
+};
 </script>
 
 <style scoped>

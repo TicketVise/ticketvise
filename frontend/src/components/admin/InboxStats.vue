@@ -3,7 +3,7 @@
     <div class="pl-6 pr-2 py-4 flex justify-between">
       <div class="flex-grow grid sm:grid-cols-2">
         <div class="flex space-x-4">
-          <img class="h-12 w-12 rounded-full object-cover border-2" :style="`border-color: ${inbox.color}`" :src="inbox.image || `/img/default-inbox.png`">
+          <img class="h-12 w-12 rounded-full object-cover border-2" :style="`border-color: ${inbox.color}`" :src="inbox.image || `/img/default-inbox.png`" />
           <div class="flex flex-col">
             <router-link class="text-primary break-words hover:underline" :to="`/inboxes/${inbox.id}/tickets`">
               {{ inbox.name }}
@@ -20,7 +20,7 @@
             {{ date(inbox.date_created) }}
           </span>
           <span class="text-gray-800 flex items-center">
-            <ClipboardListIcon class="mr-1 w-4 h-4" />
+            <ClipboardDocumentListIcon class="mr-1 w-4 h-4" />
             <span>{{ inbox.scheduling_algorithm }}</span>
           </span>
         </div>
@@ -64,15 +64,16 @@ import TicketsChart from '@/components/insights/TicketsChart.vue'
 import axios from 'axios'
 import moment from 'moment'
 
-import {
-  ChevronDownIcon,
-  ChevronUpIcon,
-  ClipboardListIcon,
-  UserIcon
-} from '@heroicons/vue/outline'
+import { ChevronDownIcon, ChevronUpIcon, ClipboardDocumentListIcon, UserIcon } from '@heroicons/vue/24/outline'
 
 export default {
-  components: { ChevronDownIcon, ChevronUpIcon, ClipboardListIcon, UserIcon, TicketsChart },
+  components: {
+    ChevronDownIcon,
+    ChevronUpIcon,
+    ClipboardDocumentListIcon,
+    UserIcon,
+    TicketsChart
+  },
   data: () => ({
     open: false,
     stats: null
@@ -84,7 +85,7 @@ export default {
     }
   },
   methods: {
-    date (date) {
+    date(date) {
       return moment.parseZone(date).calendar(null, {
         lastDay: '[Yesterday at] HH:mm',
         sameDay: '[Today at] HH:mm',
@@ -95,8 +96,8 @@ export default {
       })
     }
   },
-  mounted () {
-    axios.get(`/api/inboxes/${this.inbox.id}/statistics`).then(response => {
+  mounted() {
+    axios.get(`/api/inboxes/${this.inbox.id}/statistics`).then((response) => {
       this.stats = response.data
     })
   }
