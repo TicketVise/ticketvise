@@ -240,7 +240,7 @@
 import axios from 'axios'
 import store from '@/store'
 
-import { CollectionIcon, GlobeEuropeAfricaIcon, InboxIcon } from '@heroicons/vue/24/outline'
+import { RectangleStackIcon, GlobeEuropeAfricaIcon, InboxIcon } from '@heroicons/vue/24/outline'
 import { InformationCircleIcon } from '@heroicons/vue/24/solid'
 
 export default {
@@ -254,7 +254,7 @@ export default {
     settings: [],
     stats: [
       { label: 'Inboxes', value: '#', icon: InboxIcon },
-      { label: 'Tickets', value: '#', icon: CollectionIcon },
+      { label: 'Tickets', value: '#', icon: RectangleStackIcon },
       { label: 'Public tickets', value: '#', icon: GlobeEuropeAfricaIcon }
     ]
   }),
