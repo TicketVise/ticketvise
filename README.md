@@ -8,6 +8,7 @@ and manually to give more clarity about who answers what. The built-in Canvas in
 combination with a private discussion section for the teaching team gets rid of coordination
 overhead as no second communication channel is required (e.g. Slack or Telegram). TicketVise comes
 with many more features, such as a notification system, course/user statistics and markdown support.
+Furthermore we strive to give implicit feedback to teachers to improve their courses.
 
 ## Deployment
 ### Generate SSL certificates
