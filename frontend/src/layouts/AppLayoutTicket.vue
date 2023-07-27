@@ -140,12 +140,12 @@
 
       <!-- Main column -->
       <div class="flex flex-col w-0 flex-1 overflow-y-auto">
-        <div class="flex md:hidden flex-col px-4 pt-2">
+        <div class="flex md:hidden flex-col px-4 pb-2 bg-gray-800">
           <div class="flex justify-between items-center space-x-2">
             <router-link
               v-if="inbox"
               :to="{ name: 'Overview', params: { inboxId: inbox.inbox.id } }"
-              class="text-gray-700 text-sm truncate flex items-center space-x-1"
+              class="text-gray-200 text-sm truncate flex items-center space-x-1"
             >
               <ChevronLeftIcon class="h-3 w-3" />
               <span>{{ inbox.inbox.name }}</span>
@@ -159,7 +159,7 @@
         /> -->
 
         <main
-          class="flex-1 relative focus:outline-none flex flex-col pb-16 md:pb-0"
+          class="flex-1 relative focus:outline-none flex flex-col pb-16 md:pb-0 mt-2"
         >
           <slot />
         </main>

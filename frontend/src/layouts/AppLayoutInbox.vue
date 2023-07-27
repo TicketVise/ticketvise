@@ -140,11 +140,11 @@
 
       <!-- Main column -->
       <div class="flex flex-col w-0 flex-1 overflow-hidden">
-        <div class="flex md:hidden flex-col px-4 pt-2">
+        <div class="flex md:hidden flex-col px-4 pb-2 bg-gray-800">
           <div class="flex justify-between items-center space-x-2">
             <h2
               v-if="inbox"
-              class="font-bold leading-6 text-gray-900 text-lg truncate"
+              class="font-bold leading-6 text-gray-50 text-lg truncate"
             >
               {{ inbox.inbox.name }}
             </h2>
@@ -155,7 +155,7 @@
           </div>
 
           <div class="flex space-x-2 mt-1">
-            <div class="flex items-center text-xs text-gray-500">
+            <div class="flex items-center text-xs text-gray-300">
               <!-- Heroicon name: code -->
               <svg
                 class="w-4 h-4 mr-1"
@@ -174,7 +174,7 @@
               <span v-if="inbox">{{ inbox.inbox.lti_context_label }}</span>
               <div v-else class="h-5 w-24 bg-gray-200 rounded" />
             </div>
-            <div class="flex items-center text-xs text-gray-500">
+            <div class="flex items-center text-xs text-gray-300">
               <!-- Heroicon name: user -->
               <svg
                 class="w-4 h-4 mr-1"

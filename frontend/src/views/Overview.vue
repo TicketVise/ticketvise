@@ -64,7 +64,7 @@
             </div>
           </div>
 
-          <div class="rounded-md bg-blue-50 p-4 col-span-2">
+          <div v-if="ticketsFlattened.length == 0" class="rounded-md bg-blue-50 p-4 col-span-2">
             <div class="flex">
               <div class="flex-shrink-0">
                 <InformationCircleIcon class="h-5 w-5 text-blue-400" aria-hidden="true" />
@@ -185,7 +185,6 @@
       <div class="mx-auto flex max-w-3xl flex-col space-y-2">
         <div class="mb-1">
           <h2 class="text-xl font-bold leading-6 text-gray-700">Overview</h2>
-          <span class="text-gray-400">Here you find the most important information for you</span>
         </div>
 
         <div class="grid grid-cols-2 gap-2">
