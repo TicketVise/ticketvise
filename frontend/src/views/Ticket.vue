@@ -1,12 +1,29 @@
 <template>
   <div class="flex-1 relative overflow-y-auto focus:outline-none">
+    <!-- <div v-if="ticket == null" class="max-w-3xl mx-auto px-4">
+      <div class="rounded-md bg-red-50 p-4">
+        <div class="flex w-full">
+          <div class="flex-shrink-0">
+            <XCircleIcon class="h-5 w-5 text-red-400" aria-hidden="true" />
+          </div>
+          <div class="ml-3">
+            <h3 class="text-sm font-medium text-red-800">Something is going wrong loading the ticket</h3>
+            <div class="mt-2 text-sm text-red-700">
+              <ul role="list" class="list-disc space-y-1 pl-5">
+                <li>You don't have permission to acces this data</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div> -->
     <PublishConfirmation
-      @click="requestPublish"
+      @confirm="requestPublish"
       @cancel="publishConfirmationModal = false"
       v-if="publishConfirmationModal"
     />
     <PrivateConfirmation
-      @click="makePrivate"
+      @confirm="makePrivate"
       @cancel="privateConfirmationModal = false"
       v-if="privateConfirmationModal"
     />
@@ -102,9 +119,13 @@
             >
               <ListboxOptions ref="publicListbox" class="absolute z-10 mt-2 bg-white shadow-xl max-h-56 min-w-max rounded-md py-1 text-xs ring-1 ring-black ring-opacity-5 overflow-auto focus:outline-none sm:text-sm">
                 <ListboxOption as="template" v-slot="{ active }">
-                  <li @click="publishConfirmationModal = true" :class="[active ? 'text-white bg-primary' : 'text-gray-900', 'flex space-x-1 items-center cursor-pointer select-none relative py-2 pl-3 pr-4']">
+                  <li v-if="!ticket?.is_public" @click="publishConfirmationModal = true" :class="[active ? 'text-white bg-primary' : 'text-gray-900', 'flex space-x-2 items-center cursor-pointer select-none relative py-2 pl-3 pr-4']">
                     <GlobeEuropeAfricaIcon class="h-4 w-4 text-green-500" aria-hidden="true"/>
                     <span class="block text-xs">Make public</span>
+                  </li>
+                  <li v-else @click="privateConfirmationModal = true" :class="[active ? 'text-white bg-primary' : 'text-gray-900', 'flex space-x-2 items-center cursor-pointer select-none relative py-2 pl-3 pr-4']">
+                    <LockClosedIcon class="h-4 w-4 text-red-500" aria-hidden="true"/>
+                    <span class="block text-xs">Make private</span>
                   </li>
                 </ListboxOption>
               </ListboxOptions>
@@ -390,22 +411,22 @@
               <p class="pointer-events-none block text-sm font-medium text-gray-500">{{ readableBytes(file.file_size) }}</p>
             </li>
 
-            <li class="relative">
-              <button type="button" class="relative group aspect-w-10 aspect-h-7 block w-full rounded-lg border-2 border-dashed border-gray-300 text-center hover:border-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2">
+            <!-- <li class="flex flex-col">
+              <button type="button" class="flex justify-center items-center aspect-video rounded-lg border-2 border-dashed border-gray-300 text-center hover:border-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2">
                 <svg class="mx-auto h-12 w-12 text-gray-400" xmlns="http://www.w3.org/2000/svg" stroke="currentColor" fill="none" viewBox="0 0 48 48" aria-hidden="true">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 14v20c0 4.418 7.163 8 16 8 1.381 0 2.721-.087 4-.252M8 14c0 4.418 7.163 8 16 8s16-3.582 16-8M8 14c0-4.418 7.163-8 16-8s16 3.582 16 8m0 0v14m0-4c0 4.418-7.163 8-16 8S8 28.418 8 24m32 10v6m0 0v6m0-6h6m-6 0h-6" />
                 </svg>
-                <span class="mt-2 block text-sm font-medium text-gray-900">Upload File</span>
+                <div class="mt-2 block text-sm font-medium text-gray-900">Upload File</div>
               </button>
               <p class="pointer-events-none mt-2 block truncate text-sm font-medium text-gray-900"></p>
               <p class="pointer-events-none block text-sm font-medium text-gray-500"></p>
-            </li>
+            </li> -->
           </ul>
         </div>
 
-        <section aria-labelledby="activity-title" class="mt-8">
+        <section aria-labelledby="activity-title" class="mt-4">
           <div>
-            <!-- <div class="pb-4">
+            <div class="pb-4">
               <div class="sm:hidden">
                 <label for="tabs" class="sr-only">Select a tab</label>
                 <select
@@ -429,9 +450,9 @@
                   </option>
                 </select>
               </div>
-              <div class="hidden sm:block">
+              <div class="hidden sm:block mb-4">
                 <div class="border-b border-gray-200">
-                  <nav class="-mb-px flex space-x-8" aria-label="Tabs">
+                  <nav class="-mb-px flex space-x-8 px-4" aria-label="Tabs">
                     <a
                       v-show="tab.cond ? isStaff(role, user) : true"
                       @click="
@@ -464,7 +485,7 @@
                   </nav>
                 </div>
               </div>
-            </div> -->
+            </div>
 
             <!-- Activity feed -->
             <activity-feed
@@ -888,7 +909,8 @@ import {
 import {
   GlobeEuropeAfricaIcon,
   LockClosedIcon,
-  TagIcon
+  TagIcon,
+  XCircleIcon
 } from "@heroicons/vue/20/solid"
 
 export default {
@@ -921,7 +943,8 @@ export default {
     UserCircleIcon,
     ChevronDownIcon,
     TagIcon,
-    VueEasyLightbox
+    VueEasyLightbox,
+    XCircleIcon
   },
   data: () => ({
     publishConfirmationModal: false,

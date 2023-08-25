@@ -1,6 +1,6 @@
 <template>
   <!-- Pinned tickets -->
-  <div v-if="pinnedTickets?.length > 0" class="px-4 mt-6 sm:px-6 lg:px-8">
+  <div v-if="pinnedTickets?.length > 0" class="px-4 mt-6 sm:px-6 lg:px-8 mb-6">
     <h2
       class="text-gray-500 dark:text-gray-300 text-xs font-medium uppercase tracking-wide"
     >
@@ -24,7 +24,7 @@
             >
               {{ ticket.title }}
             </router-link>
-            <p class="text-gray-500">{{ ticket.totalResponses }} Responses</p>
+            <p class="text-gray-500">{{ ticket.totalResponses || 0 }} Responses</p>
           </div>
           <Menu v-if="is_staff" as="div" class="flex-shrink-0 pr-2">
             <MenuButton
@@ -96,7 +96,7 @@
     </ul>
   </div>
 
-  <div class="p-4 flex flex-col md:flex-row items-start md:items-center space-y-2 md:space-y-0 md:space-x-2">
+  <!-- <div class="p-4 flex flex-col md:flex-row items-start md:items-center space-y-2 md:space-y-0 md:space-x-2">
     <button
       class="inline-flex items-center rounded-full bg-gray-100 py-1 px-3 text-sm font-medium text-gray-700"
     >
@@ -192,7 +192,7 @@
         </button>
       </span>
     </div>
-  </div>
+  </div> -->
 
   <!-- Tickets list (only on smallest breakpoint) -->
   <div class="mt-3 sm:hidden h-full overflow-y-auto">

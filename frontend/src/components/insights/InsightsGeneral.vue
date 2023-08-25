@@ -25,14 +25,107 @@
     </dl> -->
 
     <!-- Some general graphs here -->
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 w-full">
-      <div class="col-span-1 border rounded-lg p-4 pt-2">
-        <h2 class="text-lg font-semibold text-primary-600">Tickets over time</h2>
-        <LineChart v-if="ticketsData" :data="ticketsData" :options="ticketsOptions" :height="200" />
+    <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 w-full">
+      <div class="overflow-hidden rounded-lg border bg-white">
+        <div class="p-2 px-4">
+          <div class="flex items-center">
+            <div class="hidden flex-shrink-0 sm:flex">
+              <StarIcon class="h-6 w-6 text-gray-400" />
+            </div>
+            <div class="w-0 flex-1 sm:ml-5">
+              <dl>
+                <dt class="truncate text-sm font-medium text-gray-500">Helpfulness</dt>
+                <dd class="flex items-center justify-between">
+                  <div class="text-xl font-medium text-primary">
+                    85%
+                    <span class="ml-1 hidden text-sm font-medium text-gray-500 lg:inline"> from 71% last week </span>
+                  </div>
+
+                  <div :class="['increase' === 'increase' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800', 'inline-flex items-baseline rounded-full px-2.5 py-0.5 text-sm font-medium md:mt-2 lg:mt-0']">
+                    <ArrowSmallUpIcon v-if="'up' === 'up'" class="-ml-1 mr-0.5 h-5 w-5 flex-shrink-0 self-center" :class="['increase' === 'increase' ? 'text-green-500' : 'text-red-500']" aria-hidden="true" />
+                    <ArrowSmallDownIcon v-else class="-ml-1 mr-0.5 h-5 w-5 flex-shrink-0 self-center" :class="['increase' === 'increase' ? 'text-green-500' : 'text-red-500']" aria-hidden="true" />
+                    <span class="sr-only"> {{ 'increase' === 'increase' ? 'Increased' : 'Decreased' }} by </span>
+                    33%
+                  </div>
+                </dd>
+              </dl>
+            </div>
+          </div>
+        </div>
       </div>
-      <div class="col-span-1 border rounded-lg p-4 pt-2">
+      <div class="overflow-hidden rounded-lg border bg-white">
+        <div class="p-2 px-4">
+          <div class="flex items-center">
+            <div class="hidden flex-shrink-0 sm:flex">
+              <ChatBubbleLeftRightIcon class="h-6 w-6 text-gray-400" />
+            </div>
+            <div class="w-0 flex-1 sm:ml-5">
+              <dl>
+                <dt class="truncate text-sm font-medium text-gray-500">Average response time</dt>
+                <dd class="flex items-center justify-between">
+                  <div class="text-xl font-medium text-primary">
+                    7.9h
+                    <span class="ml-1 hidden text-sm font-medium text-gray-500 lg:inline"> from 6.2h last week </span>
+                  </div>
+
+                  <div :class="['decrease' === 'increase' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800', 'inline-flex items-baseline px-2.5 py-0.5 rounded-full text-sm font-medium md:mt-2 lg:mt-0']">
+                    <ArrowSmallUpIcon v-if="'up' === 'up'" class="-ml-1 mr-0.5 flex-shrink-0 self-center h-5 w-5" :class="['decrease' === 'increase' ? 'text-green-500' : 'text-red-500']" aria-hidden="true" />
+                    <ArrowSmallDownIcon v-else class="-ml-1 mr-0.5 flex-shrink-0 self-center h-5 w-5" :class="['increase' === 'increase' ? 'text-green-500' : 'text-red-500']" aria-hidden="true" />
+                    <span class="sr-only"> {{ 'increase' === 'increase' ? 'Increased' : 'Decreased' }} by </span>
+                    27%
+                  </div>
+                </dd>
+              </dl>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-span-2 sm:col-span-1 overflow-hidden rounded-lg border bg-white">
+        <div class="p-2 px-4">
+          <div class="flex items-center">
+            <div class="hidden flex-shrink-0 sm:flex">
+              <HashtagIcon class="h-6 w-6 text-gray-400" />
+            </div>
+            <div class="w-0 flex-1 sm:ml-5">
+              <dl>
+                <dt class="truncate text-sm font-medium text-gray-500">Frequent terms</dt>
+                <dd class="flex items-center justify-between">
+                  <div class="text-lg font-medium text-primary">
+                    Swebok, Demo, Individual report
+                  </div>
+                </dd>
+              </dl>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="hidden sm:block overflow-hidden rounded-lg border bg-white">
+        <div class="p-2 px-4">
+          <div class="flex items-center">
+            <div class="hidden flex-shrink-0 sm:flex">
+              <DocumentTextIcon class="h-6 w-6 text-gray-400" />
+            </div>
+            <div class="w-0 flex-1 sm:ml-5">
+              <dl>
+                <dt class="truncate text-sm font-medium text-gray-500">Number of tickets</dt>
+                <dd class="flex items-center justify-between">
+                  <div class="text-xl font-medium text-primary">
+                    214
+                  </div>
+                </dd>
+              </dl>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-span-2 border rounded-lg p-4 pt-2">
+        <h2 class="text-lg font-semibold text-primary-600">Tickets over time</h2>
+        <LineChart v-if="ticketsData" :data="ticketsData" :options="ticketsOptions" :height="250" />
+      </div>
+      <div class="col-span-2 sm:col-span-1 border rounded-lg p-4 pt-2">
         <h2 class="text-lg font-semibold text-primary-600">Label usage</h2>
-        <DoughnutChart v-if="labelsData" :data="labelsData" :options="labelsOptions" />
+        <DoughnutChart class="h-full" v-if="labelsData" :data="labelsData" :options="labelsOptions" />
       </div>
     </div>
   </section>
@@ -40,6 +133,7 @@
 
 <script>
 import axios from 'axios'
+import { StarIcon, HashtagIcon, ChatBubbleLeftRightIcon, DocumentTextIcon } from '@heroicons/vue/24/outline'
 import { ArrowSmallDownIcon, ArrowSmallUpIcon } from '@heroicons/vue/24/solid'
 
 import LineChart from '@/components/insights/LineChart.vue'
@@ -51,7 +145,11 @@ export default {
     ArrowSmallDownIcon,
     ArrowSmallUpIcon,
     DoughnutChart,
-    LineChart
+    LineChart,
+    StarIcon,
+    HashtagIcon,
+    ChatBubbleLeftRightIcon,
+    DocumentTextIcon
   },
   data: () => ({
     statsData: null,

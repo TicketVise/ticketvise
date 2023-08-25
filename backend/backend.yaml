@@ -1,0 +1,70 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: backend-service
+spec:
+  ports:
+  - port: 80
+    name: api
+    protocol: TCP
+    targetPort: 8000
+  selector:
+    app: ticketvise-backend
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backend
+  labels:
+    app: ticketvise-backend
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: ticketvise-backend
+  strategy:
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+  minReadySeconds: 5
+  template:
+    metadata:
+      labels:
+        app: ticketvise-backend
+    spec:
+      nodeSelector:
+        "kubernetes.io/os": linux
+      containers:
+        - name: ticketvise-backend
+          image: ticketvise.azurecr.io/backend:v1
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8000
+          resources:
+            requests:
+              cpu: 250m
+              memory: 750Mi
+            limits:
+              cpu: 500m
+              memory: 1Gi
+          env:
+          - name: SQL_ENGINE
+            value: django.db.backends.postgresql
+          - name: SQL_DATABASE
+            value: ticketvise
+          - name: SQL_USER
+            value: postgres
+          - name: SQL_PASSWORD
+            value: admin193!
+          - name: SQL_HOST
+            value: ticketvisedb.postgres.database.azure.com
+          - name: HOST
+            value: app.ticketvise.com
+          - name: S3_USE_HTTPS
+            value: "0"
+          - name: S3_ACCESS_KEY
+            value: minio
+          - name: S3_SECRET_KEY
+            value: Welkom01
+          - name: S3_ENDPOINT_URL
+            value: http://s3:9000

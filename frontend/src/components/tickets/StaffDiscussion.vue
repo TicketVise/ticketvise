@@ -1,5 +1,5 @@
 <template>
-  <div class="flex flex-column flex-wrap w-full pr-4">
+  <div class="flex flex-column flex-wrap w-full">
     <div class="w-full">
       <div class="text-center mb-8" v-if="ticket?.comments.length === 0">
         <img
@@ -64,7 +64,7 @@
       </div>
     </div>
 
-    <div class="mt-6 w-full">
+    <div class="w-full">
       <div class="flex space-x-3">
         <div class="flex-shrink-0">
           <div class="relative">

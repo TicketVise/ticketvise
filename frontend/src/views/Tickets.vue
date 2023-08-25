@@ -4,7 +4,7 @@
     v-if="is_staff"
     class="flex flex-col h-full flex-grow justify-start dark:bg-gray-800"
   >
-    <!-- <div class="flex flex-col md:grid md:grid-cols-5 md:gap-2 p-4 space-y-2 md:space-y-0">
+    <div class="flex flex-col md:grid md:grid-cols-5 md:gap-2 p-4 space-y-2 md:space-y-0">
       <div class="flex space-x-2 md:col-span-2 xl:col-span-3 items-center">
         <SearchBar v-model="search" v-on:input="callDebounceGetTickets" />
       </div>
@@ -23,8 +23,8 @@
           My Tickets
         </button>
       </div>
-    </div> -->
-    <div class="flex justify-between w-full items-center">
+    </div>
+    <!-- <div class="flex justify-between w-full items-center">
       <div class="p-4 flex flex-col items-start space-y-2 w-full">
         <div class="flex justify-between items-center w-full">
           <Popover class="relative">
@@ -76,7 +76,7 @@
             </PopoverPanel>
           </Popover>
 
-          <!-- <div class="flex md:hidden items-center rounded-lg bg-gray-100 p-0.5">
+          <div class="flex md:hidden items-center rounded-lg bg-gray-100 p-0.5">
             <button type="button" class="rounded-md p-1.5 text-gray-400 hover:bg-white hover:shadow-sm focus:outline-none focus:ring-2 focus:ring-inset focus:ring-primary-500">
               <Bars4Icon class="h-5 w-5" aria-hidden="true" />
               <span class="sr-only">Use list view</span>
@@ -85,7 +85,7 @@
               <ViewColumnsIcon class="h-5 w-5" aria-hidden="true" />
               <span class="sr-only">Use grid view</span>
             </button>
-          </div> -->
+          </div>
         </div>
   
         <div class="flex flex-1 overflow-x-auto space-x-2">
@@ -161,7 +161,7 @@
         </div>
       </div>
 
-      <!-- <div class="mr-4 hidden md:flex items-center rounded-lg bg-gray-100 p-0.5">
+      <div class="mr-4 hidden md:flex items-center rounded-lg bg-gray-100 p-0.5">
         <button type="button" class="rounded-md p-1.5 text-gray-400 hover:bg-white hover:shadow-sm focus:outline-none focus:ring-2 focus:ring-inset focus:ring-primary-500">
           <Bars4Icon class="h-5 w-5" aria-hidden="true" />
           <span class="sr-only">Use list view</span>
@@ -170,8 +170,8 @@
           <ViewColumnsIcon class="h-5 w-5" aria-hidden="true" />
           <span class="sr-only">Use grid view</span>
         </button>
-      </div> -->
-    </div>
+      </div>
+    </div> -->
 
     <div v-if="onboarding.active" class="mx-4 border border-primary rounded-lg flex px-4 py-3 max-w-lg">
       <div class="flex flex-col text-gray-800">

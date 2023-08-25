@@ -3,10 +3,10 @@
     <h2 id="tickets-heading" class="sr-only">Label insights</h2>
 
     <!-- Some basic stats first -->
-    <div class="grid w-full grid-cols-2 gap-2 mb-4">
+    <div class="grid w-full grid-cols-2 sm:grid-cols-4 gap-4 mb-4">
       <div class="flex items-center overflow-hidden rounded-lg border bg-white p-2 px-4">
         <div class="hidden flex-shrink-0 sm:flex">
-          <TicketIcon class="h-6 w-6 text-gray-400" />
+          <TagIcon class="h-6 w-6 text-gray-400" />
         </div>
         <dl class="w-0 flex-1 sm:ml-5">
           <dt class="truncate text-sm font-medium text-gray-500">Most used label</dt>
@@ -28,14 +28,41 @@
             <div class="text-xl font-medium text-primary truncate">
               {{ 12 }}
             </div>
-            <span class="ml-2 text-sm font-medium text-gray-500"> from {{ item.previousStat }} </span>
+          </dd>
+        </dl>
+      </div>
+
+      <div class="flex items-center overflow-hidden rounded-lg border bg-white p-2 px-4">
+        <div class="hidden flex-shrink-0 sm:flex">
+          <ExclamationTriangleIcon class="h-6 w-6 text-gray-400" />
+        </div>
+        <dl class="w-0 flex-1 sm:ml-5">
+          <dt class="truncate text-sm font-medium text-gray-500">Unused labels</dt>
+          <dd class="flex items-center justify-between">
+            <div class="text-xl font-medium text-primary truncate">
+              {{ this.labels?.filter(l => l.count === 0)?.length || 0 }}
+            </div>
+          </dd>
+        </dl>
+      </div>
+
+      <div class="flex items-center overflow-hidden rounded-lg border bg-white p-2 px-4">
+        <div class="hidden flex-shrink-0 sm:flex">
+          <HashtagIcon class="h-6 w-6 text-gray-400" />
+        </div>
+        <dl class="w-0 flex-1 sm:ml-5">
+          <dt class="truncate text-sm font-medium text-gray-500">Number of labels</dt>
+          <dd class="flex items-center justify-between">
+            <div class="text-xl font-medium text-primary truncate">
+              {{ labels?.length || 0 }}
+            </div>
           </dd>
         </dl>
       </div>
     </div>
 
     <!-- Some basic stats first -->
-    <dl class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+    <!-- <dl class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
       <div v-for="item in stats" :key="item.name" class="px-4 py-3 rounded-lg border">
         <dt class="text-base font-normal text-gray-900">
           {{ item.name }}
@@ -54,11 +81,11 @@
           </div>
         </dd>
       </div>
-    </dl>
+    </dl> -->
 
     <!-- Some general graphs here -->
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mt-4">
-      <div class="col-span-1 border rounded p-4 pt-2">
+      <div class="col-span-1 border rounded p-4 pt-2 h-auto">
         <h2 class="text-lg font-semibold text-primary-600">Top 5 most used labels</h2>
         <ul role="list" class="divide-y divide-gray-200">
           <li v-for="label in labels.slice(0, 5)" :key="label.id">
@@ -83,7 +110,7 @@
 
       <div class="col-span-2 border rounded p-4 pt-2">
         <h2 class="text-lg font-semibold text-primary-600">Tickets per label</h2>
-        <LineChart v-if="labelData" :data="labelData" :options="labelOptions" :height="400" />
+        <LineChart v-if="labelData" :data="labelData" :options="labelOptions" :height="300" />
       </div>
     </div>
   </section>
@@ -91,6 +118,7 @@
 
 <script>
 import axios from 'axios'
+import { ExclamationTriangleIcon, HashtagIcon, TagIcon, TicketIcon } from '@heroicons/vue/24/outline'
 import { ArrowSmallDownIcon, ArrowSmallUpIcon } from '@heroicons/vue/24/solid'
 
 import LineChart from '@/components/insights/LineChart.vue'
@@ -100,8 +128,12 @@ export default {
   components: {
     ArrowSmallDownIcon,
     ArrowSmallUpIcon,
-    LineChart
-  },
+    LineChart,
+    TicketIcon,
+    TagIcon,
+    ExclamationTriangleIcon,
+    HashtagIcon
+},
   data: () => ({
     labels: [],
     labelData: null,

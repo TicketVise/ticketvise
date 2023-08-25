@@ -7,7 +7,7 @@
         <div v-if="show" class="pointer-events-auto rounded-lg bg-white shadow-xl ring-1 ring-black ring-opacity-5">
           <div class="p-3">
             <div class="flex items-center divide-x">
-              <div class="flex space-x-2 pl-2 pr-4">
+              <div class="flex space-x-2 p-2">
                 <!-- Select useraccount -->
                 <Menu as="button" class="relative inline-block items-center text-left">
                   <div>
@@ -59,7 +59,7 @@
                 </Menu>
 
                 <!-- Select dark mode -->
-                <Menu as="button" class="relative inline-block items-center text-left">
+                <!-- <Menu as="button" class="relative inline-block items-center text-left">
                   <div>
                     <MenuButton class="flex items-center text-gray-400 outline-none hover:text-gray-500">
                       <SunIcon v-if="darkmode == 'light'" class="h-5 w-5 flex-shrink-0" aria-hidden="true" />
@@ -93,19 +93,18 @@
                       </div>
                     </MenuItems>
                   </transition>
-                </Menu>
+                </Menu> -->
 
-                <button @click="startintroduction()" class="flex items-center text-gray-400 outline-none hover:text-gray-500">
+                <!-- <button @click="startintroduction()" class="flex items-center text-gray-400 outline-none hover:text-gray-500">
                   <SparklesIcon class="h-5 w-5 flex-shrink-0" aria-hidden="true" />
-                </button>
+                </button> -->
               </div>
 
-              <div class="pl-4 pr-2">
-                <!-- New Ticket -->
+              <!-- <div class="pl-4 pr-2">
                 <button type="button" class="inline-flex items-center rounded-full border border-transparent bg-primary-600 p-1 text-white shadow-sm hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2">
                   <PlusIcon class="h-5 w-5" aria-hidden="true" />
                 </button>
-              </div>
+              </div> -->
             </div>
           </div>
         </div>

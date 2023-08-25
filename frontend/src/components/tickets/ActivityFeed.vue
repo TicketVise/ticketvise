@@ -1,5 +1,15 @@
 <template>
   <div class="flow-root">
+    <div class="text-center mb-8" v-if="ticket?.activity.length === 0">
+      <img
+        alt="Nothing here"
+        class="w-1/2 md:w-1/4 mx-auto mb-8"
+        :src="relax"
+      />
+      <span class="text-sm leading-8 text-gray-500"
+        >There are no messages here yet...</span
+      >
+    </div>
     <ul>
       <li v-for="(item, itemIdx) in ticket?.activity" :key="item">
         <div class="relative pb-2">
@@ -432,6 +442,8 @@ import {
   HandThumbDownIcon as HandThumbDownOutlineIcon,
 } from "@heroicons/vue/24/outline";
 
+import relax from "@/assets/img/svg/relax.svg";
+
 const statusses = {
   PNDG: {
     name: "Pending",
@@ -483,6 +495,7 @@ export default {
   data: () => ({
     comment: "",
     errors: [],
+    relax
   }),
   setup() {
     return { statusses };

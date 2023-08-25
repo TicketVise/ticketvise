@@ -325,7 +325,6 @@
 
               <nav class="flex-1 px-2 bg-white dark:bg-gray-900 space-y-1">
                 <router-link
-                  v-if="is_staff"
                   :to="`/inboxes/${$route.params.inboxId}/overview`"
                   exact
                   class="text-gray-600 hover:bg-gray-50 hover:text-gray-900 dark:hover:bg-gray-700 dark:hover:text-white group flex items-center px-2 py-2 text-sm font-medium rounded-md"
@@ -351,6 +350,7 @@
                 </router-link>
 
                 <router-link
+                  v-if="is_staff"
                   :to="`/inboxes/${$route.params.inboxId}/tickets`"
                   exact
                   class="text-gray-600 hover:bg-gray-50 hover:text-gray-900 dark:hover:bg-gray-700 dark:hover:text-white group flex items-center px-2 py-2 text-sm font-medium rounded-md"
@@ -390,43 +390,6 @@
                   </h3>
                   <div class="space-y-1">
                     <router-link
-                      :to="'/inboxes/' + $route.params.inboxId + '/users'"
-                      class="text-gray-600 hover:bg-gray-50 hover:text-gray-900 dark:hover:bg-gray-700 dark:hover:text-white group flex items-center px-2 py-2 text-sm font-medium rounded-md"
-                      active-class="bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-white"
-                    >
-                      <!-- Heroicon name: outline/users -->
-                      <svg
-                        class="text-gray-400 group-hover:text-gray-500 dark:group-hover:text-gray-400 mr-3 h-6 w-6"
-                        xmlns="http://www.w3.org/2000/svg"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                        aria-hidden="true"
-                      >
-                        <path
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
-                          stroke-width="2"
-                          d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"
-                        />
-                      </svg>
-                      Users
-                    </router-link>
-
-                    <router-link
-                      :to="'/inboxes/' + $route.params.inboxId + '/labels'"
-                      exact
-                      class="text-gray-600 hover:bg-gray-50 hover:text-gray-900 dark:hover:bg-gray-700 dark:hover:text-white group flex items-center px-2 py-2 text-sm font-medium rounded-md"
-                      active-class="bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-white"
-                    >
-                      <!-- Heroicon name: outline/bookmark -->
-                      <svg xmlns="http://www.w3.org/2000/svg" class="text-gray-400 group-hover:text-gray-500 dark:group-hover:text-gray-400 mr-3 h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" />
-                      </svg>
-                      Labels
-                    </router-link>
-
-                    <router-link
                       :to="'/inboxes/' + $route.params.inboxId + '/insights'"
                       exact
                       class="text-gray-600 hover:bg-gray-50 hover:text-gray-900 dark:hover:bg-gray-700 dark:hover:text-white group flex items-center px-2 py-2 text-sm font-medium rounded-md"
@@ -451,31 +414,6 @@
                     </router-link>
 
                     <router-link
-                      :to="
-                        '/inboxes/' + $route.params.inboxId + '/automation'
-                      "
-                      exact
-                      class="text-gray-600 hover:bg-gray-50 hover:text-gray-900 dark:hover:bg-gray-700 dark:hover:text-white group flex items-center px-2 py-2 text-sm font-medium rounded-md"
-                      active-class="bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-white"
-                    >
-                      <svg
-                        class="text-gray-400 group-hover:text-gray-500 dark:group-hover:text-gray-400 mr-3 h-6 w-6"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                        xmlns="http://www.w3.org/2000/svg"
-                      >
-                        <path
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
-                          stroke-width="2"
-                          d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"
-                        ></path>
-                      </svg>
-                      Automation
-                    </router-link>
-
-                    <router-link
                       :to="'/inboxes/' + $route.params.inboxId + '/agents'"
                       exact
                       class="text-gray-600 hover:bg-gray-50 hover:text-gray-900 dark:hover:bg-gray-700 dark:hover:text-white group flex items-center px-2 py-2 text-sm font-medium rounded-md"
@@ -489,7 +427,6 @@
 
                     <router-link
                       :to="'/inboxes/' + $route.params.inboxId + '/settings'"
-                      exact
                       class="text-gray-600 hover:bg-gray-50 hover:text-gray-900 dark:hover:bg-gray-700 dark:hover:text-white group flex items-center px-2 py-2 text-sm font-medium rounded-md"
                       active-class="bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-white"
                     >
@@ -587,7 +524,7 @@ export default {
   },
   methods: {
     async goto(index) {
-      this.$router.push("/inboxes/" + index + "/tickets")
+      this.$router.push("/inboxes/" + index + "/overview")
       const response = await axios.get(`/api/me/inboxes/${index}`)
       this.inbox = response.data
     }

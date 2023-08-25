@@ -1,7 +1,7 @@
 <template>
   <section aria-labelledby="staff-heading" class="mx-auto flex max-w-3xl flex-col space-y-4 overflow-y-auto">
     <!-- Some basic stats -->
-    <div class="grid w-full grid-cols-2 gap-2">
+    <div class="grid w-full grid-cols-2 gap-4">
       <div class="flex items-center overflow-hidden rounded-lg border bg-white p-2 px-4">
         <div class="hidden flex-shrink-0 sm:flex">
           <InboxStackIcon class="h-6 w-6 text-gray-400" />

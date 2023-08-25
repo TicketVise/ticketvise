@@ -4,7 +4,7 @@
       <main class="relative z-0 order-last flex-1 overflow-y-auto focus:outline-none" tabindex="0">
         <!-- Breadcrumb -->
         <nav v-show="selected" class="flex items-start px-4 py-3 sm:px-6 lg:hidden lg:px-8" aria-label="Breadcrumb">
-          <router-link :to="{ name: 'Users', params: { inboxId: $route.params.inboxId } }" class="inline-flex items-center space-x-3 text-sm font-medium text-gray-900">
+          <router-link :to="{ name: 'Settings', params: { inboxId: $route.params.inboxId, tab: 'users', itemId: selected?.id } }" class="inline-flex items-center space-x-3 text-sm font-medium text-gray-900">
             <!-- Heroicon name: solid/chevron-left -->
             <svg class="-ml-2 h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
               <path fill-rule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clip-rule="evenodd" />
@@ -219,7 +219,7 @@
                     <img class="h-10 w-10 rounded-full" :src="user.user.avatar_url" alt="" />
                   </div>
                   <div class="min-w-0 flex-1">
-                    <router-link :to="{name: 'User', params: { inboxId: $route.params.inboxId, userId: user.user.id } }" class="cursor-pointer focus:outline-none">
+                    <router-link :to="{ name: 'Settings', params: { inboxId: $route.params.inboxId, tab: 'users', itemId: user.user.id } }" class="cursor-pointer focus:outline-none">
                       <!-- Extend touch target to entire panel -->
                       <span class="absolute inset-0" aria-hidden="true"></span>
                       <p class="text-sm font-medium text-gray-900 dark:text-gray-200">{{ user.user.first_name }} {{ user.user.last_name }}</p>
@@ -250,7 +250,7 @@ import Empty from '@/assets/img/svg/empty.svg'
 import BlankCanvas from '@/assets/img/svg/blank_canvas.svg'
 
 export default {
-  name: 'Users',
+  name: 'SettingsUsers',
   components: {
     Menu,
     MenuButton,
@@ -369,7 +369,7 @@ export default {
       return this.tickets.filter((ticket) => ticket.is_public).length
     },
     selected() {
-      return this.users?.find((user) => user.user.id === parseInt(this.$route.params.userId))
+      return this.users?.find((user) => user.user.id == parseInt(this.$route.params?.itemId))
     }
   }
 }

@@ -14,14 +14,14 @@
                 <ComboboxInput class="h-12 w-full border-0 bg-transparent pl-11 pr-4 text-gray-800 placeholder-gray-400 focus:ring-0 sm:text-sm" placeholder="Search..." @change="rawQuery = $event.target.value" />
               </div>
 
-              <ComboboxOptions v-if="filteredProjects.length > 0 || filteredUsers.length > 0" static class="max-h-80 scroll-py-10 scroll-pb-2 space-y-4 overflow-y-auto p-4 pb-2">
-                <li v-if="filteredProjects.length > 0">
-                  <h2 class="text-xs font-semibold text-gray-900">Projects</h2>
+              <ComboboxOptions v-if="filteredTickets.length > 0 || filteredUsers.length > 0" static class="max-h-80 scroll-py-10 scroll-pb-2 space-y-4 overflow-y-auto p-4 pb-2">
+                <li v-if="filteredTickets.length > 0">
+                  <h2 class="text-xs font-semibold text-gray-900">Tickets</h2>
                   <ul class="-mx-4 mt-2 text-sm text-gray-700">
-                    <ComboboxOption v-for="project in filteredProjects" :key="project.id" :value="project" as="template" v-slot="{ active }">
+                    <ComboboxOption v-for="ticket in filteredTickets" :key="ticket.id" :value="ticket" as="template" v-slot="{ active }">
                       <li :class="['flex cursor-default select-none items-center px-4 py-2', active && 'bg-indigo-600 text-white']">
                         <FolderIcon :class="['h-6 w-6 flex-none', active ? 'text-white' : 'text-gray-400']" aria-hidden="true" />
-                        <span class="ml-3 flex-auto truncate">{{ project.name }}</span>
+                        <span class="ml-3 flex-auto truncate">{{ ticket.name }}</span>
                       </li>
                     </ComboboxOption>
                   </ul>
@@ -45,19 +45,19 @@
                 <p class="mt-2 text-gray-500">Use this tool to quickly search for users and projects across our entire platform. You can also use the search modifiers found in the footer below to limit the results to just users or projects.</p>
               </div>
 
-              <div v-if="query !== '' && rawQuery !== '?' && filteredProjects.length === 0 && filteredUsers.length === 0" class="py-14 px-6 text-center text-sm sm:px-14">
+              <div v-if="query !== '' && rawQuery !== '?' && filteredTickets.length === 0 && filteredUsers.length === 0" class="py-14 px-6 text-center text-sm sm:px-14">
                 <ExclamationTriangleIcon class="mx-auto h-6 w-6 text-gray-400" aria-hidden="true" />
                 <p class="mt-4 font-semibold text-gray-900">No results found</p>
-                <p class="mt-2 text-gray-500">We couldn’t find anything with that term. Please try again.</p>
+                <p class="mt-2 text-gray-500">We couldn't find anything with that term. Please try again.</p>
               </div>
 
               <div class="flex flex-wrap items-center bg-gray-50 py-2.5 px-4 text-xs text-gray-700">
                 Type
                 <kbd :class="['mx-1 flex h-5 w-5 items-center justify-center rounded border bg-white font-semibold sm:mx-2', rawQuery.startsWith('#') ? 'border-indigo-600 text-indigo-600' : 'border-gray-400 text-gray-900']">#</kbd>
-                <span class="sm:hidden">for projects,</span>
-                <span class="hidden sm:inline">to access projects,</span>
-                <kbd :class="['mx-1 flex h-5 w-5 items-center justify-center rounded border bg-white font-semibold sm:mx-2', rawQuery.startsWith('>') ? 'border-indigo-600 text-indigo-600' : 'border-gray-400 text-gray-900']">&gt;</kbd>
-                for users, and
+                <span class="sm:hidden">for tickets, and</span>
+                <span class="hidden sm:inline">to access tickets, and</span>
+                <!-- <kbd :class="['mx-1 flex h-5 w-5 items-center justify-center rounded border bg-white font-semibold sm:mx-2', rawQuery.startsWith('>') ? 'border-indigo-600 text-indigo-600' : 'border-gray-400 text-gray-900']">&gt;</kbd>
+                for users, and -->
                 <kbd :class="['mx-1 flex h-5 w-5 items-center justify-center rounded border bg-white font-semibold sm:mx-2', rawQuery === '?' ? 'border-indigo-600 text-indigo-600' : 'border-gray-400 text-gray-900']">?</kbd>
                 for help.
               </div>
@@ -76,7 +76,7 @@ export default {
     show: {
       type: Boolean,
       required: true,
-    },
+    }
   }
 }
 </script>
@@ -96,15 +96,28 @@ import {
   TransitionRoot,
 } from '@headlessui/vue'
 
-const projects = [
-  { id: 1, name: 'Workflow Inc. / Website Redesign', category: 'Projects', url: '#' },
+const tickets = [
+  { id: 1, name: 'When is the next SWEBOK panel?', category: 'Tickets', url: '/inboxes/1/tickets/3' },
+  { id: 2, name: 'Discord does not work on my laptop!', category: 'Tickets', url: '/inboxes/1/tickets/7' },
+  { id: 3, name: 'What should be the content of the demo?', category: 'Tickets', url: '/inboxes/1/tickets/6' },
+  { id: 4, name: 'Should I mention the testing coverage in my report?', category: 'Tickets', url: '/inboxes/1/tickets/18' },
+  { id: 5, name: 'E-Journal does not work', category: 'Tickets', url: '/inboxes/1/tickets/4' },
+  { id: 6, name: 'The SWEBOK panel dates do not specify the group', category: 'Tickets', url: '/inboxes/1/tickets/20' },
+  { id: 7, name: 'Is there a minimum grade for my individual report?', category: 'Tickets', url: '/inboxes/1/tickets/12' },
   // More projects...
 ]
 
 const users = [
   {
     id: 1,
-    name: 'Leslie Alexander',
+    name: 'Christa ',
+    url: '#',
+    imageUrl:
+      'https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80',
+  },
+  {
+    id: 2,
+    name: 'Edgar W. Dijkstra ',
     url: '#',
     imageUrl:
       'https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80',
@@ -114,12 +127,12 @@ const users = [
 
 const rawQuery = ref('')
 const query = computed(() => rawQuery.value.toLowerCase().replace(/^[#>]/, ''))
-const filteredProjects = computed(() =>
+const filteredTickets = computed(() =>
   rawQuery.value === '#'
-    ? projects
+    ? tickets
     : query.value === '' || rawQuery.value.startsWith('>')
     ? []
-    : projects.filter((project) => project.name.toLowerCase().includes(query.value))
+    : tickets.filter((ticket) => ticket.name.toLowerCase().includes(query.value))
 )
 const filteredUsers = computed(() =>
   rawQuery.value === '>'

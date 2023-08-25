@@ -9,8 +9,8 @@
             <div class="left-0 p-4 flex-shrink-0">
               <router-link to="/" class="flex items-center">
                 <img class="h-8 w-auto" :src="logo" alt="TicketVise" />
-                <!-- <span class="text-2xl ml-2 text-white">Ticket</span>
-                <span class="text-2xl text-primary font-bold">Vise</span> -->
+                <span class="hidden sm:inline text-2xl ml-2 text-white">Ticket</span>
+                <span class="hidden sm:inline text-2xl text-primary font-bold">Vise</span>
               </router-link>
             </div>
             <!-- <div class="block ml-4 sm:ml-10">

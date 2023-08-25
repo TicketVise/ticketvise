@@ -2,33 +2,30 @@
   <div v-if="role == 'MANAGER'">
     <div class="overflow-y-auto p-4">
       <div class="mx-auto flex max-w-3xl flex-col space-y-3">
-        <div class="mb-1">
-          <h2 class="text-xl font-bold leading-6 text-gray-800">Overview</h2>
-          <span class="text-gray-400">Here you'll find the most important information for you</span>
-        </div>
+        <!-- <h2 class="text-xl font-bold leading-6 text-gray-700">Overview</h2> -->
 
         <div class="grid grid-cols-2 gap-2">
           <div class="overflow-hidden rounded-lg border bg-white">
             <div class="p-2 px-4">
               <div class="flex items-center">
                 <div class="hidden flex-shrink-0 sm:flex">
-                  <InboxStackIcon class="h-6 w-6 text-gray-400" />
+                  <StarIcon class="h-6 w-6 text-gray-400" />
                 </div>
                 <div class="w-0 flex-1 sm:ml-5">
                   <dl>
-                    <dt class="truncate text-sm font-medium text-gray-500">Tickets this week</dt>
+                    <dt class="truncate text-sm font-medium text-gray-700">Helpfulness</dt>
                     <dd class="flex items-center justify-between">
                       <div class="text-xl font-medium text-primary">
-                        {{ statsData.total_tickets }}
-                        <span class="ml-1 hidden text-sm font-medium text-gray-500 lg:inline"> from {{ statsData.last_week_total_tickets }} last week </span>
+                        85%
+                        <span class="ml-1 hidden text-sm font-medium text-gray-500 lg:inline"> from 71% last week </span>
                       </div>
 
-                      <!-- <div :class="['increase' === 'increase' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800', 'inline-flex items-baseline px-2.5 py-0.5 rounded-full text-sm font-medium md:mt-2 lg:mt-0']">
-                        <ArrowSmallUpIcon v-if="'up' === 'up'" class="-ml-1 mr-0.5 flex-shrink-0 self-center h-5 w-5" :class="['increase' === 'increase' ? 'text-green-500' : 'text-red-500']" aria-hidden="true" />
-                        <ArrowSmallDownIcon v-else class="-ml-1 mr-0.5 flex-shrink-0 self-center h-5 w-5" :class="['increase' === 'increase' ? 'text-green-500' : 'text-red-500']" aria-hidden="true" />
+                      <div :class="['increase' === 'increase' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800', 'inline-flex items-baseline rounded-full px-2.5 py-0.5 text-sm font-medium md:mt-2 lg:mt-0']">
+                        <ArrowSmallUpIcon v-if="'up' === 'up'" class="-ml-1 mr-0.5 h-5 w-5 flex-shrink-0 self-center" :class="['increase' === 'increase' ? 'text-green-500' : 'text-red-500']" aria-hidden="true" />
+                        <ArrowSmallDownIcon v-else class="-ml-1 mr-0.5 h-5 w-5 flex-shrink-0 self-center" :class="['increase' === 'increase' ? 'text-green-500' : 'text-red-500']" aria-hidden="true" />
                         <span class="sr-only"> {{ 'increase' === 'increase' ? 'Increased' : 'Decreased' }} by </span>
                         33%
-                      </div> -->
+                      </div>
                     </dd>
                   </dl>
                 </div>
@@ -44,19 +41,19 @@
                 </div>
                 <div class="w-0 flex-1 sm:ml-5">
                   <dl>
-                    <dt class="truncate text-sm font-medium text-gray-500">Average response time</dt>
+                    <dt class="truncate text-sm font-medium text-gray-700">Average response time</dt>
                     <dd class="flex items-center justify-between">
                       <div class="text-xl font-medium text-primary">
                         {{ statsData.avg_response_time }}h
                         <span class="ml-1 hidden text-sm font-medium text-gray-500 lg:inline"> from 6.2h last week </span>
                       </div>
 
-                      <!-- <div :class="['decrease' === 'increase' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800', 'inline-flex items-baseline px-2.5 py-0.5 rounded-full text-sm font-medium md:mt-2 lg:mt-0']">
+                      <div :class="['decrease' === 'increase' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800', 'inline-flex items-baseline px-2.5 py-0.5 rounded-full text-sm font-medium md:mt-2 lg:mt-0']">
                         <ArrowSmallUpIcon v-if="'up' === 'up'" class="-ml-1 mr-0.5 flex-shrink-0 self-center h-5 w-5" :class="['decrease' === 'increase' ? 'text-green-500' : 'text-red-500']" aria-hidden="true" />
                         <ArrowSmallDownIcon v-else class="-ml-1 mr-0.5 flex-shrink-0 self-center h-5 w-5" :class="['increase' === 'increase' ? 'text-green-500' : 'text-red-500']" aria-hidden="true" />
                         <span class="sr-only"> {{ 'increase' === 'increase' ? 'Increased' : 'Decreased' }} by </span>
                         27%
-                      </div> -->
+                      </div>
                     </dd>
                   </dl>
                 </div>
@@ -64,7 +61,7 @@
             </div>
           </div>
 
-          <div v-if="ticketsFlattened.length == 0" class="rounded-md bg-blue-50 p-4 col-span-2">
+          <div v-if="ticketsFlattened?.length == 0" class="rounded-md bg-blue-50 p-4 col-span-2">
             <div class="flex">
               <div class="flex-shrink-0">
                 <InformationCircleIcon class="h-5 w-5 text-blue-400" aria-hidden="true" />
@@ -145,17 +142,17 @@
           </div>
         </div>
 
-        <h2 v-if="ticketsFlattened?.filter((t) => t.open)?.length > 0" class="pt-4 text-lg font-semibold leading-4 text-gray-700">Tickets</h2>
+        <h2 v-if="ticketsFlattened?.filter((t) => t.open)?.length > 0" class="pt-4 text-lg font-semibold leading-4 text-gray-700">Your tickets</h2>
 
         <div v-if="ticketsFlattened?.filter((t) => t.open)?.length > 0" class="flex flex-col space-y-2">
           <router-link v-for="ticket in ticketsFlattened?.filter((t) => t.open)" :key="ticket.id" :to="`/inboxes/${1}/tickets/${ticket.ticket_inbox_id}`" class="group flex flex-col rounded-lg border p-3">
-            <div v-if="false" class="mb-1 flex justify-between">
+            <!-- <div class="mb-1 flex justify-between">
               <div class="flex space-x-2 text-orange-600">
                 <ExclamationCircleIcon class="h-5 w-5" />
                 <span class="text-sm font-medium">MEDIUM</span>
               </div>
               <span class="inline-flex items-center rounded bg-green-100 px-2 py-0.5 text-xs font-medium text-green-800">Response</span>
-            </div>
+            </div> -->
 
             <h2 class="text-lg font-semibold leading-6 group-hover:underline">
               {{ ticket.title }}
@@ -183,9 +180,9 @@
   <div v-else-if="role == 'AGENT'">
     <div class="p-4">
       <div class="mx-auto flex max-w-3xl flex-col space-y-2">
-        <div class="mb-1">
+        <!-- <div class="mb-1">
           <h2 class="text-xl font-bold leading-6 text-gray-700">Overview</h2>
-        </div>
+        </div> -->
 
         <div class="grid grid-cols-2 gap-2">
           <div class="overflow-hidden rounded-lg border bg-white">
@@ -224,7 +221,7 @@
                 </div>
                 <div class="w-0 flex-1 sm:ml-5">
                   <dl>
-                    <dt class="truncate text-sm font-medium text-gray-500">Your response time</dt>
+                    <dt class="truncate text-sm font-medium text-gray-500">Response time</dt>
                     <dd class="flex items-center justify-between">
                       <div class="text-xl font-medium text-primary">
                         7.9h
@@ -259,7 +256,7 @@
               <h3 class="text-sm font-medium text-yellow-800">Response time is high</h3>
               <div class="mt-1 text-sm text-yellow-700">
                 <p>Your response time on tickets is <strong>high</strong> in comparison to the other staff members. Try to check your page more often to reduce the response time.</p>
-                <p class="mt-1">You can check the <strong>ticket insights</strong> to see what some good times are when students often ask questions.</p>
+                <p class="mt-1">You can check the <router-link :to="{ name: 'Insights', params: { inboxId: this.$route.params.inboxId, tab: 'tickets' } }" class="text-medium underline">ticket insights</router-link> to see what some good times are when students often ask questions.</p>
               </div>
             </div>
           </div>
@@ -273,7 +270,7 @@
             <div class="ml-3">
               <h3 class="text-sm font-medium text-blue-700">Good you are here</h3>
               <div class="mt-2 text-sm text-blue-700">
-                <p>But most tickets come around <strong>15:00</strong>, so try to come back then to answer tickets quickly</p>
+                <p>But most tickets come around <strong>17:00</strong>, so try to come back then to answer tickets quickly</p>
               </div>
             </div>
           </div>
@@ -324,10 +321,108 @@
 
   <div v-else-if="role == 'STUDENT'">
     <div class="p-4">
-      <div class="mx-auto flex max-w-3xl flex-col space-y-2">
+      <div class="mx-auto flex max-w-3xl flex-col space-y-4">
+        <!-- <div class="mb-1">
+          <h2 class="text-xl font-bold leading-6 text-gray-700">Overview</h2>
+        </div> -->
+
+        <div class="grid grid-cols-2 gap-2">
+          <div class="overflow-hidden rounded-lg border bg-white">
+            <div class="p-2 px-4">
+              <div class="flex items-center">
+                <div class="hidden flex-shrink-0 sm:flex">
+                  <ChatBubbleLeftRightIcon class="h-6 w-6 text-gray-400" />
+                </div>
+                <div class="w-0 flex-1 sm:ml-5">
+                  <dl>
+                    <dt class="truncate text-sm font-medium text-gray-500">Tickets</dt>
+                    <dd class="flex items-center justify-between">
+                      <div class="text-xl font-medium text-primary">
+                        {{ ticketsFlattened?.length }}
+                      </div>
+                    </dd>
+                  </dl>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="overflow-hidden rounded-lg border bg-white">
+            <div class="p-2 px-4">
+              <div class="flex items-center">
+                <div class="hidden flex-shrink-0 sm:flex">
+                  <ChatBubbleLeftRightIcon class="h-6 w-6 text-gray-400" />
+                </div>
+                <div class="w-0 flex-1 sm:ml-5">
+                  <dl>
+                    <dt class="truncate text-sm font-medium text-gray-500">Public tickets</dt>
+                    <dd class="flex items-center justify-between">
+                      <div class="text-xl font-medium text-primary">
+                        0
+                      </div>
+                    </dd>
+                  </dl>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div v-if="ticketsFlattened?.length == 0" class="rounded-lg border p-2">
+          <div class="flex">
+            <img :src="relax" class="w-1/3 md:w-1/5" />
+            <div class="flex flex-col px-4 w-full">
+              <h2 class="text-xl font-bold text-primary">Welcome</h2>
+              <p class="text-sm">Looks like you don't have any questions yet. Feel free to ask something!</p>
+            </div>
+          </div>
+          <div class="pt-2 flex justify-end">
+            <router-link :to="'/inboxes/' + $route.params.inboxId + '/tickets/new'" exact type="button" class="inline-flex items-center justify-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-primary hover:bg-orange-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary">
+              <svg class="-ml-1 mr-2 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+              </svg>
+              New Ticket
+            </router-link>
+          </div>
+        </div>
+
+        <!-- <ul role="list" class="divide-y divide-gray-100">
+          <router-link :to="`/inboxes/${$route.params.inboxId}/tickets/${ticket.ticket_inbox_id}`" as="li" v-for="ticket in ticketsFlattened" :key="ticket.id" class="group flex flex-wrap items-center justify-between gap-x-6 gap-y-4 py-5 sm:flex-nowrap">
+            <div>
+              <p class="text-sm font-semibold leading-6 text-gray-900">
+                <a :href="ticket.href" class="group-hover:underline">{{ ticket.title }}</a>
+              </p>
+              <div class="mt-1 flex items-center gap-x-2 text-xs leading-5 text-gray-500">
+                <p>
+                  <time :datetime="ticket.date_latest_update">{{ moment(ticket.date_latest_update).calendar() }}</time>
+                </p>
+                <svg viewBox="0 0 2 2" class="h-0.5 w-0.5 fill-current">
+                  <circle cx="1" cy="1" r="1" />
+                </svg>
+              </div>
+            </div>
+            <dl class="flex w-full flex-none justify-between gap-x-8 sm:w-auto">
+              <div class="flex -space-x-0.5">
+                <dt class="sr-only">Commenters</dt>
+                <dd v-for="commenter in ticket.commenters" :key="commenter.id">
+                  <img class="h-6 w-6 rounded-full bg-gray-50 ring-2 ring-white" :src="commenter.imageUrl" :alt="commenter.name" />
+                </dd>
+              </div>
+              <div class="flex w-16 gap-x-2.5">
+                <dt>
+                  <span class="sr-only">Total comments</span>
+                  <CheckCircleIcon v-if="ticket.status === 'resolved'" class="h-6 w-6 text-gray-400" aria-hidden="true" />
+                  <ChatBubbleLeftIcon v-else class="h-6 w-6 text-gray-400" aria-hidden="true" />
+                </dt>
+                <dd class="text-sm leading-6 text-gray-900">{{ ticket.totalComments }}</dd>
+              </div>
+            </dl>
+          </router-link>
+        </ul> -->
+      </div>
+      <div v-if="ticketsFlattened?.length > 0" class="mx-auto flex max-w-3xl flex-col space-y-2 mt-6">
         <div class="mb-1">
           <h2 class="text-xl font-bold leading-6 text-gray-700">Your tickets</h2>
-          <span class="text-gray-400">Here you find your tickets</span>
         </div>
 
         <div v-if="ticketsFlattened?.filter((t) => t.open)?.length == 0">
@@ -343,12 +438,12 @@
         <div v-else>
           <ul class="divide-y divide-gray-100 border-b border-gray-200">
             <li v-for="ticket in ticketsFlattened?.filter((t) => t.open)" :key="ticket.id">
-              <router-link :to="`/inboxes/${$route.params.inboxId}/tickets/${ticket.ticket_inbox_id}`" class="group flex items-center justify-between py-3 hover:bg-gray-50 sm:px-6">
+              <router-link :to="`/inboxes/${$route.params.inboxId}/tickets/${ticket.ticket_inbox_id}`" class="group flex items-center justify-between py-3 hover:bg-gray-50">
                 <span class="flex flex-col items-start space-y-1">
                   <span class="text-sm font-medium leading-4">
                     {{ ticket.title }}
                   </span>
-                  <chip>{{ Math.random() > 0.5 ? 'Response' : 'Waiting' }}</chip>
+                  <!-- <chip>{{ Math.random() > 0.5 ? 'Response' : 'Waiting' }}</chip> -->
                 </span>
                 <ChevronRightIcon class="ml-4 h-5 w-5 text-gray-400 group-hover:text-gray-500" aria-hidden="true" />
               </router-link>
@@ -361,7 +456,7 @@
 
           <ul class="divide-y divide-gray-100 border-b border-gray-200">
             <li v-for="ticket in ticketsFlattened?.filter((t) => !t.open)" :key="ticket.id">
-              <router-link :to="`/inboxes/${$route.params.inboxId}/tickets/${ticket.ticket_inbox_id}`" class="group flex items-center justify-between py-3 hover:bg-gray-50 sm:px-6">
+              <router-link :to="`/inboxes/${$route.params.inboxId}/tickets/${ticket.ticket_inbox_id}`" class="group flex items-center justify-between py-3 hover:bg-gray-50">
                 <span class="flex items-center space-x-2 truncate">
                   <span class="truncate text-sm font-medium leading-4">
                     {{ ticket.title }}
@@ -386,12 +481,13 @@ import moment from 'moment'
 import Chip from '@/components/chip/Chip.vue'
 import TicketCard from '@/components/tickets/TicketCard.vue'
 
-import { BellIcon, ChatBubbleLeftRightIcon, ExclamationCircleIcon, InboxStackIcon } from '@heroicons/vue/24/outline'
+import { BellIcon, ChatBubbleLeftRightIcon, ExclamationCircleIcon, InboxStackIcon, ChatBubbleLeftIcon, CheckCircleIcon, StarIcon } from '@heroicons/vue/24/outline'
 import { ArrowSmallDownIcon, ArrowSmallUpIcon, ChevronRightIcon, ClockIcon, InformationCircleIcon } from '@heroicons/vue/24/solid'
 import { ArrowRightIcon, ExclamationTriangleIcon } from '@heroicons/vue/20/solid'
 
 import report from '@/assets/img/svg/report.svg'
 import awesome from '@/assets/img/svg/awesome.svg'
+import relax from '@/assets/img/svg/relax.svg'
 
 const UNLABELLED_LABEL = {
   id: 0,
@@ -414,7 +510,10 @@ export default {
     ArrowRightIcon,
     ChevronRightIcon,
     TicketCard,
-    InformationCircleIcon
+    InformationCircleIcon,
+    ChatBubbleLeftIcon,
+    CheckCircleIcon,
+    StarIcon
 },
   data: () => ({
     role: 'STUDENT',
@@ -422,6 +521,7 @@ export default {
     inbox_labels: [],
     report,
     awesome,
+    relax,
     updates: [],
     statsData: {}
   }),
