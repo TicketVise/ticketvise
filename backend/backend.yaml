@@ -36,28 +36,45 @@ spec:
         "kubernetes.io/os": linux
       containers:
         - name: ticketvise-backend
-          image: ticketvise.azurecr.io/backend:v1
+          image: registry.digitalocean.com/cr-ticketvise/backend:v2
           imagePullPolicy: Always
           ports:
             - containerPort: 8000
           resources:
             requests:
-              cpu: 250m
-              memory: 750Mi
+              cpu: 200m
+              memory: 150Mi
             limits:
               cpu: 500m
-              memory: 1Gi
+              memory: 300Mi
           env:
           - name: SQL_ENGINE
             value: django.db.backends.postgresql
           - name: SQL_DATABASE
-            value: ticketvise
+            valueFrom:
+              secretKeyRef:
+                name: db-credentials
+                key: database
           - name: SQL_USER
-            value: postgres
+            valueFrom:
+              secretKeyRef:
+                name: db-credentials
+                key: username
           - name: SQL_PASSWORD
-            value: admin193!
+            valueFrom:
+              secretKeyRef:
+                name: db-credentials
+                key: password
           - name: SQL_HOST
-            value: ticketvisedb.postgres.database.azure.com
+            valueFrom:
+              secretKeyRef:
+                name: db-credentials
+                key: host
+          - name: SQL_PORT
+            valueFrom:
+              secretKeyRef:
+                name: db-credentials
+                key: port
           - name: HOST
             value: app.ticketvise.com
           - name: S3_USE_HTTPS
