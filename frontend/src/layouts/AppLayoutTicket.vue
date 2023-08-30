@@ -159,7 +159,7 @@
         /> -->
 
         <main
-          class="flex-1 relative focus:outline-none flex flex-col pb-16 md:pb-0 mt-2"
+          class="flex-1 relative focus:outline-none flex flex-col pb-16 md:pb-0"
         >
           <slot />
         </main>

@@ -178,7 +178,7 @@
                   >
                     <span class="rounded-full bg-white w-1.5 h-1.5" />
                   </span>
-                  <div class="ml-3 flex flex-col">
+                  <div class="ml-3 flex flex-1 flex-col">
                     <RadioGroupLabel
                       as="span"
                       class="text-gray-900 block text-sm font-medium"

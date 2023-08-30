@@ -1,6 +1,6 @@
 <!-- This example requires Tailwind CSS v2.0+ -->
 <template>
-  <div class="flex">
+  <div class="flex w-full">
     <div class="flex-grow">
       <div class="relative flex items-stretch flex-grow focus-within:z-10">
         <div class="relative w-full">
@@ -65,7 +65,7 @@
         </ul>
       </div>
     </div>
-    <span class="ml-3">
+    <span class="ml-3 flex">
       <button
         :disabled="!selectedUser"
         @click="
