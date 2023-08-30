@@ -1,5 +1,5 @@
 <template>
-  <div class="flex-1 relative overflow-y-auto focus:outline-none">
+  <div class="flex-1 relative overflow-y-auto focus:outline-none mt-2">
     <!-- <div v-if="ticket == null" class="max-w-3xl mx-auto px-4">
       <div class="rounded-md bg-red-50 p-4">
         <div class="flex w-full">
@@ -298,6 +298,19 @@
             <span>{{ ticket?.labels?.[0]?.name }}</span>
             <ChevronDownIcon class="h-4 w-4 text-gray-400" aria-hidden="true" />
           </span>
+
+          <button @click="showPopupShare = true" class="flex space-x-1 items-center rounded-full bg-white border py-1 px-3 text-xs font-medium text-gray-700 mb-2 mr-2">
+            <ShareIcon
+              :class="[isStaffOrAuthor ? 'text-gray-400' : 'text-primary', 'h-4 w-4']"
+              aria-hidden="true"
+            />
+            <span v-if="isStaffOrAuthor" class="text-gray-900 text-xs font-medium">SHARE</span>
+            <span v-else class="text-primary text-xs font-medium">SHARED WITH YOU</span>
+
+            <div v-if="ticket?.shared_with?.length > 0" class="isolate flex -space-x-1 overflow-hidden pl-1">
+              <img v-for="person in ticket?.shared_with" :key="person" class="inline-block h-4 w-4 rounded-full ring-2 ring-white" :src="person.avatar_url || person.avatar" alt="" />
+            </div>
+          </button>
         </div>
 
         <!-- Pending publish request -->
@@ -861,6 +874,54 @@
         </div> -->
       </div>
     </div>
+
+    <TransitionRoot as="template" :show="showPopupShare">
+      <Dialog as="div" class="relative z-10" @close="showPopupShare = false">
+        <TransitionChild as="template" enter="ease-out duration-300" enter-from="opacity-0" enter-to="opacity-100" leave="ease-in duration-200" leave-from="opacity-100" leave-to="opacity-0">
+          <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" />
+        </TransitionChild>
+  
+        <div class="fixed inset-0 z-10 overflow-y-auto">
+          <div class="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
+            <TransitionChild as="template" enter="ease-out duration-300" enter-from="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95" enter-to="opacity-100 translate-y-0 sm:scale-100" leave="ease-in duration-200" leave-from="opacity-100 translate-y-0 sm:scale-100" leave-to="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95">
+              <DialogPanel class="relative transform rounded-lg bg-white px-4 pb-4 pt-4 text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-sm sm:p-6">
+                <div class="absolute right-0 top-0 hidden pr-4 pt-4 sm:block">
+                  <button type="button" class="rounded-md bg-white text-gray-400 hover:text-gray-500 focus:outline-none" @click="showPopupShare = false">
+                    <span class="sr-only">Close</span>
+                    <XMarkIcon class="h-6 w-6" aria-hidden="true" />
+                  </button>
+                </div>
+
+                <h2 v-if="isStaffOrAuthor" class="text-sm font-bold text-gray-800">Search user to share with</h2>
+                <div v-if="isStaffOrAuthor" class="py-2 flex justify-between items-center mb-4">
+                  <FormTextFieldWithSuggestions @add="(data) => { ticket.shared_with.push(data); updateSharedWith(); addShare = false; }" :data="guestsFiltered || []" emptyLabel="John Doe" />
+                </div>
+
+                <h2 class="text-sm font-bold text-gray-800">Shared with</h2>
+                <ul>
+                  <li v-for="person in ticket?.shared_with" :key="person.id" class="py-2 flex justify-between items-center">
+                    <div class="flex items-center">
+                      <img :src="person.avatar_url || person.avatar" alt="" class="w-6 h-6 rounded-full" />
+                      <p class="ml-3 text-sm font-medium text-gray-900">
+                        {{ person.first_name }} {{ person.last_name }}
+                        {{ !person.first_name ? person.name : "" }}
+                      </p>
+                    </div>
+                    <button @click="ticket.shared_with.splice(ticket.shared_with.map((s) => s.id).indexOf(person.id), 1); updateSharedWith();" type="button" class="ml-6 bg-white rounded-md text-sm font-medium text-primary-600 hover:text-primary focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary" v-if="isStaffOrAuthor">Remove<span class="sr-only"> {{ person.name }}</span>
+                    </button>
+                  </li>
+                  <li v-if="ticket?.shared_with?.length <= 0" class="py-2 flex justify-between items-center">
+                    <div class="flex items-center">
+                      <p class="ml-3 text-sm font-base italic text-gray-900">No one yet</p>
+                    </div>
+                  </li>
+                </ul>
+              </DialogPanel>
+            </TransitionChild>
+          </div>
+        </div>
+      </Dialog>
+    </TransitionRoot>
   </div>
 </template>
 
@@ -869,6 +930,8 @@ import axios from "axios";
 import { mapState } from "vuex";
 import moment from "moment";
 import VueEasyLightbox from "vue-easy-lightbox"
+
+import { Dialog, DialogPanel, DialogTitle, TransitionChild, TransitionRoot } from '@headlessui/vue'
 
 import FileUpload from '@/components/inputs/FileInput.vue'
 import ActivityFeed from "@/components/tickets/ActivityFeed.vue";
@@ -903,7 +966,7 @@ import {
 } from "@heroicons/vue/24/solid";
 
 import {
-  CloudIcon
+  CloudIcon, ShareIcon, XMarkIcon
 } from "@heroicons/vue/24/outline";
 
 import {
@@ -924,6 +987,9 @@ export default {
     Chip,
     CloudIcon,
     Cog6ToothIcon,
+    Dialog,
+    DialogPanel,
+    DialogTitle,
     FormTextFieldWithSuggestions,
     FileUpload,
     InformationCircleIcon,
@@ -940,12 +1006,16 @@ export default {
     ClipboardDocumentListIcon,
     ClipboardDocumentCheckIcon,
     TicketInputViewer,
+    TransitionChild,
+    TransitionRoot,
     UserCircleIcon,
     ChevronDownIcon,
     TagIcon,
     VueEasyLightbox,
-    XCircleIcon
-  },
+    XCircleIcon,
+    ShareIcon,
+    XMarkIcon
+},
   data: () => ({
     publishConfirmationModal: false,
     privateConfirmationModal: false,
@@ -969,7 +1039,8 @@ export default {
       index: 0
     },
     files: [],
-    upload: Upload
+    upload: Upload,
+    showPopupShare: false
   }),
   mounted() {
     this.loadTicketData();
