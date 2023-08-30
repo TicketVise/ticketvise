@@ -439,12 +439,19 @@
           <ul class="divide-y divide-gray-100 border-b border-gray-200">
             <li v-for="ticket in ticketsFlattened?.filter((t) => t.open)" :key="ticket.id">
               <router-link :to="`/inboxes/${$route.params.inboxId}/tickets/${ticket.ticket_inbox_id}`" class="group flex items-center justify-between py-3 hover:bg-gray-50">
-                <span class="flex flex-col items-start space-y-1">
-                  <span class="text-sm font-medium leading-4">
-                    {{ ticket.title }}
-                  </span>
-                  <!-- <chip>{{ Math.random() > 0.5 ? 'Response' : 'Waiting' }}</chip> -->
-                </span>
+                <div class="flex flex-col sm:inline-flex sm:flex-row items-start sm:items-center space-y-1 sm:space-y-0 text-sm font-medium leading-4">
+                  <span>{{ ticket.title }}</span>
+                  <div class="flex space-x-2">
+                    <span v-if="ticket.is_public != null" class="inline-flex sm:ml-3 items-center rounded-full bg-white border py-0.5 px-2 text-xs font-medium text-gray-700">
+                      <GlobeEuropeAfricaIcon class="h-4 w-4 text-green-500" aria-hidden="true"/>
+                      <span class="text-green-700 text-xs font-bold ml-1">Public</span>
+                    </span>
+                    <span v-if="ticket.author.id != user.id" class="inline-flex sm:ml-3 items-center rounded-full bg-white border py-0.5 px-2 text-xs font-medium text-gray-700">
+                      <ShareIcon class="h-4 w-4 text-primary" aria-hidden="true"/>
+                      <span class="text-primary text-xs font-bold ml-1">Shared with you</span>
+                    </span>
+                  </div>
+                </div>
                 <ChevronRightIcon class="ml-4 h-5 w-5 text-gray-400 group-hover:text-gray-500" aria-hidden="true" />
               </router-link>
             </li>
@@ -483,7 +490,7 @@ import TicketCard from '@/components/tickets/TicketCard.vue'
 
 import { BellIcon, ChatBubbleLeftRightIcon, ExclamationCircleIcon, InboxStackIcon, ChatBubbleLeftIcon, CheckCircleIcon, StarIcon } from '@heroicons/vue/24/outline'
 import { ArrowSmallDownIcon, ArrowSmallUpIcon, ChevronRightIcon, ClockIcon, InformationCircleIcon } from '@heroicons/vue/24/solid'
-import { ArrowRightIcon, ExclamationTriangleIcon } from '@heroicons/vue/20/solid'
+import { ArrowRightIcon, ExclamationTriangleIcon, GlobeEuropeAfricaIcon, ShareIcon } from '@heroicons/vue/20/solid'
 
 import report from '@/assets/img/svg/report.svg'
 import awesome from '@/assets/img/svg/awesome.svg'
@@ -513,7 +520,9 @@ export default {
     InformationCircleIcon,
     ChatBubbleLeftIcon,
     CheckCircleIcon,
-    StarIcon
+    StarIcon,
+    GlobeEuropeAfricaIcon,
+    ShareIcon
 },
   data: () => ({
     role: 'STUDENT',
