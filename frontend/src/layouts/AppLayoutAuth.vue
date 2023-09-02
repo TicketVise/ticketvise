@@ -1,7 +1,7 @@
 <template>
   <div>
     <slot />
-    <develop-panel v-if="true || development" />
+    <develop-panel v-if="development" />
   </div>
 </template>
 

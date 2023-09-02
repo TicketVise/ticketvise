@@ -220,7 +220,7 @@
     @update="user.give_introduction = false"
     v-if="onboarding.active && onboarding.popup"
   />
-  <develop-panel v-if="true || development" />
+  <develop-panel v-if="development" />
 
   <SearchPopup :show="search" v-on:close="search = false" />
 </template>
