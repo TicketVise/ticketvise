@@ -50,7 +50,7 @@
             <button
               @click="publishConfirmationModal = true"
               v-if="
-                isStaff(role, user) &&
+                isStaff &&
                 !ticket?.publish_request_created &&
                 !ticket?.is_public
               "
@@ -65,7 +65,7 @@
             </button>
             <button
               @click="privateConfirmationModal = true"
-              v-if="isStaff(role, user) && ticket?.is_public"
+              v-if="isStaff && ticket?.is_public"
               type="button"
               class="inline-flex justify-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary"
             >
@@ -86,7 +86,7 @@
 
         <!-- Status chips -->
         <div class="flex flex-wrap mt-2">
-          <Listbox v-if="isStaffOrAuthor" as="span" class="relative block mb-2 mr-2">
+          <Listbox v-if="isStaff" as="div" class="relative block mb-2 mr-2">
             <ListboxButton @click="listboxAlignment('publicListbox')" class="relative flex items-center w-full text-sm font-medium focus:outline-none">
               <span class="flex justify-between items-center rounded-full bg-white border py-1 pl-2 pr-2 text-xs w-full font-medium text-gray-700">
                 <div class="flex space-x-1 mr-1">
@@ -203,7 +203,7 @@
               </ListboxOptions>
             </transition>
           </Listbox>
-          <button v-else-if="isStaff(user.role, user)" @click="updateAssignee(user)" class="flex space-x-1 items-center rounded-full bg-white border py-1 px-3 text-xs font-medium text-gray-700 mb-2 mr-2">
+          <button v-else-if="isStaff" @click="updateAssignee(user)" class="flex space-x-1 items-center rounded-full bg-white border py-1 px-3 text-xs font-medium text-gray-700 mb-2 mr-2">
             <UserCircleIcon class="h-4 w-4 text-primary" aria-hidden="true" />
             <span class="text-primary text-xs font-medium uppercase">Assign Yourself</span>
           </button>
@@ -219,7 +219,7 @@
               class="h-4 w-4 text-gray-400"
               aria-hidden="true"
             />
-            <span v-if="ticket?.status != 'CLSD' && !isStaff(user.role, user)" class="text-gray-900 text-xs font-medium">OPEN</span>
+            <span v-if="ticket?.status != 'CLSD' && !isStaff" class="text-gray-900 text-xs font-medium">OPEN</span>
             <span v-else-if="ticket?.status === 'ASGD'" class="text-gray-900 text-xs font-medium">ASSIGNED</span>
             <span v-else-if="ticket?.status === 'ANSD'" class="text-gray-900 text-xs font-medium">AWAITING RESPONSE</span>
             <span v-else-if="ticket?.status === 'PNDG' || !ticket" class="text-gray-900 text-xs font-medium">PENDING</span>
@@ -314,7 +314,7 @@
         </div>
 
         <!-- Pending publish request -->
-        <div v-if="!ticket?.is_public && ticket?.publish_request_created && isStaff(role, user)" class="rounded-md bg-blue-50 p-4 mt-2">
+        <div v-if="!ticket?.is_public && ticket?.publish_request_created && isStaff" class="rounded-md bg-blue-50 p-4 mt-2">
           <div class="flex">
             <div class="flex-shrink-0">
               <InformationCircleIcon
@@ -387,41 +387,29 @@
           </div>
         </div>
 
-        <!-- <VueEasyLightbox scrollDisabled moveDisabled :imgs="images?.map((a) => a.file)" :visible="lightbox.visible" :index="lightbox.index" @hide="lightbox.visible = false" />
-        <ul role="list" class="grid grid-cols-3 gap-x-4 gap-y-8 sm:grid-cols-3 sm:gap-x-6 md:grid-cols-4 lg:grid-cols-3 xl:grid-cols-4 xl:gap-x-8 mb-4">
-          <li v-for="(attachment, index) in images" :key="index">
-            <button @click="lightbox.index = index; lightbox.visible = true;" class="group block w-full aspect-w-10 aspect-h-5 rounded-lg bg-gray-100 overflow-hidden">
-              <img :src="attachment.file" class="object-cover pointer-events-none" />
-              <button type="button" class="absolute inset-0 focus:outline-none">
-                <span class="sr-only">View details for {{ attachment.file.substring(attachment.file.lastIndexOf("/") + 1, attachment.file.lastIndexOf(".")) }}</span>
-              </button>
-            </button>
-            <p class="mt-1 block text-xs font-medium text-gray-900 truncate pointer-events-none">
-              {{ attachment.file.substring(attachment.file.lastIndexOf("/") + 1) }}
-            </p>
-            <p class="block text-xs font-medium text-gray-500 pointer-events-none">
-              {{ readableBytes(attachment.file_size) }}
-            </p>
-          </li>
-          <fileUpload ref="upload" v-bind:value="files" v-on:input="setFiles" class="w-full" :preview="false" />
-        </ul> -->
-
         <div class="bg-gray-50 rounded-lg px-4 py-1 mt-4">
           <h2 class="sr-only">Description</h2>
           <TicketInputViewer v-if="ticket" :content="ticket.content" />
         </div>
         
         <div class="mt-4">
+          <VueEasyLightbox scrollDisabled moveDisabled :imgs="images?.map((a) => a.file)" :visible="lightbox.visible" :index="lightbox.index" @hide="lightbox.visible = false" />
           <ul role="list" class="grid grid-cols-2 gap-x-4 gap-y-8 sm:grid-cols-3 sm:gap-x-6 lg:grid-cols-4 xl:gap-x-8">
-            <li v-for="file in attachments" :key="file" class="relative">
-              <div class="group aspect-w-10 aspect-h-7 block w-full overflow-hidden rounded-lg bg-gray-100 focus-within:ring-2 focus-within:ring-primary-500 focus-within:ring-offset-2 focus-within:ring-offset-gray-100">
-                <img :src="file.file" alt="" class="pointer-events-none object-cover group-hover:opacity-75" />
+            <li v-for="(attachment, index) in attachments" :key="attachment" class="relative">
+              <button v-if="isImage(attachment.file)" @click="lightbox = { index: index, visible: true}" class="group aspect-w-10 aspect-h-7 block w-full overflow-hidden rounded-lg bg-gray-100 focus-within:ring-2 focus-within:ring-primary-500 focus-within:ring-offset-2 focus-within:ring-offset-gray-100">
+                <img :src="attachment.file" alt="" class="pointer-events-none object-cover group-hover:opacity-75" />
                 <button type="button" class="absolute inset-0 focus:outline-none">
-                  <span class="sr-only">View details for {{ file.title }}</span>
+                  <span class="sr-only">View details for {{ attachment.title }}</span>
                 </button>
-              </div>
-              <p class="pointer-events-none mt-2 block truncate text-sm font-medium text-gray-900">{{ file.file.substring(file.file.lastIndexOf("/") + 1) }}</p>
-              <p class="pointer-events-none block text-sm font-medium text-gray-500">{{ readableBytes(file.file_size) }}</p>
+              </button>
+              <a v-else :href="attachment.file" target="_blank" class="group aspect-w-10 aspect-h-7 block w-full overflow-hidden rounded-lg bg-gray-100 focus-within:ring-2 focus-within:ring-primary-500 focus-within:ring-offset-2 focus-within:ring-offset-gray-100">
+                <PaperClipIcon class="w-16 h-16 m-auto text-gray-300 group-hover:text-gray-400 object-center" aria-hidden="true" />
+                <button type="button" class="absolute inset-0 focus:outline-none">
+                  <span class="sr-only">View details for {{ attachment.title }}</span>
+                </button>
+              </a>
+              <p class="pointer-events-none mt-2 block truncate text-sm font-medium text-gray-900">{{ attachment.file.substring(attachment.file.lastIndexOf("/") + 1) }}</p>
+              <p class="pointer-events-none block text-sm font-medium text-gray-500">{{ readableBytes(attachment.file_size) }}</p>
             </li>
 
             <!-- <li class="flex flex-col">
@@ -454,7 +442,7 @@
                   class="block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-primary focus:border-primary sm:text-sm rounded-md"
                 >
                   <option
-                    v-show="tab.cond ? isStaff(role, user) : true"
+                    v-show="tab.cond ? isStaff : true"
                     v-for="tab in tabs"
                     :key="tab.name"
                     :selected="tab.current"
@@ -467,7 +455,7 @@
                 <div class="border-b border-gray-200">
                   <nav class="-mb-px flex space-x-8 px-4" aria-label="Tabs">
                     <a
-                      v-show="tab.cond ? isStaff(role, user) : true"
+                      v-show="tab.cond ? isStaff : true"
                       @click="
                         switchTab();
                         tabs.find((t) => t.name === tab.name).current = true;
@@ -604,7 +592,7 @@
             </div>
           </div>
           <div class="mt-6 border-t border-gray-200 py-6 space-y-8">
-            <div v-if="isStaff(role, user)">
+            <div v-if="isStaff">
               <Listbox as="span" class="-ml-px relative block">
                 <ListboxButton
                   class="relative flex items-center w-full text-sm font-medium focus:outline-none ml-1"
@@ -688,7 +676,7 @@
                 >
               </div>
               <span v-else class="text-gray-400 text-sm ml-3">
-                None yet<span v-if="isStaff(role, user)"
+                None yet<span v-if="isStaff"
                   >—<button
                     @click="assignUser"
                     class="hover:text-primary-600 no-underline"
@@ -966,7 +954,7 @@ import {
 } from "@heroicons/vue/24/solid";
 
 import {
-  CloudIcon, ShareIcon, XMarkIcon
+  CloudIcon, PaperClipIcon, ShareIcon, XMarkIcon
 } from "@heroicons/vue/24/outline";
 
 import {
@@ -1014,7 +1002,8 @@ export default {
     VueEasyLightbox,
     XCircleIcon,
     ShareIcon,
-    XMarkIcon
+    XMarkIcon,
+    PaperClipIcon
 },
   data: () => ({
     publishConfirmationModal: false,
@@ -1083,7 +1072,7 @@ export default {
               }));
             });
 
-          if (this.isStaff(this.role, this.user)) {
+          if (this.isStaff) {
             this.ticket.comments = response.data.comments.map((c) => {
               return {
                 id: c.id,
@@ -1333,12 +1322,6 @@ export default {
       //   sameElse: "L [at] HH:mm",
       // });
     },
-    isStaff(role, user) {
-      return (
-        (role && (role === "AGENT" || role === "MANAGER")) ||
-        (user && user.is_superuser)
-      );
-    },
     ticketStatus(status) {
       return status === "ASGD" || status === "CLSD" ? "closed" : "open";
     },
@@ -1537,6 +1520,9 @@ export default {
           this.$refs[e].el.style.right = 0
         }
       }, 10)
+    },
+    isImage(file) {
+      return ['jpg', 'jpeg', 'png', 'gif'].includes(file.substring(file.lastIndexOf(".") + 1).toLowerCase())
     }
   },
   computed: {
@@ -1552,16 +1538,24 @@ export default {
     },
     isStaffOrAuthor() {
       return (
-        this.isStaff(this.role, this.user) ||
+        this.isStaff ||
         (this.user && this.ticket?.author?.id === this.user.id)
       );
     },
+    isStaff() {
+      return (
+        (this.role && (this.role === "AGENT" || this.role === "MANAGER")) ||
+        (this.user && this.user.is_superuser)
+      );
+    },
     attachments() {
-      return this.ticket?.attachments || []
-      // return this.ticket?.attachments?.filter((a) => 
-      //   ['jpg', 'jpeg', 'png', 'gif'].includes(a.file.substring(a.file.lastIndexOf(".") + 1).toLowerCase())
-      // );
+      return this.ticket?.attachments?.sort((a, b) => this.isImage(b.file) - this.isImage(a.file)) || []
+    },
+    images() {
+      return this.attachments?.filter((a) => 
+        ['jpg', 'jpeg', 'png', 'gif'].includes(a.file.substring(a.file.lastIndexOf(".") + 1).toLowerCase())
+      );
     }
-  },
-};
+  }
+}
 </script>
