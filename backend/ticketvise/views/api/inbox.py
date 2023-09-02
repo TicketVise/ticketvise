@@ -227,7 +227,6 @@ class CurrentUserInboxesApiView(ListCreateAPIView):
     serializer_class = CurrentUserInboxSerializer
 
     def get_queryset(self):
-        print('Hello!')
         return UserInbox.objects.filter(user=self.request.user).order_by("-date_created")
 
     def post(self, request, **kwargs):
