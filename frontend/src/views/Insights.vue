@@ -46,6 +46,7 @@ import {
   TicketIcon,
   UserIcon,
   UsersIcon,
+  TagIcon,
 } from "@heroicons/vue/24/solid";
 import InsightsGeneral from "@/components/insights/InsightsGeneral.vue";
 import InsightsTickets from "@/components/insights/InsightsTickets.vue";
@@ -65,8 +66,8 @@ export default {
     tabs: [
       { name: "General", current: true, icon: RectangleGroupIcon },
       { name: "Tickets", current: false, icon: TicketIcon },
-      { name: "Labels", current: false, icon: BookmarkIcon },
-      { name: "Students", current: false, icon: UsersIcon },
+      { name: "Labels", current: false, icon: TagIcon },
+      // { name: "Students", current: false, icon: UsersIcon },
       { name: "Staff", current: false, icon: UserIcon },
     ],
   }),
