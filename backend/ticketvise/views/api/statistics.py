@@ -214,6 +214,7 @@ class StaffInboxStatisticsAPIView(APIView):
             user.helpfulness = get_helpfulness(inbox, user)
         
         return JsonResponse({
+            "total_tickets": Ticket.objects.filter(inbox=inbox).count(),
             "avg_response_time": get_average_response_time(inbox),
             "avg_tickets_per_staff": Ticket.objects.filter(inbox=inbox).count() / UserInbox.objects.filter(inbox=inbox, role=Role.AGENT).count(),
             "staff": StaffInboxStatisticsSerializer(staff, many=True).data
