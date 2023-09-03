@@ -1,5 +1,5 @@
 <template>
-  <div v-if="role == 'MANAGER'">
+  <div v-if="false && role == 'MANAGER'">
     <div class="overflow-y-auto p-4">
       <div class="mx-auto flex max-w-3xl flex-col space-y-3">
         <!-- <h2 class="text-xl font-bold leading-6 text-gray-700">Overview</h2> -->
@@ -16,16 +16,15 @@
                     <dt class="truncate text-sm font-medium text-gray-700">Helpfulness</dt>
                     <dd class="flex items-center justify-between">
                       <div class="text-xl font-medium text-primary">
-                        85%
-                        <span class="ml-1 hidden text-sm font-medium text-gray-500 lg:inline"> from 71% last week </span>
+                        {{ statsData.staff.filter(s => s.amount_of_helpful_comments > 0).reduce(s => s.helpfulness) / statsData.staff.filter(s => s.amount_of_helpful_comments > 0).length }}%
                       </div>
 
-                      <div :class="['increase' === 'increase' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800', 'inline-flex items-baseline rounded-full px-2.5 py-0.5 text-sm font-medium md:mt-2 lg:mt-0']">
+                      <!-- <div :class="['increase' === 'increase' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800', 'inline-flex items-baseline rounded-full px-2.5 py-0.5 text-sm font-medium md:mt-2 lg:mt-0']">
                         <ArrowSmallUpIcon v-if="'up' === 'up'" class="-ml-1 mr-0.5 h-5 w-5 flex-shrink-0 self-center" :class="['increase' === 'increase' ? 'text-green-500' : 'text-red-500']" aria-hidden="true" />
                         <ArrowSmallDownIcon v-else class="-ml-1 mr-0.5 h-5 w-5 flex-shrink-0 self-center" :class="['increase' === 'increase' ? 'text-green-500' : 'text-red-500']" aria-hidden="true" />
                         <span class="sr-only"> {{ 'increase' === 'increase' ? 'Increased' : 'Decreased' }} by </span>
                         33%
-                      </div>
+                      </div> -->
                     </dd>
                   </dl>
                 </div>
@@ -37,7 +36,7 @@
             <div class="p-2 px-4">
               <div class="flex items-center">
                 <div class="hidden flex-shrink-0 sm:flex">
-                  <ChatBubbleLeftRightIcon class="h-6 w-6 text-gray-400" />
+                  <ClockIcon class="h-6 w-6 text-gray-400" />
                 </div>
                 <div class="w-0 flex-1 sm:ml-5">
                   <dl>
@@ -45,15 +44,15 @@
                     <dd class="flex items-center justify-between">
                       <div class="text-xl font-medium text-primary">
                         {{ statsData.avg_response_time }}h
-                        <span class="ml-1 hidden text-sm font-medium text-gray-500 lg:inline"> from 6.2h last week </span>
+                        <!-- <span class="ml-1 hidden text-sm font-medium text-gray-500 lg:inline"> from 6.2h last week </span> -->
                       </div>
 
-                      <div :class="['decrease' === 'increase' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800', 'inline-flex items-baseline px-2.5 py-0.5 rounded-full text-sm font-medium md:mt-2 lg:mt-0']">
+                      <!-- <div :class="['decrease' === 'increase' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800', 'inline-flex items-baseline px-2.5 py-0.5 rounded-full text-sm font-medium md:mt-2 lg:mt-0']">
                         <ArrowSmallUpIcon v-if="'up' === 'up'" class="-ml-1 mr-0.5 flex-shrink-0 self-center h-5 w-5" :class="['decrease' === 'increase' ? 'text-green-500' : 'text-red-500']" aria-hidden="true" />
                         <ArrowSmallDownIcon v-else class="-ml-1 mr-0.5 flex-shrink-0 self-center h-5 w-5" :class="['increase' === 'increase' ? 'text-green-500' : 'text-red-500']" aria-hidden="true" />
                         <span class="sr-only"> {{ 'increase' === 'increase' ? 'Increased' : 'Decreased' }} by </span>
                         27%
-                      </div>
+                      </div> -->
                     </dd>
                   </dl>
                 </div>
@@ -177,7 +176,7 @@
     </div>
   </div>
 
-  <div v-else-if="role == 'AGENT'">
+  <div v-else-if="role == 'AGENT' || role == 'MANAGER'">
     <div class="p-4">
       <div class="mx-auto flex max-w-3xl flex-col space-y-2">
         <!-- <div class="mb-1">
@@ -196,16 +195,16 @@
                     <dt class="truncate text-sm font-medium text-gray-500">Helpfulness</dt>
                     <dd class="flex items-center justify-between">
                       <div class="text-xl font-medium text-primary">
-                        85%
-                        <span class="ml-1 hidden text-sm font-medium text-gray-500 lg:inline"> from 71% last week </span>
+                        {{ statsData?.user?.helpfulness }}%
+                        <!-- <span class="ml-1 hidden text-sm font-medium text-gray-500 lg:inline"> from 71% last week </span> -->
                       </div>
 
-                      <div :class="['increase' === 'increase' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800', 'inline-flex items-baseline rounded-full px-2.5 py-0.5 text-sm font-medium md:mt-2 lg:mt-0']">
+                      <!-- <div :class="['increase' === 'increase' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800', 'inline-flex items-baseline rounded-full px-2.5 py-0.5 text-sm font-medium md:mt-2 lg:mt-0']">
                         <ArrowSmallUpIcon v-if="'up' === 'up'" class="-ml-1 mr-0.5 h-5 w-5 flex-shrink-0 self-center" :class="['increase' === 'increase' ? 'text-green-500' : 'text-red-500']" aria-hidden="true" />
                         <ArrowSmallDownIcon v-else class="-ml-1 mr-0.5 h-5 w-5 flex-shrink-0 self-center" :class="['increase' === 'increase' ? 'text-green-500' : 'text-red-500']" aria-hidden="true" />
                         <span class="sr-only"> {{ 'increase' === 'increase' ? 'Increased' : 'Decreased' }} by </span>
                         33%
-                      </div>
+                      </div> -->
                     </dd>
                   </dl>
                 </div>
@@ -217,22 +216,22 @@
             <div class="p-2 px-4">
               <div class="flex items-center">
                 <div class="hidden flex-shrink-0 sm:flex">
-                  <ChatBubbleLeftRightIcon class="h-6 w-6 text-gray-400" />
+                  <ClockIcon class="h-6 w-6 text-gray-400" />
                 </div>
                 <div class="w-0 flex-1 sm:ml-5">
                   <dl>
-                    <dt class="truncate text-sm font-medium text-gray-500">Response time</dt>
+                    <dt class="truncate text-sm font-medium text-gray-500">Your response time</dt>
                     <dd class="flex items-center justify-between">
                       <div class="text-xl font-medium text-primary">
-                        7.9h
-                        <span class="ml-1 hidden text-sm font-medium text-gray-500 lg:inline"> from 6.2h last week </span>
+                        {{ statsData?.user?.avg_response_time || '..' }}h
+                        <span class="ml-1 hidden text-sm font-medium text-gray-500 lg:inline"> ({{ statsData?.avg_response_time }}h for everyone)</span>
                       </div>
 
-                      <div :class="['decrease' === 'increase' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800', 'inline-flex items-baseline rounded-full px-2.5 py-0.5 text-sm font-medium md:mt-2 lg:mt-0']">
-                        <ArrowSmallUpIcon v-if="'up' === 'up'" class="-ml-1 mr-0.5 h-5 w-5 flex-shrink-0 self-center" :class="['decrease' === 'increase' ? 'text-green-500' : 'text-red-500']" aria-hidden="true" />
+                      <div v-if="statsData?.user?.avg_response_time" :class="[statsData.avg_response_time - statsData.user.avg_response_time > 0 ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800', 'inline-flex items-baseline rounded-full px-2.5 py-0.5 text-sm font-medium md:mt-2 lg:mt-0']">
+                        <ArrowSmallUpIcon v-if="statsData.avg_response_time - statsData.user.avg_response_time <= 0" class="-ml-1 mr-0.5 h-5 w-5 flex-shrink-0 self-center" :class="[statsData.avg_response_time - statsData.user.avg_response_time > 0 ? 'text-green-500' : 'text-red-500']" aria-hidden="true" />
                         <ArrowSmallDownIcon v-else class="-ml-1 mr-0.5 h-5 w-5 flex-shrink-0 self-center" :class="['increase' === 'increase' ? 'text-green-500' : 'text-red-500']" aria-hidden="true" />
                         <span class="sr-only"> {{ 'increase' === 'increase' ? 'Increased' : 'Decreased' }} by </span>
-                        27%
+                        {{ Math.abs(Math.round(((statsData.avg_response_time - statsData.user.avg_response_time) / statsData.avg_response_time) * 100)) }}%
                       </div>
                     </dd>
                   </dl>
@@ -242,27 +241,80 @@
           </div>
         </div>
 
-        <h2 class="pt-4 text-lg font-semibold leading-4 text-gray-700">Updates</h2>
+        <h2 class="pt-4 text-lg font-semibold leading-4 text-gray-700">Insights</h2>
 
-        <div class="rounded-md bg-yellow-50 p-4">
-          <div class="flex">
-            <div class="flex-shrink-0">
-              <!-- Heroicon name: mini/exclamation-triangle -->
-              <svg class="h-5 w-5 text-yellow-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-                <path fill-rule="evenodd" d="M8.485 3.495c.673-1.167 2.357-1.167 3.03 0l6.28 10.875c.673 1.167-.17 2.625-1.516 2.625H3.72c-1.347 0-2.189-1.458-1.515-2.625L8.485 3.495zM10 6a.75.75 0 01.75.75v3.5a.75.75 0 01-1.5 0v-3.5A.75.75 0 0110 6zm0 9a1 1 0 100-2 1 1 0 000 2z" clip-rule="evenodd" />
-              </svg>
-            </div>
-            <div class="ml-3">
-              <h3 class="text-sm font-medium text-yellow-800">Response time is high</h3>
-              <div class="mt-1 text-sm text-yellow-700">
-                <p>Your response time on tickets is <strong>high</strong> in comparison to the other staff members. Try to check your page more often to reduce the response time.</p>
-                <p class="mt-1">You can check the <router-link :to="{ name: 'Insights', params: { inboxId: this.$route.params.inboxId, tab: 'tickets' } }" class="text-medium underline">ticket insights</router-link> to see what some good times are when students often ask questions.</p>
-              </div>
-            </div>
+        <div v-if="Object.values(updates).filter(u => u == true).length == 0" class="flex rounded-lg border p-2">
+          <img :src="awesome" class="w-1/3 md:w-1/5" />
+          <div class="flex flex-col px-4">
+            <h2 class="text-xl font-bold text-primary">All good</h2>
+            <p class="text-sm">Right now there are no insights that require your attention</p>
           </div>
         </div>
 
-        <div class="rounded-md bg-blue-50 p-4">
+        <template v-else>
+          <!-- Response time is high -->
+          <div v-if="updates.highResponseTime" class="rounded-md bg-yellow-50 p-4">
+            <div class="flex">
+              <div class="flex-shrink-0">
+                <!-- Heroicon name: mini/exclamation-triangle -->
+                <svg class="h-5 w-5 text-yellow-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                  <path fill-rule="evenodd" d="M8.485 3.495c.673-1.167 2.357-1.167 3.03 0l6.28 10.875c.673 1.167-.17 2.625-1.516 2.625H3.72c-1.347 0-2.189-1.458-1.515-2.625L8.485 3.495zM10 6a.75.75 0 01.75.75v3.5a.75.75 0 01-1.5 0v-3.5A.75.75 0 0110 6zm0 9a1 1 0 100-2 1 1 0 000 2z" clip-rule="evenodd" />
+                </svg>
+              </div>
+              <div class="ml-3">
+                <h3 class="text-sm font-medium text-yellow-800">Response time is high</h3>
+                <div class="mt-1 text-sm text-yellow-700">
+                  <p>Your response time on tickets is <strong>high</strong> in comparison to the other staff members. Try to check your page more often to reduce the response time.</p>
+                  <p class="mt-1">You can check the <router-link :to="{ name: 'Insights', params: { inboxId: this.$route.params.inboxId, tab: 'tickets' } }" class="text-medium underline">ticket insights</router-link> to see what some good times are when students often ask questions.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- No feedback yet so helpfulness is 0 -->
+          <div v-if="updates.noFeedbackYet" class="rounded-md bg-blue-50 p-4">
+            <div class="flex">
+              <div class="flex-shrink-0">
+                <!-- Heroicon name: mini/exclamation-triangle -->
+                <InformationCircleIcon class="h-5 w-5 text-blue-400" aria-hidden="true" />
+              </div>
+              <div class="ml-3">
+                <h3 class="text-sm font-medium text-blue-700">No feedback yet</h3>
+                <div class="mt-1 text-sm text-blue-700">
+                  <p class="mb-2">Your <strong>helpfulness</strong> is currently showing 0, but that is because no one gave feedback on your response yet. People can mark your comments as <strong>helpful</strong> or <strong>not helpful</strong> which will display your helpfulness here.</p>
+                  <div class="inline-flex items-center px-3 py-0.5 rounded-full text-sm border text-primary bg-white font-medium">
+                    <HandThumbUpIcon class="h-4 w-4 text-primary mr-1" />
+                    Helpful
+                  </div>
+                  <div class="inline-flex items-center px-3 py-0.5 rounded-full text-sm border text-primary bg-white">
+                    <HandThumbDownIcon class="h-4 w-4 text-primary mr-1" />
+                    Not Helpful
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Helpfulness is low -->
+          <div v-if="updates.helpfulnessLow" class="rounded-md bg-yellow-50 p-4">
+            <div class="flex">
+              <div class="flex-shrink-0">
+                <!-- Heroicon name: mini/exclamation-triangle -->
+                <svg class="h-5 w-5 text-yellow-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                  <path fill-rule="evenodd" d="M8.485 3.495c.673-1.167 2.357-1.167 3.03 0l6.28 10.875c.673 1.167-.17 2.625-1.516 2.625H3.72c-1.347 0-2.189-1.458-1.515-2.625L8.485 3.495zM10 6a.75.75 0 01.75.75v3.5a.75.75 0 01-1.5 0v-3.5A.75.75 0 0110 6zm0 9a1 1 0 100-2 1 1 0 000 2z" clip-rule="evenodd" />
+                </svg>
+              </div>
+              <div class="ml-3">
+                <h3 class="text-sm font-medium text-yellow-800">Helpfulness is low</h3>
+                <div class="mt-1 text-sm text-yellow-700">
+                  <p>People think your helpfulness is <strong>low</strong>. Try to pay attention to the reponses you give on questions to improve your helpfulness.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </template>
+
+        <div v-if="false" class="rounded-md bg-blue-50 p-4">
           <div class="flex">
             <div class="flex-shrink-0">
               <ClockIcon class="h-5 w-5 text-blue-400" aria-hidden="true" />
@@ -278,7 +330,7 @@
 
         <h2 class="pt-4 text-lg font-semibold leading-4 text-gray-700">Tickets</h2>
 
-        <div v-if="tickets?.length == 0" class="flex rounded-lg border p-2">
+        <div v-if="ticketsFlattened?.length == 0" class="flex rounded-lg border p-2">
           <img :src="awesome" class="w-1/3 md:w-1/5" />
           <div class="flex flex-col px-4">
             <h2 class="text-xl font-bold text-primary">Well done!</h2>
@@ -288,12 +340,12 @@
 
         <div v-if="ticketsFlattened?.filter((t) => t.open)?.length > 0" class="flex flex-col space-y-2">
           <router-link v-for="ticket in ticketsFlattened?.filter((t) => t.open)" :key="ticket.id" :to="`/inboxes/${1}/tickets/${ticket.ticket_inbox_id}`" class="group flex flex-col rounded-lg border p-3">
-            <div v-if="false" class="mb-1 flex justify-between">
-              <div class="flex space-x-2 text-orange-600">
+            <div v-if="ticket.assignee.id == undefined" class="mb-1 flex justify-between">
+              <div class="flex space-x-2 text-red-600">
                 <ExclamationCircleIcon class="h-5 w-5" />
-                <span class="text-sm font-medium">MEDIUM</span>
+                <span class="text-sm font-medium">HIGH</span>
               </div>
-              <span class="inline-flex items-center rounded bg-green-100 px-2 py-0.5 text-xs font-medium text-green-800">Response</span>
+              <span class="inline-flex items-center rounded bg-green-100 px-2 py-0.5 text-xs font-medium text-green-800">New ticket</span>
             </div>
 
             <h2 class="text-lg font-semibold leading-6 group-hover:underline">
@@ -307,7 +359,7 @@
               </h3>
             </div>
 
-            <div class="mt-2 flex select-none items-center space-x-1">
+            <div v-if="ticket.labels.length > 0" class="mt-2 flex select-none items-center space-x-1">
               <chip :background="label.color" :key="label.id" v-for="label in ticket.labels.slice(0, 1)">
                 {{ label.name }}
               </chip>
@@ -358,7 +410,7 @@
                     <dt class="truncate text-sm font-medium text-gray-500">Public tickets</dt>
                     <dd class="flex items-center justify-between">
                       <div class="text-xl font-medium text-primary">
-                        0
+                        {{ ticketsFlattened?.filter(t => t.is_public)?.length }}
                       </div>
                     </dd>
                   </dl>
@@ -488,8 +540,8 @@ import moment from 'moment'
 import Chip from '@/components/chip/Chip.vue'
 import TicketCard from '@/components/tickets/TicketCard.vue'
 
-import { BellIcon, ChatBubbleLeftRightIcon, ExclamationCircleIcon, InboxStackIcon, ChatBubbleLeftIcon, CheckCircleIcon, StarIcon } from '@heroicons/vue/24/outline'
-import { ArrowSmallDownIcon, ArrowSmallUpIcon, ChevronRightIcon, ClockIcon, InformationCircleIcon } from '@heroicons/vue/24/solid'
+import { BellIcon, ChatBubbleLeftRightIcon, ExclamationCircleIcon, InboxStackIcon, ChatBubbleLeftIcon, CheckCircleIcon, StarIcon, HandThumbDownIcon, ClockIcon } from '@heroicons/vue/24/outline'
+import { ArrowSmallDownIcon, ArrowSmallUpIcon, ChevronRightIcon, InformationCircleIcon, HandThumbUpIcon } from '@heroicons/vue/24/solid'
 import { ArrowRightIcon, ExclamationTriangleIcon, GlobeEuropeAfricaIcon, ShareIcon } from '@heroicons/vue/20/solid'
 
 import report from '@/assets/img/svg/report.svg'
@@ -522,7 +574,9 @@ export default {
     CheckCircleIcon,
     StarIcon,
     GlobeEuropeAfricaIcon,
-    ShareIcon
+    ShareIcon,
+    HandThumbUpIcon,
+    HandThumbDownIcon
 },
   data: () => ({
     role: 'STUDENT',
@@ -531,15 +585,14 @@ export default {
     report,
     awesome,
     relax,
-    updates: [],
     statsData: {}
   }),
-  created() {
-    axios.get(`/api/inboxes/${this.$route.params.inboxId}/labels/all`).then((response) => {
+  async created() {
+    await axios.get(`/api/inboxes/${this.$route.params.inboxId}/labels/all`).then((response) => {
       this.inbox_labels = response.data.concat([UNLABELLED_LABEL])
     })
 
-    axios.get(`/api/inboxes/${this.$route.params.inboxId}/role`).then((response) => {
+    await axios.get(`/api/inboxes/${this.$route.params.inboxId}/role`).then((response) => {
       if (response.data.key === 'MANAGER') this.role = 'MANAGER'
       else if (response.data.key === 'AGENT') this.role = 'AGENT'
       else this.role = 'STUDENT'
@@ -550,25 +603,18 @@ export default {
   setup() {
     return { moment }
   },
-  async mounted() {
-    const { inboxId } = this.$route.params
-
-    /* Gettings general statistics. */
-    const statsResponse = await axios.get(`/api/inboxes/${inboxId}/statistics`)
-    this.statsData = statsResponse.data
-  },
   methods: {
     ...mapActions('onboarding', {
       nextStep: 'next',
       prevStep: 'prev'
     }),
-    get_tickets() {
+    async get_tickets() {
       // Call this function by using callDebounceGetTickets
       const labelsIds = []
       this.labels.forEach((label) => labelsIds.push(label.id))
       const { inboxId } = this.$route.params
 
-      axios
+      await axios
         .get(`/api/inboxes/${inboxId}/tickets`, {
           params: {
             q: this.search,
@@ -584,6 +630,13 @@ export default {
             tickets: response.data
           })
         })
+
+      if (this.role == 'STUDENT') return
+      
+      /* Gettings general statistics. */
+      const statsResponse = await axios.get(`/api/inboxes/${inboxId}/statistics/staff`)
+      this.statsData = statsResponse.data
+      this.statsData.user = this.statsData.staff.find(s => s.id == this.user.id)
     }
   },
   computed: {
@@ -595,6 +648,21 @@ export default {
           return c.tickets
         })
         .sort((a, b) => a.date_created < b.date_created)
+    },
+    updates() {
+      if (this.statsData?.user == undefined) return {}
+      let updates = {}
+
+      if (Math.round(((this.statsData.avg_response_time - this.statsData.user.avg_response_time) / this.statsData.avg_response_time) * 100) < -25) updates.highResponseTime = true
+      else updates.highResponseTime = false
+
+      if (this.statsData.user.amount_of_helpful_comments == 0) updates.noFeedbackYet = true
+      else updates.noFeedbackYet = false
+
+      if (this.statsData.user.amount_of_helpful_comments > 0 && this.statsData.user.helpfulness < 50) updates.helpfulnessLow = true
+      else updates.helpfulnessLow = false
+
+      return updates
     },
     ...mapState({
       user: (state) => state.user,
