@@ -91,7 +91,7 @@
           </div>
 
           <!-- Automatically search for an answer. -->
-          <div v-if="ai.prefetchingAnswers.active">
+          <div v-if="false && ai.prefetchingAnswers.active">
             <label for="content" class="relative block text-sm font-medium text-gray-700">
               Automatic Answer
             </label>
