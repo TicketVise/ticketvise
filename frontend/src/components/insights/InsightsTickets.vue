@@ -52,7 +52,7 @@
       <TicketsTimeChart :inbox-id="$route.params.inboxId" :height="200" :type="ticketChartType" />
     </div>
 
-    <div class="rounded-md bg-blue-50 p-4">
+    <!-- <div class="rounded-md bg-blue-50 p-4">
       <div class="flex">
         <div class="flex-shrink-0">
           <ClockIcon class="h-5 w-5 text-blue-400" aria-hidden="true" />
@@ -64,7 +64,7 @@
           </div>
         </div>
       </div>
-    </div>
+    </div> -->
   </section>
 </template>
 
