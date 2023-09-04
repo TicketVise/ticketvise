@@ -160,8 +160,9 @@ AWS_ACCESS_KEY_ID = os.environ.get("S3_ACCESS_KEY", "minio")
 AWS_SECRET_ACCESS_KEY = os.environ.get("S3_SECRET_KEY", "Welkom01")
 
 AWS_STORAGE_BUCKET_NAME = os.environ.get("S3_BUCKET_NAME", "ticketvise")
-AWS_S3_ENDPOINT_URL = os.environ.get("S3_ENDPOINT_URL", "http://s3:9000")
-AWS_S3_CUSTOM_DOMAIN = f"{HOST}/s3/{AWS_STORAGE_BUCKET_NAME}"
+AWS_S3_ENDPOINT_URL = ('https://' if AWS_S3_SECURE_URLS else 'http://') + os.environ.get("S3_ENDPOINT_URL", "s3:9000")
+AWS_S3_CUSTOM_DOMAIN = f"{os.environ.get('S3_ENDPOINT_URL', 's3:9000')}/{AWS_STORAGE_BUCKET_NAME}"
+AWS_DEFAULT_ACL = 'public-read'
 
 
 #: Password validation
