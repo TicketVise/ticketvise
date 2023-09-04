@@ -139,7 +139,7 @@
             </span>
           </span>
 
-          <Listbox v-if="ticket?.assignee?.first_name" as="span" class="relative block mb-2 mr-2">
+          <Listbox v-if="ticket?.assignee?.first_name && isStaff" as="span" class="relative block mb-2 mr-2">
             <ListboxButton @click="listboxAlignment('staffListbox')" class="relative flex items-center w-full text-sm font-medium focus:outline-none">
               <span class="flex justify-between items-center rounded-full bg-white border py-1 pl-3 pr-2 text-xs w-full font-medium text-gray-700">
                 <div class="flex space-x-1 mr-1">
@@ -207,6 +207,16 @@
             <UserCircleIcon class="h-4 w-4 text-primary" aria-hidden="true" />
             <span class="text-primary text-xs font-medium uppercase">Assign Yourself</span>
           </button>
+          <span v-else-if="ticket?.assignee?.first_name" class="flex space-x-1 items-center rounded-full bg-white border py-1 px-3 text-xs font-medium text-gray-700 mb-2 mr-2">
+            <img
+              class="h-4 w-4 rounded-full mr-1"
+              :src="ticket?.assignee?.avatar_url"
+              alt=""
+            />
+            <span class="text-gray-900 text-xs font-medium">
+              {{ ticket?.assignee?.first_name + ' ' + ticket?.assignee?.last_name }}
+            </span>
+          </span>
           
           <span class="flex space-x-1 items-center rounded-full bg-white border py-1 px-3 text-xs font-medium text-gray-700 mb-2 mr-2">
             <ClipboardDocumentCheckIcon
@@ -296,10 +306,9 @@
           <span v-else-if="ticket?.labels?.[0]" class="flex space-x-1 items-center rounded-full bg-white border py-1 pl-3 pr-2 text-xs font-medium text-gray-700 mb-2 mr-2">
             <div :style="`background-color: ${ticket?.labels?.[0]?.color}`" class="w-2 h-2 rounded-full flex-col mr-1" v-if="ticket?.labels?.[0]?.color"></div>
             <span>{{ ticket?.labels?.[0]?.name }}</span>
-            <ChevronDownIcon class="h-4 w-4 text-gray-400" aria-hidden="true" />
           </span>
 
-          <button @click="showPopupShare = true" class="flex space-x-1 items-center rounded-full bg-white border py-1 px-3 text-xs font-medium text-gray-700 mb-2 mr-2">
+          <button v-if="!ticket?.is_public" @click="showPopupShare = true" class="flex space-x-1 items-center rounded-full bg-white border py-1 px-3 text-xs font-medium text-gray-700 mb-2 mr-2">
             <ShareIcon
               :class="[isStaffOrAuthor ? 'text-gray-400' : 'text-primary', 'h-4 w-4']"
               aria-hidden="true"
