@@ -500,9 +500,9 @@
       </div>
     </div> -->
 
-    <div class="p-4 max-w-4xl mx-auto w-full" v-if="tabs.find(t => t.name == 'Email').current">
+    <!-- <div class="p-4 max-w-4xl mx-auto w-full" v-if="tabs.find(t => t.name == 'Email').current">
       <Email :connected="inbox.is_email_setup" />
-    </div>
+    </div> -->
   </div>
 
   <!-- Global notification live region, render this permanently at the end of the document -->
@@ -648,7 +648,7 @@ export default {
         { name: 'Automation', current: false },
         // { name: 'Intelligence', current: false },
         { name: 'Users', current: false },
-        { name: 'Email', current: false }
+        // { name: 'Email', current: false }
       ]
     }
   },
