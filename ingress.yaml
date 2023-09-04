@@ -3,21 +3,32 @@ kind: Ingress
 metadata:
   name: ingress-ticketvise
   annotations:
-    nginx.ingress.kubernetes.io/rewrite-target: /$2$3
+    cert-manager.io/issuer: letsencrypt-nginx
 spec:
   ingressClassName: nginx
+  tls:
+  - hosts:
+    - app.ticketvise.com
+    secretName: letsencrypt-nginx
   rules:
   - host: app.ticketvise.com
     http:
       paths:
-      - path: /()(api)(.*)
+      - path: /api
         pathType: Prefix
         backend:
           service:
             name: backend-service
             port:
               number: 80
-      - path: /()(.*)
+      - path: /lti
+        pathType: Prefix
+        backend:
+          service:
+            name: backend-service
+            port:
+              number: 80
+      - path: /
         pathType: Prefix
         backend:
           service:

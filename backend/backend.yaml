@@ -18,7 +18,7 @@ metadata:
   labels:
     app: ticketvise-backend
 spec:
-  replicas: 3
+  replicas: 1
   selector:
     matchLabels:
       app: ticketvise-backend
@@ -36,7 +36,7 @@ spec:
         "kubernetes.io/os": linux
       containers:
         - name: ticketvise-backend
-          image: registry.digitalocean.com/cr-ticketvise/backend:v2
+          image: registry.digitalocean.com/cr-ticketvise/backend:v2.5
           imagePullPolicy: Always
           ports:
             - containerPort: 8000
@@ -75,13 +75,32 @@ spec:
               secretKeyRef:
                 name: db-credentials
                 key: port
-          - name: HOST
+          - name: DOMAIN
             value: app.ticketvise.com
           - name: S3_USE_HTTPS
-            value: "0"
+            value: "1"
           - name: S3_ACCESS_KEY
-            value: minio
+            valueFrom:
+              secretKeyRef:
+                name: s3-credentials
+                key: key
           - name: S3_SECRET_KEY
-            value: Welkom01
+            valueFrom:
+              secretKeyRef:
+                name: s3-credentials
+                key: secret
           - name: S3_ENDPOINT_URL
-            value: http://s3:9000
+            valueFrom:
+              secretKeyRef:
+                name: s3-credentials
+                key: endpoint
+          - name: LTI_KEY
+            valueFrom:
+              secretKeyRef:
+                name: lti-credentials
+                key: key
+          - name: LTI_SECRET
+            valueFrom:
+              secretKeyRef:
+                name: lti-credentials
+                key: secret

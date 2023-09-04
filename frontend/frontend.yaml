@@ -18,7 +18,7 @@ metadata:
   labels:
     app: ticketvise-frontend
 spec:
-  replicas: 3
+  replicas: 1
   selector:
     matchLabels:
       app: ticketvise-frontend
@@ -36,7 +36,7 @@ spec:
         "kubernetes.io/os": linux
       containers:
         - name: ticketvise-frontend
-          image: registry.digitalocean.com/cr-ticketvise/frontend:v2
+          image: registry.digitalocean.com/cr-ticketvise/frontend:v2.4
           imagePullPolicy: Always
           ports:
             - containerPort: 80
