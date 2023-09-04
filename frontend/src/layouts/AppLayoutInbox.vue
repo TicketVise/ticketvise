@@ -34,7 +34,7 @@
             </div> -->
           </div>
 
-          <div
+          <!-- <div
             class="flex flex-1 justify-center lg:justify-end mx-auto max-w-2xl"
           >
             <div class="w-full px-2 lg:px-6">
@@ -43,7 +43,6 @@
                 <div
                   class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3"
                 >
-                  <!-- Heroicon name: mini/magnifying-glass -->
                   <svg
                     class="h-5 w-5"
                     xmlns="http://www.w3.org/2000/svg"
@@ -64,7 +63,7 @@
                 >Search</button>
               </div>
             </div>
-          </div>
+          </div> -->
 
           <!-- Right section on desktop -->
           <div class="flex items-center">
