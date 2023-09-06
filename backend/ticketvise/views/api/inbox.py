@@ -212,7 +212,7 @@ class InboxSettingsApiView(RetrieveUpdateAPIView):
         return super().update(request, *args, **kwargs)
 
 class CurrentUserInboxSerializer(ModelSerializer):
-    inbox = InboxSerializer(fields=["name", "id", "color", "labels", "image", "lti_context_label", "coordinator", "is_email_setup"])
+    inbox = InboxSerializer(fields=["name", "id", "color", "labels", "image", "lti_context_label", "coordinator", "is_email_setup", "date_created"])
     role_label = serializers.SerializerMethodField()
 
     def get_role_label(self, user_inbox):
