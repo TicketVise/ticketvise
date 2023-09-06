@@ -223,7 +223,7 @@
                     <dt class="truncate text-sm font-medium text-gray-500">Your response time</dt>
                     <dd class="flex items-center justify-between">
                       <div class="text-xl font-medium text-primary">
-                        {{ statsData?.user?.avg_response_time || '..' }}h
+                        {{ statsData?.user?.avg_response_time || '0' }}h
                         <span class="ml-1 hidden text-sm font-medium text-gray-500 lg:inline"> ({{ statsData?.avg_response_time }}h for everyone)</span>
                       </div>
 
@@ -253,6 +253,45 @@
 
         <template v-else>
           <!-- Response time is high -->
+          <div v-if="updates.noLabels" class="rounded-md bg-blue-50 p-4">
+            <div class="flex">
+              <div class="flex-shrink-0">
+                <InformationCircleIcon class="h-5 w-5 text-blue-400" aria-hidden="true" />
+              </div>
+              <div class="ml-3">
+                <h3 class="text-sm font-medium text-blue-700">No labels yet</h3>
+                <div class="mt-1 text-sm text-blue-700">
+                  <p>This course inbox has no labels yet. You can <strong>CLICK HERE</strong> to setup some default tickets to get started.</p>
+                  <div class="flex">
+                    <span class="flex space-x-1 items-center rounded-full bg-white border py-1 px-3 text-xs font-medium text-gray-700 mr-2">
+                      <div style="background-color: #d73a4a" class="w-2 h-2 rounded-full flex-col mr-1"></div>
+                      <span>Assignment</span>
+                    </span>
+                    <span class="flex space-x-1 items-center rounded-full bg-white border py-1 px-3 text-xs font-medium text-gray-700 mr-2">
+                      <div style="background-color: #a2eeef" class="w-2 h-2 rounded-full flex-col mr-1"></div>
+                      <span>Exam</span>
+                    </span>
+                    <span class="flex space-x-1 items-center rounded-full bg-white border py-1 px-3 text-xs font-medium text-gray-700 mr-2">
+                      <div style="background-color: #0366d6" class="w-2 h-2 rounded-full flex-col mr-1"></div>
+                      <span>Lecture</span>
+                    </span>
+                    <span class="flex space-x-1 items-center rounded-full bg-white border py-1 px-3 text-xs font-medium text-gray-700 mr-2">
+                      <div style="background-color: #008672" class="w-2 h-2 rounded-full flex-col mr-1"></div>
+                      <span>Course Material</span>
+                    </span>
+                  </div>
+
+                  <div class="flex w-full items-center justify-center mt-4">
+                    <EllipsisHorizontalIcon class="h-5 w-5 text-blue-900" aria-hidden="true" />
+                  </div>
+
+                  <p class="mt-1">You can also go to the <router-link :to="{ name: 'Settings', params: { inboxId: this.$route.params.inboxId, tab: 'labels' } }" class="text-medium underline">labels settings</router-link> to customize them yourself.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Response time is high -->
           <div v-if="updates.highResponseTime" class="rounded-md bg-yellow-50 p-4">
             <div class="flex">
               <div class="flex-shrink-0">
@@ -275,14 +314,13 @@
           <div v-if="updates.noFeedbackYet" class="rounded-md bg-blue-50 p-4">
             <div class="flex">
               <div class="flex-shrink-0">
-                <!-- Heroicon name: mini/exclamation-triangle -->
                 <InformationCircleIcon class="h-5 w-5 text-blue-400" aria-hidden="true" />
               </div>
               <div class="ml-3">
                 <h3 class="text-sm font-medium text-blue-700">No feedback yet</h3>
                 <div class="mt-1 text-sm text-blue-700">
                   <p class="mb-2">Your <strong>helpfulness</strong> is currently showing 0, but that is because no one gave feedback on your response yet. People can mark your comments as <strong>helpful</strong> or <strong>not helpful</strong> which will display your helpfulness here.</p>
-                  <div class="inline-flex items-center px-3 py-0.5 rounded-full text-sm border text-primary bg-white font-medium">
+                  <div class="inline-flex items-center px-3 py-0.5 rounded-full text-sm border text-primary bg-white font-medium mr-2">
                     <HandThumbUpIcon class="h-4 w-4 text-primary mr-1" />
                     Helpful
                   </div>
@@ -334,7 +372,8 @@
           <img :src="awesome" class="w-1/3 md:w-1/5" />
           <div class="flex flex-col px-4">
             <h2 class="text-xl font-bold text-primary">Well done!</h2>
-            <p class="text-sm">Right now there are no tickets that require your attention</p>
+            <p class="text-sm">Right now there are no tickets that require your attention.</p>
+            <p class="text-sm">We will show any tickets that are important to you here!</p>
           </div>
         </div>
 
@@ -360,10 +399,11 @@
             </div>
 
             <div v-if="ticket.labels.length > 0" class="mt-2 flex select-none items-center space-x-1">
-              <chip :background="label.color" :key="label.id" v-for="label in ticket.labels.slice(0, 1)">
-                {{ label.name }}
-              </chip>
-              <span v-if="ticket.labels.length > 1" class="text-xs text-gray-600">+{{ ticket.labels.length - 1 }}</span>
+              <span :key="label.id" v-for="label in ticket.labels.slice(0, 1)" class="flex space-x-1 items-center rounded-full bg-white border py-1 px-3 text-xs font-medium text-gray-700 mr-2">
+                <div :style="`background-color: ${ticket?.labels?.[0]?.color}`" class="w-2 h-2 rounded-full flex-col mr-1" v-if="ticket?.labels?.[0]?.color"></div>
+                <span>{{ ticket?.labels?.[0]?.name }}</span>
+              </span>
+              <span v-if="ticket.labels.length > 1" class="text-sm font-medium text-gray-600">+{{ ticket.labels.length - 1 }}</span>
             </div>
           </router-link>
         </div>
@@ -415,6 +455,21 @@
                     </dd>
                   </dl>
                 </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div v-if="user.email == 'test_user@ticketvise.com'" class="rounded-md bg-blue-50 p-4">
+          <div class="flex">
+            <div class="flex-shrink-0">
+              <InformationCircleIcon class="h-5 w-5 text-blue-400" aria-hidden="true" />
+            </div>
+            <div class="ml-3">
+              <h3 class="text-sm font-medium text-blue-700">Student View</h3>
+              <div class="mt-1 text-sm text-blue-700">
+                <p>Welkom to TicketVise as a student using the Student View. This is what students see when they go to TicketVise.</p>
+                <p>They will only see their own tickets and tickets that are public or explicitly shared you them.</p>
               </div>
             </div>
           </div>
@@ -540,7 +595,7 @@ import moment from 'moment'
 import Chip from '@/components/chip/Chip.vue'
 import TicketCard from '@/components/tickets/TicketCard.vue'
 
-import { BellIcon, ChatBubbleLeftRightIcon, ExclamationCircleIcon, InboxStackIcon, ChatBubbleLeftIcon, CheckCircleIcon, StarIcon, HandThumbDownIcon, ClockIcon } from '@heroicons/vue/24/outline'
+import { BellIcon, ChatBubbleLeftRightIcon, ExclamationCircleIcon, InboxStackIcon, ChatBubbleLeftIcon, CheckCircleIcon, StarIcon, HandThumbDownIcon, ClockIcon, EllipsisHorizontalIcon } from '@heroicons/vue/24/outline'
 import { ArrowSmallDownIcon, ArrowSmallUpIcon, ChevronRightIcon, InformationCircleIcon, HandThumbUpIcon } from '@heroicons/vue/24/solid'
 import { ArrowRightIcon, ExclamationTriangleIcon, GlobeEuropeAfricaIcon, ShareIcon } from '@heroicons/vue/20/solid'
 
@@ -576,7 +631,8 @@ export default {
     GlobeEuropeAfricaIcon,
     ShareIcon,
     HandThumbUpIcon,
-    HandThumbDownIcon
+    HandThumbDownIcon,
+    EllipsisHorizontalIcon
 },
   data: () => ({
     role: 'STUDENT',
@@ -661,6 +717,8 @@ export default {
 
       if (this.statsData.user.amount_of_helpful_comments > 0 && this.statsData.user.helpfulness < 50) updates.helpfulnessLow = true
       else updates.helpfulnessLow = false
+
+      updates.noLabels = false
 
       return updates
     },
