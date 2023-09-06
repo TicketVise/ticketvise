@@ -185,6 +185,8 @@ if (urlToken) {
   const url = new URL(window.location.href)
   url.searchParams.delete(TOKEN_KEY)
 
+  if (isLocalStorageAvailable()) localStorage.setItem(TOKEN_KEY, urlToken)
+
   window.history.replaceState({}, document.title, url.href)
 }
 
