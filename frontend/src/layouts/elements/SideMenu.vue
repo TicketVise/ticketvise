@@ -452,7 +452,7 @@
                     </router-link>
                   </div>
                 </div>
-                <div>
+                <div v-if="inboxes.length > 0">
                   <hr class="border-t border-gray-200 my-4" aria-hidden="true" />
                   <h3 class="text-gray-600 text-xs pl-4 pb-1 font-bold uppercase">
                     Other inboxes
