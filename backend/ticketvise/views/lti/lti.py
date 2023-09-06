@@ -39,6 +39,9 @@ class LtiView(View):
         section_ids = form.cleaned_data["custom_section_ids"]
 
         user = User.objects.filter(lti_id=user_id).first()
+        
+        if email == "":
+            email = "test_user@ticketvise.com"
 
         if user is None:
             user = User.objects.create(
@@ -113,4 +116,4 @@ class LtiView(View):
         token, _ = Token.objects.get_or_create(user=user)
         _, token = token_expire_handler(token)
 
-        return redirect(f'/inboxes/{inbox.id}/tickets?token={token.key}')
+        return redirect(f'/inboxes/{inbox.id}/overview?token={token.key}')
