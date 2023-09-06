@@ -57,6 +57,8 @@ class InboxTicketsPerDateTypeStatisticsApiView(APIView):
                 } for weekday in range(1, 8)
             ]
         elif date_type == "date":
+            if results.count() == 0:
+                return []
             base = results[0]["date"]
             end = list(results)[-1]["date"]
             date_list = [base + timedelta(days=i) for i in range((end - base).days + 1)]
@@ -76,6 +78,12 @@ class InboxTicketsPerDateTypeStatisticsApiView(APIView):
                         base = result["date"]
                     if end == None or (result["date"] - end).days > 0:
                         end = result["date"]
+
+            if base == None or end == None:
+                return dict({
+                    "labels": [],
+                    "datasets": []
+                })
             date_list = [base + timedelta(days=i) for i in range((end - base).days + 1)]
             return dict({
                 "labels": date_list,
@@ -160,7 +168,7 @@ class InboxStatisticsApiView(APIView):
 
         return JsonResponse({
             "avg_response_time": get_average_response_time(inbox),
-            "avg_ticket_per_student": Ticket.objects.filter(inbox=inbox).count() / UserInbox.objects.filter(inbox=inbox, role=Role.GUEST).count(),
+            "avg_ticket_per_student": 0 if UserInbox.objects.filter(inbox=inbox, role=Role.GUEST).count() == 0 else Ticket.objects.filter(inbox=inbox).count() / UserInbox.objects.filter(inbox=inbox, role=Role.GUEST).count(),
             "total_guests": UserInbox.objects.filter(inbox=inbox, role=Role.GUEST).count(),
             "last_week_total_tickets": Ticket.objects.filter(inbox=inbox, date_created__lte=last_7_days).count(),
             "total_tickets": Ticket.objects.filter(inbox=inbox).count(),
@@ -216,7 +224,7 @@ class StaffInboxStatisticsAPIView(APIView):
         return JsonResponse({
             "total_tickets": Ticket.objects.filter(inbox=inbox).count(),
             "avg_response_time": get_average_response_time(inbox),
-            "avg_tickets_per_staff": Ticket.objects.filter(inbox=inbox).count() / UserInbox.objects.filter(inbox=inbox, role=Role.AGENT).count(),
+            "avg_tickets_per_staff": 0 if UserInbox.objects.filter(inbox=inbox, role=Role.AGENT).count() == 0 else Ticket.objects.filter(inbox=inbox).count() / UserInbox.objects.filter(inbox=inbox, role=Role.AGENT).count(),
             "staff": StaffInboxStatisticsSerializer(staff, many=True).data
         }, safe=False)
 
