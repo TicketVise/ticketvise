@@ -43,7 +43,7 @@ spec:
             value: admin193
           - name: SQL_HOST
             value: database
-          - name: HOST
+          - name: DOMAIN
             value: ivan.ticketvise.com
           - name: S3_USE_HTTPS
             value: "0"
