@@ -67,14 +67,14 @@
 
           <!-- Right section on desktop -->
           <div class="flex items-center">
-            <!-- <button type="button"
+            <button type="button"
                     class="inline-flex items-center justify-center py-1 px-4 border border-transparent rounded-md shadow-sm text-white bg-primary hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500 mr-4 space-x-2"
                     aria-label="Fullscreen" @click="openInTab()" v-if="isFramed()">
                     <span>New Tab</span>
                     <ArrowTopRightOnSquareIcon class="h-5 w-5" />
             </button>
 
-            <router-link
+            <!-- <router-link
               to="/notifications"
               type="button"
               class="flex-shrink-0 p-1 text-gray-200 rounded-full hover:text-white hover:bg-white hover:bg-opacity-10 focus:outline-none focus:ring-2 focus:ring-white"
