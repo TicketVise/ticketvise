@@ -88,8 +88,7 @@ export default {
       inboxes: state => state.inboxes
     }),
     inboxesByYear() {
-      // Also reverse order
-      return this.inboxes.reverse().reduce((acc, inbox) => {
+      let inboxes = this.inboxes.sort((a, b) => a.date_created - b.date_created).reduce((acc, inbox) => {
         const year = new Date(inbox.date_created).getFullYear()
         if (!acc[year]) {
           acc[year] = []
@@ -97,6 +96,8 @@ export default {
         acc[year].push(inbox)
         return acc
       }, {})
+
+
     }
   }
 }
