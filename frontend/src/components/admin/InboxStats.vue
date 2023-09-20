@@ -18,11 +18,7 @@
             <div class="flex items-center text-sm leading-5 text-gray-500">
               <UserIcon class="mr-1 w-4 h-4" />
               {{
-                stats
-                  ? stats.coordinator.first_name +
-                    " " +
-                    stats.coordinator.last_name
-                  : ""
+                inbox.coordinator.first_name + " " + inbox.coordinator.last_name
               }}
             </div>
           </div>
@@ -40,7 +36,7 @@
       </div>
       <div
         class="flex md:items-center hover:bg-gray-200 rounded-full cursor-pointer select-none p-2 w-10 h-10 mr-2"
-        @click="open = !open"
+        @click="openDropdown"
       >
         <ChevronDownIcon v-if="!open" class="w-6 h-6" />
         <ChevronUpIcon v-else class="w-6 h-6" />
@@ -116,11 +112,15 @@ export default {
         sameElse: "L [at] HH:mm",
       });
     },
-  },
-  mounted() {
-    axios.get(`/api/inboxes/${this.inbox.id}/statistics`).then((response) => {
-      this.stats = response.data;
-    });
-  },
+    openDropdown() {
+      this.open = !this.open
+
+      if (this.open) {
+        axios.get(`/api/inboxes/${this.inbox.id}/statistics`).then((response) => {
+          this.stats = response.data;
+        });
+      }
+    }
+  }
 };
 </script>

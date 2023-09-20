@@ -109,7 +109,7 @@ class InboxesApiView(ListAPIView):
 
     def get_serializer(self, *args, **kwargs):
         return InboxSerializer(*args, **kwargs, fields=(
-            "name", "id", "color", "image", "scheduling_algorithm", "fixed_scheduling_assignee", "date_created"))
+            "name", "id", "color", "image", "scheduling_algorithm", "fixed_scheduling_assignee", "date_created", "coordinator"))
 
     def get_queryset(self):
         return Inbox.objects.all().order_by("-date_created")
