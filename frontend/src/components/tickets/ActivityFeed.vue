@@ -10,9 +10,14 @@
         >There are no messages here yet...</span
       >
     </div>
-    <ul>
+    <ul class="relative pb-4">
+      <button @click="showActivity = !showActivity" v-if="isStaff && ticket?.replies.length != 0" class="absolute top-0 right-0 text-gray-400 flex items-center space-x-2 hover:text-gray-600 cursor-pointer z-20">
+        <BoltIcon v-if="!showActivity" class="h-4 w-4" aria-hidden="true" />
+        <BoltSlashIcon v-else class="h-4 w-4" aria-hidden="true" />
+        <span class="text-sm">{{ showActivity ? 'hide activity' : 'show activity' }}</span>
+      </button>
       <li v-for="(item, itemIdx) in ticket?.activity" :key="item">
-        <div class="relative pb-2">
+        <div v-if="item.type == 'comment' || (['assignment', 'tags', 'status', 'attachment', 'group'].includes(item.type) && (showActivity || ticket?.replies.length == 0))" class="relative pb-2">
           <span
             v-if="itemIdx !== ticket.activity.length - 1"
             class="absolute top-5 left-5 -ml-px h-full w-0.5 bg-gray-200"
@@ -105,8 +110,7 @@
               </div>
             </template>
             <template
-              v-else-if="item.type === 'assignment'"
-              condition="item.type === 'assignment'"
+              v-else-if="item.type === 'assignment' && (showActivity || ticket?.replies.length == 0)"
             >
               <div>
                 <div class="relative px-1">
@@ -139,8 +143,7 @@
               </div>
             </template>
             <template
-              v-else-if="item.type === 'tags'"
-              condition="item.type === 'tags'"
+              v-else-if="item.type === 'tags' && (showActivity || ticket?.replies.length == 0)"
             >
               <div>
                 <div class="relative px-1">
@@ -180,8 +183,7 @@
               </div>
             </template>
             <template
-              v-else-if="item.type === 'status'"
-              condition="item.type === 'status'"
+              v-else-if="item.type === 'status' && (showActivity || ticket?.replies.length == 0)"
             >
               <div>
                 <div class="relative px-1">
@@ -218,8 +220,7 @@
               </div>
             </template>
             <template
-              v-else-if="item.type === 'attachment'"
-              condition="item.type === 'attachment'"
+              v-else-if="item.type === 'attachment' && (showActivity || ticket?.replies.length == 0)"
             >
               <div>
                 <div class="relative px-1">
@@ -314,8 +315,7 @@
               </div>
             </template>
             <template
-              v-else-if="item.type === 'group'"
-              condition="item.type === 'group'"
+              v-else-if="item.type === 'group' && (showActivity || ticket?.replies.length == 0)"
             >
               <div>
                 <div class="relative px-1">
@@ -440,6 +440,8 @@ import {
 import {
   HandThumbUpIcon as HandThumbUpOutlineIcon,
   HandThumbDownIcon as HandThumbDownOutlineIcon,
+BoltIcon,
+BoltSlashIcon,
 } from "@heroicons/vue/24/outline";
 
 import relax from "@/assets/img/svg/relax.svg";
@@ -480,7 +482,9 @@ export default {
     HandThumbDownSolidIcon,
     HandThumbUpOutlineIcon,
     HandThumbDownOutlineIcon,
-  },
+    BoltIcon,
+    BoltSlashIcon
+},
   props: {
     ticket: {
       type: Object,
@@ -495,10 +499,17 @@ export default {
   data: () => ({
     comment: "",
     errors: [],
-    relax
+    relax,
+    showActivity: false,
+    role: ''
   }),
   setup() {
     return { statusses };
+  },
+  mounted() {
+    axios.get(`/api/me/inboxes/${this.$route.params.inboxId}`).then((response) => {
+      this.role = response.data.role;
+    })
   },
   methods: {
     submit() {
@@ -582,6 +593,12 @@ export default {
     user() {
       return this.$store.state.user;
     },
+    isStaff() {
+      return (
+        (this.role && (this.role === "AGENT" || this.role === "MANAGER")) ||
+        (this.user && this.user.is_superuser)
+      );
+    }
   },
 };
 </script>
