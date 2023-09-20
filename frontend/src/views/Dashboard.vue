@@ -37,8 +37,8 @@
       </section>
 
       <!-- Inboxes grid -->
-      <template v-for="(inboxes, year) in inboxesByYear" :key="year">
-        <h2 class="mt-6 text-xl font-medium text-gray-800">{{ year }}</h2>
+      <!-- <template v-for="(inboxes, year) in inboxesByYear" :key="year">
+        <h2 class="mt-6 text-xl font-medium text-gray-800">{{ year }}</h2> -->
         <div class="sm:px-0 grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
           <router-link :to="`/inboxes/${inbox.id}/overview`" v-for="inbox in inboxes" :key="inbox.id" class="group bg-white relative rounded-lg">
             <div class="" aria-label="more options">
@@ -54,7 +54,7 @@
             </div>
           </router-link>
         </div>
-      </template>
+      <!-- </template> -->
     </div>
   </div>
 </template>
@@ -88,7 +88,9 @@ export default {
       inboxes: state => state.inboxes
     }),
     inboxesByYear() {
-      let inboxes = this.inboxes.sort((a, b) => a.date_created - b.date_created).reduce((acc, inbox) => {
+      let inboxes = [...this.inboxes]
+
+      const unordered = inboxes.reduce((acc, inbox) => {
         const year = new Date(inbox.date_created).getFullYear()
         if (!acc[year]) {
           acc[year] = []
@@ -96,8 +98,18 @@ export default {
         acc[year].push(inbox)
         return acc
       }, {})
+      console.log(unordered)
 
+      const ordered = Object.keys(unordered).sort((a, b) => a > b).reduce(
+        (obj, key) => { 
+          obj[key] = unordered[key]; 
+          return obj;
+        }, 
+        {}
+      );
+      console.log(ordered)
 
+      return ordered
     }
   }
 }
