@@ -19,10 +19,11 @@
           <div v-for="i of length" :key="i" class="h-24 w-full bg-gray-200 rounded"/>
         </div>
 
-        <div v-if="has_next" class="flex justify-center">
-          <!-- <submit-button @click="$emit('input')" class="bg-white">
+        <div v-if="has_next" class="flex justify-center py-4">
+          <button @click="$emit('input')" class="flex items-center text-primary font-semibold text-sm">
+            <ChevronDownIcon class="w-4 h-4 inline-block mr-1" />
             Load More
-          </submit-button> -->
+          </button>
         </div>
       </div>
     </div>
@@ -31,10 +32,11 @@
 
 <script>
   import TicketCard from '@/components/tickets/TicketCard.vue'
+  import { ChevronDownIcon } from '@heroicons/vue/24/outline';
   // import SubmitButton from '../elements/buttons/SubmitButton'
 
   export default {
-    components: { TicketCard },
+    components: { TicketCard, ChevronDownIcon },
     name: 'TicketColumn',
     props: ['title', 'color', 'ticketList', 'has_next', 'length']
   }
