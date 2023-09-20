@@ -4,7 +4,7 @@
     <div class="grid w-full grid-cols-2 gap-4">
       <div class="flex items-center overflow-hidden rounded-lg border bg-white p-2 px-4">
         <div class="hidden flex-shrink-0 sm:flex">
-          <InboxStackIcon class="h-6 w-6 text-gray-400" />
+          <StarIcon class="h-6 w-6 text-gray-400" />
         </div>
         <dl class="w-0 flex-1 sm:ml-5">
           <dt class="truncate text-sm font-medium text-gray-500">Helpfulness</dt>
@@ -90,7 +90,7 @@
 
 <script>
 import axios from 'axios'
-import { InboxStackIcon, ChatBubbleLeftRightIcon } from '@heroicons/vue/24/outline'
+import { InboxStackIcon, ChatBubbleLeftRightIcon, StarIcon } from '@heroicons/vue/24/outline'
 import { ArrowSmallDownIcon, ArrowSmallUpIcon, BookmarkIcon } from '@heroicons/vue/24/solid'
 import { ClockIcon, TagIcon, TicketIcon, HandThumbUpIcon } from '@heroicons/vue/20/solid'
 
@@ -105,7 +105,8 @@ export default {
     ChatBubbleLeftRightIcon,
     TicketIcon,
     ClockIcon,
-    TagIcon
+    TagIcon,
+    StarIcon
 },
   data: () => ({
     statsData: [],
