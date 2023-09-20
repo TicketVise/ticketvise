@@ -1237,7 +1237,7 @@ export default {
             this.ticket.attachments.length;
 
           /* Hide too many system messages. Make sure the focus is on the comments. */
-          this.ticket.activity = this.crampActivities(this.ticket.activity);
+          // this.ticket.activity = this.crampActivities(this.ticket.activity);
 
           /* Check list of tags. */
           this.ticket.inbox.labels = this.ticket.inbox.labels.map((l) => {
@@ -1295,16 +1295,16 @@ export default {
             newActivities.push(groupActivities[0]);
             groupActivities = [];
           } else if (groupActivities.length > 1) {
-            // newActivities.push({
-            //   id: groupActivities[0].id,
-            //   type: "group",
-            //   activities: groupActivities,
-            // });
+            newActivities.push({
+              id: groupActivities[0].id,
+              type: "group",
+              activities: groupActivities,
+            });
             groupActivities = [];
           }
           newActivities.push(activity);
         } else {
-          // groupActivities.push(activity);
+          groupActivities.push(activity);
         }
       });
 
