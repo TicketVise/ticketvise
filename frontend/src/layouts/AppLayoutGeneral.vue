@@ -8,7 +8,7 @@
             <div class="left-0 py-5 flex-shrink-0 static">
               <router-link to="/" class="flex items-center">
                 <img class="h-8 w-auto" :src="logo" alt="TicketVise" />
-                <span class="text-2xl ml-2 text-white">Ticket</span
+                <span class="text-2xl ml-2 font-semibold text-white">Ticket</span
                 ><span class="text-2xl text-primary font-bold">Vise</span>
               </router-link>
             </div>

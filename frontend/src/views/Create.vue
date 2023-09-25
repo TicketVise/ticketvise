@@ -468,7 +468,6 @@ export default {
       }).then((response) => {
         this.ai.prefetchingAnswers.loading = false
         this.ai.prefetchingAnswers.response = response.data
-        console.log(response.data)
       }).catch(() => {
         this.ai.prefetchingAnswers.loading = false
         this.ai.prefetchingAnswers.response = response.data

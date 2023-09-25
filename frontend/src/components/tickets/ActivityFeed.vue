@@ -11,7 +11,7 @@
       >
     </div>
     <ul class="relative pb-4">
-      <button @click="showActivity = !showActivity" v-if="isStaff && ticket?.replies.length != 0" class="absolute top-0 right-0 text-gray-400 flex items-center space-x-2 hover:text-gray-600 cursor-pointer z-20">
+      <button @click="showActivity = !showActivity" v-if="isStaff && ticket?.replies.length != 0" class="sm:absolute top-0 right-0 text-gray-400 flex items-center space-x-2 hover:text-gray-600 cursor-pointer z-10 mb-4">
         <BoltIcon v-if="!showActivity" class="h-4 w-4" aria-hidden="true" />
         <BoltSlashIcon v-else class="h-4 w-4" aria-hidden="true" />
         <span class="text-sm">{{ showActivity ? 'hide activity' : 'show activity' }}</span>

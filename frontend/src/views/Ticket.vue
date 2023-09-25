@@ -1434,8 +1434,6 @@ export default {
 
       if (this.files.length == 0) return
 
-      console.log(this.files)
-
       this.files.forEach(file => formData.append('files', file))
 
       axios.post(`/api/inboxes/${inboxId}/tickets/${ticketInboxId}/attachments`, formData, {
