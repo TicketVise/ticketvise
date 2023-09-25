@@ -86,31 +86,7 @@ export default {
     ...mapState({
       user: state => state.user,
       inboxes: state => state.inboxes
-    }),
-    inboxesByYear() {
-      let inboxes = [...this.inboxes]
-
-      const unordered = inboxes.reduce((acc, inbox) => {
-        const year = new Date(inbox.date_created).getFullYear()
-        if (!acc[year]) {
-          acc[year] = []
-        }
-        acc[year].push(inbox)
-        return acc
-      }, {})
-      console.log(unordered)
-
-      const ordered = Object.keys(unordered).sort((a, b) => a > b).reduce(
-        (obj, key) => { 
-          obj[key] = unordered[key]; 
-          return obj;
-        }, 
-        {}
-      );
-      console.log(ordered)
-
-      return ordered
-    }
+    })
   }
 }
 </script>
