@@ -261,7 +261,7 @@
 <script>
 import axios from "axios";
 
-import { XMarkIcon } from "@heroicons/vue/24/solid";
+import { XMarkIcon } from '@heroicons/vue/24/solid'
 
 export default {
   components: { XMarkIcon },
@@ -286,24 +286,17 @@ export default {
       this.getInbox();
       this.open = false;
     },
-    async getInbox() {
-      await axios
-        .get(`/api/inboxes/${this.$route.params.inboxId}/settings`)
-        .then((response) => {
-          this.inbox = response.data.inbox;
-          this.scheduling_options = response.data.scheduling_options;
-          this.scheduling_options.push(["nothing", "Nothing"]);
-          this.selected = this.scheduling_options.find(
-            (item) => item[0] === this.inbox.scheduling_algorithm
-          );
+    async getInbox () {
+      await axios.get(`/api/inboxes/${this.$route.params.inboxId}/settings`).then(response => {
+        this.inbox = response.data.inbox
+        this.scheduling_options = response.data.scheduling_options
+        this.scheduling_options.push(['nothing', 'Nothing'])
+        this.selected = this.scheduling_options.find(item => item[0] === this.inbox.scheduling_algorithm)
 
-          if (
-            this.inbox.scheduling_algorithm === "fixed" &&
-            !this.inbox.fixed_scheduling_assignee
-          ) {
-            this.selected = ["nothing", "Nothing"];
+        if (this.inbox.scheduling_algorithm === 'fixed' && !this.inbox.fixed_scheduling_assignee) {
+          this.selected = ['nothing', 'Nothing']
           }
-        });
+      })
 
       await axios
         .get(`/api/inboxes/${this.$route.params.inboxId}/staff`)
@@ -311,16 +304,10 @@ export default {
           this.staff = response.data;
           this.fixed_user = this.staff[0];
 
-          if (
-            this.selected[0] === "fixed" &&
-            this.inbox.fixed_scheduling_assignee
-          ) {
-            this.fixed_user =
-              this.staff.find(
-                (item) => item.id === this.inbox.fixed_scheduling_assignee
-              ) || this.staff[0];
+        if (this.selected[0] === 'fixed' && this.inbox.fixed_scheduling_assignee) {
+          this.fixed_user = this.staff.find(item => item.id === this.inbox.fixed_scheduling_assignee) || this.staff[0]
           }
-        });
+      })
     },
     save() {
       axios.defaults.xsrfCookieName = "csrftoken";

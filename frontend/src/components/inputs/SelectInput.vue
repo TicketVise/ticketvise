@@ -5,7 +5,13 @@
       {{ label }}
     </ListboxLabel>
     <div class="mt-1 relative">
-      <ListboxButton :disabled="disabled" class="relative w-full bg-white border border-gray-300 rounded-md pl-3 pr-10 py-2 text-left focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary sm:text-sm" :class="disabled ? 'cursor-not-allowed text-gray-400' : 'cursor-pointer'">
+      <ListboxButton
+        :disabled="disabled"
+        class="relative w-full bg-white border border-gray-300 rounded-md pl-3 pr-10 py-2 text-left focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary sm:text-sm"
+        :class="
+          disabled ? 'cursor-not-allowed text-gray-400' : 'cursor-pointer'
+        "
+      >
         <span class="flex items-center">
           <span
             v-if="selected?.color"
@@ -18,8 +24,14 @@
             alt=""
             class="flex-shrink-0 h-5 w-5 rounded-full"
           />
-          <component class="flex-shrink-0 h-4 w-4 mr-2 text-gray-700" v-if="selected?.icon" :is="selected?.icon" />
-          <span :class="[selected?.avatar ? 'ml-3' : '', 'block truncate']">{{ selected?.name || emptyLabel }}</span>
+          <component
+            class="flex-shrink-0 h-4 w-4 mr-2 text-gray-700"
+            v-if="selected?.icon"
+            :is="selected?.icon"
+          />
+          <span :class="[selected?.avatar ? 'ml-3' : '', 'block truncate']">{{
+            selected?.name || emptyLabel
+          }}</span>
         </span>
         <span
           class="ml-3 absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none"
@@ -50,14 +62,22 @@
               ]"
             >
               <div class="flex items-center pr-2">
-                <span v-if="element.color" class="flex-shrink-0 inline-block h-2 w-2 rounded-full mr-3" :style="`background-color: ${element.color}`" />
+                <span
+                  v-if="element.color"
+                  class="flex-shrink-0 inline-block h-2 w-2 rounded-full mr-3"
+                  :style="`background-color: ${element.color}`"
+                />
                 <img
                   v-if="element.avatar"
                   :src="element.avatar"
                   alt=""
                   class="flex-shrink-0 h-6 w-6 rounded-full"
                 />
-                <component class="flex-shrink-0 h-4 w-4 mr-2" v-if="element.icon" :is="element.icon" />
+                <component
+                  class="flex-shrink-0 h-4 w-4 mr-2"
+                  v-if="element.icon"
+                  :is="element.icon"
+                />
                 <span
                   :class="[
                     selected ? 'font-semibold' : 'font-normal',
@@ -99,7 +119,7 @@ import {
 import { CheckIcon, ChevronUpDownIcon } from "@heroicons/vue/24/solid";
 
 export default {
-  name: 'SelectInput',
+  name: "SelectInput",
   components: {
     Listbox,
     ListboxButton,
@@ -117,7 +137,7 @@ export default {
     data: {
       required: false,
       type: Array,
-      default: () => []
+      default: () => [],
     },
     init: {
       required: false,
@@ -133,13 +153,13 @@ export default {
     },
     modelValue: {
       required: false,
-      type: Object
+      type: Object,
     },
     disabled: {
       default: false,
       required: false,
-      type: Boolean
-    }
+      type: Boolean,
+    },
   },
   data: () => ({
     selected: null,
@@ -147,16 +167,16 @@ export default {
   watch: {
     modelValue: {
       immediate: true,
-      handler (value) {
-        this.selected = value
-      }
+      handler(value) {
+        this.selected = value;
+      },
     },
     selected: {
-      handler (value) {
-        this.$emit('update:modelValue', value)
-        this.$emit('update', value)
-      }
-    }
-  }
-}
+      handler(value) {
+        this.$emit("update:modelValue", value);
+        this.$emit("update", value);
+      },
+    },
+  },
+};
 </script>

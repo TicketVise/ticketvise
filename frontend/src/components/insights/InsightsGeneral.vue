@@ -15,7 +15,7 @@
                 <dt class="truncate text-sm font-medium text-gray-500">Helpfulness</dt>
                 <dd class="flex items-center justify-between">
                   <div class="text-xl font-medium text-primary">
-                    {{ Math.round(statsData?.staff?.filter(s => s.amount_of_helpful_comments > 0).reduce((acc, cur) => acc + cur.helpfulness, 0) / statsData?.staff?.filter(s => s.amount_of_helpful_comments > 0).length) }}%
+                    {{ Math.round(statsData?.staff?.filter(s => s.amount_of_helpful_comments > 0).reduce((acc, cur) => acc + cur.helpfulness, 0) / statsData?.staff?.filter(s => s.amount_of_helpful_comments > 0).length) || 0 }}%
                   </div>
 
                   <!-- <div :class="['increase' === 'increase' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800', 'inline-flex items-baseline rounded-full px-2.5 py-0.5 text-sm font-medium md:mt-2 lg:mt-0']">

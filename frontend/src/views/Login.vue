@@ -1,6 +1,8 @@
 <template>
   <div class="min-h-screen bg-white dark:bg-gray-800 flex">
-    <div class="flex-1 flex flex-col justify-center py-12 px-4 sm:px-6 lg:flex-none lg:px-20 xl:px-24">
+    <div
+      class="flex-1 flex flex-col justify-center py-12 px-4 sm:px-6 lg:flex-none lg:px-20 xl:px-24"
+    >
       <div class="mx-auto w-full max-w-sm lg:w-96">
         <div>
           <div class="font-ticketvise mx-auto flex items-center">
@@ -8,7 +10,9 @@
             <span class="text-2xl ml-2 text-gray-800 dark:text-white font-bold">Ticket</span>
             <span class="text-2xl text-primary font-bold">Vise</span>
           </div>
-          <h2 class="mt-6 text-3xl font-extrabold text-gray-900 dark:text-white">
+          <h2
+            class="mt-6 text-3xl font-extrabold text-gray-900 dark:text-white"
+          >
             Sign in to your account
           </h2>
         </div>
@@ -149,7 +153,7 @@
 </template>
 
 <script>
-import { ExclamationCircleIcon } from "@heroicons/vue/24/solid";
+import { ExclamationTriangleIcon } from "@heroicons/vue/24/solid";
 
 import Logo from "@/assets/logo/logo.svg";
 import SurfConext from "@/assets/img/ext/surfconext.png";
@@ -158,7 +162,7 @@ import Canvas from "@/assets/img/ext/canvas.svg";
 export default {
   name: "Login",
   components: {
-    ExclamationCircleIcon,
+    ExclamationTriangleIcon,
   },
   data: () => ({
     username: "",

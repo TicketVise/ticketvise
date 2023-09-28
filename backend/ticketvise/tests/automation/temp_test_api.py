@@ -13,8 +13,8 @@ class AutomationAPITestCase(TicketTestCase):
     def setUp(self):
         self.client = APIClient()
 
-        self.inbox = Inbox.objects.create(name="TestInbox 1", code="TestCode1", color="#FF6600")
-        self.inbox2 = Inbox.objects.create(name="TestInbox 2", code="TestCode2", color="#FF6600")
+        self.inbox = Inbox.objects.create(name="TestInbox 1", lti_context_label="TestCode1", color="#FF6600")
+        self.inbox2 = Inbox.objects.create(name="TestInbox 2", lti_context_label="TestCode2", color="#FF6600")
 
         self.assistant = User.objects.create(username="assistant", password="test67891",
                                              email="assistant@ticketvise.com")

@@ -143,9 +143,9 @@ export default {
     MenuButton,
     MenuItem,
     MenuItems,
+    ArrowTopRightOnSquareIcon,
     BellIcon,
     DevelopPanel,
-    ArrowTopRightOnSquareIcon
   },
   setup() {
     return {

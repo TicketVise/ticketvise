@@ -10,6 +10,7 @@ Contains classes for the API interface to dynamically load models using AJAX.
 * :class:`InboxUsersView`
 * :class:`InboxTicketView`
 """
+import logging
 from datetime import datetime
 import json
 
@@ -33,6 +34,7 @@ from ticketvise.models.ticket import Ticket, TicketAttachment, TicketEvent, Stat
     TicketAssigneeEvent, TicketLabelEvent, TicketLabel, TicketTitleEvent
 from ticketvise.models.user import User, Role, UserTicket, UserInbox
 from ticketvise.notifications import unread_related_ticket_notifications
+from ticketvise.models.notification.new import NewTicketNotification
 from ticketvise.views.api import CommentSerializer, CommentHelpfulSerializer, TicketSerializer, LabelSerializer
 from ticketvise.views.api.inbox import InboxSerializer
 from ticketvise.views.api.security import UserIsInInboxPermission, UserIsSuperUserPermission, \
@@ -490,8 +492,21 @@ class TicketCreateApiView(CreateAPIView):
         inbox = get_object_or_404(Inbox, pk=self.kwargs["inbox_id"])
         ticket = serializer.save(author=self.request.user, inbox=inbox)
 
+        # After saving we do the automations so the labels etc. are also created so we can use them in the automations
+        try:
+            for automation in ticket.inbox.automations.all():
+                automation.execute(ticket)
+
+            ticket.save()
+        except Exception as e:
+            logging.error(e)
+
         for file in self.request.FILES.getlist('files'):
             TicketAttachment(ticket=ticket, file=file).save()
+
+        if not ticket.assignee:
+            for user in ticket.inbox.get_assistants_and_coordinators():
+                NewTicketNotification.objects.create(ticket=ticket, receiver=user)
 
 
 class TicketSharedWithRetrieveSerializer(ModelSerializer):

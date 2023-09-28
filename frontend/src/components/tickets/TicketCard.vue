@@ -46,6 +46,7 @@
     <div class="flex justify-between items-center mt-1">
       <div v-if="!small" class="space-x-1 select-none">
         <chip
+          class="rounded-full"
           :background="label.color"
           :key="label.id"
           v-for="label in ticket.labels.slice(0, 1)"
@@ -55,6 +56,14 @@
         <span v-if="ticket.labels.length > 1" class="text-gray-600 text-xs"
           >+{{ ticket.labels.length - 1 }}</span
         >
+      </div>
+      <div v-if="ticket.labels.length > 0 && avatar" class="flex-shrink-0">
+        <img
+          class="h-5 w-5 rounded-full"
+          :src="avatar"
+          alt=""
+          :title="assignee.first_name + ' ' + assignee.last_name"
+        />
       </div>
       <!-- <div v-if="ticket.labels.length > 0 && avatar" class="flex-shrink-0">
         <img
@@ -102,14 +111,6 @@ export default {
   methods: {
     date(date) {
       return moment.parseZone(date).fromNow()
-      // return moment.parseZone(date).calendar(null, {
-      //   lastDay: "[Yesterday at] HH:mm",
-      //   sameDay: "[Today at] HH:mm",
-      //   nextDay: "[Tomorrow at] HH:mm",
-      //   lastWeek: "[Last] dddd [at] HH:mm",
-      //   nextWeek: "dddd [at] HH:mm",
-      //   sameElse: "L [at] HH:mm",
-      // });
     },
     assignUser(ticketId) {
       const id =

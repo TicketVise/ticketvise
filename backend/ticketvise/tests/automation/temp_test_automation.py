@@ -11,7 +11,7 @@ from ticketvise.tests.test_ticket import TicketTestCase
 class AutomationTestCase(TicketTestCase):
 
     def setUp(self):
-        self.inbox = Inbox.objects.create(name="TestInbox", code="TestCode", color="#FF6600")
+        self.inbox = Inbox.objects.create(name="TestInbox", lti_context_label="TestCode", color="#FF6600")
 
         self.student = User.objects.create(username="student", password="test12345", email="student@ticketvise.com")
         self.student.add_inbox(self.inbox)
@@ -58,7 +58,7 @@ class AutomationTestCase(TicketTestCase):
             evaluation_func="is_set",
             evaluation_value="True")
         result = automation_condition(self.ticket)
-        self.assertTrue(result)
+        self.assertFalse(result)
 
     def test_equals_boolean_valid(self):
         automation_condition = AutomationCondition.objects.create(

@@ -10,7 +10,7 @@
           <dt class="truncate text-sm font-medium text-gray-500">Helpfulness</dt>
           <dd class="flex items-center justify-between">
             <div class="text-xl font-medium text-primary">
-              {{ Math.round(statsData?.staff?.filter(s => s.amount_of_helpful_comments > 0).reduce((acc, cur) => acc + cur.helpfulness, 0) / statsData?.staff?.filter(s => s.amount_of_helpful_comments > 0).length) }}%
+              {{ Math.round(statsData?.staff?.filter(s => s.amount_of_helpful_comments > 0).reduce((acc, cur) => acc + cur.helpfulness, 0) / statsData?.staff?.filter(s => s.amount_of_helpful_comments > 0).length) || 0 }}%
             </div>
           </dd>
         </dl>

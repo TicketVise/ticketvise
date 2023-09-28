@@ -393,7 +393,8 @@ export default {
         this.ai.prefetchingAnswers.active = true
       })
 
-    axios.get(`/api/inboxes/${this.$route.params.inboxId}/guests`)
+    axios
+      .get(`/api/inboxes/${this.$route.params.inboxId}/guests`)
       .then((response) => {
         this.inbox.guests = response.data.map((g) => ({
           id: g.id,

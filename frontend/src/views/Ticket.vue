@@ -401,7 +401,7 @@
           <TicketInputViewer v-if="ticket" :content="ticket.content" />
         </div>
         
-        <div class="mt-4">
+        <div v-if="attachments" class="mt-4">
           <VueEasyLightbox scrollDisabled moveDisabled :imgs="images?.map((a) => a.file)" :visible="lightbox.visible" :index="lightbox.index" @hide="lightbox.visible = false" />
           <ul role="list" class="grid grid-cols-2 gap-x-4 gap-y-8 sm:grid-cols-3 sm:gap-x-6 lg:grid-cols-4 xl:gap-x-8">
             <li v-for="(attachment, index) in attachments" :key="attachment" class="relative">
@@ -436,7 +436,7 @@
 
         <section aria-labelledby="activity-title" class="mt-4">
           <div>
-            <div class="pb-4">
+            <div class="pb-4 sm:pb-0">
               <div class="sm:hidden">
                 <label for="tabs" class="sr-only">Select a tab</label>
                 <select
@@ -1216,6 +1216,9 @@ export default {
             moment(a.datetime).diff(moment(b.datetime))
           );
 
+          if (this.role == 'GUEST')
+            this.ticket.activity = this.ticket.activity.filter((a) => a.type == 'comment')
+
           axios
             .get(`/api/inboxes/${this.$route.params.inboxId}/labels/all`)
             .then((response) => {
@@ -1420,7 +1423,7 @@ export default {
         this.ticket.labels = []
       }
 
-      this.updateLabels()
+      this.updateLabels();
     },
     readableBytes(bytes) {
       const sizes = ["Bytes", "KB", "MB", "GB", "TB"];

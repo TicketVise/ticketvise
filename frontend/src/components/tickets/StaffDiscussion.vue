@@ -97,7 +97,14 @@
         <div class="min-w-0 flex-1">
           <form @submit.prevent="submit">
             <div>
-              <TicketInput v-model="comment" ref="commentStaffInput" />
+              <TicketInput
+                v-model="comment"
+                ref="commentStaffInput"
+                :staff="staff"
+              />
+              <p class="mt-1 text-sm text-gray-500">
+                Type @ to mention a team member
+              </p>
             </div>
             <div class="mt-6 flex items-center justify-end space-x-4">
               <button
@@ -137,11 +144,25 @@ export default {
   data: () => ({
     relax: Relax,
     comment: "",
+    staff: [],
   }),
+  mounted() {
+    const { inboxId } = this.$route.params;
+
+    axios.get(`/api/inboxes/${inboxId}/staff`).then((response) => {
+      this.staff = response.data;
+      this.staff.forEach((c) => {
+        c.name = c.first_name + " " + c.last_name;
+        c.avatar = c.avatar_url;
+        c.username = c.username;
+      });
+
+      this.$refs.commentStaffInput.registerKeyUp(this.staff);
+    });
+  },
   methods: {
     submit() {
-      const inboxId = this.$route.params.inboxId;
-      const ticketInboxId = this.$route.params.ticketInboxId;
+      const { inboxId, ticketInboxId } = this.$route.params;
 
       axios
         .post(

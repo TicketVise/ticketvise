@@ -25,7 +25,7 @@ const types = [
     options: [
       { name: 'Contains', value: 'contains' },
       { name: 'Contains not', value: 'contains_not' },
-      { name: 'Equals', value: 'equals' }
+      { name: 'Equals', value: 'eq' }
     ],
     input: 'text'
   },
@@ -35,7 +35,7 @@ const types = [
     options: [
       { name: 'Contains', value: 'contains' },
       { name: 'Contains not', value: 'contains_not' },
-      { name: 'Equals', value: 'equals' }
+      { name: 'Equals', value: 'eq' }
     ],
     input: 'text'
   },
@@ -45,7 +45,7 @@ const types = [
     options: [
       { name: 'Contains', value: 'contains' },
       { name: 'Contains not', value: 'contains_not' },
-      { name: 'Equals', value: 'equals' }
+      { name: 'Equals', value: 'eq' }
     ],
     input: 'labels'
   },
@@ -145,6 +145,9 @@ export default {
     },
     selectedOption: {
       get () {
+        if (this.selectedType?.value === 'is_public')
+          return this.selectedType?.options.find(option => option.name === this.condition?.evaluation_value)
+
         return this.selectedType?.options.find(option => option.value === this.condition?.evaluation_func)
       },
       set (value) {
@@ -153,6 +156,13 @@ export default {
           condition: this.condition,
           evaluationFunc: value?.value
         })
+
+        if (this.selectedType.value === 'is_public')
+          this.$store.commit('automation/setConditionEvaluationValue', {
+            filterId: this.filterId,
+            condition: this.condition,
+            evaluationValue: value?.name
+          })
       }
     },
     selectedValue: {

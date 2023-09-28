@@ -3,11 +3,7 @@
     <div class="pl-6 pr-2 py-4 flex justify-between">
       <div class="flex-grow grid sm:grid-cols-2">
         <div class="flex space-x-4">
-          <img
-            class="h-12 w-12 rounded-full object-cover border-2"
-            :style="`border-color: ${inbox.color}`"
-            :src="inbox.image || `/img/default-inbox.png`"
-          />
+          <img class="h-12 w-12 rounded-full object-cover border-2" :style="`border-color: ${inbox.color}`" :src="inbox.image || `/img/default-inbox.png`" />
           <div class="flex flex-col">
             <router-link
               class="text-primary break-words hover:underline"
@@ -76,12 +72,7 @@ import TicketsChart from "@/components/insights/TicketsChart.vue";
 import axios from "axios";
 import moment from "moment";
 
-import {
-  ChevronDownIcon,
-  ChevronUpIcon,
-  ClipboardDocumentListIcon,
-  UserIcon,
-} from "@heroicons/vue/24/outline";
+import { ChevronDownIcon, ChevronUpIcon, ClipboardDocumentListIcon, UserIcon } from '@heroicons/vue/24/outline'
 
 export default {
   components: {
@@ -89,7 +80,7 @@ export default {
     ChevronUpIcon,
     ClipboardDocumentListIcon,
     UserIcon,
-    TicketsChart,
+    TicketsChart
   },
   data: () => ({
     open: false,
@@ -121,6 +112,11 @@ export default {
         });
       }
     }
+  },
+  mounted() {
+    axios.get(`/api/inboxes/${this.inbox.id}/statistics`).then((response) => {
+      this.stats = response.data
+    })
   }
 };
 </script>

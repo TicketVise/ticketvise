@@ -66,12 +66,16 @@
           </div> -->
 
           <!-- Right section on desktop -->
-          <div class="flex items-center">
-            <button type="button"
-                    class="inline-flex items-center justify-center py-1 px-4 border border-transparent rounded-md shadow-sm text-white bg-primary hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500 mr-4 space-x-2"
-                    aria-label="Fullscreen" @click="openInTab()" v-if="isFramed()">
-                    <span>New Tab</span>
-                    <ArrowTopRightOnSquareIcon class="h-5 w-5" />
+          <div class="flex lg:ml-4 lg:items-center pr-0.5">
+            <button
+              type="button"
+              class="inline-flex items-center justify-center py-1 px-4 border border-transparent rounded-md shadow-sm text-white bg-primary hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500 mr-4 space-x-2"
+              aria-label="Fullscreen"
+              @click="openInTab()"
+              v-if="isFramed()"
+            >
+              <span>New Tab</span>
+              <ArrowTopRightOnSquareIcon class="h-5 w-5" />
             </button>
 
             <!-- <router-link
@@ -298,10 +302,10 @@ export default {
     }),
     is_staff() {
       if (!this.inbox) {
-        return false
+        return false;
       }
 
-      const role = this.inbox.role
+      const role = this.inbox.role;
       return (
         (this.user && this.user.is_superuser) ||
         (role && (role === "AGENT" || role === "MANAGER"))
@@ -313,14 +317,10 @@ export default {
     inbox: async function (newVal) {
       const response = await axios.get("/api/me/inboxes")
       this.inboxes = []
-      for (const inbox of response.data) {
-        if (inbox.inbox.id === newVal.inbox.id) continue
-        this.inboxes.push(inbox)
-      }
     },
     $route: async function () {
       this.menu = false
-    },
-  },
+    }
+  }
 }
 </script>
