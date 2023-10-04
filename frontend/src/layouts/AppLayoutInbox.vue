@@ -78,14 +78,14 @@
               <ArrowTopRightOnSquareIcon class="h-5 w-5" />
             </button>
 
-            <!-- <router-link
+            <router-link
               to="/notifications"
               type="button"
               class="flex-shrink-0 p-1 text-gray-200 rounded-full hover:text-white hover:bg-white hover:bg-opacity-10 focus:outline-none focus:ring-2 focus:ring-white"
             >
               <span class="sr-only">View notifications</span>
               <BellIcon class="h-6 w-6" aria-hidden="true"/>
-            </router-link> -->
+            </router-link>
 
             <!-- Profile dropdown -->
             <Menu as="div" class="p-4 relative flex-shrink-0">
