@@ -112,11 +112,6 @@ export default {
         });
       }
     }
-  },
-  mounted() {
-    axios.get(`/api/inboxes/${this.inbox.id}/statistics`).then((response) => {
-      this.stats = response.data
-    })
   }
 };
 </script>
