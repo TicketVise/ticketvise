@@ -70,7 +70,7 @@
                 type="button"
                 class="inline-flex justify-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary"
               >
-                <LockIcon
+                <LockClosedIcon
                   class="-ml-1 mr-2 h-5 w-5 text-primary-400"
                   aria-hidden="true"
                 />
@@ -529,7 +529,7 @@
           <h2 class="sr-only">Details</h2>
           <div class="space-y-5">
             <div class="flex items-center space-x-2">
-              <LockOpenIcon
+              <GlobeEuropeAfricaIcon
                 v-if="ticket?.is_public"
                 class="h-5 w-5 text-green-500"
                 aria-hidden="true"
