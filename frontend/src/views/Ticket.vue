@@ -28,502 +28,504 @@
       v-if="privateConfirmationModal"
     />
     <div class="py-4 pt-0 md:pt-4">
-      <div class="max-w-3xl mx-auto px-4">
-        <div class="md:flex md:items-center md:justify-between md:space-x-4">
-          <div>
-            <h1 class="text-2xl font-bold text-gray-900">
-              {{ ticket?.title }}
-            </h1>
-            <p class="text-sm text-gray-500 flex space-x-2 items-center font-medium">
-              <span>
-                <span v-if="ticket?.author">
-                  {{ ticket?.author?.first_name }}
-                  {{ ticket?.author?.last_name }}
+      <div class="max-w-3xl mx-auto px-4 xl:max-w-5xl xl:grid xl:grid-cols-3">
+        <div class="xl:col-span-2 xl:border-r xl:border-gray-200 xl:pr-6">
+          <div class="md:flex md:items-center md:justify-between md:space-x-4">
+            <div>
+              <h1 class="text-2xl font-bold text-gray-900">
+                {{ ticket?.title }}
+              </h1>
+              <p class="text-sm text-gray-500 flex space-x-2 items-center font-medium">
+                <span>
+                  <span v-if="ticket?.author">
+                    {{ ticket?.author?.first_name }}
+                    {{ ticket?.author?.last_name }}
+                  </span>
+                  <span v-else>Someone in this inbox</span>
                 </span>
-                <span v-else>Someone in this inbox</span>
-              </span>
-              <span>&#183;</span>
-              <time :datetime="ticket?.date_created">{{ date(ticket?.date_created) }}</time>
-            </p>
+                <span>&#183;</span>
+                <time :datetime="ticket?.date_created">{{ date(ticket?.date_created) }}</time>
+              </p>
+            </div>
+            <div class="hidden xl:flex space-x-3 md:mt-0">
+              <button
+                @click="publishConfirmationModal = true"
+                v-if="
+                  isStaff &&
+                  !ticket?.publish_request_created &&
+                  !ticket?.is_public
+                "
+                type="button"
+                class="inline-flex justify-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary"
+              >
+                <CloudIcon
+                  class="-ml-1 mr-2 h-5 w-5 text-primary-400"
+                  aria-hidden="true"
+                />
+                <span>Make public</span>
+              </button>
+              <button
+                @click="privateConfirmationModal = true"
+                v-if="isStaff && ticket?.is_public"
+                type="button"
+                class="inline-flex justify-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary"
+              >
+                <LockIcon
+                  class="-ml-1 mr-2 h-5 w-5 text-primary-400"
+                  aria-hidden="true"
+                />
+                <span>Make private</span>
+              </button>
+              <!-- <button type="button" class="inline-flex justify-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-900">
+                <svg class="-ml-1 mr-2 h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                  <path d="M10 2a6 6 0 00-6 6v3.586l-.707.707A1 1 0 004 14h12a1 1 0 00.707-1.707L16 11.586V8a6 6 0 00-6-6zM10 18a3 3 0 01-3-3h6a3 3 0 01-3 3z" />
+                </svg>
+                <span>Subscribe</span>
+              </button> -->
+            </div>
           </div>
-          <!-- <div class="flex space-x-3 md:mt-0">
-            <button
-              @click="publishConfirmationModal = true"
-              v-if="
-                isStaff &&
-                !ticket?.publish_request_created &&
-                !ticket?.is_public
-              "
-              type="button"
-              class="inline-flex justify-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary"
-            >
-              <CloudIcon
-                class="-ml-1 mr-2 h-5 w-5 text-primary-400"
-                aria-hidden="true"
-              />
-              <span>Publish</span>
-            </button>
-            <button
-              @click="privateConfirmationModal = true"
-              v-if="isStaff && ticket?.is_public"
-              type="button"
-              class="inline-flex justify-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary"
-            >
-              <LockIcon
-                class="-ml-1 mr-2 h-5 w-5 text-primary-400"
-                aria-hidden="true"
-              />
-              <span>Private</span>
-            </button>
-            <button type="button" class="inline-flex justify-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-900">
-              <svg class="-ml-1 mr-2 h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-                <path d="M10 2a6 6 0 00-6 6v3.586l-.707.707A1 1 0 004 14h12a1 1 0 00.707-1.707L16 11.586V8a6 6 0 00-6-6zM10 18a3 3 0 01-3-3h6a3 3 0 01-3 3z" />
-              </svg>
-              <span>Subscribe</span>
-            </button>
-          </div> -->
-        </div>
-
-        <!-- Status chips -->
-        <div class="flex flex-wrap mt-2">
-          <Listbox v-if="isStaff" as="div" class="relative block mb-2 mr-2">
-            <ListboxButton @click="listboxAlignment('publicListbox')" class="relative flex items-center w-full text-sm font-medium focus:outline-none">
-              <span class="flex justify-between items-center rounded-full bg-white border py-1 pl-2 pr-2 text-xs w-full font-medium text-gray-700">
-                <div class="flex space-x-1 mr-1">
-                  <GlobeEuropeAfricaIcon
-                    v-if="ticket?.is_public"
-                    class="h-4 w-4 text-green-500"
-                    aria-hidden="true"
-                  />
-                  <LockClosedIcon
-                    v-else
-                    class="h-4 w-4 text-red-500 ml-1"
-                    aria-hidden="true"
-                  />
-                  <span
-                    :class="[
-                      ticket?.is_public ? 'text-green-700' : 'text-red-700',
-                      'text-xs font-medium',
-                    ]"
-                  >
-                    {{ ticket?.is_public ? "PUBLIC" : "PRIVATE" }}
-                  </span>
-                </div>
-                <ChevronDownIcon class="h-4 w-4 text-gray-400" aria-hidden="true" />
-              </span>
-            </ListboxButton>
-            <transition
-              leave-active-class="transition ease-in duration-100"
-              leave-from-class="opacity-100"
-              leave-to-class="opacity-0"
-            >
-              <ListboxOptions ref="publicListbox" class="absolute z-10 mt-2 bg-white shadow-xl max-h-56 min-w-max rounded-md py-1 text-xs ring-1 ring-black ring-opacity-5 overflow-auto focus:outline-none sm:text-sm">
-                <ListboxOption as="template" v-slot="{ active }">
-                  <li v-if="!ticket?.is_public" @click="publishConfirmationModal = true" :class="[active ? 'text-white bg-primary' : 'text-gray-900', 'flex space-x-2 items-center cursor-pointer select-none relative py-2 pl-3 pr-4']">
-                    <GlobeEuropeAfricaIcon class="h-4 w-4 text-green-500" aria-hidden="true"/>
-                    <span class="block text-xs">Make public</span>
-                  </li>
-                  <li v-else @click="privateConfirmationModal = true" :class="[active ? 'text-white bg-primary' : 'text-gray-900', 'flex space-x-2 items-center cursor-pointer select-none relative py-2 pl-3 pr-4']">
-                    <LockClosedIcon class="h-4 w-4 text-red-500" aria-hidden="true"/>
-                    <span class="block text-xs">Make private</span>
-                  </li>
-                </ListboxOption>
-              </ListboxOptions>
-            </transition>
-          </Listbox>
-          <span v-else class="flex space-x-1 items-center rounded-full bg-white border py-1 pl-2 pr-3 text-xs font-medium text-gray-700 mb-2 mr-2">
-            <GlobeEuropeAfricaIcon v-if="ticket?.is_public" class="h-4 w-4 text-green-500" aria-hidden="true"/>
-            <LockClosedIcon v-else class="h-4 w-4 text-red-500 ml-1" aria-hidden="true"/>
-            <span :class="[ticket?.is_public ? 'text-green-700' : 'text-red-700', 'text-xs font-medium']">
-              {{ ticket?.is_public ? "PUBLIC" : "PRIVATE" }}
-            </span>
-          </span>
-
-          <Listbox v-if="ticket?.assignee?.first_name && isStaff" as="span" class="relative block mb-2 mr-2">
-            <ListboxButton @click="listboxAlignment('staffListbox')" class="relative flex items-center w-full text-sm font-medium focus:outline-none">
-              <span class="flex justify-between items-center rounded-full bg-white border py-1 pl-3 pr-2 text-xs w-full font-medium text-gray-700">
-                <div class="flex space-x-1 mr-1">
-                  <img
-                    class="h-4 w-4 rounded-full mr-1"
-                    :src="ticket?.assignee?.avatar_url"
-                    alt=""
-                  />
-                  <span class="text-gray-900 text-xs font-medium">
-                    {{ ticket?.assignee?.first_name + ' ' + ticket?.assignee?.last_name }}
-                  </span>
-                </div>
-                <ChevronDownIcon class="h-4 w-4 text-gray-400" aria-hidden="true" />
-              </span>
-            </ListboxButton>
-            <transition
-              leave-active-class="transition ease-in duration-100"
-              leave-from-class="opacity-100"
-              leave-to-class="opacity-0"
-            >
-              <ListboxOptions ref="staffListbox" class="absolute z-10 mt-2 bg-white shadow-xl max-h-56 min-w-max rounded-md py-1 text-xs ring-1 ring-black ring-opacity-5 overflow-auto focus:outline-none sm:text-sm">
-                <ListboxOption
-                  as="template"
-                  v-for="assignee in staff"
-                  :key="assignee.id"
-                  :value="assignee"
-                  v-slot="{ active }"
-                >
-                  <li
-                    @click="updateAssignee(assignee)"
-                    :class="[
-                      active ? 'text-white bg-primary' : 'text-gray-900',
-                      'cursor-pointer select-none relative py-2 pl-3 pr-9',
-                    ]"
-                  >
-                    <div class="flex items-center space-x-2">
-                      <div class="flex-shrink-0">
-                        <img
-                          class="h-4 w-4 rounded-full"
-                          :src="assignee.avatar_url"
-                          alt=""
-                        />
-                      </div>
-                      <span class="block truncate"
-                        >{{ assignee.first_name }}
-                        {{ assignee.last_name }}</span
-                      >
-                    </div>
-
+  
+          <!-- Status chips -->
+          <div class="flex flex-wrap mt-2 xl:hidden">
+            <Listbox v-if="isStaff" as="div" class="relative block mb-2 mr-2">
+              <ListboxButton @click="listboxAlignment('publicListbox')" class="relative flex items-center w-full text-sm font-medium focus:outline-none">
+                <span class="flex justify-between items-center rounded-full bg-white border py-1 pl-2 pr-2 text-xs w-full font-medium text-gray-700">
+                  <div class="flex space-x-1 mr-1">
+                    <GlobeEuropeAfricaIcon
+                      v-if="ticket?.is_public"
+                      class="h-4 w-4 text-green-500"
+                      aria-hidden="true"
+                    />
+                    <LockClosedIcon
+                      v-else
+                      class="h-4 w-4 text-red-500 ml-1"
+                      aria-hidden="true"
+                    />
                     <span
-                      v-if="assignee.id === ticket?.assignee.id"
                       :class="[
-                        active ? 'text-white' : 'text-primary-600',
-                        'absolute inset-y-0 right-0 flex items-center pr-2',
+                        ticket?.is_public ? 'text-green-700' : 'text-red-700',
+                        'text-xs font-medium',
                       ]"
                     >
-                      <CheckIcon class="h-5 w-5" aria-hidden="true" />
+                      {{ ticket?.is_public ? "PUBLIC" : "PRIVATE" }}
                     </span>
-                  </li>
-                </ListboxOption>
-              </ListboxOptions>
-            </transition>
-          </Listbox>
-          <button v-else-if="isStaff" @click="updateAssignee(user)" class="flex space-x-1 items-center rounded-full bg-white border py-1 px-3 text-xs font-medium text-gray-700 mb-2 mr-2">
-            <UserCircleIcon class="h-4 w-4 text-primary" aria-hidden="true" />
-            <span class="text-primary text-xs font-medium uppercase">Assign Yourself</span>
-          </button>
-          <span v-else-if="ticket?.assignee?.first_name" class="flex space-x-1 items-center rounded-full bg-white border py-1 px-3 text-xs font-medium text-gray-700 mb-2 mr-2">
-            <img
-              class="h-4 w-4 rounded-full mr-1"
-              :src="ticket?.assignee?.avatar_url"
-              alt=""
-            />
-            <span class="text-gray-900 text-xs font-medium">
-              {{ ticket?.assignee?.first_name + ' ' + ticket?.assignee?.last_name }}
-            </span>
-          </span>
-          
-          <span class="flex space-x-1 items-center rounded-full bg-white border py-1 px-3 text-xs font-medium text-gray-700 mb-2 mr-2">
-            <ClipboardDocumentCheckIcon
-              v-if="ticket?.status === 'CLSD'"
-              class="h-4 w-4 text-gray-400"
-              aria-hidden="true"
-            />
-            <ClipboardDocumentListIcon
-              v-else
-              class="h-4 w-4 text-gray-400"
-              aria-hidden="true"
-            />
-            <span v-if="ticket?.status != 'CLSD' && !isStaff" class="text-gray-900 text-xs font-medium">OPEN</span>
-            <span v-else-if="ticket?.status === 'ASGD'" class="text-gray-900 text-xs font-medium">ASSIGNED</span>
-            <span v-else-if="ticket?.status === 'ANSD'" class="text-gray-900 text-xs font-medium">AWAITING RESPONSE</span>
-            <span v-else-if="ticket?.status === 'PNDG' || !ticket" class="text-gray-900 text-xs font-medium">PENDING</span>
-            <span v-else-if="ticket?.status === 'CLSD'" class="text-gray-900 text-xs font-medium">CLOSED</span>
-          </span>
-          
-          <Listbox v-if="isStaffOrAuthor" as="span" class="relative block mb-2 mr-2">
-            <ListboxButton @click="listboxAlignment('labelListbox')" class="relative flex items-center w-full text-sm font-medium focus:outline-none">
-              <span class="flex justify-between items-center rounded-full bg-white border py-1 pl-3 pr-2 text-xs w-full font-medium text-gray-700">
-                <span v-if="ticket?.labels?.[0]" class="flex space-x-1 items-center">
-                  <div :style="`background-color: ${ticket?.labels?.[0]?.color}`" class="w-2 h-2 rounded-full flex-col mr-1" v-if="ticket?.labels?.[0]?.color"></div>
-                  <span>{{ ticket?.labels?.[0]?.name }}</span>
+                  </div>
+                  <ChevronDownIcon class="h-4 w-4 text-gray-400" aria-hidden="true" />
                 </span>
-                <button v-else class="flex space-x-1 items-center">
-                  <TagIcon class="h-4 w-4 text-primary" aria-hidden="true" />
-                  <span class="text-primary text-xs font-medium uppercase">Choose a label</span>
-                </button>
-                <ChevronDownIcon class="h-4 w-4 text-gray-400 ml-1" aria-hidden="true" />
+              </ListboxButton>
+              <transition
+                leave-active-class="transition ease-in duration-100"
+                leave-from-class="opacity-100"
+                leave-to-class="opacity-0"
+              >
+                <ListboxOptions ref="publicListbox" class="absolute z-10 mt-2 bg-white shadow-xl max-h-56 min-w-max rounded-md py-1 text-xs ring-1 ring-black ring-opacity-5 overflow-auto focus:outline-none sm:text-sm">
+                  <ListboxOption as="template" v-slot="{ active }">
+                    <li v-if="!ticket?.is_public" @click="publishConfirmationModal = true" :class="[active ? 'text-white bg-primary' : 'text-gray-900', 'flex space-x-2 items-center cursor-pointer select-none relative py-2 pl-3 pr-4']">
+                      <GlobeEuropeAfricaIcon class="h-4 w-4 text-green-500" aria-hidden="true"/>
+                      <span class="block text-xs">Make public</span>
+                    </li>
+                    <li v-else @click="privateConfirmationModal = true" :class="[active ? 'text-white bg-primary' : 'text-gray-900', 'flex space-x-2 items-center cursor-pointer select-none relative py-2 pl-3 pr-4']">
+                      <LockClosedIcon class="h-4 w-4 text-red-500" aria-hidden="true"/>
+                      <span class="block text-xs">Make private</span>
+                    </li>
+                  </ListboxOption>
+                </ListboxOptions>
+              </transition>
+            </Listbox>
+            <span v-else class="flex space-x-1 items-center rounded-full bg-white border py-1 pl-2 pr-3 text-xs font-medium text-gray-700 mb-2 mr-2">
+              <GlobeEuropeAfricaIcon v-if="ticket?.is_public" class="h-4 w-4 text-green-500" aria-hidden="true"/>
+              <LockClosedIcon v-else class="h-4 w-4 text-red-500 ml-1" aria-hidden="true"/>
+              <span :class="[ticket?.is_public ? 'text-green-700' : 'text-red-700', 'text-xs font-medium']">
+                {{ ticket?.is_public ? "PUBLIC" : "PRIVATE" }}
               </span>
-            </ListboxButton>
-            <transition
-              leave-active-class="transition ease-in duration-100"
-              leave-from-class="opacity-100"
-              leave-to-class="opacity-0"
-            >
-              <ListboxOptions ref="labelListbox" class="absolute z-10 mt-2 bg-white shadow-xl max-h-56 min-w-max rounded-md py-1 text-xs ring-1 ring-black ring-opacity-5 overflow-auto focus:outline-none sm:text-sm">
-                <ListboxOption
-                  as="template"
-                  v-for="label in ticket?.inbox.labels"
-                  :key="label.id"
-                  :value="label"
-                  v-slot="{ active }"
-                >
-                  <li
-                    @click="toggleLabel(label)"
-                    :class="[
-                      active
-                        ? 'text-white bg-primary'
-                        : 'text-gray-900',
-                      'cursor-pointer select-none relative py-2 pl-3 pr-9',
-                    ]"
+            </span>
+  
+            <Listbox v-if="ticket?.assignee?.first_name && isStaff" as="span" class="relative block mb-2 mr-2">
+              <ListboxButton @click="listboxAlignment('staffListbox')" class="relative flex items-center w-full text-sm font-medium focus:outline-none">
+                <span class="flex justify-between items-center rounded-full bg-white border py-1 pl-3 pr-2 text-xs w-full font-medium text-gray-700">
+                  <div class="flex space-x-1 mr-1">
+                    <img
+                      class="h-4 w-4 rounded-full mr-1"
+                      :src="ticket?.assignee?.avatar_url"
+                      alt=""
+                    />
+                    <span class="text-gray-900 text-xs font-medium">
+                      {{ ticket?.assignee?.first_name + ' ' + ticket?.assignee?.last_name }}
+                    </span>
+                  </div>
+                  <ChevronDownIcon class="h-4 w-4 text-gray-400" aria-hidden="true" />
+                </span>
+              </ListboxButton>
+              <transition
+                leave-active-class="transition ease-in duration-100"
+                leave-from-class="opacity-100"
+                leave-to-class="opacity-0"
+              >
+                <ListboxOptions ref="staffListbox" class="absolute z-10 mt-2 bg-white shadow-xl max-h-56 min-w-max rounded-md py-1 text-xs ring-1 ring-black ring-opacity-5 overflow-auto focus:outline-none sm:text-sm">
+                  <ListboxOption
+                    as="template"
+                    v-for="assignee in staff"
+                    :key="assignee.id"
+                    :value="assignee"
+                    v-slot="{ active }"
                   >
-                    <div class="flex items-center space-x-3">
-                      <div
-                        :style="`background-color: ${label.color};`"
-                        class="w-2 h-2 rounded-full"
-                      ></div>
+                    <li
+                      @click="updateAssignee(assignee)"
+                      :class="[
+                        active ? 'text-white bg-primary' : 'text-gray-900',
+                        'cursor-pointer select-none relative py-2 pl-3 pr-9',
+                      ]"
+                    >
+                      <div class="flex items-center space-x-2">
+                        <div class="flex-shrink-0">
+                          <img
+                            class="h-4 w-4 rounded-full"
+                            :src="assignee.avatar_url"
+                            alt=""
+                          />
+                        </div>
+                        <span class="block truncate"
+                          >{{ assignee.first_name }}
+                          {{ assignee.last_name }}</span
+                        >
+                      </div>
+  
                       <span
+                        v-if="assignee.id === ticket?.assignee.id"
                         :class="[
-                          containsObject(ticket?.labels, label.id)
-                            ? 'font-semibold'
-                            : 'font-normal',
-                          'block truncate',
+                          active ? 'text-white' : 'text-primary-600',
+                          'absolute inset-y-0 right-0 flex items-center pr-2',
                         ]"
                       >
-                        {{ label.name }}
+                        <CheckIcon class="h-5 w-5" aria-hidden="true" />
                       </span>
-                    </div>
-
-                    <span
-                      v-if="containsObject(ticket?.labels, label.id)"
-                      :class="[
-                        active ? 'text-white' : 'text-primary-600',
-                        'absolute inset-y-0 right-0 flex items-center pr-2',
-                      ]"
-                    >
-                      <CheckIcon class="h-5 w-5" aria-hidden="true" />
-                    </span>
-                  </li>
-                </ListboxOption>
-              </ListboxOptions>
-            </transition>
-          </Listbox>
-          <span v-else-if="ticket?.labels?.[0]" class="flex space-x-1 items-center rounded-full bg-white border py-1 pl-3 pr-2 text-xs font-medium text-gray-700 mb-2 mr-2">
-            <div :style="`background-color: ${ticket?.labels?.[0]?.color}`" class="w-2 h-2 rounded-full flex-col mr-1" v-if="ticket?.labels?.[0]?.color"></div>
-            <span>{{ ticket?.labels?.[0]?.name }}</span>
-          </span>
-
-          <button v-if="!ticket?.is_public" @click="showPopupShare = true" class="flex space-x-1 items-center rounded-full bg-white border py-1 px-3 text-xs font-medium text-gray-700 mb-2 mr-2">
-            <ShareIcon
-              :class="[isStaffOrAuthor ? 'text-gray-400' : 'text-primary', 'h-4 w-4']"
-              aria-hidden="true"
-            />
-            <span v-if="isStaffOrAuthor" class="text-gray-900 text-xs font-medium">SHARE</span>
-            <span v-else class="text-primary text-xs font-medium">SHARED WITH YOU</span>
-
-            <div v-if="ticket?.shared_with?.length > 0" class="isolate flex -space-x-1 overflow-hidden pl-1">
-              <img v-for="person in ticket?.shared_with" :key="person" class="inline-block h-4 w-4 rounded-full ring-2 ring-white" :src="person.avatar_url || person.avatar" alt="" />
-            </div>
-          </button>
-        </div>
-
-        <!-- Pending publish request -->
-        <div v-if="!ticket?.is_public && ticket?.publish_request_created && isStaff" class="rounded-md bg-blue-50 p-4 mt-2">
-          <div class="flex">
-            <div class="flex-shrink-0">
-              <InformationCircleIcon
-                class="h-5 w-5 text-blue-400"
+                    </li>
+                  </ListboxOption>
+                </ListboxOptions>
+              </transition>
+            </Listbox>
+            <button v-else-if="isStaff" @click="updateAssignee(user)" class="flex space-x-1 items-center rounded-full bg-white border py-1 px-3 text-xs font-medium text-gray-700 mb-2 mr-2">
+              <UserCircleIcon class="h-4 w-4 text-primary" aria-hidden="true" />
+              <span class="text-primary text-xs font-medium uppercase">Assign Yourself</span>
+            </button>
+            <span v-else-if="ticket?.assignee?.first_name" class="flex space-x-1 items-center rounded-full bg-white border py-1 px-3 text-xs font-medium text-gray-700 mb-2 mr-2">
+              <img
+                class="h-4 w-4 rounded-full mr-1"
+                :src="ticket?.assignee?.avatar_url"
+                alt=""
+              />
+              <span class="text-gray-900 text-xs font-medium">
+                {{ ticket?.assignee?.first_name + ' ' + ticket?.assignee?.last_name }}
+              </span>
+            </span>
+            
+            <span class="flex space-x-1 items-center rounded-full bg-white border py-1 px-3 text-xs font-medium text-gray-700 mb-2 mr-2">
+              <ClipboardDocumentCheckIcon
+                v-if="ticket?.status === 'CLSD'"
+                class="h-4 w-4 text-gray-400"
                 aria-hidden="true"
               />
-            </div>
-            <div class="ml-3">
-              <h3 class="text-sm font-medium text-blue-800">
-                Publish request pending
-              </h3>
-              <div class="mt-1 text-sm text-blue-700">
-                <p>
-                  Just so you know, the request to make this ticket public is still waiting for approval from the author. Once they give the green light, this ticket will be visible to everyone in the inbox. Hang tight!
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Accept publish request as student -->
-        <div v-if="!ticket?.is_public && ticket?.publish_request_initiator && ticket?.author.id == user.id" class="rounded-md bg-green-50 p-4 mt-2">
-          <div class="flex">
-            <div class="">
-              <h3 class="text-sm font-medium text-green-800">
-                Sharing is caring
-              </h3>
-              <div class="mt-1 text-sm text-green-700">
-                <p class="mb-2 text-justify">
-                  Hey, {{ ticket.publish_request_initiator.first_name }}
-                  {{ ticket.publish_request_initiator.last_name }} has requested that this ticket be made public for everyone in this inbox to see. Public tickets can be really helpful for others because they can get answers to their questions before they even have to ask.
-                </p>
-                <div class="relative flex items-start">
-                  <div class="flex items-center h-5">
-                    <input
-                      v-model="ticket.is_anonymous"
-                      id="anonymize"
-                      aria-describedby="anonymize-description"
-                      name="anonymize"
-                      type="checkbox"
-                      class="focus:ring-green-500 h-4 w-4 text-green-600 border-gray-300 rounded"
-                    />
-                  </div>
-                  <div class="ml-2 text-sm">
-                    <label
-                      for="anonymize"
-                      class="font-medium text-green-700"
-                      >Anonymize before publish</label
-                    >
-                    <p id="comments-description" class="text-green-700">
-                      An anonymous ticket does not show the author or its
-                      role, but does show the conversation and
-                      attachments.
-                    </p>
-                  </div>
-                </div>
-              </div>
-              <div class="mt-4">
-                <div class="-mx-2 -my-1.5 flex">
-                  <button
-                    @click="publishTicket"
-                    type="button"
-                    class="bg-green-50 px-2 py-1.5 rounded-md text-sm font-medium text-green-800 hover:bg-green-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-green-50 focus:ring-green-600"
-                  >
-                    Publish ticket
+              <ClipboardDocumentListIcon
+                v-else
+                class="h-4 w-4 text-gray-400"
+                aria-hidden="true"
+              />
+              <span v-if="ticket?.status != 'CLSD' && !isStaff" class="text-gray-900 text-xs font-medium">OPEN</span>
+              <span v-else-if="ticket?.status === 'ASGD'" class="text-gray-900 text-xs font-medium">ASSIGNED</span>
+              <span v-else-if="ticket?.status === 'ANSD'" class="text-gray-900 text-xs font-medium">AWAITING RESPONSE</span>
+              <span v-else-if="ticket?.status === 'PNDG' || !ticket" class="text-gray-900 text-xs font-medium">PENDING</span>
+              <span v-else-if="ticket?.status === 'CLSD'" class="text-gray-900 text-xs font-medium">CLOSED</span>
+            </span>
+            
+            <Listbox v-if="isStaffOrAuthor" as="span" class="relative block mb-2 mr-2">
+              <ListboxButton @click="listboxAlignment('labelListbox')" class="relative flex items-center w-full text-sm font-medium focus:outline-none">
+                <span class="flex justify-between items-center rounded-full bg-white border py-1 pl-3 pr-2 text-xs w-full font-medium text-gray-700">
+                  <span v-if="ticket?.labels?.[0]" class="flex space-x-1 items-center">
+                    <div :style="`background-color: ${ticket?.labels?.[0]?.color}`" class="w-2 h-2 rounded-full flex-col mr-1" v-if="ticket?.labels?.[0]?.color"></div>
+                    <span>{{ ticket?.labels?.[0]?.name }} {{ (ticket?.labels?.length > 1 ? `+${ticket?.labels?.length - 1}` : '') }}</span>
+                  </span>
+                  <button v-else class="flex space-x-1 items-center">
+                    <TagIcon class="h-4 w-4 text-primary" aria-hidden="true" />
+                    <span class="text-primary text-xs font-medium uppercase">Choose a label</span>
                   </button>
+                  <ChevronDownIcon class="h-4 w-4 text-gray-400 ml-1" aria-hidden="true" />
+                </span>
+              </ListboxButton>
+              <transition
+                leave-active-class="transition ease-in duration-100"
+                leave-from-class="opacity-100"
+                leave-to-class="opacity-0"
+              >
+                <ListboxOptions ref="labelListbox" class="absolute z-10 mt-2 bg-white shadow-xl max-h-56 min-w-max rounded-md py-1 text-xs ring-1 ring-black ring-opacity-5 overflow-auto focus:outline-none sm:text-sm">
+                  <ListboxOption
+                    as="template"
+                    v-for="label in ticket?.inbox.labels"
+                    :key="label.id"
+                    :value="label"
+                    v-slot="{ active }"
+                  >
+                    <li
+                      @click="toggleLabel(label)"
+                      :class="[
+                        active
+                          ? 'text-white bg-primary'
+                          : 'text-gray-900',
+                        'cursor-pointer select-none relative py-2 pl-3 pr-9',
+                      ]"
+                    >
+                      <div class="flex items-center space-x-3">
+                        <div
+                          :style="`background-color: ${label.color};`"
+                          class="w-2 h-2 rounded-full"
+                        ></div>
+                        <span
+                          :class="[
+                            containsObject(ticket?.labels, label.id)
+                              ? 'font-semibold'
+                              : 'font-normal',
+                            'block truncate',
+                          ]"
+                        >
+                          {{ label.name }}
+                        </span>
+                      </div>
+  
+                      <span
+                        v-if="containsObject(ticket?.labels, label.id)"
+                        :class="[
+                          active ? 'text-white' : 'text-primary-600',
+                          'absolute inset-y-0 right-0 flex items-center pr-2',
+                        ]"
+                      >
+                        <CheckIcon class="h-5 w-5" aria-hidden="true" />
+                      </span>
+                    </li>
+                  </ListboxOption>
+                </ListboxOptions>
+              </transition>
+            </Listbox>
+            <span v-else-if="ticket?.labels?.[0]" class="flex space-x-1 items-center rounded-full bg-white border py-1 pl-3 pr-2 text-xs font-medium text-gray-700 mb-2 mr-2">
+              <div :style="`background-color: ${ticket?.labels?.[0]?.color}`" class="w-2 h-2 rounded-full flex-col mr-1" v-if="ticket?.labels?.[0]?.color"></div>
+              <span>{{ ticket?.labels?.[0]?.name }}</span>
+            </span>
+  
+            <button v-if="!ticket?.is_public" @click="showPopupShare = true" class="flex space-x-1 items-center rounded-full bg-white border py-1 px-3 text-xs font-medium text-gray-700 mb-2 mr-2">
+              <ShareIcon
+                :class="[isStaffOrAuthor ? 'text-gray-400' : 'text-primary', 'h-4 w-4']"
+                aria-hidden="true"
+              />
+              <span v-if="isStaffOrAuthor" class="text-gray-900 text-xs font-medium">SHARE</span>
+              <span v-else class="text-primary text-xs font-medium">SHARED WITH YOU</span>
+  
+              <div v-if="ticket?.shared_with?.length > 0" class="isolate flex -space-x-1 overflow-hidden pl-1">
+                <img v-for="person in ticket?.shared_with" :key="person" class="inline-block h-4 w-4 rounded-full ring-2 ring-white" :src="person.avatar_url || person.avatar" alt="" />
+              </div>
+            </button>
+          </div>
+  
+          <!-- Pending publish request -->
+          <div v-if="!ticket?.is_public && ticket?.publish_request_created && isStaff" class="rounded-md bg-blue-50 p-4 mt-2">
+            <div class="flex">
+              <div class="flex-shrink-0">
+                <InformationCircleIcon
+                  class="h-5 w-5 text-blue-400"
+                  aria-hidden="true"
+                />
+              </div>
+              <div class="ml-3">
+                <h3 class="text-sm font-medium text-blue-800">
+                  Publish request pending
+                </h3>
+                <div class="mt-1 text-sm text-blue-700">
+                  <p>
+                    Just so you know, the request to make this ticket public is still waiting for approval from the author. Once they give the green light, this ticket will be visible to everyone in the inbox. Hang tight!
+                  </p>
                 </div>
               </div>
             </div>
           </div>
-        </div>
-
-        <div class="bg-gray-50 rounded-lg px-4 py-1 mt-4">
-          <h2 class="sr-only">Description</h2>
-          <TicketInputViewer v-if="ticket" :content="ticket.content" />
-        </div>
-        
-        <div v-if="attachments" class="mt-4">
-          <VueEasyLightbox scrollDisabled moveDisabled :imgs="images?.map((a) => a.file)" :visible="lightbox.visible" :index="lightbox.index" @hide="lightbox.visible = false" />
-          <ul role="list" class="grid grid-cols-2 gap-x-4 gap-y-8 sm:grid-cols-3 sm:gap-x-6 lg:grid-cols-4 xl:gap-x-8">
-            <li v-for="(attachment, index) in attachments" :key="attachment" class="relative">
-              <button v-if="isImage(attachment.file)" @click="lightbox = { index: index, visible: true}" class="group aspect-w-10 aspect-h-7 block w-full overflow-hidden rounded-lg bg-gray-100 focus-within:ring-2 focus-within:ring-primary-500 focus-within:ring-offset-2 focus-within:ring-offset-gray-100">
-                <img :src="attachment.file" alt="" class="pointer-events-none object-cover group-hover:opacity-75" />
-                <button type="button" class="absolute inset-0 focus:outline-none">
-                  <span class="sr-only">View details for {{ attachment.title }}</span>
-                </button>
-              </button>
-              <a v-else :href="attachment.file" target="_blank" class="group aspect-w-10 aspect-h-7 block w-full overflow-hidden rounded-lg bg-gray-100 focus-within:ring-2 focus-within:ring-primary-500 focus-within:ring-offset-2 focus-within:ring-offset-gray-100">
-                <PaperClipIcon class="w-16 h-16 m-auto text-gray-300 group-hover:text-gray-400 object-center" aria-hidden="true" />
-                <button type="button" class="absolute inset-0 focus:outline-none">
-                  <span class="sr-only">View details for {{ attachment.title }}</span>
-                </button>
-              </a>
-              <p class="pointer-events-none mt-2 block truncate text-sm font-medium text-gray-900">{{ attachment.file.substring(attachment.file.lastIndexOf("/") + 1) }}</p>
-              <p class="pointer-events-none block text-sm font-medium text-gray-500">{{ readableBytes(attachment.file_size) }}</p>
-            </li>
-
-            <!-- <li class="flex flex-col">
-              <button type="button" class="flex justify-center items-center aspect-video rounded-lg border-2 border-dashed border-gray-300 text-center hover:border-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2">
-                <svg class="mx-auto h-12 w-12 text-gray-400" xmlns="http://www.w3.org/2000/svg" stroke="currentColor" fill="none" viewBox="0 0 48 48" aria-hidden="true">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 14v20c0 4.418 7.163 8 16 8 1.381 0 2.721-.087 4-.252M8 14c0 4.418 7.163 8 16 8s16-3.582 16-8M8 14c0-4.418 7.163-8 16-8s16 3.582 16 8m0 0v14m0-4c0 4.418-7.163 8-16 8S8 28.418 8 24m32 10v6m0 0v6m0-6h6m-6 0h-6" />
-                </svg>
-                <div class="mt-2 block text-sm font-medium text-gray-900">Upload File</div>
-              </button>
-              <p class="pointer-events-none mt-2 block truncate text-sm font-medium text-gray-900"></p>
-              <p class="pointer-events-none block text-sm font-medium text-gray-500"></p>
-            </li> -->
-          </ul>
-        </div>
-
-        <section aria-labelledby="activity-title" class="mt-4">
-          <div>
-            <div class="pb-4 sm:pb-0">
-              <div class="sm:hidden">
-                <label for="tabs" class="sr-only">Select a tab</label>
-                <select
-                  id="tabs"
-                  name="tabs"
-                  @change="
-                    switchTab();
-                    tabs.find(
-                      (t) => t.name === $event.target.value
-                    ).current = true;
-                  "
-                  class="block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-primary focus:border-primary sm:text-sm rounded-md"
-                >
-                  <option
-                    v-show="tab.cond ? isStaff : true"
-                    v-for="tab in tabs"
-                    :key="tab.name"
-                    :selected="tab.current"
-                  >
-                    {{ tab.name }}
-                  </option>
-                </select>
+  
+          <!-- Accept publish request as student -->
+          <div v-if="!ticket?.is_public && ticket?.publish_request_initiator && ticket?.author.id == user.id" class="rounded-md bg-green-50 p-4 mt-2">
+            <div class="flex">
+              <div class="">
+                <h3 class="text-sm font-medium text-green-800">
+                  Sharing is caring
+                </h3>
+                <div class="mt-1 text-sm text-green-700">
+                  <p class="mb-2 text-justify">
+                    Hey, {{ ticket.publish_request_initiator.first_name }}
+                    {{ ticket.publish_request_initiator.last_name }} has requested that this ticket be made public for everyone in this inbox to see. Public tickets can be really helpful for others because they can get answers to their questions before they even have to ask.
+                  </p>
+                  <div class="relative flex items-start">
+                    <div class="flex items-center h-5">
+                      <input
+                        v-model="ticket.is_anonymous"
+                        id="anonymize"
+                        aria-describedby="anonymize-description"
+                        name="anonymize"
+                        type="checkbox"
+                        class="focus:ring-green-500 h-4 w-4 text-green-600 border-gray-300 rounded"
+                      />
+                    </div>
+                    <div class="ml-2 text-sm">
+                      <label
+                        for="anonymize"
+                        class="font-medium text-green-700"
+                        >Anonymize before publish</label
+                      >
+                      <p id="comments-description" class="text-green-700">
+                        An anonymous ticket does not show the author or its
+                        role, but does show the conversation and
+                        attachments.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+                <div class="mt-4">
+                  <div class="-mx-2 -my-1.5 flex">
+                    <button
+                      @click="publishTicket"
+                      type="button"
+                      class="bg-green-50 px-2 py-1.5 rounded-md text-sm font-medium text-green-800 hover:bg-green-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-green-50 focus:ring-green-600"
+                    >
+                      Publish ticket
+                    </button>
+                  </div>
+                </div>
               </div>
-              <div class="hidden sm:block mb-4">
-                <div class="border-b border-gray-200">
-                  <nav class="-mb-px flex space-x-8 px-4" aria-label="Tabs">
-                    <a
+            </div>
+          </div>
+  
+          <div class="bg-gray-50 rounded-lg px-4 py-1 mt-4">
+            <h2 class="sr-only">Description</h2>
+            <TicketInputViewer v-if="ticket" :content="ticket.content" />
+          </div>
+          
+          <div v-if="attachments" class="mt-4">
+            <VueEasyLightbox scrollDisabled moveDisabled :imgs="images?.map((a) => a.file)" :visible="lightbox.visible" :index="lightbox.index" @hide="lightbox.visible = false" />
+            <ul role="list" class="grid grid-cols-2 gap-x-4 gap-y-8 sm:grid-cols-3 sm:gap-x-6 lg:grid-cols-4 xl:gap-x-8">
+              <li v-for="(attachment, index) in attachments" :key="attachment" class="relative">
+                <button v-if="isImage(attachment.file)" @click="lightbox = { index: index, visible: true}" class="group aspect-w-10 aspect-h-7 block w-full overflow-hidden rounded-lg bg-gray-100 focus-within:ring-2 focus-within:ring-primary-500 focus-within:ring-offset-2 focus-within:ring-offset-gray-100">
+                  <img :src="attachment.file" alt="" class="pointer-events-none object-cover group-hover:opacity-75" />
+                  <button type="button" class="absolute inset-0 focus:outline-none">
+                    <span class="sr-only">View details for {{ attachment.title }}</span>
+                  </button>
+                </button>
+                <a v-else :href="attachment.file" target="_blank" class="group aspect-w-10 aspect-h-7 block w-full overflow-hidden rounded-lg bg-gray-100 focus-within:ring-2 focus-within:ring-primary-500 focus-within:ring-offset-2 focus-within:ring-offset-gray-100">
+                  <PaperClipIcon class="w-16 h-16 m-auto text-gray-300 group-hover:text-gray-400 object-center" aria-hidden="true" />
+                  <button type="button" class="absolute inset-0 focus:outline-none">
+                    <span class="sr-only">View details for {{ attachment.title }}</span>
+                  </button>
+                </a>
+                <p class="pointer-events-none mt-2 block truncate text-sm font-medium text-gray-900">{{ attachment.file.substring(attachment.file.lastIndexOf("/") + 1) }}</p>
+                <p class="pointer-events-none block text-sm font-medium text-gray-500">{{ readableBytes(attachment.file_size) }}</p>
+              </li>
+  
+              <!-- <li class="flex flex-col">
+                <button type="button" class="flex justify-center items-center aspect-video rounded-lg border-2 border-dashed border-gray-300 text-center hover:border-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2">
+                  <svg class="mx-auto h-12 w-12 text-gray-400" xmlns="http://www.w3.org/2000/svg" stroke="currentColor" fill="none" viewBox="0 0 48 48" aria-hidden="true">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 14v20c0 4.418 7.163 8 16 8 1.381 0 2.721-.087 4-.252M8 14c0 4.418 7.163 8 16 8s16-3.582 16-8M8 14c0-4.418 7.163-8 16-8s16 3.582 16 8m0 0v14m0-4c0 4.418-7.163 8-16 8S8 28.418 8 24m32 10v6m0 0v6m0-6h6m-6 0h-6" />
+                  </svg>
+                  <div class="mt-2 block text-sm font-medium text-gray-900">Upload File</div>
+                </button>
+                <p class="pointer-events-none mt-2 block truncate text-sm font-medium text-gray-900"></p>
+                <p class="pointer-events-none block text-sm font-medium text-gray-500"></p>
+              </li> -->
+            </ul>
+          </div>
+  
+          <section aria-labelledby="activity-title" class="mt-4">
+            <div>
+              <div class="pb-4 sm:pb-0">
+                <div class="sm:hidden">
+                  <label for="tabs" class="sr-only">Select a tab</label>
+                  <select
+                    id="tabs"
+                    name="tabs"
+                    @change="
+                      switchTab();
+                      tabs.find(
+                        (t) => t.name === $event.target.value
+                      ).current = true;
+                    "
+                    class="block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-primary focus:border-primary sm:text-sm rounded-md"
+                  >
+                    <option
                       v-show="tab.cond ? isStaff : true"
-                      @click="
-                        switchTab();
-                        tabs.find((t) => t.name === tab.name).current = true;
-                      "
                       v-for="tab in tabs"
                       :key="tab.name"
-                      href="#"
-                      :class="[
-                        tab.current
-                          ? 'border-primary text-primary-600'
-                          : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-200',
-                        'whitespace-nowrap flex py-4 px-1 border-b-2 font-medium text-sm',
-                      ]"
-                      :aria-current="tab.current ? 'page' : undefined"
+                      :selected="tab.current"
                     >
                       {{ tab.name }}
-                      <span
-                        v-if="tab.count !== 0"
+                    </option>
+                  </select>
+                </div>
+                <div class="hidden sm:block mb-4">
+                  <div class="border-b border-gray-200">
+                    <nav class="-mb-px flex space-x-8 px-4" aria-label="Tabs">
+                      <a
+                        v-show="tab.cond ? isStaff : true"
+                        @click="
+                          switchTab();
+                          tabs.find((t) => t.name === tab.name).current = true;
+                        "
+                        v-for="tab in tabs"
+                        :key="tab.name"
+                        href="#"
                         :class="[
                           tab.current
-                            ? 'bg-primary-100 text-primary-600'
-                            : 'bg-gray-100 text-gray-900',
-                          'hidden ml-3 py-0.5 px-2.5 rounded-full text-xs font-medium md:inline-block',
+                            ? 'border-primary text-primary-600'
+                            : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-200',
+                          'whitespace-nowrap flex py-4 px-1 border-b-2 font-medium text-sm',
                         ]"
-                        >{{ tab.count }}</span
+                        :aria-current="tab.current ? 'page' : undefined"
                       >
-                    </a>
-                  </nav>
+                        {{ tab.name }}
+                        <span
+                          v-if="tab.count !== 0"
+                          :class="[
+                            tab.current
+                              ? 'bg-primary-100 text-primary-600'
+                              : 'bg-gray-100 text-gray-900',
+                            'hidden ml-3 py-0.5 px-2.5 rounded-full text-xs font-medium md:inline-block',
+                          ]"
+                          >{{ tab.count }}</span
+                        >
+                      </a>
+                    </nav>
+                  </div>
                 </div>
               </div>
+  
+              <!-- Activity feed -->
+              <activity-feed
+                :ticket="ticket"
+                :permissions="isStaffOrAuthor"
+                v-if="
+                  tabs.find((t) => t.current).name === 'Activity' && ticket
+                "
+                v-on:post="loadTicketData"
+                v-on:helpful="helpful"
+                v-on:unfold="unfold"
+              />
+              <!-- Staff discussion -->
+              <staff-discussion
+                :ticket="ticket"
+                v-if="tabs.find((t) => t.current).name === 'Staff discussion'"
+                v-on:post="loadTicketData"
+              />
+              <!-- Attachments -->
+              <attachments
+                :ticket="ticket"
+                v-if="tabs.find((t) => t.current).name === 'Attachments'"
+                v-on:uploaded="loadTicketData"
+              />
             </div>
+          </section>
+        </div>
 
-            <!-- Activity feed -->
-            <activity-feed
-              :ticket="ticket"
-              :permissions="isStaffOrAuthor"
-              v-if="
-                tabs.find((t) => t.current).name === 'Activity' && ticket
-              "
-              v-on:post="loadTicketData"
-              v-on:helpful="helpful"
-              v-on:unfold="unfold"
-            />
-            <!-- Staff discussion -->
-            <staff-discussion
-              :ticket="ticket"
-              v-if="tabs.find((t) => t.current).name === 'Staff discussion'"
-              v-on:post="loadTicketData"
-            />
-            <!-- Attachments -->
-            <attachments
-              :ticket="ticket"
-              v-if="tabs.find((t) => t.current).name === 'Attachments'"
-              v-on:uploaded="loadTicketData"
-            />
-          </div>
-        </section>
-
-        <!-- <div class="xl:pl-8">
+        <div class="hidden xl:block xl:pl-6">
           <h2 class="sr-only">Details</h2>
           <div class="space-y-5">
             <div class="flex items-center space-x-2">
@@ -868,7 +870,7 @@
               </ul>
             </div>
           </div>
-        </div> -->
+        </div>
       </div>
     </div>
 
@@ -1407,21 +1409,21 @@ export default {
       return list && list.some((e) => e.id === id);
     },
     toggleLabel(value) {
-      // if (this.containsObject(this.ticket.labels, value.id)) {
-      //   this.ticket.labels.splice(
-      //     this.ticket.labels.findIndex((e) => e.id === value.id),
-      //     1
-      //   );
-      // } else {
-      //   this.ticket.labels.push(value);
-      // }
-      
-      if (!this.containsObject(this.ticket.labels, value.id)) {
-        this.ticket.labels = []
-        this.ticket.labels.push(value)
+      if (this.containsObject(this.ticket.labels, value.id)) {
+        this.ticket.labels.splice(
+          this.ticket.labels.findIndex((e) => e.id === value.id),
+          1
+        );
       } else {
-        this.ticket.labels = []
+        this.ticket.labels.push(value);
       }
+      
+      // if (!this.containsObject(this.ticket.labels, value.id)) {
+      //   this.ticket.labels = []
+      //   this.ticket.labels.push(value)
+      // } else {
+      //   this.ticket.labels = []
+      // }
 
       this.updateLabels();
     },
