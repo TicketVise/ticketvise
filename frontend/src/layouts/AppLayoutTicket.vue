@@ -67,7 +67,7 @@
 
           <!-- Right section on desktop -->
           <div class="flex items-center">
-            <!-- <button type="button"
+            <button type="button"
                     class="inline-flex items-center justify-center py-1 px-4 border border-transparent rounded-md shadow-sm text-white bg-primary hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500 mr-4 space-x-2"
                     aria-label="Fullscreen" @click="openInTab()" v-if="isFramed()">
                     <span>New Tab</span>
@@ -81,7 +81,7 @@
             >
               <span class="sr-only">View notifications</span>
               <BellIcon class="h-6 w-6" aria-hidden="true"/>
-            </router-link> -->
+            </router-link>
 
             <!-- Profile dropdown -->
             <Menu as="div" class="p-4 relative flex-shrink-0">
