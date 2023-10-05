@@ -378,7 +378,7 @@
         </div>
 
         <div v-if="ticketsFlattened?.filter((t) => t.open)?.length > 0" class="flex flex-col space-y-2">
-          <router-link v-for="ticket in ticketsFlattened?.filter((t) => t.open)" :key="ticket.id" :to="`/inboxes/${1}/tickets/${ticket.ticket_inbox_id}`" class="group flex flex-col rounded-lg border p-3">
+          <router-link v-for="ticket in ticketsFlattened?.filter((t) => t.open)" :key="ticket.id" :to="`/inboxes/${$route.params.inboxId}/tickets/${ticket.ticket_inbox_id}`" class="group flex flex-col rounded-lg border p-3">
             <div v-if="ticket.assignee.id == undefined" class="mb-1 flex justify-between">
               <div class="flex space-x-2 text-red-600">
                 <ExclamationCircleIcon class="h-5 w-5" />
