@@ -1,6 +1,6 @@
 <template>
   <!-- Pinned tickets -->
-  <div v-if="pinnedTickets?.length > 0" class="px-4 mt-6 sm:px-6 lg:px-8">
+  <div v-if="pinnedTickets?.length > 0" class="px-4 mt-6 sm:px-6 lg:px-8 mb-6">
     <h2
       class="text-gray-500 dark:text-gray-300 text-xs font-medium uppercase tracking-wide"
     >
@@ -24,7 +24,7 @@
             >
               {{ ticket.title }}
             </router-link>
-            <p class="text-gray-500">{{ ticket.totalResponses }} Responses</p>
+            <p class="text-gray-500">{{ ticket.totalResponses || 0 }} Responses</p>
           </div>
           <Menu v-if="is_staff" as="div" class="flex-shrink-0 pr-2">
             <MenuButton
@@ -96,6 +96,104 @@
     </ul>
   </div>
 
+  <!-- <div class="p-4 flex flex-col md:flex-row items-start md:items-center space-y-2 md:space-y-0 md:space-x-2">
+    <button
+      class="inline-flex items-center rounded-full bg-gray-100 py-1 px-3 text-sm font-medium text-gray-700"
+    >
+      FILTERS
+      <span
+        class="ml-2 inline-flex h-5 w-5 flex-shrink-0 items-center justify-center rounded-full text-gray-600"
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke-width="1.5"
+          stroke="currentColor"
+          class="w-5 h-5"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            d="M6 13.5V3.75m0 9.75a1.5 1.5 0 010 3m0-3a1.5 1.5 0 000 3m0 3.75V16.5m12-3V3.75m0 9.75a1.5 1.5 0 010 3m0-3a1.5 1.5 0 000 3m0 3.75V16.5m-6-9V3.75m0 3.75a1.5 1.5 0 010 3m0-3a1.5 1.5 0 000 3m0 9.75V10.5"
+          />
+        </svg>
+      </span>
+    </button>
+
+    <div class="flex flex-1 overflow-x-auto space-x-2">
+      <span
+        class="flex w-max items-center rounded-full bg-white border py-1 pl-3 pr-1.5 text-xs font-medium text-gray-700"
+      >
+        YOUR TICKETS
+        <button
+          type="button"
+          class="ml-1 inline-flex h-4 w-4 flex-shrink-0 items-center justify-center rounded-full text-gray-600 hover:bg-gray-200 hover:text-gray-500 focus:bg-gray-500 focus:text-white focus:outline-none"
+        >
+          <span class="sr-only">Remove large option</span>
+          <svg
+            class="h-2 w-2"
+            stroke="currentColor"
+            fill="none"
+            viewBox="0 0 8 8"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-width="1.5"
+              d="M1 1l6 6m0-6L1 7"
+            />
+          </svg>
+        </button>
+      </span>
+      <span
+        class="flex w-max items-center rounded-full bg-white border py-1 pl-3 pr-1.5 text-xs font-medium text-gray-700"
+      >
+        PRIVATE
+        <button
+          type="button"
+          class="ml-1 inline-flex h-4 w-4 flex-shrink-0 items-center justify-center rounded-full text-gray-600 hover:bg-gray-200 hover:text-gray-500 focus:bg-gray-500 focus:text-white focus:outline-none"
+        >
+          <span class="sr-only">Remove large option</span>
+          <svg
+            class="h-2 w-2"
+            stroke="currentColor"
+            fill="none"
+            viewBox="0 0 8 8"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-width="1.5"
+              d="M1 1l6 6m0-6L1 7"
+            />
+          </svg>
+        </button>
+      </span>
+      <span
+        class="flex w-max items-center rounded-full bg-white border py-1 pl-3 pr-1.5 text-xs font-medium text-gray-700"
+      >
+        TODAY
+        <button
+          type="button"
+          class="ml-1 inline-flex h-4 w-4 flex-shrink-0 items-center justify-center rounded-full text-gray-600 hover:bg-gray-200 hover:text-gray-500 focus:bg-gray-500 focus:text-white focus:outline-none"
+        >
+          <span class="sr-only">Remove large option</span>
+          <svg
+            class="h-2 w-2"
+            stroke="currentColor"
+            fill="none"
+            viewBox="0 0 8 8"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-width="1.5"
+              d="M1 1l6 6m0-6L1 7"
+            />
+          </svg>
+        </button>
+      </span>
+    </div>
+  </div> -->
+
   <!-- Tickets list (only on smallest breakpoint) -->
   <div class="mt-3 sm:hidden h-full overflow-y-auto">
     <div class="px-4 sm:px-6">
@@ -124,7 +222,7 @@
   </div>
 
   <!-- Tickets table (small breakpoint and up) -->
-  <div class="hidden mt-8 sm:block h-full overflow-y-auto">
+  <div class="hidden sm:block h-full overflow-y-auto">
     <div class="align-middle inline-block min-w-full border-b border-gray-200">
       <table class="min-w-full">
         <thead>

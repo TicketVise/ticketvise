@@ -20,7 +20,7 @@
         >
           <div class="p-3">
             <div class="flex items-center divide-x">
-              <div class="pl-2 pr-4 flex space-x-2">
+              <div class="flex space-x-2 p-2">
                 <!-- Select useraccount -->
                 <Menu
                   as="button"
@@ -89,6 +89,12 @@
                           </button>
                         </MenuItem>
                         <MenuItem v-slot="{ active }">
+                          <button @click="selectAssistant()" :class="[active ? 'bg-gray-100 text-gray-900' : 'text-gray-700', 'group flex w-full items-center px-4 py-2 text-sm']">
+                            <UsersIcon class="mr-3 h-5 w-5 text-gray-400 group-hover:text-gray-500" aria-hidden="true" />
+                            Assistant
+                          </button>
+                        </MenuItem>
+                        <MenuItem v-slot="{ active }">
                           <button
                             @click="selectStudent()"
                             :class="[
@@ -130,7 +136,7 @@
                 </Menu>
 
                 <!-- Select dark mode -->
-                <Menu
+                <!-- <Menu
                   as="button"
                   class="relative inline-block text-left items-center"
                 >
@@ -226,18 +232,18 @@
                       </div>
                     </MenuItems>
                   </transition>
-                </Menu>
+                </Menu> -->
+
+                <!-- <button @click="startintroduction()" class="flex items-center text-gray-400 outline-none hover:text-gray-500">
+                  <SparklesIcon class="h-5 w-5 flex-shrink-0" aria-hidden="true" />
+                </button> -->
               </div>
 
-              <div class="pl-4 pr-2">
-                <!-- New Ticket -->
-                <button
-                  type="button"
-                  class="inline-flex items-center p-1 border border-transparent rounded-full shadow-sm text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500"
-                >
+              <!-- <div class="pl-4 pr-2">
+                <button type="button" class="inline-flex items-center rounded-full border border-transparent bg-primary-600 p-1 text-white shadow-sm hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2">
                   <PlusIcon class="h-5 w-5" aria-hidden="true" />
                 </button>
-              </div>
+              </div> -->
             </div>
           </div>
         </div>
@@ -338,6 +344,14 @@ export default {
       this.$store
         .dispatch("login", payload)
         .catch((_) => (this.error = "Incorrect username or password."));
+    },
+    selectAssistant() {
+      const payload = {
+        username: 'jelleassistant',
+        password: 'admin193'
+      }
+
+      this.$store.dispatch('login', payload).catch((_) => (this.error = 'Incorrect username or password.'))
     },
     selectStudent() {
       const payload = {

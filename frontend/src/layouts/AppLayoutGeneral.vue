@@ -8,19 +8,19 @@
             <div class="left-0 py-5 flex-shrink-0 static">
               <router-link to="/" class="flex items-center">
                 <img class="h-8 w-auto" :src="logo" alt="TicketVise" />
-                <span class="text-2xl ml-2 text-white">Ticket</span
+                <span class="text-2xl ml-2 font-semibold text-white">Ticket</span
                 ><span class="text-2xl text-primary font-bold">Vise</span>
               </router-link>
             </div>
             <div class="block ml-4 sm:ml-10">
               <div class="flex space-x-4">
-                <router-link
+                <!-- <router-link
                   to="/dashboard"
                   class="px-3 py-2 rounded-md text-sm font-medium text-gray-300 hover:text-white hover:bg-gray-700 focus:outline-none focus:text-white focus:bg-gray-700"
                   active-class="text-gray-100 bg-gray-800"
                 >
                   Dashboard
-                </router-link>
+                </router-link> -->
                 <router-link
                   v-if="user.is_superuser"
                   to="/admin"

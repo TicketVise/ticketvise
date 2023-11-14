@@ -1,13 +1,13 @@
 from django.db.models import Case, BooleanField, When, Q
 from django.shortcuts import get_object_or_404
 from rest_framework import serializers
-from rest_framework.generics import ListAPIView, RetrieveUpdateDestroyAPIView, ListCreateAPIView, RetrieveAPIView, UpdateAPIView
+from rest_framework.generics import ListAPIView, RetrieveUpdateDestroyAPIView, ListCreateAPIView, CreateAPIView, RetrieveAPIView, UpdateAPIView
 from rest_framework.generics import RetrieveUpdateAPIView
 from rest_framework.response import Response
 from rest_framework.serializers import ModelSerializer
 
 from ticketvise.middleware import CurrentUserMiddleware
-from ticketvise.models.inbox import Inbox, SchedulingAlgorithm
+from ticketvise.models.inbox import Inbox, SchedulingAlgorithm, InboxMaterial
 from ticketvise.models.label import Label
 from ticketvise.models.user import User, Role, UserInbox
 from ticketvise.utils import StandardResultsSetPagination
@@ -37,6 +37,9 @@ class InboxSerializer(DynamicFieldsModelSerializer):
 
     def get_is_email_setup(self, obj):
         return obj.is_email_setup()
+    
+    # def get_automations(self, obj):
+    #     return AutomationSerializer(obj.automations, many=True, read_only=False).data
     class Meta:
         model = Inbox
         fields = [
@@ -106,7 +109,7 @@ class InboxesApiView(ListAPIView):
 
     def get_serializer(self, *args, **kwargs):
         return InboxSerializer(*args, **kwargs, fields=(
-            "name", "id", "color", "image", "scheduling_algorithm", "fixed_scheduling_assignee", "date_created"))
+            "name", "id", "color", "image", "scheduling_algorithm", "fixed_scheduling_assignee", "date_created", "coordinator"))
 
     def get_queryset(self):
         return Inbox.objects.all().order_by("-date_created")
@@ -209,7 +212,7 @@ class InboxSettingsApiView(RetrieveUpdateAPIView):
         return super().update(request, *args, **kwargs)
 
 class CurrentUserInboxSerializer(ModelSerializer):
-    inbox = InboxSerializer(fields=["name", "id", "color", "labels", "image", "lti_context_label", "coordinator", "is_email_setup"])
+    inbox = InboxSerializer(fields=["name", "id", "color", "labels", "image", "lti_context_label", "coordinator", "is_email_setup", "date_created"])
     role_label = serializers.SerializerMethodField()
 
     def get_role_label(self, user_inbox):
@@ -251,3 +254,26 @@ class CurrentUserInboxApiView(RetrieveAPIView):
             return UserInbox(user=self.request.user, inbox=inbox, role=Role.MANAGER)
 
         return get_object_or_404(UserInbox, inbox=inbox, user=self.request.user)
+
+
+class InboxMaterialSerializer(ModelSerializer):
+    class Meta:
+        model = InboxMaterial
+        fields = ["inbox", "file"]
+
+
+class InboxMaterialApiView(ListCreateAPIView):
+    serializer_class = InboxMaterialSerializer
+    # permission_classes = [UserIsInInboxPermission]
+
+    def get_queryset(self):
+        # return Response()
+        return InboxMaterial.objects.filter(inbox=self.kwargs["inbox_id"])
+
+    def post(self, request, *args, **kwargs):
+        inbox = get_object_or_404(Inbox, pk=self.kwargs["inbox_id"])
+
+        for file in self.request.FILES.getlist('files'):
+            InboxMaterial(inbox=inbox, file=file).save()
+
+        return Response()

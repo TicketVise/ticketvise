@@ -39,7 +39,7 @@ class Command(BaseCommand):
             username="e.dijkstra",
             first_name="Edsger",
             last_name="W. Dijkstra",
-            avatar_url="https://upload.wikimedia.org/wikipedia/commons/thumb/d/d9/Edsger_Wybe_Dijkstra.jpg/800px-Edsger_Wybe_Dijkstra.jpg",
+            avatar_url="https://upload.wikimedia.org/wikipedia/commons/d/d9/Edsger_Wybe_Dijkstra.jpg",
             password=password,
             email="Edsger@ticketvise.com",
             is_staff=False,
@@ -67,7 +67,7 @@ class Command(BaseCommand):
             username="c.mcauliffe",
             first_name="Christa",
             last_name="McAuliffe",
-            avatar_url="https://www.biography.com/.image/t_share/MTc1NDAwODQ5MjM1NzgxMjI2/the-challenger-christa-mcauliffe-16492799851_nasa.jpg",
+            avatar_url="https://upload.wikimedia.org/wikipedia/commons/thumb/a/aa/ChristaMcAuliffe.jpg/800px-ChristaMcAuliffe.jpg",
             password=password,
             email="christa@ticketvise.com",
             is_staff=False,
@@ -602,6 +602,7 @@ class Command(BaseCommand):
         )
         ticket_31.add_label(label_pse_assignment)
         ticket_31.status = Status.PENDING
+        ticket_31.assignee = None
         ticket_31.date_created = timezone.now() - datetime.timedelta(minutes=5)
         ticket_31.date_edited = timezone.now() - datetime.timedelta(minutes=5)
         ticket_31.save()

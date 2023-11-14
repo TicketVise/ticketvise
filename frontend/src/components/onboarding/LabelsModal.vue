@@ -9,19 +9,11 @@
           <p class="text-sm text-gray-500">
             We offer four default labels, but they are fully customizable. Labels are useful for organizing the tickets
             inside the inbox. You can even change the visibility of the labels for students. Labels can be managed from the labels page.
+
+            We offer labels which can be applied to tickets by everyone to organize tickets.
           </p>
         </div>
       </div>
-    </div>
-    <div class="mt-5 sm:mt-6 sm:grid sm:grid-cols-2 sm:gap-3 sm:grid-flow-row-dense">
-      <button type="button" @click="$emit('next')"
-              class="w-full inline-flex justify-center rounded-md px-4 py-2 bg-primary text-base font-medium text-white hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 sm:col-start-2 sm:text-sm">
-        Continue
-      </button>
-      <button type="button" @click="$emit('cancel')"
-              class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 sm:mt-0 sm:col-start-1 sm:text-sm">
-        Back
-      </button>
     </div>
   </div>
 </template>

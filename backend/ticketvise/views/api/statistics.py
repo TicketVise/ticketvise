@@ -2,7 +2,7 @@ from datetime import datetime, timedelta
 
 from django.db.models import F, Count, OuterRef, Subquery, Avg
 from django.db.models.functions import TruncDate, TruncMonth, TruncYear, TruncWeek, \
-    ExtractHour
+    ExtractHour, ExtractWeekDay
 from django.http import JsonResponse
 from rest_framework import serializers
 from rest_framework.generics import get_object_or_404
@@ -14,7 +14,8 @@ from ticketvise.models.inbox import Inbox
 from ticketvise.models.label import Label
 from ticketvise.models.ticket import Ticket, TicketStatusEvent, Status
 from ticketvise.models.user import User, Role, UserInbox
-from ticketvise.statistics import get_average_response_time
+from ticketvise.statistics import get_average_response_time, get_average_response_time_ta, calculate_timedelta_hours, get_most_answered_label_ta, get_amount_of_helpful_reacted_comments, get_helpfulness
+from ticketvise.views.api import DynamicFieldsModelSerializer
 from ticketvise.views.api.security import UserIsInboxStaffPermission
 from ticketvise.views.api.ticket import LabelSerializer
 from ticketvise.views.api.user import UserSerializer
@@ -23,7 +24,7 @@ from ticketvise.views.api.user import UserSerializer
 class InboxTicketsPerDateTypeStatisticsApiView(APIView):
     permission_classes = [UserIsInboxStaffPermission]
     truncaters = [TruncYear, TruncMonth, TruncWeek, TruncDate]
-    extracters = [ExtractHour]
+    extracters = [ExtractHour, ExtractWeekDay]
 
     def get_date_modifier(self, request):
         date_type = request.GET.get("date_type")
@@ -48,14 +49,24 @@ class InboxTicketsPerDateTypeStatisticsApiView(APIView):
                     "total": next((result["total"] for result in results if result["date"] == hour), 0)
                 } for hour in range(24)
             ]
+        elif date_type == "week_day":
+            return [
+                {
+                    "date": weekday,
+                    "total": next((result["total"] for result in results if result["date"] == weekday), 0)
+                } for weekday in range(1, 8)
+            ]
         elif date_type == "date":
+            if results.count() == 0:
+                return []
             base = results[0]["date"]
             end = list(results)[-1]["date"]
             date_list = [base + timedelta(days=i) for i in range((end - base).days + 1)]
             return [
                 {
-                    "date": date,
-                    "total": next((result["total"] for result in results if result["date"] == date), 0)
+                    "date": datetime.strftime(date, "%d-%m-%Y"),
+                    "total": next((result["total"] for result in results if result["date"] == date), 0),
+                    "public": next((result["public"] for result in results if result["date"] == date), 0)
                 } for date in date_list
             ]
         elif date_type == "labels":
@@ -67,6 +78,12 @@ class InboxTicketsPerDateTypeStatisticsApiView(APIView):
                         base = result["date"]
                     if end == None or (result["date"] - end).days > 0:
                         end = result["date"]
+
+            if base == None or end == None:
+                return dict({
+                    "labels": [],
+                    "datasets": []
+                })
             date_list = [base + timedelta(days=i) for i in range((end - base).days + 1)]
             return dict({
                 "labels": date_list,
@@ -99,7 +116,7 @@ class InboxTicketsPerDateTypeStatisticsApiView(APIView):
             counts = Ticket.objects.filter(inbox=inbox) \
                 .annotate(date=date_modifier('date_created')) \
                 .values('date') \
-                .annotate(**{'total': Count('date')}) \
+                .annotate(**{'total': Count('date'), 'public': Count('is_public')}) \
                 .order_by("date")
 
         results = self.fill_gaps(request, counts)
@@ -150,41 +167,65 @@ class InboxStatisticsApiView(APIView):
         last_14_days = now - timedelta(days=14)
 
         return JsonResponse({
-            "current_week_pending": TicketStatusEvent.objects.filter(ticket__inbox=inbox,
-                                                                     date_created__gte=last_7_days,
-                                                                     old_status=Status.PENDING).count(),
-            "current_week_assigned": TicketStatusEvent.objects.filter(ticket__inbox=inbox,
-                                                                      date_created__gte=last_7_days,
-                                                                      new_status=Status.ASSIGNED).count(),
-            "current_week_answered": TicketStatusEvent.objects.filter(ticket__inbox=inbox,
-                                                                      date_created__gte=last_7_days,
-                                                                      new_status=Status.ANSWERED).count(),
-            "current_week_closed": TicketStatusEvent.objects.filter(ticket__inbox=inbox,
-                                                                    date_created__gte=last_7_days,
-                                                                    new_status=Status.CLOSED).count(),
-            "last_week_pending": TicketStatusEvent.objects.filter(ticket__inbox=inbox,
-                                                                  date_created__lte=last_7_days,
-                                                                  date_created__gte=last_14_days,
-                                                                  old_status=Status.PENDING).count(),
-            "last_week_assigned": TicketStatusEvent.objects.filter(ticket__inbox=inbox,
-                                                                   date_created__lte=last_7_days,
-                                                                   date_created__gte=last_14_days,
-                                                                   new_status=Status.ASSIGNED).count(),
-            "last_week_answered": TicketStatusEvent.objects.filter(ticket__inbox=inbox,
-                                                                   date_created__lte=last_7_days,
-                                                                   date_created__gte=last_14_days,
-                                                                   new_status=Status.ANSWERED).count(),
-            "last_week_closed": TicketStatusEvent.objects.filter(ticket__inbox=inbox,
-                                                                 date_created__lte=last_7_days,
-                                                                 date_created__gte=last_14_days,
-                                                                 new_status=Status.ANSWERED).count(),
             "avg_response_time": get_average_response_time(inbox),
+            "avg_ticket_per_student": 0 if UserInbox.objects.filter(inbox=inbox, role=Role.GUEST).count() == 0 else Ticket.objects.filter(inbox=inbox).count() / UserInbox.objects.filter(inbox=inbox, role=Role.GUEST).count(),
             "total_guests": UserInbox.objects.filter(inbox=inbox, role=Role.GUEST).count(),
             "last_week_total_tickets": Ticket.objects.filter(inbox=inbox, date_created__lte=last_7_days).count(),
-            'total_tickets': Ticket.objects.filter(inbox=inbox).count(),
-            'labels': Label.objects.filter(inbox=inbox).count(),
-            'users': User.objects.filter(inbox_relationship__inbox_id=inbox).count(),
-            'coordinator': UserSerializer(inbox.get_coordinator()).data
+            "total_tickets": Ticket.objects.filter(inbox=inbox).count(),
+            "total_open_tickets": Ticket.objects.filter(inbox=inbox, status=Status.PENDING).count(),
+            "total_public_tickets": Ticket.objects.filter(inbox=inbox, is_public__isnull=False).count(),
+            "labels": Label.objects.filter(inbox=inbox).count(),
+            "users": User.objects.filter(inbox_relationship__inbox_id=inbox).count(),
+            "coordinator": UserSerializer(inbox.get_coordinator()).data
+        }, safe=False)
+        
+        
+class StaffInboxStatisticsSerializer(DynamicFieldsModelSerializer):
+    tickets_count = serializers.SerializerMethodField()
+    avg_response_time = serializers.SerializerMethodField()
+    most_answered_label = serializers.SerializerMethodField()
+    amount_of_helpful_comments = serializers.SerializerMethodField()
+    helpfulness = serializers.SerializerMethodField()
+    
+    def get_tickets_count(self, obj):
+        return obj.tickets_count
+
+    def get_avg_response_time(self, obj):
+        return obj.avg_response_time
+
+    def get_most_answered_label(self, obj):
+        return LabelSerializer(obj.most_answered_label).data
+
+    def get_amount_of_helpful_comments(self, obj):
+        return obj.amount_of_helpful_comments
+
+    def get_helpfulness(self, obj):
+        return obj.helpfulness
+
+    class Meta:
+        model = User
+        fields = ["first_name", "last_name", "avatar_url", "id", "is_active", "tickets_count", "avg_response_time", "most_answered_label", "amount_of_helpful_comments", "helpfulness"]
+    
+        
+class StaffInboxStatisticsAPIView(APIView):
+    permission_classes = [UserIsInboxStaffPermission]
+    
+    def get(self, request, inbox_id):
+        inbox = get_object_or_404(Inbox, pk=inbox_id)
+        
+        staff = inbox.get_assistants_and_coordinators()
+        for user in staff:
+            user.tickets_count = Ticket.objects.filter(inbox=inbox, assignee=user, comments__author=user, comments__is_reply=True).distinct().count()
+            user.avg_response_time = calculate_timedelta_hours(get_average_response_time_ta(inbox, user))
+            user.most_answered_label = get_most_answered_label_ta(inbox, user)
+            user.amount_of_helpful_comments = get_amount_of_helpful_reacted_comments(inbox, user)
+            user.helpfulness = get_helpfulness(inbox, user)
+        
+        return JsonResponse({
+            "total_tickets": Ticket.objects.filter(inbox=inbox).count(),
+            "avg_response_time": get_average_response_time(inbox),
+            "avg_tickets_per_staff": 0 if UserInbox.objects.filter(inbox=inbox, role=Role.AGENT).count() == 0 else Ticket.objects.filter(inbox=inbox).count() / UserInbox.objects.filter(inbox=inbox, role=Role.AGENT).count(),
+            "staff": StaffInboxStatisticsSerializer(staff, many=True).data
         }, safe=False)
 
 

@@ -1,6 +1,6 @@
 <template>
-  <div class="bg-white shadow sm:rounded-lg">
-    <div class="px-4 py-5 sm:p-6">
+  <div>
+    <div>
       <h3 class="text-lg leading-6 font-medium text-gray-900">
         Mailbox
       </h3>

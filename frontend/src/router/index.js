@@ -53,9 +53,17 @@ const routes = [
     }
   },
   {
+    path: '/inboxes/:inboxId/overview',
+    name: 'Overview',
+    component: () => import(/* webpackChunkName: "overview" */ '@/views/Overview.vue'),
+    meta: {
+      layout: 'AppLayoutInbox'
+    }
+  },
+  {
     path: '/inboxes/:inboxId/tickets',
     name: 'Tickets',
-    component: () => import(/* webpackChunkName: "tickets" */ '@/views/Inbox.vue'),
+    component: () => import(/* webpackChunkName: "tickets" */ '@/views/Tickets.vue'),
     meta: {
       layout: 'AppLayoutInbox'
     }
@@ -65,7 +73,7 @@ const routes = [
     name: 'Ticket',
     component: () => import(/* webpackChunkName: "ticket" */ '@/views/Ticket.vue'),
     meta: {
-      layout: 'AppLayoutInbox'
+      layout: 'AppLayoutTicket'
     }
   },
   {
@@ -73,7 +81,7 @@ const routes = [
     name: 'Create',
     component: () => import(/* webpackChunkName: "create" */ '@/views/Create.vue'),
     meta: {
-      layout: 'AppLayoutInbox'
+      layout: 'AppLayoutTicket'
     }
   },
   {
@@ -125,7 +133,7 @@ const routes = [
     }
   },
   {
-    path: '/inboxes/:inboxId/insights',
+    path: '/inboxes/:inboxId/insights/:tab?/:itemId?',
     name: 'Insights',
     component: () => import(/* webpackChunkName: "insights" */ '@/views/Insights.vue'),
     meta: {
@@ -133,7 +141,7 @@ const routes = [
     }
   },
   {
-    path: '/inboxes/:inboxId/settings',
+    path: '/inboxes/:inboxId/settings/:tab?/:itemId?',
     name: 'Settings',
     component: () => import(/* webpackChunkName: "settings" */ '@/views/Settings.vue'),
     meta: {

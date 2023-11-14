@@ -1,21 +1,39 @@
 <template>
   <div class="grid sm:grid-cols-2 gap-2 w-full">
-    <SelectInput v-model="selectedAction" :data="actions" emptyLabel="Choose action" />
-    <SelectInput v-if="selectedAction?.input === 'labels'" v-model="selectedValue" :data="labels" :emptyLabel="!selectedAction ? 'First choose action' : 'Choose value'" :disabled="!selectedAction" multiple />
-    <SelectInput v-if="selectedAction?.input === 'staff'" v-model="selectedValue" :data="staff" :emptyLabel="!selectedAction ? 'First choose action' : 'Choose value'" :disabled="!selectedAction" multiple />
+    <SelectInput
+      v-model="selectedAction"
+      :data="actions"
+      emptyLabel="Choose action"
+    />
+    <SelectInput
+      v-if="selectedAction?.input === 'labels'"
+      v-model="selectedValue"
+      :data="labels"
+      :emptyLabel="!selectedAction ? 'First choose action' : 'Choose value'"
+      :disabled="!selectedAction"
+      multiple
+    />
+    <SelectInput
+      v-if="selectedAction?.input === 'staff'"
+      v-model="selectedValue"
+      :data="staff"
+      :emptyLabel="!selectedAction ? 'First choose action' : 'Choose value'"
+      :disabled="!selectedAction"
+      multiple
+    />
   </div>
 </template>
 
 <script>
-import { mapState } from 'vuex'
-import axios from 'axios'
+import { mapState } from "vuex";
+import axios from "axios";
 
 import { BookmarkIcon, UserPlusIcon } from '@heroicons/vue/24/solid'
 
 import SelectInput from '@/components/inputs/SelectInput.vue'
 
 export default {
-  name: 'AutomationAction',
+  name: "AutomationAction",
   components: {
     BookmarkIcon,
     UserPlusIcon,
@@ -24,18 +42,18 @@ export default {
   props: {
     filterId: {
       required: true,
-      type: Number
-    }
+      type: Number,
+    },
   },
   data: () => ({
     labels: [],
     staff: [],
     actions: [
       {
-        name: 'Add label',
-        value: 'add_label',
-        input: 'labels',
-        icon: BookmarkIcon
+        name: "Add label",
+        value: "add_label",
+        input: "labels",
+        icon: BookmarkIcon,
       },
       {
         name: 'Assign to',
@@ -64,11 +82,11 @@ export default {
       handler(newType, oldType) {
         if (oldType === newType) return
 
-        if (newType.input === 'labels') this.selectedValue = this.labels[0]
-        else this.selectedValue = this.staff[0]
+        if (newType.input === "labels") this.selectedValue = this.labels[0];
+        else this.selectedValue = this.staff[0];
       },
-      deep: true
-    }
+      deep: true,
+    },
   },
   computed: {
     ...mapState('automation', {
@@ -83,9 +101,9 @@ export default {
       set(value) {
         this.$store.commit('automation/setActionFunc', {
           filterId: this.filterId,
-          actionFunc: value.value
-        })
-      }
+          actionFunc: value.value,
+        });
+      },
     },
     selectedValue: {
       get() {
@@ -95,10 +113,10 @@ export default {
       set(value) {
         this.$store.commit('automation/setActionValue', {
           filterId: this.filterId,
-          actionValue: value.id
-        })
-      }
-    }
-  }
-}
+          actionValue: value.id,
+        });
+      },
+    },
+  },
+};
 </script>

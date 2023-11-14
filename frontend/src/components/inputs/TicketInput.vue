@@ -34,11 +34,12 @@ export default {
     onMounted(() => {
       e = new Editor({
         el: editor.value,
-        minHeight: '300px',
+        minHeight: '100px',
         height: 'auto',
         usageStatistics: false,
         initialEditType: 'wysiwyg',
         previewStyle: 'vertical',
+        autofocus: false,
         plugins: [[codeSyntaxHighlight, { highlighter: Prism }], LatexPlugin],
         events: {
           change: () => emit('update:modelValue', e.getMarkdown())

@@ -5,7 +5,11 @@
     <div class="grid grid-cols-1 gap-4 items-start">
       <h2 class="text-lg leading-6 font-medium text-gray-100">Your account</h2>
       <div class="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
-        <div v-for="stat in stats" :key="stat.label" class="bg-white overflow-hidden shadow rounded">
+        <div
+          v-for="stat in stats"
+          :key="stat.label"
+          class="bg-white overflow-hidden shadow rounded"
+        >
           <div class="p-5">
             <div class="flex items-center">
               <div class="flex-shrink-0">
@@ -41,7 +45,10 @@
                 <div class="mt-6 flex flex-col lg:flex-row">
                   <div class="flex-grow space-y-4">
                     <div>
-                      <label for="last_name" class="block text-sm font-medium text-gray-700">
+                      <label
+                        for="last_name"
+                        class="block text-sm font-medium text-gray-700"
+                      >
                         <span class="mr-1">Username</span>
                         <span class="inline-flex items-center px-2.5 rounded-md text-sm font-medium bg-gray-100 text-primary"> LTI </span>
                       </label>
@@ -51,7 +58,10 @@
                     </div>
 
                     <div>
-                      <label for="first_name" class="block text-sm font-medium text-gray-700">
+                      <label
+                        for="first_name"
+                        class="block text-sm font-medium text-gray-700"
+                      >
                         <span class="mr-1">First Name</span>
                         <span class="inline-flex items-center px-2.5 rounded-md text-sm font-medium bg-gray-100 text-primary"> LTI </span>
                       </label>
@@ -61,7 +71,10 @@
                     </div>
 
                     <div>
-                      <label for="last_name" class="block text-sm font-medium text-gray-700">
+                      <label
+                        for="last_name"
+                        class="block text-sm font-medium text-gray-700"
+                      >
                         <span class="mr-1">Last Name</span>
                         <span class="inline-flex items-center px-2.5 rounded-md text-sm font-medium bg-gray-100 text-primary"> LTI </span>
                       </label>
@@ -71,7 +84,10 @@
                     </div>
 
                     <div>
-                      <label for="last_name" class="block text-sm font-medium text-gray-700">
+                      <label
+                        for="last_name"
+                        class="block text-sm font-medium text-gray-700"
+                      >
                         <span class="mr-1">Email</span>
                         <span class="inline-flex items-center px-2.5 rounded-md text-sm font-medium bg-gray-100 text-primary"> LTI </span>
                       </label>
@@ -81,8 +97,13 @@
                     </div>
                   </div>
 
-                  <div class="mt-6 flex-grow lg:mt-0 lg:ml-6 lg:flex-grow-0 lg:flex-shrink-0">
-                    <p class="text-sm font-medium text-gray-700 mb-1" aria-hidden="true">
+                  <div
+                    class="mt-6 flex-grow lg:mt-0 lg:ml-6 lg:flex-grow-0 lg:flex-shrink-0"
+                  >
+                    <p
+                      class="text-sm font-medium text-gray-700 mb-1"
+                      aria-hidden="true"
+                    >
                       <span class="mr-1">Photo</span>
                       <span class="inline-flex items-center px-2.5 rounded-md text-sm font-medium bg-gray-100 text-primary"> LTI </span>
                     </p>
@@ -136,7 +157,9 @@
           </form>
         </section>
 
-        <table class="min-w-full divide-y divide-gray-200 shadow rounded sm:overflow-hidden">
+        <table
+          class="min-w-full divide-y divide-gray-200 shadow rounded sm:overflow-hidden"
+        >
           <thead>
             <tr>
               <th class="px-4 py-3 bg-gray-50 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">Notification</th>
@@ -237,16 +260,16 @@
 </template>
 
 <script>
-import axios from 'axios'
-import store from '@/store'
+import axios from "axios";
+import store from "@/store";
 
 import { RectangleStackIcon, GlobeEuropeAfricaIcon, InboxIcon } from '@heroicons/vue/24/outline'
 import { InformationCircleIcon } from '@heroicons/vue/24/solid'
 
 export default {
-  name: 'Dashboard',
+  name: "Dashboard",
   components: {
-    InformationCircleIcon
+    InformationCircleIcon,
   },
   data: () => ({
     enabled: false,

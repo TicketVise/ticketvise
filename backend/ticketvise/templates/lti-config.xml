@@ -18,6 +18,8 @@
         <lticm:property name="course_id">$Canvas.course.id</lticm:property>
         <lticm:property name="course_name">$Canvas.course.name</lticm:property>
         <lticm:property name="course_start">$Canvas.course.startAt</lticm:property>
+        <lticm:property name="course_end">$Canvas.course.endAt</lticm:property>
+        <lticm:property name="section_ids">$Canvas.course.sectionIds</lticm:property>
     </blti:custom>
     <blti:extensions platform="canvas.instructure.com">
         <lticm:property name="privacy_level">anonymous</lticm:property>

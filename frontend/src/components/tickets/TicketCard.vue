@@ -15,12 +15,8 @@
         v-if="!ticket.is_public"
         class="text-xs text-gray-500 dark:text-gray-400 float-right"
       >
-        #{{ ticket.ticket_inbox_id }}
       </span>
-      <GlobeEuropeAfricaIcon
-        v-else
-        class="h-4 w-4 text-gray-500 dark:text-gray-400"
-      />
+      <GlobeEuropeAfricaIcon v-else class="h-4 w-4 text-gray-500 dark:text-gray-400" />
     </div>
 
     <div class="flex justify-between items-center">
@@ -28,7 +24,7 @@
         <span class="font-medium"
           >{{ ticket.author?.first_name }} {{ ticket.author?.last_name }}</span
         >・{{ date(ticket.date_created)
-        }}<span v-if="!assignee?.first_name"
+        }}<span v-if="!assignee?.first_name && assignee_show"
           >・<button
             @click="assignUser(ticket.ticket_inbox_id)"
             class="text-primary-600 no-underline font-medium"
@@ -47,9 +43,10 @@
       </div>
     </div>
 
-    <div class="flex justify-between items-center">
+    <div class="flex justify-between items-center mt-1">
       <div v-if="!small" class="space-x-1 select-none">
         <chip
+          class="rounded-full"
           :background="label.color"
           :key="label.id"
           v-for="label in ticket.labels.slice(0, 1)"
@@ -68,6 +65,14 @@
           :title="assignee.first_name + ' ' + assignee.last_name"
         />
       </div>
+      <!-- <div v-if="ticket.labels.length > 0 && avatar" class="flex-shrink-0">
+        <img
+          class="h-5 w-5 rounded-full"
+          :src="avatar"
+          alt=""
+          :title="assignee.first_name + ' ' + assignee.last_name"
+        />
+      </div> -->
     </div>
   </div>
 </template>
@@ -105,14 +110,7 @@ export default {
   },
   methods: {
     date(date) {
-      return moment.parseZone(date).calendar(null, {
-        lastDay: "[Yesterday at] HH:mm",
-        sameDay: "[Today at] HH:mm",
-        nextDay: "[Tomorrow at] HH:mm",
-        lastWeek: "[Last] dddd [at] HH:mm",
-        nextWeek: "dddd [at] HH:mm",
-        sameElse: "L [at] HH:mm",
-      });
+      return moment.parseZone(date).fromNow()
     },
     assignUser(ticketId) {
       const id =
@@ -127,7 +125,9 @@ export default {
           formData
         )
         .then((_) => {
-          this.$emit("refresh");
+          this.$router.push({
+            path: `/inboxes/${this.$route.params.inboxId}/tickets/${ticketId}`,
+          });
         });
     },
   },

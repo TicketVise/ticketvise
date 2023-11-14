@@ -1,0 +1,200 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: backend-service
+spec:
+  ports:
+  - port: 80
+    name: api
+    protocol: TCP
+    targetPort: 8000
+  selector:
+    app: ticketvise-backend
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backend
+  labels:
+    app: ticketvise-backend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ticketvise-backend
+  template:
+    metadata:
+      labels:
+        app: ticketvise-backend
+    spec:
+      containers:
+        - name: ticketvise-backend
+          image: backend
+          ports:
+            - containerPort: 8000
+          env:
+          - name: SQL_ENGINE
+            value: django.db.backends.postgresql
+          - name: SQL_DATABASE
+            value: ticketvisedb
+          - name: SQL_USER
+            value: admin
+          - name: SQL_PASSWORD
+            value: admin193
+          - name: SQL_HOST
+            value: database
+          - name: DOMAIN
+            value: ivan.ticketvise.com
+          - name: S3_USE_HTTPS
+            value: "0"
+          - name: S3_ACCESS_KEY
+            value: minio
+          - name: S3_SECRET_KEY
+            value: Welkom01
+          - name: S3_ENDPOINT_URL
+            value: s3:9000
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: database
+  labels:
+    app: database
+spec:
+  ports:
+    - port: 5432
+  selector:
+    app: database
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: database
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: database
+  template:
+    metadata:
+      labels:
+        app: database
+    spec:
+      containers:
+        - name: database
+          image: postgres:13.3
+          # imagePullPolicy: "IfNotPresent"
+          ports:
+            - containerPort: 5432
+          envFrom:
+            - configMapRef:
+                name: database-config
+          volumeMounts:
+            - mountPath: /var/lib/postgresql/data
+              name: database-storage
+      volumes:
+        - name: database-storage
+          persistentVolumeClaim:
+            claimName: database-pvc
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: database-config
+  labels:
+    app: database
+data:
+  POSTGRES_DB: ticketvisedb
+  POSTGRES_USER: admin
+  POSTGRES_PASSWORD: admin193
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: database-pvc
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 20Gi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: s3
+  labels:
+    app: s3
+spec:
+  ports:
+    - port: 80
+      name: storage
+      protocol: TCP
+      targetPort: 9000
+    - port: 9000
+      name: test
+      protocol: TCP
+      targetPort: 9000
+    - port: 9001
+      name: console
+      protocol: TCP
+      targetPort: 9001
+  selector:
+    app: s3
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: s3
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: s3
+  template:
+    metadata:
+      labels:
+        app: s3
+    spec:
+      containers:
+        - name: s3
+          image: minio/minio
+          # imagePullPolicy: "IfNotPresent"
+          ports:
+            - containerPort: 9000
+            - containerPort: 9001
+          envFrom:
+            - configMapRef:
+                name: s3-config
+          volumeMounts:
+            - mountPath: /data
+              name: s3-storage
+          command: [ "/bin/sh" ]
+          args: [ "-c", "mkdir -p /data/$$S3_BUCKET_NAME && minio server /data --console-address \":9001\"" ]
+      volumes:
+        - name: s3-storage
+          persistentVolumeClaim:
+            claimName: s3-pvc
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: s3-config
+  labels:
+    app: s3
+data:
+   MINIO_ROOT_USER: minio
+   MINIO_ROOT_PASSWORD: Welkom01
+   S3_BUCKET_NAME: ticketvise
+   S3_ENDPOINT_URL: http://ivan.ticketvise.com/s3/
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: s3-pvc
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 20Gi

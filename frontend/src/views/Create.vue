@@ -8,7 +8,7 @@
               Create a new ticket
             </h1>
             <p class="mt-1 text-sm text-gray-500">
-              Let’s get started by filling in the information below to create
+              Let's get started by filling in the information below to create
               your new ticket.
             </p>
           </div>
@@ -90,6 +90,44 @@
             </p>
           </div>
 
+          <!-- Automatically search for an answer. -->
+          <div v-if="false && ai.prefetchingAnswers.active">
+            <label for="content" class="relative block text-sm font-medium text-gray-700">
+              Automatic Answer
+            </label>
+            <div class="rounded-md bg-blue-50 p-4 my-2">
+              <div class="flex">
+                <div class="flex-shrink-0">
+                  <InformationCircleIcon class="h-5 w-5 text-blue-400" aria-hidden="true" />
+                </div>
+                <div class="ml-3 flex-1 md:flex md:justify-between">
+                  <p class="text-sm text-blue-700">We are developing a system which looks for answers within the material from this course. After you have filled in your question, please click the button below to let the system prefetch an answers to your question. If it does not answer your question, you can still just submit your ticket.</p>
+                </div>
+              </div>
+            </div>
+            <div v-if="ai.prefetchingAnswers.response" class="mt-1">
+              <div class="font-semibold">Answer:</div>
+              <span class="text-sm italic">{{ ai.prefetchingAnswers.response.answer }}</span>
+              <div class="text-sm mt-2">We are <strong>{{ parseInt(ai.prefetchingAnswers.response.score * 100) }}%</strong> sure about the answer which we found on page <strong>{{ ai.prefetchingAnswers.response.page }}</strong> of the following file:</div>
+              <Attachment class="w-2/3" v-if="ai.prefetchingAnswers.response?.file" :show-delete="false" :attachment="{ file: ai.prefetchingAnswers.response.file, id: null }" />
+            </div>
+            <div class="mt-2">
+              <button :disabled="!content" v-if="!ai.prefetchingAnswers.loading" @click="prefetchAnswer" type="button" :class="['inline-flex items-center px-4 py-2 font-semibold leading-6 text-sm shadow rounded-md transition ease-in-out duration-150', content ? 'text-white bg-primary hover:bg-primary-400' : 'text-gray-500 bg-gray-100']">
+                <svg xmlns="http://www.w3.org/2000/svg" class="-ml-1 mr-3 h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                </svg>
+                <span> Find an answer </span>
+              </button>
+              <button v-else type="button" class="inline-flex items-center px-4 py-2 font-semibold leading-6 text-sm shadow rounded-md text-white bg-primary hover:bg-primary-400 transition ease-in-out duration-150 cursor-not-allowed" disabled="">
+                <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                  <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                  <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+                Looking through the files...
+              </button>
+            </div>
+          </div>
+
           <!-- The labels of the ticket. -->
           <div>
             <label class="block text-sm font-medium text-gray-700 mb-1">
@@ -140,7 +178,7 @@
                   >
                     <span class="rounded-full bg-white w-1.5 h-1.5" />
                   </span>
-                  <div class="ml-3 flex flex-col">
+                  <div class="ml-3 flex flex-1 flex-col">
                     <RadioGroupLabel
                       as="span"
                       class="text-gray-900 block text-sm font-medium"
@@ -262,11 +300,12 @@ import axios from "axios";
 import router from "@/router";
 import { mapState } from "vuex";
 
-import FileUpload from "@/components/inputs/FileInput.vue";
-import TicketInput from "@/components/inputs/TicketInput.vue";
-import LabelDropdown from "@/components/dropdown/LabelDropdown.vue";
-import FormTextFieldWithSuggestions from "@/components/form/FormTextFieldWithSuggestions.vue";
-import Error from "@/components/inputs/Error.vue";
+import Attachment from '@/components/tickets/Attachment.vue'
+import FileUpload from '@/components/inputs/FileInput.vue'
+import TicketInput from '@/components/inputs/TicketInput.vue'
+import LabelDropdown from '@/components/dropdown/LabelDropdown.vue'
+import FormTextFieldWithSuggestions from '@/components/form/FormTextFieldWithSuggestions.vue'
+import Error from '@/components/inputs/Error.vue'
 
 import { ref } from "vue";
 import {
@@ -275,7 +314,7 @@ import {
   RadioGroupLabel,
   RadioGroupOption,
 } from "@headlessui/vue";
-import { XMarkIcon, ExclamationCircleIcon } from "@heroicons/vue/24/solid";
+import { XMarkIcon, ExclamationCircleIcon, InformationCircleIcon } from "@heroicons/vue/24/solid";
 
 const settings = [
   {
@@ -300,6 +339,7 @@ const settings = [
 export default {
   name: "Create",
   components: {
+    Attachment,
     Error,
     FileUpload,
     TicketInput,
@@ -311,6 +351,7 @@ export default {
     RadioGroupOption,
     XMarkIcon,
     ExclamationCircleIcon,
+    InformationCircleIcon
   },
   data: () => ({
     inbox: {},
@@ -322,6 +363,13 @@ export default {
     files: [],
     errors: [],
     buttonDisabled: false,
+    ai: {
+      prefetchingAnswers: {
+        active: false,
+        loading: false,
+        response: null
+      }
+    }
   }),
   setup() {
     const open = ref(false);
@@ -339,6 +387,11 @@ export default {
       .then((response) => {
         this.inbox.labels = response.data;
       });
+
+    axios.get(`/ai/prefetchingAnswers/healthz`)
+      .then((response) => {
+        this.ai.prefetchingAnswers.active = true
+      })
 
     axios
       .get(`/api/inboxes/${this.$route.params.inboxId}/guests`)
@@ -402,6 +455,25 @@ export default {
     setFiles(files) {
       this.files = files;
     },
+    setFiles (files) {
+      this.files = files
+    },
+    prefetchAnswer () {
+      this.ai.prefetchingAnswers.response = null
+      this.ai.prefetchingAnswers.loading = true
+      axios.get('/ai/prefetchingAnswers/question', {
+        params: {
+          question: this.content,
+          inbox: this.$route.params.inboxId
+        }
+      }).then((response) => {
+        this.ai.prefetchingAnswers.loading = false
+        this.ai.prefetchingAnswers.response = response.data
+      }).catch(() => {
+        this.ai.prefetchingAnswers.loading = false
+        this.ai.prefetchingAnswers.response = response.data
+      })
+    }
   },
   computed: {
     ...mapState({

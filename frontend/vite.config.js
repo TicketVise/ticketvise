@@ -9,7 +9,7 @@ export default defineConfig({
   plugins: [vue(), vueJsx()],
   server: {
     host: true,
-    port: 8080,
+    port: 3000,
     hmr: {
       clientPort: 80
     }

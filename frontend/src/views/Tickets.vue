@@ -4,36 +4,184 @@
     v-if="is_staff"
     class="flex flex-col h-full flex-grow justify-start dark:bg-gray-800"
   >
-    <div
-      class="flex flex-col md:grid md:grid-cols-5 md:gap-2 p-4 space-y-2 md:space-y-0"
-    >
+    <div class="flex flex-col md:grid md:grid-cols-5 md:gap-2 p-4 space-y-2 md:space-y-0">
       <div class="flex space-x-2 md:col-span-2 xl:col-span-3 items-center">
         <SearchBar v-model="search" v-on:input="callDebounceGetTickets" />
       </div>
 
       <div class="flex space-x-2 md:col-span-3 xl:col-span-2 items-center">
-        <!--FILTER LABELS-->
         <div class="flex-grow">
-          <label-dropdown
-            :selected="labels"
-            :values="inbox_labels"
-            v-model="labels"
-            v-on:input="updateLabels"
-          />
+          <label-dropdown :selected="labels" :values="inbox_labels" v-model="labels" v-on:input="updateLabels" />
         </div>
 
         <button
-          :class="
-            showPersonal
-              ? `bg-primary-500 text-white px-4 py-2 border border-gray-300 text-sm leading-5 font-medium rounded-md focus:outline-none transition duration-150 ease-in-out`
-              : `bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-300 px-4 py-2 border border-gray-300 text-sm leading-5 font-medium rounded-md focus:outline-none transition duration-150 ease-in-out`
-          "
+          :class="showPersonal ? `bg-primary-500 text-white px-4 py-2 border border-gray-300 text-sm leading-5 font-medium rounded-md focus:outline-none transition duration-150 ease-in-out` : `bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-300 px-4 py-2 border border-gray-300 text-sm leading-5 font-medium rounded-md focus:outline-none transition duration-150 ease-in-out` "
           @click="togglePersonal"
           class="px-4 md:m-0 h-10"
           v-if="is_staff"
         >
           My Tickets
         </button>
+      </div>
+    </div>
+    <!-- <div class="flex justify-between w-full items-center">
+      <div class="p-4 flex flex-col items-start space-y-2 w-full">
+        <div class="flex justify-between items-center w-full">
+          <Popover class="relative">
+            <PopoverButton class="inline-flex items-center rounded-full bg-gray-100 py-1 px-3 text-sm font-medium text-gray-700">
+              <span>FILTERS</span>
+            <span
+              class="ml-2 inline-flex h-5 w-5 flex-shrink-0 items-center justify-center rounded-full text-gray-600"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke-width="1.5"
+                stroke="currentColor"
+                class="w-5 h-5"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  d="M6 13.5V3.75m0 9.75a1.5 1.5 0 010 3m0-3a1.5 1.5 0 000 3m0 3.75V16.5m12-3V3.75m0 9.75a1.5 1.5 0 010 3m0-3a1.5 1.5 0 000 3m0 3.75V16.5m-6-9V3.75m0 3.75a1.5 1.5 0 010 3m0-3a1.5 1.5 0 000 3m0 9.75V10.5"
+                />
+              </svg>
+            </span>
+            </PopoverButton>
+
+            <PopoverPanel class="absolute z-10 bg-white shadow-lg p-4 rounded-md">
+              <h3 class="font-medium text-gray-600">Filters</h3>
+
+              <div class="flex flex-col w-max text-gray-800">
+                <div class="py-1 flex space-x-2 items-center">
+                  <UserIcon class="h-4 w-4" />
+                  <span class="">Your tickets</span>
+                </div>
+                <hr />
+                <div class="py-1 flex space-x-2 items-center">
+                  <UserIcon class="h-4 w-4" />
+                  <span class="">Public</span>
+                </div>
+                <div class="py-1 flex space-x-2 items-center">
+                  <UserIcon class="h-4 w-4" />
+                  <span class="">Private</span>
+                </div>
+                <hr />
+                <div class="py-1 flex space-x-2 items-center">
+                  <UserIcon class="h-4 w-4" />
+                  <span class="">Today</span>
+                </div>
+              </div>
+            </PopoverPanel>
+          </Popover>
+
+          <div class="flex md:hidden items-center rounded-lg bg-gray-100 p-0.5">
+            <button type="button" class="rounded-md p-1.5 text-gray-400 hover:bg-white hover:shadow-sm focus:outline-none focus:ring-2 focus:ring-inset focus:ring-primary-500">
+              <Bars4Icon class="h-5 w-5" aria-hidden="true" />
+              <span class="sr-only">Use list view</span>
+            </button>
+            <button type="button" class="ml-0.5 rounded-md bg-white p-1.5 text-gray-400 shadow-sm focus:outline-none focus:ring-2 focus:ring-inset focus:ring-primary-500">
+              <ViewColumnsIcon class="h-5 w-5" aria-hidden="true" />
+              <span class="sr-only">Use grid view</span>
+            </button>
+          </div>
+        </div>
+  
+        <div class="flex flex-1 overflow-x-auto space-x-2">
+          <span
+            class="flex w-max items-center rounded-full bg-white border py-1 pl-3 pr-1.5 text-xs font-medium text-gray-700"
+          >
+            YOUR TICKETS
+            <button
+              type="button"
+              class="ml-1 inline-flex h-4 w-4 flex-shrink-0 items-center justify-center rounded-full text-gray-600 hover:bg-gray-200 hover:text-gray-500 focus:bg-gray-500 focus:text-white focus:outline-none"
+            >
+              <span class="sr-only">Remove large option</span>
+              <svg
+                class="h-2 w-2"
+                stroke="currentColor"
+                fill="none"
+                viewBox="0 0 8 8"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-width="1.5"
+                  d="M1 1l6 6m0-6L1 7"
+                />
+              </svg>
+            </button>
+          </span>
+          <span
+            class="flex w-max items-center rounded-full bg-white border py-1 pl-3 pr-1.5 text-xs font-medium text-gray-700"
+          >
+            PRIVATE
+            <button
+              type="button"
+              class="ml-1 inline-flex h-4 w-4 flex-shrink-0 items-center justify-center rounded-full text-gray-600 hover:bg-gray-200 hover:text-gray-500 focus:bg-gray-500 focus:text-white focus:outline-none"
+            >
+              <span class="sr-only">Remove large option</span>
+              <svg
+                class="h-2 w-2"
+                stroke="currentColor"
+                fill="none"
+                viewBox="0 0 8 8"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-width="1.5"
+                  d="M1 1l6 6m0-6L1 7"
+                />
+              </svg>
+            </button>
+          </span>
+          <span
+            class="flex w-max items-center rounded-full bg-white border py-1 pl-3 pr-1.5 text-xs font-medium text-gray-700"
+          >
+            TODAY
+            <button
+              type="button"
+              class="ml-1 inline-flex h-4 w-4 flex-shrink-0 items-center justify-center rounded-full text-gray-600 hover:bg-gray-200 hover:text-gray-500 focus:bg-gray-500 focus:text-white focus:outline-none"
+            >
+              <span class="sr-only">Remove large option</span>
+              <svg
+                class="h-2 w-2"
+                stroke="currentColor"
+                fill="none"
+                viewBox="0 0 8 8"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-width="1.5"
+                  d="M1 1l6 6m0-6L1 7"
+                />
+              </svg>
+            </button>
+          </span>
+        </div>
+      </div>
+
+      <div class="mr-4 hidden md:flex items-center rounded-lg bg-gray-100 p-0.5">
+        <button type="button" class="rounded-md p-1.5 text-gray-400 hover:bg-white hover:shadow-sm focus:outline-none focus:ring-2 focus:ring-inset focus:ring-primary-500">
+          <Bars4Icon class="h-5 w-5" aria-hidden="true" />
+          <span class="sr-only">Use list view</span>
+        </button>
+        <button type="button" class="ml-0.5 rounded-md bg-white p-1.5 text-gray-400 shadow-sm focus:outline-none focus:ring-2 focus:ring-inset focus:ring-primary-500">
+          <ViewColumnsIcon class="h-5 w-5" aria-hidden="true" />
+          <span class="sr-only">Use grid view</span>
+        </button>
+      </div>
+    </div> -->
+
+    <div v-if="onboarding.active" class="mx-4 border border-primary rounded-lg flex px-4 py-3 max-w-lg">
+      <div class="flex flex-col text-gray-800">
+        <h2 class="font-bold text-primary text-xl">The tickets</h2>
+        <p class="text-sm mt-1 text-justify">This is the <strong>tickets page</strong>. Here you will find every ticket in the inbox. They are organized by their status.</p>
+        <div class="flex justify-end text-sm mt-2">
+          <button @click="nextStep()">
+            <span class="text-primary uppercase font-medium">Got it!</span>
+          </button>
+        </div>
       </div>
     </div>
 
@@ -56,7 +204,7 @@
     </div>
 
     <!-- Floating action button for new ticket -->
-    <router-link
+    <!-- <router-link
       :to="'/inboxes/' + $route.params.inboxId + '/tickets/new'"
       exact
       type="button"
@@ -77,7 +225,7 @@
         ></path>
       </svg>
       New Ticket
-    </router-link>
+    </router-link> -->
   </section>
 
   <!-- Private questions for students -->
@@ -200,7 +348,7 @@
 <script>
 import axios from "axios";
 import store from "@/store";
-import { mapState } from "vuex";
+import { mapState, mapActions } from "vuex";
 import _ from "lodash";
 import moment from "moment";
 
@@ -208,8 +356,9 @@ import SearchBar from "@/components/searchbar/SearchBar.vue";
 import TicketColumn from "@/components/tickets/TicketColumn.vue";
 import LabelDropdown from "@/components/dropdown/LabelDropdown.vue";
 
-import { ChevronRightIcon } from "@heroicons/vue/24/solid";
-import { GlobeEuropeAfricaIcon } from "@heroicons/vue/24/outline";
+import { ChevronRightIcon, UserIcon } from "@heroicons/vue/24/solid";
+import { GlobeEuropeAfricaIcon, Bars4Icon, ViewColumnsIcon } from "@heroicons/vue/24/outline";
+import { Popover, PopoverButton, PopoverPanel } from "@headlessui/vue";
 
 const UNLABELLED_LABEL = {
   id: 0,
@@ -220,11 +369,17 @@ const UNLABELLED_LABEL = {
 export default {
   name: "Inbox",
   components: {
+    Bars4Icon,
     ChevronRightIcon,
     GlobeEuropeAfricaIcon,
     TicketColumn,
     LabelDropdown,
     SearchBar,
+    ViewColumnsIcon,
+    Popover,
+    PopoverButton,
+    PopoverPanel,
+    UserIcon
   },
   data: () => ({
     colors: {
@@ -243,6 +398,10 @@ export default {
     return { moment };
   },
   methods: {
+    ...mapActions('onboarding', {
+      nextStep: 'next',
+      prevStep: 'prev'
+    }),
     get_tickets() {
       // Call this function by using callDebounceGetTickets
       const labelsIds = [];
@@ -354,6 +513,14 @@ export default {
         return store.getters.inbox(this.$route.params.inboxId)?.tickets;
       },
     }),
+    ...mapState('onboarding', {
+      onboarding: (state) => state.status
+    })
+  },
+  watch: {
+    $route: async function () {
+      this.get_tickets();
+    },
   },
 };
 </script>

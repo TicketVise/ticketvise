@@ -7,9 +7,8 @@
         <div>
           <div class="font-ticketvise mx-auto flex items-center">
             <img class="h-8 w-auto" :src="logo" alt="TicketVise" />
-            <span class="text-2xl ml-2 text-gray-800 dark:text-white font-bold"
-              >Ticket</span
-            ><span class="text-2xl text-primary font-bold">Vise</span>
+            <span class="text-2xl ml-2 text-gray-800 dark:text-white font-bold">Ticket</span>
+            <span class="text-2xl text-primary font-bold">Vise</span>
           </div>
           <h2
             class="mt-6 text-3xl font-extrabold text-gray-900 dark:text-white"
@@ -19,29 +18,6 @@
         </div>
 
         <div class="mt-4">
-          <div class="rounded-md bg-yellow-50 p-4 mb-4">
-            <div class="flex">
-              <div class="flex-shrink-0">
-                <ExclamationTriangleIcon
-                  class="h-5 w-5 text-yellow-400"
-                  aria-hidden="true"
-                />
-              </div>
-              <div class="ml-3">
-                <h3 class="text-sm font-medium text-yellow-800">
-                  Login is unavailable
-                </h3>
-                <div class="mt-2 text-sm text-yellow-700">
-                  <p>
-                    We currently only support login via Canvas, so please go to
-                    TicketVise through the course page in Canvas. We are working
-                    on a solution to login via SURFconext.
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
-
           <div>
             <div>
               <p class="text-sm font-medium text-gray-700 dark:text-gray-200">
@@ -56,7 +32,7 @@
                   >
                     <span class="sr-only">Go to Canvas</span>
                     <img
-                      class="h-6 w-auto dark:filter dark:invert"
+                      class="h-6 w-auto"
                       :src="canvas"
                       alt="Canvas"
                     />

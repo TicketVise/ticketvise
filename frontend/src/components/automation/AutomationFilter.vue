@@ -8,7 +8,10 @@
       </div>
       <div v-if="filter.name" class="items-center hidden sm:flex">
         <div class="flex space-x-1">
-          <template v-for="(condition, index) in filter.conditions" :key="index">
+          <template
+            v-for="(condition, index) in filter.conditions"
+            :key="index"
+          >
             <chip v-if="condition.field_name === 'title'">
               <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img" class="w-4 h-4 text-gray-700 mr-1 flex justify-center items-center" preserveAspectRatio="xMidYMid meet" viewBox="0 0 24 24">
                 <path d="M5 4v3h5.5v12h3V7H19V4H5z" fill="currentColor"></path>
@@ -17,7 +20,9 @@
             </chip>
             <chip v-if="condition.field_name === 'content'">
               <DocumentTextIcon class="w-4 h-4 text-gray-700 mr-1" />
-              <span class="text-sm leading-3">{{ condition.evaluation_value }}</span>
+              <span class="text-sm leading-3">{{
+                condition.evaluation_value
+              }}</span>
             </chip>
             <chip v-if="condition.field_name === 'date_created'">
               <ClockIcon class="w-4 h-4 text-gray-700 mr-1" />
@@ -31,7 +36,9 @@
               <BookmarkIcon class="w-4 h-4 text-gray-700 mr-1" :style="`color: ${labels.find((l) => parseInt(l.id) === parseInt(condition.evaluation_value))?.color}`" />
               <span class="text-sm leading-3">{{ labels.find((l) => parseInt(l.id) === parseInt(condition.evaluation_value))?.name }}</span>
             </chip>
-            <chip v-if="condition.field_name === 'is_public'">{{ condition.evaluation_value === 'True' ? 'Public' : 'Private' }}</chip>
+            <chip v-if="condition.field_name === 'is_public'">{{
+              condition.evaluation_value === "True" ? "Public" : "Private"
+            }}</chip>
           </template>
         </div>
         <chevron-right-icon class="h-6 w-6" />
@@ -52,9 +59,28 @@
           <div class="w-full">
             <label class="block text-xs leading-5 font-medium text-primary"> Action title: </label>
             <div class="mt-1 relative rounded-md">
-              <input v-model="filter.name" type="text" id="filterName" class="block w-full focus:outline-none sm:text-sm rounded-md" :class="errors?.name ? 'pr-10 border-red-300 text-red-900 placeholder-red-300 focus:ring-red-500 focus:border-red-500' : 'focus:ring-primary focus:border-primary border-gray-300'" placeholder="Filter name" aria-invalid="true" aria-autocomplete="false" />
-              <div v-if="errors?.name" class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
-                <ExclamationCircleIcon class="h-5 w-5 text-red-500" aria-hidden="true" />
+              <input
+                v-model="filter.name"
+                type="text"
+                id="filterName"
+                class="block w-full focus:outline-none sm:text-sm rounded-md"
+                :class="
+                  errors?.name
+                    ? 'pr-10 border-red-300 text-red-900 placeholder-red-300 focus:ring-red-500 focus:border-red-500'
+                    : 'focus:ring-primary focus:border-primary border-gray-300'
+                "
+                placeholder="Filter name"
+                aria-invalid="true"
+                aria-autocomplete="false"
+              />
+              <div
+                v-if="errors?.name"
+                class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none"
+              >
+                <ExclamationCircleIcon
+                  class="h-5 w-5 text-red-500"
+                  aria-hidden="true"
+                />
               </div>
             </div>
             <p v-if="errors?.name" class="mt-1 text-sm text-red-600" id="name-error">
@@ -70,19 +96,32 @@
           <div class="h-1 border-b w-1/2"></div>
         </div>
         <!-- Place for the conditions -->
-        <div v-for="(condition, index) in filter.conditions" :key="condition">
-          <div class="flex space-x-2 w-full">
-            <div class="flex w-22 justify-center items-center rounded px-4 py-2 space-x-2 text-blue-500 focus:outline-none">
-              <span>{{ index === 0 ? 'IF' : 'AND' }}</span>
-            </div>
+        <div class="flex flex-col sm:flex-row space-x-2 w-full" v-for="(condition, index) in filter.conditions" :key="condition">
+          <div
+            class="flex sm:w-22 w-full justify-between sm:justify-center items-center rounded px-4 py-2 space-x-2 text-blue-500 focus:outline-none"
+          >
+            <span>{{ index === 0 ? "IF" : "AND" }}</span>
 
-            <AutomationCondition :filterId="filter.id" :conditionId="condition.id" />
+            <button
+              @click="removeCondition(condition)"
+              class="sm:hidden p-2 focus:outline-none"
+            >
+              <trash-icon class="h-6 w-6 text-red-600" />
+            </button>
+          </div>
 
-            <div class="flex items-center">
-              <button @click="removeCondition(condition)" class="p-2 focus:outline-none">
-                <trash-icon class="h-6 w-6 text-red-600" />
-              </button>
-            </div>
+          <AutomationCondition
+            :filterId="filter.id"
+            :conditionId="condition.id"
+          />
+
+          <div class="hidden sm:flex items-center">
+            <button
+              @click="removeCondition(condition)"
+              class="p-2 focus:outline-none"
+            >
+              <trash-icon class="h-6 w-6 text-red-600" />
+            </button>
           </div>
         </div>
         <p v-if="errors?.conditions" class="mt-1 text-sm text-red-600" id="conditions-error">
@@ -133,20 +172,24 @@
     </div>
 
     <!-- <NotificationAutomation v-if="showNotification" /> -->
-    <RemoveDialog :open="showWarning" @cancel="showWarning = false" @submit="remove()" />
+    <RemoveDialog
+      :open="showWarning"
+      @cancel="showWarning = false"
+      @submit="remove()"
+    />
   </div>
 </template>
 
 <script>
-import moment from 'moment'
-import axios from 'axios'
-import { mapState, mapMutations } from 'vuex'
+import moment from "moment";
+import axios from "axios";
+import { mapState, mapMutations } from "vuex";
 
-import Chip from '@/components/chip/Chip.vue'
-import AutomationAction from '@/components/automation/AutomationAction.vue'
-import AutomationCondition from '@/components/automation/AutomationCondition.vue'
-import NotificationAutomation from '@/components/notifications/NotificationAutomation.vue'
-import RemoveDialog from '@/components/automation/RemoveDialog.vue'
+import Chip from "@/components/chip/Chip.vue";
+import AutomationAction from "@/components/automation/AutomationAction.vue";
+import AutomationCondition from "@/components/automation/AutomationCondition.vue";
+import NotificationAutomation from "@/components/notifications/NotificationAutomation.vue";
+import RemoveDialog from "@/components/automation/RemoveDialog.vue";
 
 import { TrashIcon, ChevronUpDownIcon } from '@heroicons/vue/24/outline'
 import { PlusIcon, ChevronRightIcon, ExclamationCircleIcon, DocumentTextIcon, ClockIcon, BookmarkIcon } from '@heroicons/vue/24/solid'
@@ -165,12 +208,12 @@ export default {
     ClockIcon,
     NotificationAutomation,
     RemoveDialog,
-    ExclamationCircleIcon
+    ExclamationCircleIcon,
   },
   data: () => ({
     open: false,
     showWarning: false,
-    title: '',
+    title: "",
     labels: [],
     staff: [],
     errors: {},
@@ -180,7 +223,7 @@ export default {
       date_created: 'Created'
     },
     showNotification: false,
-    removeConditions: []
+    removeConditions: [],
   }),
   async mounted() {
     await axios.get(`/api/inboxes/${this.$route.params.inboxId}/labels/all`).then((response) => {
@@ -197,21 +240,21 @@ export default {
     })
 
     if (this.filter?.open) {
-      this.open = true
-      this.filter.open = false
+      this.open = true;
+      this.filter.open = false;
     }
   },
   props: {
     filterId: {
       type: Number,
       required: false,
-      default: 1
-    }
+      default: 1,
+    },
   },
   methods: {
-    ...mapMutations('automation', ['removeFilterCondition']),
+    ...mapMutations("automation", ["removeFilterCondition"]),
     moment: (date) => {
-      return moment(date).calendar()
+      return moment(date).calendar();
     },
     cancel() {
       this.open = false
@@ -227,8 +270,8 @@ export default {
       this.removeConditions.push(condition.id)
       this.removeFilterCondition({
         filterId: this.filter.id,
-        conditionId: condition.id
-      })
+        conditionId: condition.id,
+      });
     },
     askRemove() {
       this.showWarning = true
@@ -244,12 +287,15 @@ export default {
       const { inboxId } = this.$route.params
 
       /* Make sure elements for a filter are present. */
-      if (!this.filter.name) this.errors.name = 'You need to give this filter a name.'
-      else delete this.errors.name
-      if (this.filter.conditions.length === 0) this.errors.conditions = 'You need to add at least one condition.'
-      else delete this.errors.conditions
-      if (!this.filter.action_value || this.filter.action_value === '') this.errors.action = 'You need to add an action.'
-      else delete this.errors.action
+      if (!this.filter.name)
+        this.errors.name = "You need to give this filter a name.";
+      else delete this.errors.name;
+      if (this.filter.conditions.length === 0)
+        this.errors.conditions = "You need to add at least one condition.";
+      else delete this.errors.conditions;
+      if (!this.filter.action_value || this.filter.action_value === "")
+        this.errors.action = "You need to add an action.";
+      else delete this.errors.action;
 
       /* Check each condition for validity. */
       for (const condition of this.filter.conditions) {
@@ -257,7 +303,7 @@ export default {
         if (!condition.evaluation_func) this.errors.conditions = 'You need to add an operator for each condition.'
         if (!condition.field_name) this.errors.conditions = 'You need to choose a field for each condition.'
       }
-      if (Object.keys(this.errors).length > 0) return
+      if (Object.keys(this.errors).length > 0) return;
 
       if (this.filter.id < 0) {
         await axios
@@ -280,9 +326,12 @@ export default {
             })
           })
       } else {
-        const updateAutomation = axios.put(`/api/inboxes/${inboxId}/automation/${this.filter.id}`, {
-          ...this.filter
-        })
+        const updateAutomation = axios.put(
+          `/api/inboxes/${inboxId}/automation/${this.filter.id}`,
+          {
+            ...this.filter,
+          }
+        );
         const updateConditions = this.filter.conditions.map((condition) => {
           if (condition.id > 0)
             return axios.put(`/api/inboxes/${inboxId}/automation/${this.filter.id}/condition/${condition.id}`, {
@@ -294,17 +343,23 @@ export default {
             })
         })
         const removeConditions = this.removeConditions.map((condition) => {
-          if (condition < 0) return
-          return axios.delete(`/api/inboxes/${inboxId}/automation/${this.filter.id}/condition/${condition}`)
-        })
-        Promise.all([updateAutomation, updateConditions, removeConditions]).then(() => {
-          this.showNotification = true
-          this.open = false
-          this.$emit('update')
+          if (condition < 0) return;
+          return axios.delete(
+            `/api/inboxes/${inboxId}/automation/${this.filter.id}/condition/${condition}`
+          );
+        });
+        Promise.all([
+          updateAutomation,
+          updateConditions,
+          removeConditions,
+        ]).then(() => {
+          this.showNotification = true;
+          this.open = false;
+          this.$emit("update");
           setTimeout(() => {
-            this.showNotification = false
-          }, 3000)
-        })
+            this.showNotification = false;
+          }, 3000);
+        });
       }
     }
   },
@@ -313,9 +368,9 @@ export default {
       filter(state) {
         const filter = state.filters?.find((filter) => parseInt(filter.id) === parseInt(this.filterId))
 
-        return filter
-      }
-    })
-  }
-}
+        return filter;
+      },
+    }),
+  },
+};
 </script>

@@ -1,15 +1,38 @@
 <template>
   <div class="flow-root">
-    <ul class="-mb-8">
-      <li v-for="(item, itemIdx) in ticket?.activity" :key="item.id">
-        <div class="relative pb-8">
-          <span v-if="(itemIdx !== ticket.activity.length - 1)"
-                class="absolute top-5 left-5 -ml-px h-full w-0.5 bg-gray-200" aria-hidden="true"/>
+    <div class="text-center mb-8" v-if="ticket?.activity.length === 0">
+      <img
+        alt="Nothing here"
+        class="w-1/2 md:w-1/4 mx-auto mb-8"
+        :src="relax"
+      />
+      <span class="text-sm leading-8 text-gray-500"
+        >There are no messages here yet...</span
+      >
+    </div>
+    <ul class="relative pb-4">
+      <div class="flex w-full justify-end">
+        <button @click="showActivity = !showActivity" v-if="isStaff && ticket?.replies.length != 0" class="text-gray-400 flex items-center space-x-2 hover:text-gray-600 cursor-pointer z-10 mb-4">
+          <BoltIcon v-if="!showActivity" class="h-4 w-4" aria-hidden="true" />
+          <BoltSlashIcon v-else class="h-4 w-4" aria-hidden="true" />
+          <span class="text-sm">{{ showActivity ? 'hide activity' : 'show activity' }}</span>
+        </button>
+      </div>
+      <li v-for="(item, itemIdx) in ticket?.activity" :key="item">
+        <div v-if="item.type == 'comment' || (['assignment', 'tags', 'status', 'attachment', 'group'].includes(item.type) && (showActivity || ticket?.replies.length == 0))" class="relative pb-2">
+          <span
+            v-if="itemIdx !== ticket.activity.length - 1"
+            class="absolute top-5 left-5 -ml-px h-full w-0.5 bg-gray-200"
+            aria-hidden="true"
+          />
           <div class="relative flex items-start space-x-3">
             <template v-if="item.type === 'comment'">
               <div class="relative">
-                <img class="h-10 w-10 rounded-full bg-gray-400 flex items-center justify-center ring-8 ring-white"
-                     :src="item?.imageUrl" alt=""/>
+                <img
+                  class="h-10 w-10 rounded-full bg-gray-400 flex items-center justify-center ring-8 ring-white"
+                  :src="item?.imageUrl"
+                  alt=""
+                />
 
                 <span class="absolute -bottom-0.5 -right-1 bg-white rounded-tl px-0.5 py-px">
                   <ChatBubbleLeftEllipsisIcon class="h-5 w-5 text-gray-400" aria-hidden="true"/>
@@ -19,16 +42,20 @@
                 <div class="flex justify-between">
                   <div>
                     <div class="text-sm">
-                      <span class="font-medium text-gray-900">{{ item?.person?.name }}</span>
+                      <span class="font-medium text-gray-900">{{
+                        item?.person?.name
+                      }}</span>
                     </div>
-                    <p class="mt-0.5 text-sm text-gray-500">Commented {{ item?.date }}</p>
+                    <p class="mt-0.5 text-sm text-gray-500">
+                      Commented {{ item?.date }}
+                    </p>
                   </div>
                   <div class="flex items-center space-x-4">
                     <div v-if="ticket.is_public && isMostHelpful(item.id)" class="border border-primary-400 rounded-md px-1.5 py-0.5 inline-flex items-center text-sm text-primary font-medium">
                       <ThumbUpSolidIcon class="h-4 w-4 text-primary-400 mr-1" />
                       <span class="hidden sm:flex">Most Helpful</span>
                     </div>
-                    <Menu v-if="staff" as="div" class="relative inline-block text-left">
+                    <Menu v-if="isStaff" as="div" class="relative inline-block text-left">
                       <div>
                         <MenuButton class="flex items-center rounded-full text-primary hover:text-primary-600 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 focus:ring-offset-primary-100">
                           <span class="sr-only">Open options</span>
@@ -51,69 +78,127 @@
                 <div class="mt-2 text-sm text-gray-700">
                   <TicketInputViewer v-if="item" :content="item.comment" />
                 </div>
-                <div v-if="item?.person.username != user.username" class="mt-2 text-sm flex space-x-2">
-                  <button @click="item?.helpful === 'helpful' ? clearHelpful(item.id) : helpful(item.id)" class="inline-flex items-center px-3 py-0.5 rounded-full text-sm border text-primary" :class="item?.helpful === 'helpful' ? 'font-medium' : ''">
-                    <ThumbUpSolidIcon v-if="item?.helpful === 'helpful'" class="h-4 w-4 text-primary mr-1" />
-                    <ThumbUpOutlineIcon v-else class="h-4 w-4 text-primary mr-1" />
+                <div
+                  v-if="item?.person.username != user.username"
+                  class="mt-2 text-sm flex space-x-2 mb-4"
+                >
+                  <button
+                    @click="
+                      item?.helpful === 'helpful'
+                        ? clearHelpful(item.id)
+                        : helpful(item.id)
+                    "
+                    class="inline-flex items-center px-3 py-0.5 rounded-full text-sm border text-primary"
+                    :class="item?.helpful === 'helpful' ? 'font-medium' : ''"
+                  >
+                    <ThumbUpSolidIcon
+                      v-if="item?.helpful === 'helpful'"
+                      class="h-4 w-4 text-primary mr-1"
+                    />
+                    <ThumbUpOutlineIcon
+                      v-else
+                      class="h-4 w-4 text-primary mr-1"
+                    />
                     Helpful
                   </button>
-                  <button @click="item?.helpful === 'notHelpful' ? clearHelpful(item.id) : notHelpful(item.id)" class="inline-flex items-center px-3 py-0.5 rounded-full text-sm border text-primary" :class="item?.helpful === 'notHelpful' ? 'font-medium' : ''">
-                    <ThumbDownSolidIcon v-if="item?.helpful === 'notHelpful'" class="h-4 w-4 text-primary mr-1" />
-                    <ThumbDownOutlineIcon v-else class="h-4 w-4 text-primary mr-1" />
+                  <button
+                    @click="
+                      item?.helpful === 'notHelpful'
+                        ? clearHelpful(item.id)
+                        : notHelpful(item.id)
+                    "
+                    class="inline-flex items-center px-3 py-0.5 rounded-full text-sm border text-primary"
+                    :class="item?.helpful === 'notHelpful' ? 'font-medium' : ''"
+                  >
+                    <ThumbDownSolidIcon
+                      v-if="item?.helpful === 'notHelpful'"
+                      class="h-4 w-4 text-primary mr-1"
+                    />
+                    <ThumbDownOutlineIcon
+                      v-else
+                      class="h-4 w-4 text-primary mr-1"
+                    />
                     Not Helpful
                   </button>
                 </div>
               </div>
             </template>
-            <template v-else-if="item.type === 'assignment'" condition="item.type === 'assignment'">
+            <template
+              v-else-if="item.type === 'assignment' && (showActivity || ticket?.replies.length == 0)"
+            >
               <div>
                 <div class="relative px-1">
-                  <div class="h-8 w-8 bg-gray-100 rounded-full ring-8 ring-white flex items-center justify-center">
-                    <UserCircleIconSolid class="h-5 w-5 text-gray-500" aria-hidden="true"/>
+                  <div
+                    class="h-8 w-8 bg-gray-100 rounded-full ring-8 ring-white flex items-center justify-center"
+                  >
+                    <UserCircleIconSolid
+                      class="h-5 w-5 text-gray-500"
+                      aria-hidden="true"
+                    />
                   </div>
                 </div>
               </div>
               <div class="min-w-0 flex-1 py-1.5">
                 <div class="text-sm text-gray-500">
-                  <span class="font-medium text-gray-900">{{ item?.person?.name }}</span>
-                  {{ ' ' }}
-                  {{ item?.person ? 'assigned' : 'Ticket has been assigned to' }}
-                  {{ ' ' }}
-                  <span class="font-medium text-gray-900">{{ item?.assigned?.name }}</span>
-                  {{ ' ' }}
+                  <span class="font-medium text-gray-900">{{
+                    item?.person?.name
+                  }}</span>
+                  {{ " " }}
+                  {{
+                    item?.person ? "assigned" : "Ticket has been assigned to"
+                  }}
+                  {{ " " }}
+                  <span class="font-medium text-gray-900">{{
+                    item?.assigned?.name
+                  }}</span>
+                  {{ " " }}
                   <span class="whitespace-nowrap">{{ item?.date }}</span>
                 </div>
               </div>
             </template>
-            <template v-else-if="item.type === 'tags'" condition="item.type === 'tags'">
+            <template
+              v-else-if="item.type === 'tags' && (showActivity || ticket?.replies.length == 0)"
+            >
               <div>
                 <div class="relative px-1">
-                  <div class="h-8 w-8 bg-gray-100 rounded-full ring-8 ring-white flex items-center justify-center">
-                    <TagIcon class="h-5 w-5 text-gray-500" aria-hidden="true"/>
+                  <div
+                    class="h-8 w-8 bg-gray-100 rounded-full ring-8 ring-white flex items-center justify-center"
+                  >
+                    <TagIcon class="h-5 w-5 text-gray-500" aria-hidden="true" />
                   </div>
                 </div>
               </div>
               <div class="min-w-0 flex-1 py-0">
                 <div class="text-sm leading-8 text-gray-500">
                   <span class="mr-0.5">
-                    <span class="font-medium text-gray-900">{{ item?.person?.name }}</span>
-                    {{ ' ' }}
-                    {{ item?.person ? (item?.is_added ? 'added labels' : 'removed labels') : 'Ticket got labels' }}
+                    <span class="font-medium text-gray-900">{{
+                      item?.person?.name
+                    }}</span>
+                    {{ " " }}
+                    {{
+                      item?.person
+                        ? item?.is_added
+                          ? "added labels"
+                          : "removed labels"
+                        : "Ticket got labels"
+                    }}
                   </span>
-                  {{ ' ' }}
+                  {{ " " }}
                   <span class="mr-0.5">
                     <span v-for="tag in item.tags" :key="tag.name">
                       <chip :background="tag.color">
                         {{ tag.name }}
                       </chip>
-                      {{ ' ' }}
+                      {{ " " }}
                     </span>
                   </span>
                   <span class="whitespace-nowrap">{{ item.date }}</span>
                 </div>
               </div>
             </template>
-            <template v-else-if="item.type === 'status'" condition="item.type === 'status'">
+            <template
+              v-else-if="item.type === 'status' && (showActivity || ticket?.replies.length == 0)"
+            >
               <div>
                 <div class="relative px-1">
                   <div class="h-8 w-8 bg-gray-100 rounded-full ring-8 ring-white flex items-center justify-center">
@@ -124,59 +209,144 @@
               <div class="min-w-0 flex-1 py-0">
                 <div class="text-sm leading-8 text-gray-500">
                   <span class="mr-0.5">
-                    <span class="font-medium text-gray-900">{{ item?.person?.name }}</span>
-                    {{ ' ' }}
-                    {{ item?.person ? 'changed the status to' : 'Status changed to' }}
+                    <span class="font-medium text-gray-900">{{
+                      item?.person?.name
+                    }}</span>
+                    {{ " " }}
+                    {{
+                      item?.person
+                        ? "changed the status to"
+                        : "Status changed to"
+                    }}
                   </span>
-                  {{ ' ' }}
+                  {{ " " }}
                   <span class="mr-0.5">
                     <chip>{{ statusses[item.status].name }}</chip>
-                    {{ ' ' }}
+                    {{ " " }}
                   </span>
                   <span class="whitespace-nowrap">{{ item.date }}</span>
                 </div>
               </div>
             </template>
-            <template v-else-if="item.type === 'attachment'" condition="item.type === 'attachment'">
+            <template
+              v-else-if="item.type === 'attachment' && (showActivity || ticket?.replies.length == 0)"
+            >
               <div>
                 <div class="relative px-1">
-                  <div class="h-8 w-8 bg-gray-100 rounded-full ring-8 ring-white flex items-center justify-center">
-                    <DocumentIcon class="h-5 w-5 text-gray-500" aria-hidden="true"/>
+                  <div
+                    class="h-8 w-8 bg-gray-100 rounded-full ring-8 ring-white flex items-center justify-center"
+                  >
+                    <DocumentIcon
+                      class="h-5 w-5 text-gray-500"
+                      aria-hidden="true"
+                    />
                   </div>
                 </div>
               </div>
               <div class="min-w-0 flex-1 py-0">
                 <div class="text-sm leading-8 text-gray-500">
                   <span class="mr-0.5">
-                    <span class="font-medium text-gray-900">{{ item?.person?.name }}</span>
-                    {{ ' ' }}
-                    uploaded the following file{{ item?.attachment?.length > 1 ? 's' : '' }}
+                    <span class="font-medium text-gray-900">{{
+                      item?.person?.name
+                    }}</span>
+                    {{ " " }}
+                    uploaded the following file{{
+                      item?.attachment?.length > 1 ? "s" : ""
+                    }}
                   </span>
-                  {{ ' ' }}
-                  <span class="mr-0.5" v-for="attachment in item.attachment" :key="attachment.name">
+                  {{ " " }}
+                  <span
+                    class="mr-0.5"
+                    v-for="attachment in item.attachment"
+                    :key="attachment.name"
+                  >
                     <a :href="attachment.href" target="_blank">
                       <chip class="max-w-xs">
-                        <span class="truncate leading-4">{{ attachment.name + '.' + attachment.extension }}</span>
+                        <span class="truncate leading-4">{{
+                          attachment.name + "." + attachment.extension
+                        }}</span>
                       </chip>
                     </a>
-                    {{ ' ' }}
+                    {{ " " }}
                   </span>
                   <span class="whitespace-nowrap">{{ item.date }}</span>
                 </div>
 
-                <VueEasyLightbox scrollDisabled moveDisabled :imgs="filterImages(item.attachment).map(a => a.href)" :visible="item.visible" :index="item.index" @hide="item.visible = false" />
-                <ul role="list" class="mt-2 grid grid-cols-2 gap-x-4 gap-y-8 sm:grid-cols-3 sm:gap-x-6 md:grid-cols-4 lg:grid-cols-3 xl:grid-cols-4 xl:gap-x-8">
-                  <li v-for="(attachment, index) in filterImages(item.attachment)" :key="index">
-                    <button @click="item.index = index; item.visible = true" class="group block w-full aspect-w-10 aspect-h-7 rounded-lg bg-gray-100 overflow-hidden">
-                      <img :src="attachment.href" class="object-cover pointer-events-none" loading=lazy />
-                      <button type="button" class="absolute inset-0 focus:outline-none">
-                        <span class="sr-only">View details for {{ attachment.name }}</span>
+                <VueEasyLightbox
+                  scrollDisabled
+                  moveDisabled
+                  :imgs="filterImages(item.attachment).map((a) => a.href)"
+                  :visible="item.visible"
+                  :index="item.index"
+                  @hide="item.visible = false"
+                />
+                <ul
+                  role="list"
+                  class="mt-2 grid grid-cols-2 gap-x-4 gap-y-8 sm:grid-cols-3 sm:gap-x-6 md:grid-cols-4 lg:grid-cols-3 xl:grid-cols-4 xl:gap-x-8"
+                >
+                  <li
+                    v-for="(attachment, index) in filterImages(item.attachment)"
+                    :key="index"
+                  >
+                    <button
+                      @click="
+                        item.index = index;
+                        item.visible = true;
+                      "
+                      class="group block w-full aspect-w-10 aspect-h-7 rounded-lg bg-gray-100 overflow-hidden"
+                    >
+                      <img
+                        :src="attachment.href"
+                        class="object-cover pointer-events-none"
+                        loading="lazy"
+                      />
+                      <button
+                        type="button"
+                        class="absolute inset-0 focus:outline-none"
+                      >
+                        <span class="sr-only"
+                          >View details for {{ attachment.name }}</span
+                        >
                       </button>
                     </button>
-                    <p class="mt-2 block text-sm font-medium text-gray-900 truncate pointer-events-none">{{ attachment.name + '.' + attachment.extension }}</p>
-                    <p class="block text-sm font-medium text-gray-500 pointer-events-none">{{ readableBytes(attachment.size) }}</p>
+                    <p
+                      class="mt-2 block text-sm font-medium text-gray-900 truncate pointer-events-none"
+                    >
+                      {{ attachment.name + "." + attachment.extension }}
+                    </p>
+                    <p
+                      class="block text-sm font-medium text-gray-500 pointer-events-none"
+                    >
+                      {{ readableBytes(attachment.size) }}
+                    </p>
                   </li>
                 </ul>
+              </div>
+            </template>
+            <template
+              v-else-if="item.type === 'group' && (showActivity || ticket?.replies.length == 0)"
+            >
+              <div>
+                <div class="relative px-1">
+                  <div
+                    class="h-8 w-8 bg-gray-100 rounded-full ring-8 ring-white flex items-center justify-center"
+                  >
+                    <RectangleStackIcon
+                      class="h-5 w-5 text-gray-500"
+                      aria-hidden="true"
+                    />
+                  </div>
+                </div>
+              </div>
+              <div class="min-w-0 flex-1 py-0">
+                <div class="text-sm leading-8 text-gray-500">
+                  <button
+                    @click="$emit('unfold', item)"
+                    class="font-medium hover:underline"
+                  >
+                    View {{ item.activities.length }} grouped changes
+                  </button>
+                </div>
               </div>
             </template>
           </div>
@@ -185,12 +355,15 @@
     </ul>
 
     <!-- Box to make a new comment. -->
-    <div class="mt-6">
+    <div>
       <div class="flex space-x-3">
         <div class="flex-shrink-0">
           <div class="relative">
-            <img class="h-10 w-10 rounded-full bg-gray-400 flex items-center justify-center ring-8 ring-white"
-                 :src="user.avatar_url" alt=""/>
+            <img
+              class="h-10 w-10 rounded-full bg-gray-400 flex items-center justify-center ring-8 ring-white"
+              :src="user.avatar_url"
+              alt=""
+            />
 
             <span class="absolute -bottom-0.5 -right-1 bg-white rounded-tl px-0.5 py-px">
               <ChatBubbleLeftEllipsisIcon class="h-5 w-5 text-gray-400" aria-hidden="true"/>
@@ -203,20 +376,41 @@
               <label for="comment" class="sr-only">Comment</label>
               <div class="relative">
                 <TicketInput v-model="comment" ref="commentInput" />
-                <div v-if="errors.content" class="absolute inset-y-0 right-0 top-14 pr-3 flex pointer-events-none">
-                  <ExclamationCircleIcon class="h-5 w-5 text-red-500" aria-hidden="true" />
+                <div
+                  v-if="errors.content"
+                  class="absolute inset-y-0 right-0 top-14 pr-3 flex pointer-events-none"
+                >
+                  <ExclamationCircleIcon
+                    class="h-5 w-5 text-red-500"
+                    aria-hidden="true"
+                  />
                 </div>
               </div>
-              <p v-if="errors.content" class="mt-2 text-sm text-red-600" id="email-error">{{ errors.content[0] }}</p>
+              <p
+                v-if="errors.content"
+                class="mt-2 text-sm text-red-600"
+                id="email-error"
+              >
+                {{ errors.content[0] }}
+              </p>
             </div>
             <div class="mt-6 flex items-center justify-end space-x-4">
-              <button type="button" @click="closeTicket" v-if="ticket.status !== 'CLSD' && permissions"
-                      class="inline-flex justify-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary">
-                <CheckCircleIcon class="-ml-1 mr-2 h-5 w-5 text-green-500" aria-hidden="true" />
+              <button
+                type="button"
+                @click="closeTicket"
+                v-if="ticket.status !== 'CLSD' && permissions"
+                class="inline-flex justify-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary"
+              >
+                <CheckCircleIcon
+                  class="-ml-1 mr-2 h-5 w-5 text-green-500"
+                  aria-hidden="true"
+                />
                 Close ticket
               </button>
-              <button type="submit"
-                      class="inline-flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-primary hover:bg-primary-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary">
+              <button
+                type="submit"
+                class="inline-flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-primary hover:bg-primary-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary"
+              >
                 <span v-if="ticket.status !== 'CLSD'">Comment</span>
                 <span v-else>Comment and reopen ticket</span>
               </button>
@@ -243,6 +437,7 @@
                 </div>
                 <div class="mt-0 text-left">
                   <DialogTitle as="h2" class="text-lg font-semibold leading-6 text-gray-900">Split ticket</DialogTitle>
+                  <p class="text-sm text-gray-600">If this comment is more a new questions on it's own, then you can split it into a new separate ticket.</p>
                   <div class="mt-2">
                     <label for="ticketTitle" class="block text-sm font-medium text-gray-700 sm:mt-px sm:pt-2">Title</label>
                     <div class="mt-1 sm:col-span-2 sm:mt-0">
@@ -305,14 +500,15 @@
 </template>
 
 <script>
-import axios from 'axios'
-import VueEasyLightbox from 'vue-easy-lightbox'
+import axios from "axios";
+import VueEasyLightbox from "vue-easy-lightbox";
 
 import Chip from '@/components/chip/Chip.vue'
 import TicketInput from '@/components/inputs/TicketInput.vue'
 import TicketInputViewer from '@/components/inputs/TicketInputViewer.vue'
 import LabelDropdown from '@/components/dropdown/LabelDropdown.vue'
 
+import relax from '@/assets/img/svg/relax.svg'
 
 import { Menu, MenuButton, MenuItem, MenuItems, Dialog, DialogPanel, DialogTitle, TransitionChild, TransitionRoot, SwitchGroup, SwitchLabel, SwitchDescription, Switch } from '@headlessui/vue'
 import { EllipsisVerticalIcon } from '@heroicons/vue/20/solid'
@@ -330,27 +526,29 @@ import {
 import {
   HandThumbUpIcon as ThumbUpOutlineIcon,
   HandThumbDownIcon as ThumbDownOutlineIcon,
-  XMarkIcon
+  XMarkIcon,
+  BoltIcon,
+  BoltSlashIcon
 } from '@heroicons/vue/24/outline'
 
 const statusses = {
   PNDG: {
-    name: 'Pending',
-    color: '#e76f51'
+    name: "Pending",
+    color: "#e76f51",
   },
   ASGD: {
-    name: 'Assigned',
-    color: '#e9c46a'
+    name: "Assigned",
+    color: "#e9c46a",
   },
   ANSD: {
-    name: 'Awaiting response',
-    color: '#2a9d8f'
+    name: "Awaiting response",
+    color: "#2a9d8f",
   },
   CLSD: {
-    name: 'Closed',
-    color: '#264653'
-  }
-}
+    name: "Closed",
+    color: "#264653",
+  },
+};
 
 export default {
   components: {
@@ -384,12 +582,14 @@ export default {
     SwitchLabel,
     SwitchDescription,
     Switch,
-    XMarkIcon
-  },
+    XMarkIcon,
+    BoltIcon,
+    BoltSlashIcon
+},
   props: {
     ticket: {
       type: Object,
-      required: true
+      required: true,
     },
     permissions: {
       type: Boolean,
@@ -403,6 +603,7 @@ export default {
     }
   },
   data: () => ({
+    relax,
     inbox: {
       labels: []
     },
@@ -412,75 +613,94 @@ export default {
     splitTicketPrompt: {
       assignYourself: true,
       originalUser: false
-    }
+    },
+    role: null,
+    showActivity: false
   }),
-  setup () {
-    return { statusses }
+  setup() {
+    return { statusses };
   },
-  mounted () {
+  mounted() {
+    axios.get(`/api/me/inboxes/${this.$route.params.inboxId}`).then((response) => {
+      this.role = response.data.role;
+    })
+    
     axios.get(`/api/inboxes/${this.$route.params.inboxId}/labels/all`)
-      .then((response) => {
-        this.inbox.labels = response.data
-      })
+    .then((response) => {
+      this.inbox.labels = response.data
+    })
   },
   methods: {
-    submit () {
-      const inboxId = this.$route.params.inboxId
-      const ticketInboxId = this.$route.params.ticketInboxId
+    submit() {
+      const inboxId = this.$route.params.inboxId;
+      const ticketInboxId = this.$route.params.ticketInboxId;
 
-      axios.post(`/api/inboxes/${ inboxId }/tickets/${ ticketInboxId }/replies/post`, { content: this.comment })
+      axios
+        .post(`/api/inboxes/${inboxId}/tickets/${ticketInboxId}/replies/post`, {
+          content: this.comment,
+        })
         .then(() => {
-          this.$emit('post')
-          this.comment = ''
-          this.$refs.commentInput.setMarkdown('')
-          this.errors = []
+          this.$emit("post");
+          this.comment = "";
+          this.$refs.commentInput.setMarkdown("");
+          this.errors = [];
         })
-        .catch(error => {
-          this.errors = error.response.data
-        })
+        .catch((error) => {
+          this.errors = error.response.data;
+        });
     },
-    closeTicket () {
-      const inboxId = this.$route.params.inboxId
-      const ticketInboxId = this.$route.params.ticketInboxId
+    closeTicket() {
+      const inboxId = this.$route.params.inboxId;
+      const ticketInboxId = this.$route.params.ticketInboxId;
 
-      axios.patch(`/api/inboxes/${ inboxId }/tickets/${ ticketInboxId }/status/close`).then(() => {
-        this.$emit('post')
-      })
+      axios
+        .patch(`/api/inboxes/${inboxId}/tickets/${ticketInboxId}/status/close`)
+        .then(() => {
+          this.$emit("post");
+        });
     },
-    readableBytes (bytes) {
-      const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB']
-      if (bytes === 0) return '0 Byte'
-      const i = parseInt(Math.floor(Math.log(bytes) / Math.log(1024)))
-      return Math.round(bytes / Math.pow(1024, i), 2) + ' ' + sizes[i]
+    readableBytes(bytes) {
+      const sizes = ["Bytes", "KB", "MB", "GB", "TB"];
+      if (bytes === 0) return "0 Byte";
+      const i = parseInt(Math.floor(Math.log(bytes) / Math.log(1024)));
+      return Math.round(bytes / Math.pow(1024, i), 2) + " " + sizes[i];
     },
-    filterImages (files) {
-      return files.filter(file => ['jpg', 'png'].includes(file.extension.toLowerCase()))
+    filterImages(files) {
+      return files.filter((file) =>
+        ["jpg", "png"].includes(file.extension.toLowerCase())
+      );
     },
-    helpful (id) {
-      this.$emit('helpful', 'helpful', id)
+    helpful(id) {
+      this.$emit("helpful", "helpful", id);
     },
-    notHelpful (id) {
-      this.$emit('helpful', 'notHelpful', id)
+    notHelpful(id) {
+      this.$emit("helpful", "notHelpful", id);
     },
-    clearHelpful (id) {
-      this.$emit('helpful', undefined, id)
+    clearHelpful(id) {
+      this.$emit("helpful", undefined, id);
     },
-    helpfulScore (helpful) {
-      if (!helpful) return 0
-      return helpful.reduce((sum, helpful) => sum + (helpful.is_helpful ? 1 : -1), 0)
+    helpfulScore(helpful) {
+      if (!helpful) return 0;
+      return helpful.reduce(
+        (sum, helpful) => sum + (helpful.is_helpful ? 1 : -1),
+        0
+      );
     },
-    isMostHelpful (id) {
-      if (!this.ticket.is_public) return false
-      const replies = this.ticket.replies
+    isMostHelpful(id) {
+      if (!this.ticket.is_public) return false;
+      const replies = this.ticket.replies;
       const mostHelpfulReply = replies.reduce((mostHelpful, reply) => {
-        if (!mostHelpful) return reply
+        if (!mostHelpful) return reply;
 
-        if (this.helpfulScore(reply.helpful) > this.helpfulScore(mostHelpful.helpful)) {
-          return reply
+        if (
+          this.helpfulScore(reply.helpful) >
+          this.helpfulScore(mostHelpful.helpful)
+        ) {
+          return reply;
         }
 
-        return mostHelpful
-      }, undefined)
+        return mostHelpful;
+      }, undefined);
 
       return mostHelpfulReply.helpful.length == 0 || this.helpfulScore(mostHelpfulReply.helpful) <= 0 ? false : mostHelpfulReply.id === id
     },
@@ -503,9 +723,15 @@ export default {
     }
   },
   computed: {
-    user () {
-      return this.$store.state.user
+    user() {
+      return this.$store.state.user;
+    },
+    isStaff() {
+      return (
+        (this.role && (this.role === "AGENT" || this.role === "MANAGER")) ||
+        (this.user && this.user.is_superuser)
+      );
     }
-  }
-}
+  },
+};
 </script>

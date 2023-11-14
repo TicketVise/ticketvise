@@ -11,7 +11,7 @@
         <ticket-card
           :key="ticket.id"
           :ticket="ticket"
-          :assignee_show="title !== 'Pending'"
+          :assignee_show="true"
           v-for="ticket in ticketList"
           v-on:refresh="$emit('refresh')" />
 
@@ -20,7 +20,8 @@
         </div>
 
         <div v-if="has_next" class="flex justify-center py-4">
-          <button @click="$emit('input')" class="text-primary font-semibold text-sm">
+          <button @click="$emit('input')" class="flex items-center text-primary font-semibold text-sm">
+            <ChevronDownIcon class="w-4 h-4 inline-block mr-1" />
             Load More
           </button>
         </div>
@@ -31,10 +32,11 @@
 
 <script>
   import TicketCard from '@/components/tickets/TicketCard.vue'
+  import { ChevronDownIcon } from '@heroicons/vue/24/outline';
   // import SubmitButton from '../elements/buttons/SubmitButton'
 
   export default {
-    components: { TicketCard },
+    components: { TicketCard, ChevronDownIcon },
     name: 'TicketColumn',
     props: ['title', 'color', 'ticketList', 'has_next', 'length']
   }
@@ -42,20 +44,13 @@
 
 <style>
   .ticket-column {
-    min-width: calc(100vw - 64px - 32px) !important;
-    /* height: calc((100vh - 216px) - 3rem); */
+    min-width: calc(100vw - 32px) !important;
     scroll-snap-align: start;
   }
 
   @media screen and (min-width: 500px) {
     .ticket-column {
       min-width: 300px !important;
-    }
-  }
-
-  @media screen and (min-width: 768px) {
-    .ticket-column {
-      /* height: calc((100vh - 92px - 16px) - 3rem); */
     }
   }
 </style>
