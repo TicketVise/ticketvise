@@ -112,7 +112,7 @@ class IntroductionAPIView(UpdateAPIView):
 
     def put(self, request, *args, **kwargs):
         user = request.user
-        user.give_introduction = False
+        user.give_introduction = kwargs["introduction"] or False
         user.save()
 
         return Response()

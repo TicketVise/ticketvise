@@ -3,14 +3,19 @@
     <div class="pl-6 pr-2 py-4 flex justify-between">
       <div class="flex-grow grid sm:grid-cols-2">
         <div class="flex space-x-4">
-          <img class="h-12 w-12 rounded-full object-cover border-2" :style="`border-color: ${inbox.color}`" :src="inbox.image || `/img/default-inbox.png`">
+          <img class="h-12 w-12 rounded-full object-cover border-2" :style="`border-color: ${inbox.color}`" :src="inbox.image || `/img/default-inbox.png`" />
           <div class="flex flex-col">
-            <router-link class="text-primary break-words hover:underline" :to="`/inboxes/${inbox.id}/tickets`">
+            <router-link
+              class="text-primary break-words hover:underline"
+              :to="`/inboxes/${inbox.id}/tickets`"
+            >
               {{ inbox.name }}
             </router-link>
             <div class="flex items-center text-sm leading-5 text-gray-500">
               <UserIcon class="mr-1 w-4 h-4" />
-              {{ stats ? stats.coordinator.first_name + ' ' + stats.coordinator.last_name : '' }}
+              {{
+                inbox.coordinator.first_name + " " + inbox.coordinator.last_name
+              }}
             </div>
           </div>
         </div>
@@ -20,12 +25,15 @@
             {{ date(inbox.date_created) }}
           </span>
           <span class="text-gray-800 flex items-center">
-            <ClipboardListIcon class="mr-1 w-4 h-4" />
+            <ClipboardDocumentListIcon class="mr-1 w-4 h-4" />
             <span>{{ inbox.scheduling_algorithm }}</span>
           </span>
         </div>
       </div>
-      <div class="flex md:items-center hover:bg-gray-200 rounded-full cursor-pointer select-none p-2 w-10 h-10 mr-2" @click="open = !open">
+      <div
+        class="flex md:items-center hover:bg-gray-200 rounded-full cursor-pointer select-none p-2 w-10 h-10 mr-2"
+        @click="openDropdown"
+      >
         <ChevronDownIcon v-if="!open" class="w-6 h-6" />
         <ChevronUpIcon v-else class="w-6 h-6" />
       </div>
@@ -34,19 +42,19 @@
       <div class="grid grid-cols-3 divide-x">
         <div class="flex flex-col items-center">
           <span class="text-primary text-2xl">
-            {{ stats ? stats.users : '' }}
+            {{ stats ? stats.users : "" }}
           </span>
           <span class="text-gray-700">Users</span>
         </div>
         <div class="flex flex-col items-center">
           <span class="text-primary text-2xl">
-            {{ stats ? stats.total_tickets : '' }}
+            {{ stats ? stats.total_tickets : "" }}
           </span>
           <span class="text-gray-700">Tickets</span>
         </div>
         <div class="flex flex-col items-center">
           <span class="text-primary text-2xl">
-            {{ stats ? stats.labels : '' }}
+            {{ stats ? stats.labels : "" }}
           </span>
           <span class="text-gray-700">Labels</span>
         </div>
@@ -60,45 +68,50 @@
 </template>
 
 <script>
-import TicketsChart from '@/components/insights/TicketsChart'
-import axios from 'axios'
-import moment from 'moment'
+import TicketsChart from "@/components/insights/TicketsChart.vue";
+import axios from "axios";
+import moment from "moment";
 
-import {
-  ChevronDownIcon,
-  ChevronUpIcon,
-  ClipboardListIcon,
-  UserIcon
-} from '@heroicons/vue/outline'
+import { ChevronDownIcon, ChevronUpIcon, ClipboardDocumentListIcon, UserIcon } from '@heroicons/vue/24/outline'
 
 export default {
-  components: { ChevronDownIcon, ChevronUpIcon, ClipboardListIcon, UserIcon, TicketsChart },
+  components: {
+    ChevronDownIcon,
+    ChevronUpIcon,
+    ClipboardDocumentListIcon,
+    UserIcon,
+    TicketsChart
+  },
   data: () => ({
     open: false,
-    stats: null
+    stats: null,
   }),
   props: {
     inbox: {
       required: true,
-      type: Object
-    }
+      type: Object,
+    },
   },
   methods: {
-    date (date) {
+    date(date) {
       return moment.parseZone(date).calendar(null, {
-        lastDay: '[Yesterday at] HH:mm',
-        sameDay: '[Today at] HH:mm',
-        nextDay: '[Tomorrow at] HH:mm',
-        lastWeek: '[Last] dddd [at] HH:mm',
-        nextWeek: 'dddd [at] HH:mm',
-        sameElse: 'L [at] HH:mm'
-      })
+        lastDay: "[Yesterday at] HH:mm",
+        sameDay: "[Today at] HH:mm",
+        nextDay: "[Tomorrow at] HH:mm",
+        lastWeek: "[Last] dddd [at] HH:mm",
+        nextWeek: "dddd [at] HH:mm",
+        sameElse: "L [at] HH:mm",
+      });
+    },
+    openDropdown() {
+      this.open = !this.open
+
+      if (this.open) {
+        axios.get(`/api/inboxes/${this.inbox.id}/statistics`).then((response) => {
+          this.stats = response.data;
+        });
+      }
     }
-  },
-  mounted () {
-    axios.get(`/api/inboxes/${this.inbox.id}/statistics`).then(response => {
-      this.stats = response.data
-    })
   }
-}
+};
 </script>

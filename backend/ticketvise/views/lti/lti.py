@@ -1,3 +1,4 @@
+import logging
 from django.contrib.auth import login
 from django.contrib.auth.hashers import make_password
 from django.core.exceptions import PermissionDenied
@@ -38,6 +39,9 @@ class LtiView(View):
         section_ids = form.cleaned_data["custom_section_ids"]
 
         user = User.objects.filter(lti_id=user_id).first()
+        
+        if email == "":
+            email = "test_user@ticketvise.com"
 
         if user is None:
             user = User.objects.create(
@@ -57,13 +61,26 @@ class LtiView(View):
             user.save()
 
         user_roles = [role.split("/")[-1].lower() for role in form.cleaned_data["roles"].split(",")]
-        inbox_code = form.cleaned_data["context_label"]
-        inbox = Inbox.objects.filter(code=inbox_code).first()
+        context_label = form.cleaned_data.get("context_label")
+        context_id = form.cleaned_data.get("context_id")
+        inbox = Inbox.objects.filter(lti_context_label=context_label, lti_context_id=context_id).first()
 
         if inbox is None:
-            if "instructor" in user_roles:
+            # Migrate courses without lti_context_label
+            if Inbox.objects.filter(lti_context_label=context_label, lti_context_id=None).exists():
+                inboxes = Inbox.objects.filter(lti_context_label=context_label)
+                if inboxes.count() > 1:
+                    raise Exception("Multiple courses with the same LTI context label found. Please contact your network administrator.")
+                
+                inbox = inboxes.first()
+                inbox.lti_context_id = context_id
+                inbox.save()
+
+                logging.info(f"Migrated course {inbox.name} ({inbox.lti_context_label}) without lti_context_id to {inbox.lti_context_id}")
+            elif "instructor" in user_roles:
                 inbox_name = form.cleaned_data["custom_course_name"]
-                inbox = Inbox.objects.create(code=inbox_code, name=inbox_name)
+                inbox = Inbox.objects.create(lti_context_label=context_label, 
+                    lti_context_id=context_id, name=inbox_name)
 
                 # Set default labels
                 Label.objects.create(inbox=inbox, color="#d73a4a", name="Assignment")
@@ -72,13 +89,12 @@ class LtiView(View):
                 Label.objects.create(inbox=inbox, color="#008672", name="Course material")
             else:
                 raise Http404("Course does not have a ticket system (yet). Please contact your instructor.")
-
         user_role = Role.GUEST
 
-        if any("instructor" in s for s in user_roles):
+        if any(s.lower() in ["instructor", "administrator"] for s in user_roles):
             user_role = Role.MANAGER
 
-        if any("teachingassistant" in s for s in user_roles):
+        if any("teachingassistant" in s.lower() for s in user_roles):
             user_role = Role.AGENT
 
         relation = UserInbox.objects.filter(user=user, inbox=inbox).first()
@@ -100,4 +116,4 @@ class LtiView(View):
         token, _ = Token.objects.get_or_create(user=user)
         _, token = token_expire_handler(token)
 
-        return redirect(f'/inboxes/{inbox.id}/tickets?token={token.key}')
+        return redirect(f'/inboxes/{inbox.id}/overview?token={token.key}')

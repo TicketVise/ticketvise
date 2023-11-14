@@ -7,8 +7,7 @@ Contains all entity sets for the ticket database and TicketStatusChangedNotifica
 * :class:`Ticket`
 * :class:`TicketStatuscChangedNotification`
 """
-import os
-import uuid
+import logging
 from secrets import token_urlsafe
 
 from django.db import models, transaction
@@ -18,11 +17,9 @@ from django.dispatch import receiver
 from django.utils.translation import gettext_lazy as _
 from model_utils.managers import InheritanceManager
 
-from ticketvise import settings
 from ticketvise.middleware import CurrentUserMiddleware
 from ticketvise.models.label import Label
 from ticketvise.models.notification.assigned import TicketAssignedNotification
-from ticketvise.models.notification.new import NewTicketNotification
 from ticketvise.scheduling import schedule_ticket
 
 
@@ -66,6 +63,7 @@ class Ticket(models.Model):
     is_pinned = models.DateTimeField(auto_now_add=False, null=True, default=None)
     pin_initiator = models.ForeignKey("User", on_delete=models.CASCADE, blank=True, null=True,
                                       related_name="pin_initiator")
+    email_message = models.TextField(null=True, blank=True)
     date_edited = models.DateTimeField(auto_now=True)
     date_created = models.DateTimeField(auto_now_add=True)
 
@@ -109,7 +107,7 @@ class Ticket(models.Model):
             self.status = Status.PENDING
         else:
             self.status = Status.ASSIGNED
-
+    
     @transaction.atomic
     def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
         """
@@ -144,9 +142,6 @@ class Ticket(models.Model):
                                                initiator=current_user)
             if current_user != self.assignee:
                 TicketAssignedNotification.objects.create(ticket=self, receiver=self.assignee)
-        elif not self.assignee:
-            for user in self.inbox.get_assistants_and_coordinators():
-                NewTicketNotification.objects.create(ticket=self, receiver=user)
 
         if old_ticket and old_ticket.title != self.title:
             TicketTitleEvent.objects.create(ticket=self, initiator=CurrentUserMiddleware.get_current_user(),
@@ -201,7 +196,7 @@ def ticket_directory_path(instance, filename):
     return f"inboxes/{instance.ticket.inbox.id}/tickets/{instance.ticket.ticket_inbox_id}/attachments/{token_urlsafe(64)}/{filename}"
 
 class TicketAttachment(models.Model):
-    ticket = models.ForeignKey(Ticket, on_delete=models.CASCADE, related_name="attachments")
+    ticket = models.ForeignKey("Ticket", on_delete=models.CASCADE, related_name="attachments")
     file = models.FileField(upload_to=ticket_directory_path, max_length=1000)
     uploader = models.ForeignKey("User", on_delete=models.CASCADE, null=True)
     date_edited = models.DateTimeField(auto_now=True)
@@ -221,7 +216,7 @@ class TicketAttachment(models.Model):
 
 class TicketEvent(models.Model):
     objects = InheritanceManager()
-    ticket = models.ForeignKey(Ticket, on_delete=models.CASCADE)
+    ticket = models.ForeignKey("Ticket", on_delete=models.CASCADE)
     initiator = models.ForeignKey("User", on_delete=models.CASCADE, null=True)
     date_edited = models.DateTimeField(auto_now=True)
     date_created = models.DateTimeField(auto_now_add=True)

@@ -2,6 +2,9 @@ import { createStore } from 'vuex'
 import router from '@/router'
 import axios from 'axios'
 
+import automation from '@/store/modules/automation'
+import onboarding from '@/store/modules/onboarding'
+
 const TOKEN_KEY = 'token'
 const urlQueryParams = new URLSearchParams(window.location.search)
 const urlToken = urlQueryParams.get(TOKEN_KEY)
@@ -104,6 +107,50 @@ const store = createStore({
         const response = await axios.get('/api/me/inboxes')
         commit('update_inboxes', response.data.map(inbox => inbox.inbox))
       }
+    },
+    demo_tickets ({ commit, state }, payload) {
+      const ticket = {
+        id: 1,
+        ticket_inbox_id: 1,
+        title: 'Example ticket',
+        date_created: Date.now(),
+        author: { first_name: 'John', last_name: 'Doe' },
+        assignee: payload.status !== 'pending' ? state.user : null,
+        labels: [
+          {
+            id: 1,
+            name: 'General',
+            color: '#9061F9'
+          }
+        ]
+      }
+      const inbox = {
+        inbox: payload.inboxId,
+        tickets: [
+          {
+            label: 'Pending',
+            total: 1,
+            tickets: payload.status === 'pending' ? [ticket] : []
+          },
+          {
+            label: 'Assigned',
+            total: 0,
+            tickets: payload.status === 'assigned' ? [ticket] : []
+          },
+          {
+            label: 'Awaiting response',
+            total: 0,
+            tickets: payload.status === 'awaiting' ? [ticket] : []
+          },
+          {
+            label: 'Closed',
+            total: 0,
+            tickets: payload.status === 'closed' ? [ticket] : []
+          }
+        ]
+      }
+
+      commit('update_tickets', inbox)
     }
   },
   getters: {
@@ -111,6 +158,8 @@ const store = createStore({
     inbox: (state) => (id) => state.inboxes.find(i => i.id === parseInt(id))
   },
   modules: {
+    automation,
+    onboarding
   }
 })
 
@@ -135,6 +184,8 @@ if (urlToken) {
   // Remove token parameter from URL.
   const url = new URL(window.location.href)
   url.searchParams.delete(TOKEN_KEY)
+
+  if (isLocalStorageAvailable()) localStorage.setItem(TOKEN_KEY, urlToken)
 
   window.history.replaceState({}, document.title, url.href)
 }

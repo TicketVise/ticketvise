@@ -6,6 +6,8 @@ some custom.
 """
 import os
 
+from msal.application import ConfidentialClientApplication
+
 #: Project base directory.
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -20,6 +22,15 @@ SEND_MAIL = int(os.environ.get("SEND_MAIL", False))
 
 DOMAIN = os.environ.get("DOMAIN", "localhost")
 HOST = os.environ.get("HOST", DOMAIN)
+
+MICROSOFT_CLIENT_ID = os.environ.get("MICROSOFT_CLIENT_ID")
+MICROSOFT_CLIENT_SECRET = os.environ.get("MICROSOFT_CLIENT_SECRET")
+MICROSOFT_EMAIL_SCOPES = ["https://outlook.office.com/IMAP.AccessAsUser.All",
+                          "https://outlook.office.com/POP.AccessAsUser.All", 
+                          "https://outlook.office.com/SMTP.Send"]
+MICROSOFT_AUTH = None
+if MICROSOFT_CLIENT_ID and MICROSOFT_CLIENT_SECRET:
+    MICROSOFT_AUTH = ConfidentialClientApplication(MICROSOFT_CLIENT_ID, MICROSOFT_CLIENT_SECRET)
 
 ALLOWED_HOSTS = ["*"]
 
@@ -149,8 +160,9 @@ AWS_ACCESS_KEY_ID = os.environ.get("S3_ACCESS_KEY", "minio")
 AWS_SECRET_ACCESS_KEY = os.environ.get("S3_SECRET_KEY", "Welkom01")
 
 AWS_STORAGE_BUCKET_NAME = os.environ.get("S3_BUCKET_NAME", "ticketvise")
-AWS_S3_ENDPOINT_URL = os.environ.get("S3_ENDPOINT_URL", "http://s3:9000")
-AWS_S3_CUSTOM_DOMAIN = f"{HOST}/s3/{AWS_STORAGE_BUCKET_NAME}"
+AWS_S3_ENDPOINT_URL = ('https://' if AWS_S3_SECURE_URLS else 'http://') + os.environ.get("S3_ENDPOINT_URL", "s3:9000")
+AWS_S3_CUSTOM_DOMAIN = f"{os.environ.get('S3_ENDPOINT_URL', 's3:9000')}/{AWS_STORAGE_BUCKET_NAME}"
+AWS_DEFAULT_ACL = 'public-read'
 
 
 #: Password validation
@@ -190,7 +202,7 @@ STATIC_ROOT = os.path.join(BASE_DIR, "static")
 #: Email settings
 #: ~~~~~~~~~~~~~~~~~~~
 if SEND_MAIL:
-    EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+    EMAIL_BACKEND = 'ticketvise.mail.send.OAuthCompatibleEmailBackend'
 else:
     EMAIL_BACKEND = 'django.core.mail.backends.locmem.EmailBackend'
 
@@ -201,7 +213,7 @@ EMAIL_HOST_PASSWORD = os.getenv("SMTP_OUTBOUND_PASSWORD", "Welkom01")
 EMAIL_USE_TLS = os.getenv("SMTP_TLS", True)
 EMAIL_USE_SSL = os.getenv("SMTP_SSL", False)
 DEFAULT_FROM_EMAIL = os.getenv("SMTP_OUTBOUND_FROM", "TicketVise <ticket@{}>".format(DOMAIN))
- 
+
 PAGE_SIZE = 25
 
 ROLE_GUEST_DISPLAY_NAME = os.getenv("ROLE_GUEST_DISPLAY_NAME", "Student")
@@ -229,6 +241,6 @@ REST_FRAMEWORK = {
         'ticketvise.security.token.ExpiringTokenAuthentication',
     ),
     'DEFAULT_PERMISSION_CLASSES': (
-        'rest_framework.permissions.IsAuthenticated',
+        'rest_framework.permissions.IsAuthenticatedOrReadOnly',
     )
 }

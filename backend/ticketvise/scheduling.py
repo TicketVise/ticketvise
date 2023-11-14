@@ -9,8 +9,9 @@ import operator
 import random
 
 from django.db.models import Q
+from django.apps import apps
 
-from ticketvise.models.inbox import InboxUserSection, SchedulingAlgorithm
+from ticketvise.models.utils import SchedulingAlgorithm
 
 
 def schedule_ticket(ticket):
@@ -99,6 +100,7 @@ def schedule_sections(ticket):
     :return: None.
     """
     inbox_staff = ticket.inbox.get_assignable_assistants_and_coordinators()
+    InboxUserSection = apps.get_model('ticketvise', 'InboxUserSection')
     sections = InboxUserSection.objects.filter(reduce(operator.or_, (Q(section=x.section) for x in ticket.author.inbox_sections.all())))
     staff = inbox_staff.filter(reduce(operator.or_, (Q(inbox_sections=x) for x in sections)))
     

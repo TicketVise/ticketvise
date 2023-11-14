@@ -10,6 +10,7 @@ Contains classes for the API interface to dynamically load models using AJAX.
 * :class:`InboxUsersView`
 * :class:`InboxTicketView`
 """
+import logging
 from datetime import datetime
 import json
 
@@ -21,19 +22,20 @@ from django.http import JsonResponse, Http404
 from django.shortcuts import get_object_or_404
 from django.utils import timezone
 from rest_framework import serializers, status
-from rest_framework.generics import UpdateAPIView, ListAPIView, RetrieveAPIView, CreateAPIView, DestroyAPIView
+from rest_framework.generics import UpdateAPIView, ListAPIView, RetrieveAPIView, CreateAPIView, DestroyAPIView, RetrieveUpdateDestroyAPIView
 from rest_framework.response import Response
 from rest_framework.serializers import ModelSerializer
 from rest_framework.views import APIView
 
-from ticketvise.models.comment import Comment
+from ticketvise.models.comment import Comment, CommentHelpful
 from ticketvise.models.inbox import Inbox, SchedulingAlgorithm
 from ticketvise.models.label import Label
 from ticketvise.models.ticket import Ticket, TicketAttachment, TicketEvent, Status, TicketStatusEvent, \
     TicketAssigneeEvent, TicketLabelEvent, TicketLabel, TicketTitleEvent
 from ticketvise.models.user import User, Role, UserTicket, UserInbox
 from ticketvise.notifications import unread_related_ticket_notifications
-from ticketvise.views.api import CommentSerializer, TicketSerializer, LabelSerializer
+from ticketvise.models.notification.new import NewTicketNotification
+from ticketvise.views.api import CommentSerializer, CommentHelpfulSerializer, TicketSerializer, LabelSerializer
 from ticketvise.views.api.inbox import InboxSerializer
 from ticketvise.views.api.security import UserIsInInboxPermission, UserIsSuperUserPermission, \
     UserHasAccessToTicketPermission, UserIsInboxStaffPermission, UserIsTicketAuthorOrInboxStaffPermission, \
@@ -227,7 +229,7 @@ class InboxTicketsApiView(ListAPIView):
         return JsonResponse(data=columns, safe=False)
 
     def search_tickets(self, q, inbox):
-        query = SearchQuery(q)
+        query = SearchQuery(f"'{q}' & '{q}':*", search_type="raw")
 
         # Load comments and replies if permissions are right, else load only replies.
         is_reply = [True]
@@ -490,8 +492,21 @@ class TicketCreateApiView(CreateAPIView):
         inbox = get_object_or_404(Inbox, pk=self.kwargs["inbox_id"])
         ticket = serializer.save(author=self.request.user, inbox=inbox)
 
+        # After saving we do the automations so the labels etc. are also created so we can use them in the automations
+        try:
+            for automation in ticket.inbox.automations.all():
+                automation.execute(ticket)
+
+            ticket.save()
+        except Exception as e:
+            logging.error(e)
+
         for file in self.request.FILES.getlist('files'):
             TicketAttachment(ticket=ticket, file=file).save()
+
+        if not ticket.assignee:
+            for user in ticket.inbox.get_assistants_and_coordinators():
+                NewTicketNotification.objects.create(ticket=ticket, receiver=user)
 
 
 class TicketSharedWithRetrieveSerializer(ModelSerializer):
@@ -679,6 +694,16 @@ class PinUnpinTicketAPIView(UpdateAPIView):
             ticket.pin_initiator = request.user
         ticket.save()
         return super().update(request, *args, **kwargs)
+
+
+class HelpfulTicketAPIView(CreateAPIView, RetrieveUpdateDestroyAPIView):
+    permission_classes = [UserHasAccessToTicketPermission]
+    serializer_class = CommentHelpfulSerializer
+
+    def get_object(self):
+        comment = get_object_or_404(Comment, pk=self.kwargs["ticket_comment_id"])
+
+        return CommentHelpful.objects.get(comment=comment, user=self.request.user)
 
 
 class SubscribeToTicketAPIView(CreateAPIView):

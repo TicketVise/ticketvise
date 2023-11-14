@@ -1,2 +1,1 @@
-from ticketvise.models import comment, inbox, label, notification, ticket, user, validators  # noqa: F401
-
+from ticketvise.models import comment, inbox, label, notification, ticket, user, automation, validators # noqa: F401

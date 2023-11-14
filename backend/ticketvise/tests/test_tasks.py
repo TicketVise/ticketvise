@@ -12,7 +12,7 @@ from ticketvise.tasks import alert_unanswered_tickets, close_expired_answered_ti
 class TasksTestCase(TestCase):
 
     def test_close_expired_answered_tickets(self):
-        inbox = Inbox.objects.create(code="ABC", name="how to code", close_answered_weeks=1)
+        inbox = Inbox.objects.create(lti_context_label="ABC", name="how to code", close_answered_weeks=1)
         guest = User.objects.create_user(username="guest", email="guest@ticketvise.com")
         guest.add_inbox(inbox)
 
@@ -27,7 +27,7 @@ class TasksTestCase(TestCase):
         self.assertEqual(updated_ticket.status, Status.CLOSED)
 
     def test_alert_unanswered_tickets(self):
-        inbox = Inbox.objects.create(code="ABC", name="how to code", alert_coordinator_unanswered_days=1)
+        inbox = Inbox.objects.create(lti_context_label="ABC", name="how to code", alert_coordinator_unanswered_days=1)
         guest = User.objects.create_user(username="guest", email="guest@ticketvise.com")
         guest.add_inbox(inbox)
 

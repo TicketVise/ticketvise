@@ -27,12 +27,13 @@ class LtiLaunchForm(forms.Form):
     #: The custom username of the user.
     custom_username = forms.CharField()
     #: The custom mail of the user.
-    custom_email = forms.EmailField()
+    custom_email = forms.EmailField(required=False)
     #: The account picture of the user.
     custom_image_url = forms.URLField()
     #: The name of the inbox of the user.
     custom_course_name = forms.CharField()
     #: The code of the inbox.
+    context_id = forms.CharField()
     context_label = forms.CharField()
     #: The role of user in the inbox.
     roles = forms.CharField()
