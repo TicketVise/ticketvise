@@ -8,10 +8,10 @@ spec:
   ingressClassName: nginx
   tls:
   - hosts:
-    - app.ticketvise.com
+    - uva.ticketvise.com
     secretName: letsencrypt-nginx
   rules:
-  - host: app.ticketvise.com
+  - host: uva.ticketvise.com
     http:
       paths:
       - path: /api
