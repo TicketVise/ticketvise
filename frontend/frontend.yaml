@@ -36,7 +36,7 @@ spec:
         "kubernetes.io/os": linux
       containers:
         - name: ticketvise-frontend
-          image: registry.digitalocean.com/cr-ticketvise/frontend:v2.13.1
+          image: registry.digitalocean.com/cr-ticketvise/frontend:v2.14
           imagePullPolicy: Always
           ports:
             - containerPort: 80
