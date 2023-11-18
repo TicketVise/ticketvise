@@ -45,7 +45,7 @@ class InboxSerializer(DynamicFieldsModelSerializer):
         fields = [
             "name", "id", "color", "labels", "image", "scheduling_algorithm", "lti_context_label", "show_assignee_to_guest",
             "fixed_scheduling_assignee", "is_active", "date_created", "close_answered_weeks",
-            "alert_coordinator_unanswered_days", "coordinator", "is_email_setup"
+            "alert_coordinator_unanswered_days", "coordinator", "is_email_setup", "visible_coordinator"
         ]
 
 class InboxEmailSerializer(ModelSerializer):
@@ -191,7 +191,7 @@ class InboxSettingsApiView(RetrieveUpdateAPIView):
     def get_serializer(self, *args, **kwargs):
         return InboxSerializer(*args, **kwargs, fields=(
             "name", "id", "color", "image", "scheduling_algorithm", "lti_context_label", "show_assignee_to_guest",
-            "fixed_scheduling_assignee", "close_answered_weeks", "alert_coordinator_unanswered_days", "is_email_setup"))
+            "fixed_scheduling_assignee", "close_answered_weeks", "alert_coordinator_unanswered_days", "is_email_setup", "coordinator", "visible_coordinator"))
 
     def retrieve(self, request, *args, **kwargs):
         inbox = self.get_object()
@@ -209,6 +209,10 @@ class InboxSettingsApiView(RetrieveUpdateAPIView):
             "fixed_scheduling_assignee"].isdigit():
             request.POST._mutable = True
             request.POST["fixed_scheduling_assignee"] = None
+        if "visible_coordinator" in request.POST.keys() and not request.POST[
+            "visible_coordinator"].isdigit():
+            request.POST._mutable = True
+            request.POST["visible_coordinator"] = None
         return super().update(request, *args, **kwargs)
 
 class CurrentUserInboxSerializer(ModelSerializer):
