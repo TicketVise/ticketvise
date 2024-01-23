@@ -57,7 +57,7 @@ jobs:
 
       - name: Generate Short Git SHA
         id: git-sha7
-        run: echo "sha7=$(echo ${{ github.sha }} | cut -c1-7)" >> $GITHUB_ENV
+        run: echo "sha7=$(echo ${{ github.sha }} | cut -c1-7)" >> $GITHUB_OUTPUT
 
       - name: Deploy to Docker Swarm (development)
         uses: sagebind/docker-swarm-deploy-action@v2
