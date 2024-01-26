@@ -66,7 +66,7 @@
           </div> -->
 
           <!-- Right section on desktop -->
-          <div class="flex lg:ml-4 lg:items-center pr-0.5">
+          <div class="flex lg:ml-4 lg:items-center lg:py-5 lg:pr-0.5">
             <button
               type="button"
               class="inline-flex items-center justify-center py-1 px-4 border border-transparent rounded-md shadow-sm text-white bg-primary hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500 mr-4 space-x-2"
@@ -84,11 +84,11 @@
               class="flex-shrink-0 p-1 text-gray-200 rounded-full hover:text-white hover:bg-white hover:bg-opacity-10 focus:outline-none focus:ring-2 focus:ring-white"
             >
               <span class="sr-only">View notifications</span>
-              <BellIcon class="h-6 w-6" aria-hidden="true"/>
+              <BellIcon class="h-6 w-6" aria-hidden="true" />
             </router-link>
 
             <!-- Profile dropdown -->
-            <Menu as="div" class="p-4 relative flex-shrink-0">
+            <Menu as="div" class="mx-4 relative flex-shrink-0">
               <div>
                 <MenuButton
                   class="bg-white rounded-full flex text-sm ring-2 ring-white ring-opacity-20 focus:outline-none focus:ring-opacity-100"
