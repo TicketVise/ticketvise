@@ -14,3 +14,4 @@ django-storages==1.12.3
 Pillow==9.0.1
 msal==1.17.0
 html2text==2020.1.16
+PyLTI1p3==2.0.0
