@@ -1,8 +1,9 @@
 import logging
+import os
 from django.contrib.auth import login
 from django.contrib.auth.hashers import make_password
 from django.core.exceptions import PermissionDenied
-from django.http import Http404
+from django.http import Http404, HttpResponse
 from django.shortcuts import redirect
 from django.urls import reverse
 from django.utils.decorators import method_decorator
@@ -10,11 +11,86 @@ from django.views import View
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework.authtoken.models import Token
 
+from pylti1p3.contrib.django import DjangoOIDCLogin, DjangoMessageLaunch, DjangoCacheDataStorage
+from pylti1p3.deep_link_resource import DeepLinkResource
+from pylti1p3.grade import Grade
+from pylti1p3.lineitem import LineItem
+from pylti1p3.tool_config import ToolConfJsonFile, ToolConfDict
+from pylti1p3.registration import Registration
+
+from ticketvise import settings
 from ticketvise.models.inbox import Inbox, InboxSection, InboxUserSection
 from ticketvise.models.label import Label
 from ticketvise.models.user import User, UserInbox, Role
 from ticketvise.security.token import token_expire_handler
 from ticketvise.views.lti.validation import LtiLaunchForm
+
+
+class ExtendedDjangoMessageLaunch(DjangoMessageLaunch):
+
+    def validate_nonce(self):
+        """
+        Probably it is bug on "https://lti-ri.imsglobal.org":
+        site passes invalid "nonce" value during deep links launch.
+        Because of this in case of iss == http://imsglobal.org just skip nonce validation.
+
+        """
+        iss = self.get_iss()
+        deep_link_launch = self.is_deep_link_launch()
+        if iss == "http://imsglobal.org" and deep_link_launch:
+            return self
+        return super().validate_nonce()
+
+
+def get_tool_conf():
+    tool_conf = ToolConfDict({
+        "https://lti-ri.imsglobal.org": {
+            "default": True,
+            "client_id": "123456789",
+            "auth_login_url": "https://lti-ri.imsglobal.org/platforms/4645/authorizations/new",
+            "auth_token_url": "https://lti-ri.imsglobal.org/platforms/4645/access_tokens",
+            "auth_audience": None,
+            "key_set_url": "https://lti-ri.imsglobal.org/platforms/4645/platform_keys/4253.json",
+            "key_set": None,
+            "deployment_ids": ["1"]
+        }
+    })
+    
+    return tool_conf
+
+
+def get_launch_data_storage():
+    return DjangoCacheDataStorage()
+
+
+def get_launch_url(request):
+    target_link_uri = request.POST.get('target_link_uri', request.GET.get('target_link_uri'))
+    if not target_link_uri:
+        raise Exception('Missing "target_link_uri" param')
+    return target_link_uri
+
+
+@method_decorator(csrf_exempt, name="dispatch")
+def LTILoginView(request):
+    tool_conf = get_tool_conf()
+    launch_data_storage = get_launch_data_storage()
+
+    oidc_login = DjangoOIDCLogin(request, tool_conf, launch_data_storage=launch_data_storage)
+    target_link_uri = get_launch_url(request)
+    return oidc_login \
+        .enable_check_cookies() \
+        .redirect(target_link_uri)
+        
+        
+@method_decorator(csrf_exempt, name="dispatch")
+def LTILaunchView(request):
+    tool_conf = get_tool_conf()
+    launch_data_storage = get_launch_data_storage()
+    message_launch = ExtendedDjangoMessageLaunch(request, tool_conf, launch_data_storage=launch_data_storage)
+    message_launch_data = message_launch.get_launch_data()
+    print(message_launch_data)
+    
+    return HttpResponse(message_launch_data.get('https://purl.imsglobal.org/spec/lti/claim/context', 'No name found'))
 
 
 @method_decorator(csrf_exempt, name="dispatch")

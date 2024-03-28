@@ -1,0 +1,7 @@
+{
+  "title": "TicketVise",
+  "description": "Efficient course communication",
+  "oidc_initiation_url": "http://ivan.ticketvise.com/lti/login",
+  "target_link_uri": "http://ivan.ticketvise.com/lti/launch",
+  ""
+}
