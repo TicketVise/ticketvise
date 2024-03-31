@@ -148,6 +148,12 @@ DEFAULT_INBOX_IMAGE_PATH = "/img/default-inbox.png"
 #: Directory for uploaded inbox images.
 INBOX_IMAGE_DIRECTORY = "media/img/inboxes"
 
+#: URL paths for data
+#: ~~~~~~~~~~~~~~~~~~~
+
+#: Data url base.
+DATA_URL = os.path.join(BASE_DIR, "ticketvise/data/")
+
 # S3 config
 #: Set max upload size for files
 AWS_S3_MAX_MEMORY_SIZE = 314572800

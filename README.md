@@ -1,42 +1,67 @@
-## Introduction
-TicketVise is a ticket system that makes answering questions from students easier than ever before.
-The currently used mailing list has many flaws, such as confusion about who will answer what.
-In addition to that questions are often forgotten and there is a need for a second communication
-channel for discussion amongst assistants. TicketVise solves this as it forms a central place for
-students to ask questions via tickets, which can be assigned to assistants both automatically
-and manually to give more clarity about who answers what. The built-in Canvas integration in
-combination with a private discussion section for the teaching team gets rid of coordination
-overhead as no second communication channel is required (e.g. Slack or Telegram). TicketVise comes
-with many more features, such as a notification system, course/user statistics and markdown support.
+<div align="center">
+  <a href="https://ticketvise.com">
+    <img src="https://ticketvise.com/img/logo.svg" alt="Logo" width="80" height="80">
+  </a>
 
-## Deployment
-### Generate SSL certificates
-```shell script
-docker run -it --rm --name certbot -p 80:80 \
-          -v "ticketvise_cert_conf:/etc/letsencrypt" \
-          -v "ticketvise_cert_www:/var/www/certbot" \
-          certbot/certbot certonly \
-          --standalone \
-          -w /var/www/certbot \
-          --email <EMAIL> \
-          -d <DOMAIN>
-```
-### Deploy to Docker Stack
-```shell script
-docker stack deploy -c docker-compose.yml -c docker-compose.prod.yml ticketvise
-```
-NOTE: IPv6 has to be disabled, because Docker Swawrm does not support it.
+  <h3 align="center">TicketVise</h3>
 
-## Troubleshooting
-#### Cronjobs
+  <p align="center">
+    Answer questions from students with ease!
+    <br />
+    <a href="https://ticketvise.com/getting-started"><strong>Explore the docs »</strong></a>
+    <br />
+    <br />
+    <a href="https://ticketvise.com">View Demo</a>
+    ·
+    <a href="https://github.com/ticketvise/ticketvise/issues">Report Bug</a>
+    ·
+    <a href="https://github.com/ticketvise/ticketvise/issues">Request Feature</a>
+  </p>
+</div>
 
-Access the docker container running the backend image. You can find the container id by running `docker ps`.
-```shell script
-docker exec -it <backend_container_id> bash
-```
 
-View the cronjob logs.
-```shell script
-cat /var/log/cron.log
-```
- 
+## About The Project
+
+There are many great ticketing systems available today; however, none that really suits connects well with education. We want to create a question platform that links directly into your Learning Management System and bridges the gap between students' questions and the teachers -- we think this is it.
+
+Here's why:
+* Divide questions amongst your team to give more time for other work
+* Get insights about difficult topics
+* Markdown, attachments and LaTeX support for even the most complicated questions and answers
+* Ask questions private or public to create a knowledge base which you can reuse next year
+
+
+### Built With
+
+* Vue
+* Django
+* TailwindCSS
+* Kubernetes
+* Docker
+
+
+## Getting Started
+
+To get a local copy up and running follow these simple example steps.
+
+### Prerequisites
+
+This is an example of how to list things you need to use the software and how to install them.
+* npm
+  ```sh
+  npm install npm@latest -g
+  ```
+* docker (follow the steps to install docker from the docker website)
+* minikube (or other local kubernetes platform)
+  * ingress
+  * ingress-dns
+  * registry
+* kubectl
+* tilt ([https://tilt.dev](https://tilt.dev))
+
+### Installation
+
+1. Clone the repo
+   ```sh
+   git clone https://github.com/ticketvise/ticketvise.git
+   ```

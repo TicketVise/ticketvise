@@ -1,0 +1,34 @@
+{
+  "title": "TicketVise",
+  "description": "TicketVise LTI 1.3 Tool",
+  "oidc_initiation_url": "http://ivan.ticketvise.com/lti/login",
+  "target_link_uri": "http://ivan.ticketvise.com/lti/launch",
+  "scopes": [],
+  "extensions": [
+    {
+      "privacy_level": "public",
+      "platform": "instructure.com",
+      "settings": {
+        "text": "TicketVise",
+        "placements": [
+          {
+            "text": "TicketVise",
+            "enabled": true,
+            "placement": "course_navigation",
+            "default": "disabled",
+            "message_type": "LtiResourceLinkRequest",
+            "target_link_uri": "http://ivan.ticketvise.com/lti/launch",
+            "canvas_icon_class": "icon-lti"
+          }
+        ]
+      }
+    }
+  ],
+  "public_jwk_url": "http://ivan.ticketvise.com/lti/jwks",
+  "custom_fields": {
+    "masq_userid": "$Canvas.masqueradingUser.id",
+    "canvas_user_id": "$Canvas.user.id",
+    "voc_section_name": "$com.instructure.User.sectionNames",
+    "lms_courseid": "$Canvas.course.id"
+  }
+}

@@ -1,3 +1,4 @@
+import json
 import logging
 import os
 from django.contrib.auth import login
@@ -8,7 +9,9 @@ from django.shortcuts import redirect
 from django.urls import reverse
 from django.utils.decorators import method_decorator
 from django.views import View
+from django.views.generic import TemplateView
 from django.views.decorators.csrf import csrf_exempt
+from django.http import JsonResponse
 from rest_framework.authtoken.models import Token
 
 from pylti1p3.contrib.django import DjangoOIDCLogin, DjangoMessageLaunch, DjangoCacheDataStorage
@@ -24,6 +27,26 @@ from ticketvise.models.label import Label
 from ticketvise.models.user import User, UserInbox, Role
 from ticketvise.security.token import token_expire_handler
 from ticketvise.views.lti.validation import LtiLaunchForm
+
+
+def LTIConfigJSONView(request):
+    template_name = "lti-canvas.json"
+
+    json_path = os.path.join(settings.DATA_URL, template_name)
+    with open(json_path) as f:
+        data = json.load(f)
+    
+    return JsonResponse(data)
+
+
+def LTIJWKsView(request):
+    template_name = "jwks.json"
+
+    json_path = os.path.join(settings.DATA_URL, template_name)
+    with open(json_path) as f:
+        data = json.load(f)
+    
+    return JsonResponse(data)
 
 
 class ExtendedDjangoMessageLaunch(DjangoMessageLaunch):
@@ -53,6 +76,16 @@ def get_tool_conf():
             "key_set_url": "https://lti-ri.imsglobal.org/platforms/4645/platform_keys/4253.json",
             "key_set": None,
             "deployment_ids": ["1"]
+        },
+        "https://canvas.instructure.com": {
+            "default": False,
+            "client_id": "10000000000003",
+            "auth_login_url": "https://128.199.192.247/api/lti/authorize_redirect",
+            "auth_token_url": "https://128.199.192.247/platforms/4645/access_tokens",
+            "auth_audience": None,
+            "key_set_url": None,
+            "key_set": {"keys":[{"kty":"RSA","e":"AQAB","n":"uX1MpfEMQCBUMcj0sBYI-iFaG5Nodp3C6OlN8uY60fa5zSBd83-iIL3n_qzZ8VCluuTLfB7rrV_tiX727XIEqQ","kid":"2018-05-18T22:33:20Z"},{"kty":"RSA","e":"AQAB","n":"uX1MpfEMQCBUMcj0sBYI-iFaG5Nodp3C6OlN8uY60fa5zSBd83-iIL3n_qzZ8VCluuTLfB7rrV_tiX727XIEqQ","kid":"2018-06-18T22:33:20Z"},{"kty":"RSA","e":"AQAB","n":"uX1MpfEMQCBUMcj0sBYI-iFaG5Nodp3C6OlN8uY60fa5zSBd83-iIL3n_qzZ8VCluuTLfB7rrV_tiX727XIEqQ","kid":"2018-07-18T22:33:20Z"}]},
+            "deployment_ids": ["2:8865aa05b4b79b64a91a86042e43af5ea8ae79eb"]
         }
     })
     
@@ -88,9 +121,8 @@ def LTILaunchView(request):
     launch_data_storage = get_launch_data_storage()
     message_launch = ExtendedDjangoMessageLaunch(request, tool_conf, launch_data_storage=launch_data_storage)
     message_launch_data = message_launch.get_launch_data()
-    print(message_launch_data)
     
-    return HttpResponse(message_launch_data.get('https://purl.imsglobal.org/spec/lti/claim/context', 'No name found'))
+    return HttpResponse(message_launch_data)
 
 
 @method_decorator(csrf_exempt, name="dispatch")
