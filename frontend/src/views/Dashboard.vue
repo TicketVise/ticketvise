@@ -66,6 +66,10 @@ import store from '@/store'
 
 export default {
   name: 'Dashboard',
+  async created () {
+    if (store.state.user.is_superuser)
+      this.$router.push('/admin')
+  },
   async mounted () {
     const inboxes = await this.getInboxes()
 

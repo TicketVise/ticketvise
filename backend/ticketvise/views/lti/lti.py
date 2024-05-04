@@ -67,7 +67,7 @@ class ExtendedDjangoMessageLaunch(DjangoMessageLaunch):
 
 def get_tool_conf():
     tool_conf = ToolConfDict({
-        "https://lti-ri.imsglobal.org": {
+        "https://lti-ri.imsglobal.org": [{
             "default": True,
             "client_id": "123456789",
             "auth_login_url": "https://lti-ri.imsglobal.org/platforms/4645/authorizations/new",
@@ -76,17 +76,17 @@ def get_tool_conf():
             "key_set_url": "https://lti-ri.imsglobal.org/platforms/4645/platform_keys/4253.json",
             "key_set": None,
             "deployment_ids": ["1"]
-        },
-        "https://canvas.instructure.com": {
+        }],
+        "https://canvas.instructure.com": [{
             "default": False,
             "client_id": "10000000000003",
             "auth_login_url": "https://128.199.192.247/api/lti/authorize_redirect",
-            "auth_token_url": "https://128.199.192.247/platforms/4645/access_tokens",
+            "auth_token_url": "https://128.199.192.247/login/oauth2/token",
             "auth_audience": None,
-            "key_set_url": None,
-            "key_set": {"keys":[{"kty":"RSA","e":"AQAB","n":"uX1MpfEMQCBUMcj0sBYI-iFaG5Nodp3C6OlN8uY60fa5zSBd83-iIL3n_qzZ8VCluuTLfB7rrV_tiX727XIEqQ","kid":"2018-05-18T22:33:20Z"},{"kty":"RSA","e":"AQAB","n":"uX1MpfEMQCBUMcj0sBYI-iFaG5Nodp3C6OlN8uY60fa5zSBd83-iIL3n_qzZ8VCluuTLfB7rrV_tiX727XIEqQ","kid":"2018-06-18T22:33:20Z"},{"kty":"RSA","e":"AQAB","n":"uX1MpfEMQCBUMcj0sBYI-iFaG5Nodp3C6OlN8uY60fa5zSBd83-iIL3n_qzZ8VCluuTLfB7rrV_tiX727XIEqQ","kid":"2018-07-18T22:33:20Z"}]},
+            "key_set_url": "https://128.99.192.247/api/lti/security/jwks",
+            "key_set": None,
             "deployment_ids": ["2:8865aa05b4b79b64a91a86042e43af5ea8ae79eb"]
-        }
+        }]
     })
     
     return tool_conf
