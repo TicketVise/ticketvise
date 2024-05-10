@@ -7,6 +7,9 @@ class LTIDomain(models.Model):
     id = models.UUIDField(primary_key=True, null=False)
     domain = models.TextField(null=False)
     
+    def __str__(self):
+        return self.domain
+    
 
 class LTIClient(models.Model):
     id = models.UUIDField(primary_key=True, null=False)
@@ -23,6 +26,9 @@ class LTIClient(models.Model):
     class Meta:
         unique_together = ('domain_id', 'client_id')
     
+    def __str__(self):
+        return self.name
+    
 
 class LTIDeployment(models.Model):
     id = models.UUIDField(primary_key=True, null=False)
@@ -36,6 +42,9 @@ class LTIDeployment(models.Model):
           
     def get_inboxes(self):
         return Inbox.objects.filter(deployment_id=self.id)
+    
+    def __str__(self):
+        return self.name
 
 
 # class LTIKeySet(models.Model):
