@@ -1,10 +1,11 @@
+import uuid
 from django.db import models
 
 from ticketvise.models.inbox import Inbox
 
 
 class LTIDomain(models.Model):
-    id = models.UUIDField(primary_key=True, null=False)
+    id = models.UUIDField(primary_key=True, null=False, default=uuid.uuid4)
     domain = models.TextField(null=False)
     
     def __str__(self):
@@ -12,15 +13,15 @@ class LTIDomain(models.Model):
     
 
 class LTIClient(models.Model):
-    id = models.UUIDField(primary_key=True, null=False)
+    id = models.UUIDField(primary_key=True, null=False, default=uuid.uuid4)
     domain_id = models.ForeignKey(LTIDomain, on_delete=models.CASCADE, null=False)
     client_id = models.TextField(null=False)
     name = models.TextField(null=False)
     auth_login_url = models.TextField(null=False)
     auth_token_url = models.TextField(null=False)
-    auth_audience = models.TextField(null=True)
-    key_set_url = models.TextField(null=True)
-    key_set = models.TextField(null=True)
+    auth_audience = models.TextField(null=True, blank=True)
+    key_set_url = models.TextField(null=True, blank=True)
+    key_set = models.TextField(null=True, blank=True)
     default = models.BooleanField(null=False, default=False)
     
     class Meta:
@@ -31,7 +32,7 @@ class LTIClient(models.Model):
     
 
 class LTIDeployment(models.Model):
-    id = models.UUIDField(primary_key=True, null=False)
+    id = models.UUIDField(primary_key=True, null=False, default=uuid.uuid4)
     client_id = models.ForeignKey(LTIClient, on_delete=models.CASCADE, null=False)
     deployment_id = models.TextField(null=False)
     name = models.TextField(null=False)
