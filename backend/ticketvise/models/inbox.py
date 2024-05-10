@@ -51,7 +51,7 @@ class Inbox(models.Model):
                         * **user_relationship** -- Set of :class:`UserInbox` s belonging to the inbox.
                         * **users** -- Set of :class:`User` s belonging to the inbox.
     """
-
+    deployment_id = models.ForeignKey("LTIDeployment", on_delete=models.CASCADE, null=True, blank=True)
     lti_context_label = models.CharField(max_length=255, null=True, blank=True)
     lti_context_id = models.CharField(max_length=255, null=True, blank=True, unique=True)
     name = models.CharField(max_length=100)

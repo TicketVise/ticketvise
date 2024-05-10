@@ -20,6 +20,7 @@ from ticketvise.models.notification.reminder import TicketReminderNotification
 from ticketvise.models.ticket import Ticket, TicketEvent, TicketStatusEvent, \
     TicketAssigneeEvent, TicketLabelEvent, TicketAttachment, TicketSharedUser
 from ticketvise.models.user import User, UserInbox
+from ticketvise.models.lti import LTIClient, LTIDomain, LTIDeployment
 
 
 class InboxInlineAdmin(admin.TabularInline):
@@ -75,3 +76,6 @@ admin.site.register(MentionNotification)
 admin.site.register(NewTicketNotification)
 admin.site.register(TicketReminderNotification)
 admin.site.register(TicketSharedUser)
+admin.site.register(LTIClient)
+admin.site.register(LTIDomain)
+admin.site.register(LTIDeployment)
