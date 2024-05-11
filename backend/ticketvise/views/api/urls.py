@@ -22,7 +22,7 @@ from ticketvise.views.api.ticket import TicketApiView, TicketUpdateAssignee, \
 from ticketvise.views.api.user import UserRoleApiView, CurrentUserApiView, NotificationsSettingsAPIView, \
     UsersApiView, IntroductionAPIView
 from ticketvise.views.api.mail import EmailCallbackApiView, EmailSetupApiView
-from ticketvise.views.api.lti import LTIApiView
+from ticketvise.views.api.lti import LTIApiView, LTIDeploymentApiView
 
 urlpatterns = [
     path("login", LoginApiView.as_view()),
@@ -80,6 +80,7 @@ urlpatterns = [
     path("admin/statistics/users/count", UsersApiView.as_view()),
     path("admin/statistics/tickets/count", TicketsApiView.as_view()),
     path("admin/lti", LTIApiView.as_view()),
+    path("admin/lti/<uuid:pk>", LTIDeploymentApiView.as_view()),
     path("notifications", NotificationsAPIView.as_view()),
     path("notifications/unread", NotificationUnreadCountAPI.as_view()),
     path("notifications/read/all", NotificationsReadAll.as_view()),

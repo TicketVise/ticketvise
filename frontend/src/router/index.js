@@ -37,6 +37,14 @@ const routes = [
     }
   },
   {
+    path: '/admin/:deploymentId',
+    name: 'Deployment',
+    component: () => import(/* webpackChunkName: "deployment" */ '@/views/Deployment.vue'),
+    meta: {
+      layout: 'AppLayoutGeneral'
+    }
+  },
+  {
     path: '/account',
     name: 'Account',
     component: () => import(/* webpackChunkName: "account" */ '@/views/Account.vue'),
