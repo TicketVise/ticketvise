@@ -52,18 +52,23 @@
       </div>
     </header>
 
-    <div v-if="deployment" class="w-full border rounded-lg divide-y bg-white shadow">
+    <div v-if="deployment" class="w-full border rounded-lg divide-y bg-white shadow mb-4">
       <div class="p-4">
         <SelectInput label="Inbox" :data="deployment.inboxes" v-model="selectedInbox" />
       </div>
 
       <InboxStats v-if="selectedInbox?.name" :key="selectedInbox" :inbox="selectedInbox" />
     </div>
+
+    <div v-if="deployment" class="w-full border rounded-lg divide-y bg-white shadow">
+      <UsersPerYear :data="deployment.statistics.usersPerYear" />
+    </div>
   </div>
 </template>
 
 <script>
 import InboxStats from "@/components/admin/InboxStats.vue";
+import UsersPerYear from "@/components/admin/UsersPerYear.vue";
 import SelectInput from "@/components/inputs/SelectInput.vue";
 import axios from "axios";
 import { ChevronLeftIcon } from "@heroicons/vue/20/solid";
@@ -73,7 +78,8 @@ export default {
   components: {
     ChevronLeftIcon,
     InboxStats,
-    SelectInput
+    SelectInput,
+    UsersPerYear
   },
   data: () => ({
     deployment: null,
@@ -85,6 +91,16 @@ export default {
     axios.get(`/api/admin/lti/${deploymentId}`).then((response) => {
       this.deployment = response.data;
       this.selectedInbox = this.deployment.inboxes[0];
+
+      this.deployment.statistics.usersPerYear.datasets = this.deployment.statistics.usersPerYear.data.map(
+        (data) => ({
+          fill: false,
+          label: 'Users',
+          backgroundColor: '#ed8936',
+          borderColor: '#fbd38d',
+          data: Array.isArray(data) ? data : [data]
+        })
+      );
     })
   }
 }
