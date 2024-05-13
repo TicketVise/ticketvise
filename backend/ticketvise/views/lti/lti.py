@@ -18,6 +18,7 @@ from django.core.serializers.json import DjangoJSONEncoder
 from pylti1p3.contrib.django import DjangoOIDCLogin, DjangoMessageLaunch, DjangoCacheDataStorage
 from pylti1p3.lineitem import LineItem
 from pylti1p3.tool_config import ToolConfDict
+from pylti1p3.roles import TeacherRole, TeachingAssistantRole
 
 from ticketvise import settings
 from ticketvise.models.inbox import Inbox, InboxSection, InboxUserSection
@@ -138,6 +139,66 @@ def update_inbox_sections(user: User, inbox: Inbox, message_launch: DjangoMessag
         section, _ = InboxSection.objects.get_or_create(code=section_id, inbox=inbox)
         InboxUserSection.objects.get_or_create(user=user, section=section)
         
+def update_inbox_users(inbox: Inbox, message_launch: DjangoMessageLaunch):
+    if not message_launch.has_nrps():
+        return
+
+    message_launch_data = message_launch.get_launch_data()
+
+    message_launch._registration.set_tool_public_key(public_key)
+    message_launch._registration.set_tool_private_key(private_key)
+    nrps = message_launch.get_nrps()
+    members = nrps.get_members()
+    
+    for member in members:
+        new_user = None
+        user_id = message_launch_data["sub"]
+
+        # Check for the deprecated lti1.1 user_id to migrate to lti1.3
+        lti1p1_user_id = member["lti11_legacy_user_id"]
+        if User.objects.filter(lti_id=lti1p1_user_id).exists():
+            # convert old lti1.1 user_id to new lti1.3 user_id
+            lti1p1_member = User.objects.filter(lti_id=lti1p1_user_id).first()
+            lti1p1_member.lti_id = user_id
+            lti1p1_member.save()
+
+        if not User.objects.filter(lti_id=user_id).exists():
+            # Create new user
+            new_user = User.objects.create(
+                first_name=member["given_name"],
+                last_name=member["family_name"],
+                username=member["name"],
+                email=member["email"],
+                lti_id=user_id, # use new lti1.3 user_id
+                password=make_password(None),
+                avatar_url=member["picture"],
+            )
+        else:
+            # Update user data
+            new_user = User.objects.filter(lti_id=user_id).first()
+            new_user.first_name = member["given_name"]
+            new_user.last_name = member["family_name"]
+            new_user.email = member["email"]
+            new_user.avatar_url = member["picture"]
+            new_user.save()
+            
+        jwt_body = {}
+        jwt_body["https://purl.imsglobal.org/spec/lti/claim/roles"] = member["roles"]
+
+        user_role = Role.GUEST
+        if TeacherRole(jwt_body).check():
+            user_role = Role.MANAGER
+        elif TeachingAssistantRole(jwt_body).check():
+            user_role = Role.AGENT
+
+        relation = UserInbox.objects.filter(user=new_user, inbox=inbox).first()
+
+        if relation is None:
+            UserInbox.objects.create(user=new_user, inbox=inbox, role=user_role)
+        elif relation.role != user_role:
+            relation.role = user_role
+            relation.save()
+        
 public_key = """-----BEGIN PUBLIC KEY-----
 MIICIjANBgkqhkiG9w0BAQEFAAOCAg8AMIICCgKCAgEAwfiSy8Rx3Pw2y+7l1y5F
 InGh5RUoELueVfCgmGo36DmqGspjWKsyaEu7GOki1Z6g8oaGtjRCHIacx8NqM4l4
@@ -250,42 +311,7 @@ def LTILaunchView(request):
     update_inbox_sections(user, inbox, message_launch)
     
     # Request Names and Roles Provisioning Service
-    if message_launch.has_nrps():
-        message_launch._registration.set_tool_public_key(public_key)
-        message_launch._registration.set_tool_private_key(private_key)
-        nrps = message_launch.get_nrps()
-        members = nrps.get_members()
-        
-        for user in members:
-            user_id = message_launch_data["sub"]
-
-            # Check for the deprecated lti1.1 user_id to migrate to lti1.3
-            lti1p1_user_id = user["lti11_legacy_user_id"]
-            if User.objects.filter(lti_id=lti1p1_user_id).exists():
-                # convert old lti1.1 user_id to new lti1.3 user_id
-                user = User.objects.filter(lti_id=lti1p1_user_id).first()
-                user.lti_id = user_id
-                user.save()
-
-            if not User.objects.filter(lti_id=user_id).exists():
-                # Create new user
-                user = User.objects.create(
-                    first_name=user["given_name"],
-                    last_name=user["family_name"],
-                    username=user["name"],
-                    email=user["email"],
-                    lti_id=user_id, # use new lti1.3 user_id
-                    password=make_password(None),
-                    avatar_url=user["picture"],
-                )
-            else:
-                # Update user data
-                user = User.objects.filter(lti_id=user_id).first()
-                user.first_name = user["given_name"]
-                user.last_name = user["family_name"]
-                user.email = user["email"]
-                user.avatar_url = user["picture"]
-                user.save()
+    update_inbox_users(inbox, message_launch)
 
     # Login user
     login(request, user)
