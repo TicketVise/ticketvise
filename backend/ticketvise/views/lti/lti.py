@@ -25,10 +25,9 @@ from ticketvise import settings
 from ticketvise.models.inbox import Inbox, InboxSection, InboxUserSection
 from ticketvise.models.label import Label
 from ticketvise.models.user import User, UserInbox, Role
-from ticketvise.models.lti import LTIDomain
+from ticketvise.models.lti import LTIDeployment, LTIDomain
 from ticketvise.views.api.lti import LTIDomainSerializer
 from ticketvise.security.token import token_expire_handler
-from ticketvise.views.lti.validation import LtiLaunchForm
 
 
 def LTIConfigJSONView(request):
@@ -140,6 +139,12 @@ def update_inbox_sections(user: User, inbox: Inbox, message_launch: DjangoMessag
         InboxUserSection.objects.get_or_create(user=user, section=section)
         
 def update_inbox_users(inbox: Inbox, message_launch: DjangoMessageLaunch):
+    """When called will ask the Names and Roles Provisioning Service for the members of the course and update the users in the inbox.
+
+    Args:
+        inbox (Inbox): the context of the course
+        message_launch (DjangoMessageLaunch): the launch details
+    """
     if not message_launch.has_nrps():
         return
 
@@ -220,23 +225,29 @@ def LTILaunchView(request):
     
     # Handle inbox and user role
     lti_context_id = message_launch_data["https://purl.imsglobal.org/spec/lti/claim/context"]["id"]
+    deployment = LTIDeployment.objects.filter(deployment_id=message_launch_data["https://purl.imsglobal.org/spec/lti/claim/deployment_id"]).first()
     inbox = Inbox.objects.filter(lti_context_id=lti_context_id).first()
     
     if inbox is None and not message_launch.check_teacher_access():
         raise Http404("This course doesn't have an inbox (yet). Please contact your instructor.")
     
     if inbox is None and message_launch.check_teacher_access():
-        print("Creating new inbox")
         inbox = Inbox.objects.create(
             lti_context_label=message_launch_data["https://purl.imsglobal.org/spec/lti/claim/context"]["label"], 
             lti_context_id=message_launch_data["https://purl.imsglobal.org/spec/lti/claim/context"]["id"],
-            name=message_launch_data["https://purl.imsglobal.org/spec/lti/claim/context"]["title"])
+            name=message_launch_data["https://purl.imsglobal.org/spec/lti/claim/context"]["title"],
+            deployment_id=deployment)
 
         # Set default labels (TODO: move to setup wizard)
         Label.objects.create(inbox=inbox, color="#d73a4a", name="Assignment")
         Label.objects.create(inbox=inbox, color="#a2eeef", name="Exam")
         Label.objects.create(inbox=inbox, color="#0366d6", name="Lecture")
         Label.objects.create(inbox=inbox, color="#008672", name="Course material")
+        
+    # Add inboxes without deployment to the deployment (migration lti1.3)
+    if inbox.deployment_id is None:
+        inbox.deployment_id = deployment
+        inbox.save()
     
     # Set user role
     update_user_role(user, inbox, message_launch)
