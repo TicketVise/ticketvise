@@ -311,7 +311,8 @@ def LTILaunchView(request):
     update_inbox_sections(user, inbox, message_launch)
     
     # Request Names and Roles Provisioning Service
-    update_inbox_users(inbox, message_launch)
+    if message_launch.has_nrps() and (message_launch.check_teacher_access() or message_launch.check_teaching_assistant_access()):
+        update_inbox_users(inbox, message_launch)
 
     # Login user
     login(request, user)
