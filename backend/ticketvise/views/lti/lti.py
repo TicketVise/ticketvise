@@ -13,18 +13,18 @@ from django.views.generic import TemplateView
 from django.views.decorators.csrf import csrf_exempt
 from django.http import JsonResponse
 from rest_framework.authtoken.models import Token
+from django.core.serializers.json import DjangoJSONEncoder
 
 from pylti1p3.contrib.django import DjangoOIDCLogin, DjangoMessageLaunch, DjangoCacheDataStorage
-from pylti1p3.deep_link_resource import DeepLinkResource
-from pylti1p3.grade import Grade
 from pylti1p3.lineitem import LineItem
-from pylti1p3.tool_config import ToolConfJsonFile, ToolConfDict
-from pylti1p3.registration import Registration
+from pylti1p3.tool_config import ToolConfDict
 
 from ticketvise import settings
 from ticketvise.models.inbox import Inbox, InboxSection, InboxUserSection
 from ticketvise.models.label import Label
 from ticketvise.models.user import User, UserInbox, Role
+from ticketvise.models.lti import LTIDomain
+from ticketvise.views.api.lti import LTIDomainSerializer
 from ticketvise.security.token import token_expire_handler
 from ticketvise.views.lti.validation import LtiLaunchForm
 
@@ -48,48 +48,12 @@ def LTIJWKsView(request):
     
     return JsonResponse(data)
 
-
-class ExtendedDjangoMessageLaunch(DjangoMessageLaunch):
-
-    def validate_nonce(self):
-        """
-        Probably it is bug on "https://lti-ri.imsglobal.org":
-        site passes invalid "nonce" value during deep links launch.
-        Because of this in case of iss == http://imsglobal.org just skip nonce validation.
-
-        """
-        iss = self.get_iss()
-        deep_link_launch = self.is_deep_link_launch()
-        if iss == "http://imsglobal.org" and deep_link_launch:
-            return self
-        return super().validate_nonce()
-
-
 def get_tool_conf():
-    tool_conf = ToolConfDict({
-        "https://lti-ri.imsglobal.org": [{
-            "default": True,
-            "client_id": "123456789",
-            "auth_login_url": "https://lti-ri.imsglobal.org/platforms/4645/authorizations/new",
-            "auth_token_url": "https://lti-ri.imsglobal.org/platforms/4645/access_tokens",
-            "auth_audience": None,
-            "key_set_url": "https://lti-ri.imsglobal.org/platforms/4645/platform_keys/4253.json",
-            "key_set": None,
-            "deployment_ids": ["1"]
-        }],
-        "https://canvas.instructure.com": [{
-            "default": False,
-            "client_id": "10000000000003",
-            "auth_login_url": "https://128.199.192.247/api/lti/authorize_redirect",
-            "auth_token_url": "https://128.199.192.247/login/oauth2/token",
-            "auth_audience": None,
-            "key_set_url": "https://128.99.192.247/api/lti/security/jwks",
-            "key_set": None,
-            "deployment_ids": ["2:8865aa05b4b79b64a91a86042e43af5ea8ae79eb"]
-        }]
-    })
+    tool_conf_json = {}
+    for domain in LTIDomain.objects.all():
+        tool_conf_json[domain.domain] = LTIDomainSerializer(domain).data['clients']
     
-    return tool_conf
+    return ToolConfDict(tool_conf_json)
 
 
 def get_launch_data_storage():
@@ -114,114 +78,220 @@ def LTILoginView(request):
         .enable_check_cookies() \
         .redirect(target_link_uri)
         
+def handle_lti_user(message_launch: DjangoMessageLaunch) -> User:
+    message_launch_data = message_launch.get_launch_data()
+    user = None
+    user_id = message_launch_data["sub"]
+
+    # Check for the deprecated lti1.1 user_id to migrate to lti1.3
+    lti1p1_user_id = message_launch_data["https://purl.imsglobal.org/spec/lti/claim/lti1p1"]["user_id"]
+    if User.objects.filter(lti_id=lti1p1_user_id).exists():
+        # convert old lti1.1 user_id to new lti1.3 user_id
+        user = User.objects.filter(lti_id=lti1p1_user_id).first()
+        user.lti_id = user_id
+        user.save()
+
+    if not User.objects.filter(lti_id=user_id).exists():
+        # Create new user
+        user = User.objects.create(
+            first_name=message_launch_data["given_name"],
+            last_name=message_launch_data["family_name"],
+            username=message_launch_data["name"],
+            email=message_launch_data["email"],
+            lti_id=user_id, # use new lti1.3 user_id
+            password=make_password(None),
+            avatar_url=message_launch_data["picture"],
+        )
+    else:
+        # Update user data
+        user = User.objects.filter(lti_id=user_id).first()
+        user.first_name = message_launch_data["given_name"]
+        user.last_name = message_launch_data["family_name"]
+        user.email = message_launch_data["email"]
+        user.avatar_url = message_launch_data["picture"]
+        user.save()
+        
+    return user
+
+def update_user_role(user: User, inbox: Inbox, message_launch: DjangoMessageLaunch):
+    user_role = Role.GUEST
+    
+    if message_launch.check_teacher_access():
+        user_role = Role.MANAGER
+    elif message_launch.check_teaching_assistant_access():
+        user_role = Role.AGENT
+
+    relation = UserInbox.objects.filter(user=user, inbox=inbox).first()
+
+    if relation is None:
+        UserInbox.objects.create(user=user, inbox=inbox, role=user_role)
+    elif relation.role != user_role:
+        relation.role = user_role
+        relation.save()
+        
+def update_inbox_sections(user: User, inbox: Inbox, message_launch: DjangoMessageLaunch):
+    message_launch_data = message_launch.get_launch_data()
+    section_ids = message_launch_data["https://purl.imsglobal.org/spec/lti/claim/custom"]["section_ids"]
+    
+    for section_id in section_ids.split(','):
+        section_id = section_id.strip().lower()
+        section, _ = InboxSection.objects.get_or_create(code=section_id, inbox=inbox)
+        InboxUserSection.objects.get_or_create(user=user, section=section)
+        
+public_key = """-----BEGIN PUBLIC KEY-----
+MIICIjANBgkqhkiG9w0BAQEFAAOCAg8AMIICCgKCAgEAwfiSy8Rx3Pw2y+7l1y5F
+InGh5RUoELueVfCgmGo36DmqGspjWKsyaEu7GOki1Z6g8oaGtjRCHIacx8NqM4l4
+LYRUuOA4NnTD2gAJDQBR0wG36/T8yD8bQy3Qkck4+h031nElicDfnHfWXV0Pp916
+Ms0zyO3u7I/vwpJheR5wiwsthqMisEOSetqyOx4Y6lVg5KLc8zc5Gp/Wv/hIwwOj
+CCPyTjZnwLjEkS7SMJhllYPJ7Kd9x48dhAic/cCwK49IUAKdVlGhyi3twn/xdYGB
+Vfh8YTAbu2LFu3EBjJ3seco4Cv4oD1FX2FlxF9/mqiDgrllHFO30KiYoXnloi7St
+h/zT9b2sbB3XRQ5UcZ982bvYffS22UjWJ/gnw40m1J5bVJrhBN+eUG64WSbw8mq5
+EvgEOsb2Kgu50eZWzjEhQUD4b1NMYxMKXd6aRgjs7mS7x1q11M87T1FfAAyn07MR
+Axbs4tfwAwb9xd0uCLfnFWlX9RiMygZMNRQttj8GZM6zkwKz4mdVgmWUS16snvog
+qxWje0i2PWRvAwEZ7tFkbXngS04/Je9mW0iRT2Vbtzgcpb56luvWlCqd/GKDds4B
+rGnRWAMWc8yulrbMEXYAbixlnqgYs/y+bbpKMz8K20Rl6GFba23IpkjMNUdGlOKL
+APEBSOvPmjGsHoJChZ2gLOsCAwEAAQ==
+-----END PUBLIC KEY-----"""
+private_key = """-----BEGIN RSA PRIVATE KEY-----
+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
+-----END RSA PRIVATE KEY-----"""
         
 @method_decorator(csrf_exempt, name="dispatch")
 def LTILaunchView(request):
     tool_conf = get_tool_conf()
     launch_data_storage = get_launch_data_storage()
-    message_launch = ExtendedDjangoMessageLaunch(request, tool_conf, launch_data_storage=launch_data_storage)
+    message_launch = DjangoMessageLaunch(request, tool_conf, launch_data_storage=launch_data_storage)
     message_launch_data = message_launch.get_launch_data()
     
-    return HttpResponse(message_launch_data)
+    # Validate the launch
+    if not message_launch.validate():
+        return HttpResponse("Invalid launch")
+    
+    # Check if user exists and create if not
+    user = handle_lti_user(message_launch)
+    
+    # Future: Show admin dashboard
+    # if message_launch.check_staff_access():
+    #     print("Admin login")
+    #     return Http404("Admin's dashboard is not implemented yet.")
+    
+    # Handle inbox and user role
+    lti_context_id = message_launch_data["https://purl.imsglobal.org/spec/lti/claim/context"]["id"]
+    inbox = Inbox.objects.filter(lti_context_id=lti_context_id).first()
+    
+    if inbox is None and not message_launch.check_teacher_access():
+        raise Http404("This course doesn't have an inbox (yet). Please contact your instructor.")
+    
+    if inbox is None and message_launch.check_teacher_access():
+        print("Creating new inbox")
+        inbox = Inbox.objects.create(
+            lti_context_label=message_launch_data["https://purl.imsglobal.org/spec/lti/claim/context"]["label"], 
+            lti_context_id=message_launch_data["https://purl.imsglobal.org/spec/lti/claim/context"]["id"],
+            name=message_launch_data["https://purl.imsglobal.org/spec/lti/claim/context"]["title"])
 
+        # Set default labels (TODO: move to setup wizard)
+        Label.objects.create(inbox=inbox, color="#d73a4a", name="Assignment")
+        Label.objects.create(inbox=inbox, color="#a2eeef", name="Exam")
+        Label.objects.create(inbox=inbox, color="#0366d6", name="Lecture")
+        Label.objects.create(inbox=inbox, color="#008672", name="Course material")
+    
+    # Set user role
+    update_user_role(user, inbox, message_launch)
 
-@method_decorator(csrf_exempt, name="dispatch")
-class LtiView(View):
-    """
-    Implementation of the LTI launch. The form authenticates a user based on its data from the LMS. If the user is
-    not present in the database a new one is created and will be associated with the inbox from where the launch was
-    initiated from. The implementation also assigns the correct role to the user based on the inbox and LMS role.
-    """
-
-    def post(self, request):
-        form = LtiLaunchForm(request.POST, request=request)
-
-        if not form.is_valid():
-            raise PermissionDenied(form.errors.items())
-
-        user_id = form.cleaned_data["user_id"]
-        first_name, last_name = form.cleaned_data["custom_user_full_name"].split(" ", 1)
-        username = form.cleaned_data["custom_username"]
-        email = form.cleaned_data["custom_email"]
-        avatar = form.cleaned_data["custom_image_url"]
-        section_ids = form.cleaned_data["custom_section_ids"]
-
-        user = User.objects.filter(lti_id=user_id).first()
+    # Check if sections exist and create if not
+    update_inbox_sections(user, inbox, message_launch)
+    
+    # Request Names and Roles Provisioning Service
+    if message_launch.has_nrps():
+        message_launch._registration.set_tool_public_key(public_key)
+        message_launch._registration.set_tool_private_key(private_key)
+        nrps = message_launch.get_nrps()
+        members = nrps.get_members()
         
-        if email == "":
-            email = "test_user@ticketvise.com"
+        for user in members:
+            user_id = message_launch_data["sub"]
 
-        if user is None:
-            user = User.objects.create(
-                first_name=first_name,
-                last_name=last_name,
-                username=username,
-                email=email,
-                lti_id=user_id,
-                avatar_url=avatar,
-                password=make_password(None),
-            )
-        else:
-            user.first_name = first_name
-            user.last_name = last_name
-            user.email = email
-            user.avatar_url = avatar
-            user.save()
+            # Check for the deprecated lti1.1 user_id to migrate to lti1.3
+            lti1p1_user_id = user["lti11_legacy_user_id"]
+            if User.objects.filter(lti_id=lti1p1_user_id).exists():
+                # convert old lti1.1 user_id to new lti1.3 user_id
+                user = User.objects.filter(lti_id=lti1p1_user_id).first()
+                user.lti_id = user_id
+                user.save()
 
-        user_roles = [role.split("/")[-1].lower() for role in form.cleaned_data["roles"].split(",")]
-        context_label = form.cleaned_data.get("context_label")
-        context_id = form.cleaned_data.get("context_id")
-        inbox = Inbox.objects.filter(lti_context_label=context_label, lti_context_id=context_id).first()
-
-        if inbox is None:
-            # Migrate courses without lti_context_label
-            if Inbox.objects.filter(lti_context_label=context_label, lti_context_id=None).exists():
-                inboxes = Inbox.objects.filter(lti_context_label=context_label)
-                if inboxes.count() > 1:
-                    raise Exception("Multiple courses with the same LTI context label found. Please contact your network administrator.")
-                
-                inbox = inboxes.first()
-                inbox.lti_context_id = context_id
-                inbox.save()
-
-                logging.info(f"Migrated course {inbox.name} ({inbox.lti_context_label}) without lti_context_id to {inbox.lti_context_id}")
-            elif "instructor" in user_roles:
-                inbox_name = form.cleaned_data["custom_course_name"]
-                inbox = Inbox.objects.create(lti_context_label=context_label, 
-                    lti_context_id=context_id, name=inbox_name)
-
-                # Set default labels
-                Label.objects.create(inbox=inbox, color="#d73a4a", name="Assignment")
-                Label.objects.create(inbox=inbox, color="#a2eeef", name="Exam")
-                Label.objects.create(inbox=inbox, color="#0366d6", name="Lecture")
-                Label.objects.create(inbox=inbox, color="#008672", name="Course material")
+            if not User.objects.filter(lti_id=user_id).exists():
+                # Create new user
+                user = User.objects.create(
+                    first_name=user["given_name"],
+                    last_name=user["family_name"],
+                    username=user["name"],
+                    email=user["email"],
+                    lti_id=user_id, # use new lti1.3 user_id
+                    password=make_password(None),
+                    avatar_url=user["picture"],
+                )
             else:
-                raise Http404("Course does not have a ticket system (yet). Please contact your instructor.")
-        user_role = Role.GUEST
+                # Update user data
+                user = User.objects.filter(lti_id=user_id).first()
+                user.first_name = user["given_name"]
+                user.last_name = user["family_name"]
+                user.email = user["email"]
+                user.avatar_url = user["picture"]
+                user.save()
 
-        if any(s.lower() in ["instructor", "administrator"] for s in user_roles):
-            user_role = Role.MANAGER
+    # Login user
+    login(request, user)
 
-        if any("teachingassistant" in s.lower() for s in user_roles):
-            user_role = Role.AGENT
+    # Retrieving token of user, checking if not expired otherwise a create new one.
+    token, _ = Token.objects.get_or_create(user=user)
+    _, token = token_expire_handler(token)
 
-        relation = UserInbox.objects.filter(user=user, inbox=inbox).first()
-
-        if relation is None:
-            UserInbox.objects.create(user=user, inbox=inbox, role=user_role)
-        elif relation.role != user_role:
-            relation.role = user_role
-            relation.save()
-
-        for section_id in section_ids.split(','):
-            section_id = section_id.strip().lower()
-            section, _ = InboxSection.objects.get_or_create(code=section_id, inbox=inbox)
-            InboxUserSection.objects.get_or_create(user=user, section=section)
-
-        login(request, user)
-
-        # Retrieving token of user, checking if not expired otherwise a create new one.
-        token, _ = Token.objects.get_or_create(user=user)
-        _, token = token_expire_handler(token)
-
-        return redirect(f'/inboxes/{inbox.id}/overview?token={token.key}')
+    return redirect(f'/inboxes/{inbox.id}/overview?token={token.key}')

@@ -129,6 +129,8 @@ DATABASES = {
         "PASSWORD": os.environ.get("SQL_PASSWORD", "Welkom01"),
         "HOST": os.environ.get("SQL_HOST", "localhost"),
         "PORT": os.environ.get("SQL_PORT", "5432"),
+        # "CONN_MAX_AGE": 600,
+        # "CONN_HEALTH_CHECKS": True
     }
 }
 

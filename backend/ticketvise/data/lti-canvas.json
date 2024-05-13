@@ -3,7 +3,10 @@
   "description": "TicketVise LTI 1.3 Tool",
   "oidc_initiation_url": "http://ivan.ticketvise.com/lti/login",
   "target_link_uri": "http://ivan.ticketvise.com/lti/launch",
-  "scopes": [],
+  "scopes": [
+    "https://purl.imsglobal.org/spec/lti-ags/scope/lineitem.readonly",
+    "https://purl.imsglobal.org/spec/lti-nrps/scope/contextmembership.readonly"
+  ],
   "extensions": [
     {
       "privacy_level": "public",
@@ -26,9 +29,11 @@
   ],
   "public_jwk_url": "http://ivan.ticketvise.com/lti/jwks",
   "custom_fields": {
-    "masq_userid": "$Canvas.masqueradingUser.id",
-    "canvas_user_id": "$Canvas.user.id",
-    "voc_section_name": "$com.instructure.User.sectionNames",
-    "lms_courseid": "$Canvas.course.id"
+    "email": "$Person.email.primary",
+    "canvas_user_id": "$Canvas.user.loginId",
+    "course_id": "$Canvas.course.id",
+    "section_ids": "$Canvas.course.sectionIds",
+    "course_start_at": "$Canvas.course.startAt",
+    "course_end_at": "$Canvas.course.endAt"
   }
 }

@@ -42,13 +42,17 @@ class LTIDeploymentWithInboxesSerializer(ModelSerializer):
 
 class LTIClientSerializer(ModelSerializer):
     deployments = SerializerMethodField()
+    deployment_ids = SerializerMethodField()
 
     def get_deployments(self, obj):
         return LTIDeploymentSerializer(LTIDeployment.objects.filter(client_id=obj.id), many=True).data
+    
+    def get_deployment_ids(self, obj):
+        return [deployment['deployment_id'] for deployment in self.get_deployments(obj)]
 
     class Meta:
         model = LTIClient
-        fields = ['client_id', 'name', 'auth_login_url', 'auth_token_url', 'auth_audience', 'key_set_url', 'key_set', 'default', 'deployments']
+        fields = ['client_id', 'name', 'auth_login_url', 'auth_token_url', 'auth_audience', 'key_set_url', 'key_set', 'default', 'deployments', 'deployment_ids']
 
 
 class LTIDomainSerializer(ModelSerializer):
