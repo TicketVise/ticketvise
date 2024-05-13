@@ -74,6 +74,9 @@ export default {
     const inboxes = await this.getInboxes()
 
     store.commit('update_inboxes', inboxes)
+
+    if (this.user.is_superuser)
+      this.$router.push('/admin')
   },
   methods: {
     async getInboxes () {
