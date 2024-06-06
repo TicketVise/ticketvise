@@ -48,6 +48,8 @@ spec:
               cpu: 1000m
               memory: 700Mi
           env:
+          - name: DEBUG
+            value: "0"
           - name: SQL_ENGINE
             value: django.db.backends.postgresql
           - name: SQL_DATABASE

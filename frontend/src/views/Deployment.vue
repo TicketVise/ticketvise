@@ -92,15 +92,13 @@ export default {
       this.deployment = response.data;
       this.selectedInbox = this.deployment.inboxes[0];
 
-      this.deployment.statistics.usersPerYear.datasets = this.deployment.statistics.usersPerYear.data.map(
-        (data) => ({
-          fill: false,
-          label: 'Users',
-          backgroundColor: '#ed8936',
-          borderColor: '#fbd38d',
-          data: Array.isArray(data) ? data : [data]
-        })
-      );
+      this.deployment.statistics.usersPerYear.datasets = [{
+        fill: false,
+        label: 'Users',
+        backgroundColor: '#ed8936',
+        borderColor: '#fbd38d',
+        data: this.deployment.statistics.usersPerYear.data
+      }]
     })
   }
 }

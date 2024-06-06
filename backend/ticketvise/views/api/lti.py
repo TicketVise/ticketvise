@@ -25,9 +25,10 @@ class LTIDeploymentWithInboxesSerializer(ModelSerializer):
         stats = {}
 
         stats['tickets'] = sum(Ticket.objects.filter(inbox=inbox['id']).count() for inbox in self.get_inboxes(obj))
-        stats['users'] = sum(UserInbox.objects.filter(inbox=inbox['id']).count() for inbox in self.get_inboxes(obj))
+        inboxes = [inbox['id'] for inbox in self.get_inboxes(obj)]
+        stats['users'] = UserInbox.objects.filter(inbox__in=inboxes).distinct('user').count()
         
-        years = set(userInbox.date_created.year for userInbox in UserInbox.objects.filter(inbox__in=[inbox['id'] for inbox in self.get_inboxes(obj)]))
+        years = set(userInbox.date_created.year for userInbox in UserInbox.objects.filter(inbox__in=inboxes))
         stats['usersPerYear'] = {
             'labels': years,
             'data': [sum(UserInbox.objects.filter(inbox=inbox['id'], date_created__year=year).count() for inbox in self.get_inboxes(obj)) for year in years]
