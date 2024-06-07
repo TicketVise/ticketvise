@@ -33,7 +33,7 @@ class UserSerializer(DynamicFieldsModelSerializer):
     class Meta:
         model = User
         fields = ["first_name", "last_name", "email", "username", "avatar_url", "id", "is_superuser", "is_active",
-                  "give_introduction"]
+                  "give_introduction", "inboxes"]
 
 
 class TicketSharedUserSerializer(ModelSerializer):

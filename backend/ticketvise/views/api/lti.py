@@ -19,7 +19,7 @@ class LTIDeploymentWithInboxesSerializer(ModelSerializer):
     statistics = SerializerMethodField()
     
     def get_inboxes(self, obj):
-        return InboxSerializer(Inbox.objects.filter(deployment_id=obj.id), many=True).data
+        return InboxSerializer(Inbox.objects.filter(deployment_id=obj.id).order_by('date_created').reverse(), many=True).data
     
     def get_statistics(self, obj):
         stats = {}

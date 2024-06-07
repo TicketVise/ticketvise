@@ -9,7 +9,7 @@
               class="text-gray-600 text-sm truncate flex items-center space-x-1"
             >
               <ChevronLeftIcon class="h-3 w-3" />
-              <span>Admin</span>
+              <span>Admin overview</span>
             </router-link>
             <h2
               class="text-2xl font-bold leading-7 text-gray-900 sm:text-3xl sm:leading-9 truncate"
@@ -53,14 +53,17 @@
     </header>
 
     <div v-if="deployment" class="w-full border rounded-lg divide-y bg-white shadow mb-4">
-      <div class="p-4">
+      <div v-if="deployment.inboxes.length > 0" class="p-4">
         <SelectInput label="Inbox" :data="deployment.inboxes" v-model="selectedInbox" />
+      </div>
+      <div v-else class="p-4">
+        <h2 class="text-lg font-semibold text-primary-600">No inboxes linked to this deployment yet</h2>
       </div>
 
       <InboxStats v-if="selectedInbox?.name" :key="selectedInbox" :inbox="selectedInbox" />
     </div>
 
-    <div v-if="deployment" class="w-full border rounded-lg divide-y bg-white shadow">
+    <div v-if="deployment?.inboxes.length > 0" class="w-full border rounded-lg divide-y bg-white shadow">
       <UsersPerYear :data="deployment.statistics.usersPerYear" />
     </div>
   </div>
@@ -90,6 +93,7 @@ export default {
 
     axios.get(`/api/admin/lti/${deploymentId}`).then((response) => {
       this.deployment = response.data;
+      this.deployment.inboxes.sort
       this.selectedInbox = this.deployment.inboxes[0];
 
       this.deployment.statistics.usersPerYear.datasets = [{

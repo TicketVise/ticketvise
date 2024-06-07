@@ -1,23 +1,16 @@
 import json
-import logging
 import os
 from jwcrypto.jwk import JWK
 from django.contrib.auth import login
 from django.contrib.auth.hashers import make_password
-from django.core.exceptions import PermissionDenied
 from django.http import Http404, HttpResponse
 from django.shortcuts import redirect
-from django.urls import reverse
 from django.utils.decorators import method_decorator
-from django.views import View
-from django.views.generic import TemplateView
 from django.views.decorators.csrf import csrf_exempt
 from django.http import JsonResponse
 from rest_framework.authtoken.models import Token
-from django.core.serializers.json import DjangoJSONEncoder
 
 from pylti1p3.contrib.django import DjangoOIDCLogin, DjangoMessageLaunch, DjangoCacheDataStorage
-from pylti1p3.lineitem import LineItem
 from pylti1p3.tool_config import ToolConfDict
 from pylti1p3.roles import TeacherRole, TeachingAssistantRole
 
@@ -209,11 +202,12 @@ def LTILaunchView(request):
     tool_conf = get_tool_conf()
     launch_data_storage = get_launch_data_storage()
     message_launch = DjangoMessageLaunch(request, tool_conf, launch_data_storage=launch_data_storage)
-    message_launch_data = message_launch.get_launch_data()
     
     # Validate the launch
     if not message_launch.validate():
         return HttpResponse("Invalid launch")
+    
+    message_launch_data = message_launch.get_launch_data()
     
     # Check if user exists and create if not
     user = handle_lti_user(message_launch)

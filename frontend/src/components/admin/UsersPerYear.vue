@@ -1,7 +1,7 @@
 <template>
   <div class="p-4">
     <div class="flex justify-between items-center mb-1">
-      <h2 class="text-lg font-semibold text-primary-600">Tickets</h2>
+      <h2 class="text-lg font-semibold text-primary-600">Users per year</h2>
     </div>
     <VerticalBarChart v-if="data" :data="data" :options="options" :height="400" />
   </div>

@@ -113,7 +113,8 @@ SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
 #: LTI settings
 #: ~~~~~~~~~~~~
-
+LTI_KEY = os.environ.get("LTI_KEY", "<LTI_KEY_DEFAULT>")
+LTI_SECRET = os.environ.get("LTI_SECRET", "<LTI_SECRET_DEFAULT>")
 LTI_PUBLIC_KEY = os.environ.get("LTI_PUBLIC_KEY", """-----BEGIN PUBLIC KEY-----
 MIICIjANBgkqhkiG9w0BAQEFAAOCAg8AMIICCgKCAgEAwfiSy8Rx3Pw2y+7l1y5F
 InGh5RUoELueVfCgmGo36DmqGspjWKsyaEu7GOki1Z6g8oaGtjRCHIacx8NqM4l4

@@ -96,6 +96,16 @@ spec:
               secretKeyRef:
                 name: s3-credentials
                 key: endpoint
+          - name: LTI_KEY
+            valueFrom:
+              secretKeyRef:
+                name: lti-credentials
+                key: key
+          - name: LTI_SECRET
+            valueFrom:
+              secretKeyRef:
+                name: lti-credentials
+                key: secret
           - name: LTI_PUBLIC_KEY
             valueFrom:
               secretKeyRef:
