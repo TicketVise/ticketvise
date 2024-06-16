@@ -88,7 +88,7 @@ TEMPLATES = [
     },
 ]
 
-CSP_FRAME_ANCESTORS = ["https://uvadlo-tes.instructure.com", "https://*.uva.nl"]
+CSP_FRAME_ANCESTORS = ["https://uvadlo-tes.instructure.com", "https://uvadlo-dev.test.instructure.com", "https://*.uva.nl"]
 CSP_STYLE_SRC = ["'self'", "'unsafe-inline'"]
 CSP_SCRIPT_SRC = ["'self'", "'unsafe-inline'", "'unsafe-eval'"]
 CSP_IMG_SRC = ["*", "data:"]

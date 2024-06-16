@@ -1,8 +1,8 @@
 {
   "title": "TicketVise",
   "description": "TicketVise LTI 1.3 Tool",
-  "oidc_initiation_url": "http://uva.ticketvise.com/lti/login",
-  "target_link_uri": "http://uva.ticketvise.com/lti/launch",
+  "oidc_initiation_url": "https://uva.ticketvise.com/lti/login",
+  "target_link_uri": "https://uva.ticketvise.com/lti/launch",
   "scopes": [
     "https://purl.imsglobal.org/spec/lti-nrps/scope/contextmembership.readonly"
   ],
@@ -19,14 +19,14 @@
             "placement": "course_navigation",
             "default": "disabled",
             "message_type": "LtiResourceLinkRequest",
-            "target_link_uri": "http://uva.ticketvise.com/lti/launch",
+            "target_link_uri": "https://uva.ticketvise.com/lti/launch",
             "canvas_icon_class": "icon-lti"
           }
         ]
       }
     }
   ],
-  "public_jwk_url": "http://uva.ticketvise.com/lti/jwks",
+  "public_jwk_url": "https://uva.ticketvise.com/lti/jwks",
   "custom_fields": {
     "email": "$Person.email.primary",
     "canvas_user_id": "$Canvas.user.loginId",

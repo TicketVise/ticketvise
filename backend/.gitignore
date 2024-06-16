@@ -139,6 +139,7 @@ cython_debug/
 
 # SQLite
 *.sqlite3
+*.sql
 
 # Django
 static
