@@ -176,8 +176,12 @@ def update_inbox_users(inbox: Inbox, message_launch: DjangoMessageLaunch):
             new_user = User.objects.filter(lti_id=user_id).first()
             new_user.first_name = member["given_name"]
             new_user.last_name = member["family_name"]
-            new_user.email = member["email"]
-            new_user.avatar_url = member["picture"]
+            
+            if member.get("email"):
+                new_user.email = member["email"]
+            if member.get("picture"):
+                new_user.avatar_url = member["picture"]
+
             new_user.save()
             
         jwt_body = {}

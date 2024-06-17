@@ -9,7 +9,7 @@
   "extensions": [
     {
       "privacy_level": "public",
-      "platform": "instructure.com",
+      "platform": "canvas.instructure.com",
       "settings": {
         "text": "TicketVise",
         "placements": [
