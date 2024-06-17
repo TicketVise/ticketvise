@@ -179,6 +179,8 @@ def update_inbox_users(inbox: Inbox, message_launch: DjangoMessageLaunch):
             
             if member.get("email"):
                 new_user.email = member["email"]
+            else: # Maybe in testing environment there is no email?
+                new_user.email = "none@ticketvise.com"
             if member.get("picture"):
                 new_user.avatar_url = member["picture"]
 
