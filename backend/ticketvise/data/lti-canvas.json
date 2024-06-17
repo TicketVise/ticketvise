@@ -8,8 +8,10 @@
   ],
   "extensions": [
     {
-      "privacy_level": "public",
+      "domain": "ticketvise.com",
+      "tool_id": "ticketvise",
       "platform": "canvas.instructure.com",
+      "privacy_level": "public",
       "settings": {
         "text": "TicketVise",
         "placements": [
