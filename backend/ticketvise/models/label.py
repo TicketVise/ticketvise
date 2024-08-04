@@ -27,3 +27,6 @@ class Label(models.Model):
     is_active = models.BooleanField(default=True)
     date_edited = models.DateTimeField(auto_now=True)
     date_created = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return str(self.inbox) + ' - ' + self.name

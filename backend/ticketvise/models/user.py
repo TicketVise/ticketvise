@@ -246,6 +246,9 @@ class UserInbox(models.Model):
     class Meta:
         unique_together = ("user", "inbox")
 
+    def __str__(self):
+        return self.user.get_full_name() + " - " + self.inbox.name
+
 
 class UserTicket(models.Model):
     user = models.ForeignKey(User, related_name="ticket_relationship", on_delete=models.CASCADE)

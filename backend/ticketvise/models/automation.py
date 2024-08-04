@@ -35,6 +35,9 @@ class Automation(models.Model):
 
             getattr(ticket, self.action_func)(value)
 
+    def __str__(self):
+        return str(self.inbox) + ' - ' + self.name
+
 
 class AutomationCondition(models.Model):
     EVALUATION_FUNC_CHOICES = [

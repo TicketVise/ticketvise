@@ -67,6 +67,9 @@ class Ticket(models.Model):
     date_edited = models.DateTimeField(auto_now=True)
     date_created = models.DateTimeField(auto_now_add=True)
 
+    def __str__(self):
+        return str(self.inbox) + ' - ' + self.title
+
     class Meta:
         unique_together = ("ticket_inbox_id", "inbox")
 
