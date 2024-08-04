@@ -11,7 +11,7 @@
            role="dialog" aria-modal="true" aria-labelledby="modal-headline">
 
         <welcome-modal v-if="onboarding.step === 0" />
-        <tickets-modal v-if="onboarding.step === 2" />
+        <!-- <tickets-modal v-if="onboarding.step === 2" /> -->
         <scheduling-modal v-if="onboarding.step === 3" />
         <labels-modal v-if="onboarding.step === 4" />
         <statistics-modal v-if="onboarding.step === 5" />
@@ -48,12 +48,12 @@
 
         <div class="mt-5 sm:mt-4 space-y-2 sm:space-y-0 sm:flex sm:flex-row-reverse">
           <button @click="nextStep()" type="button" class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-primary-600 text-base font-medium text-white hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary sm:ml-3 sm:w-auto sm:text-sm">
-            {{ onboarding.step === 0 ? 'Start' : 'Next' }}
+            {{ onboarding.step === 0 ? 'Start setup' : 'Next' }}
           </button>
           <!-- <button v-if="onboarding.step === 0" type="button" class="w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary sm:ml-3 sm:w-auto sm:text-sm">
             Settings
           </button> -->
-          <button v-if="onboarding.step === 0" type="button" class="w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary sm:ml-3 sm:w-auto sm:text-sm" @click="finishIntroduction">
+          <button v-if="onboarding.step === 0" type="button" class="w-full inline-flex justify-center rounded-md border-0 px-4 py-2 bg-white text-base font-medium text-gray-700 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary sm:ml-3 sm:w-auto sm:text-sm" @click="finishIntroduction">
             Skip
           </button>
           <button v-if="onboarding.step > 0" @click="prevStep()" type="button" class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary sm:mt-0 sm:w-auto sm:text-sm">
@@ -68,7 +68,6 @@
 
 <script>
 import axios from 'axios'
-import store from '@/store'
 import { mapState, mapActions } from "vuex"
 
 import WelcomeModal from './WelcomeModal.vue'
@@ -106,7 +105,7 @@ export default {
   computed: {
     ...mapState('onboarding', {
       onboarding: (state) => state.status
-    })
+    }),
   },
   watch: {
     async modalNumber (newVal) {

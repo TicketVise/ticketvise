@@ -218,14 +218,6 @@
       <MenuBottom class="block md:hidden" />
     </div>
   </div>
-
-  <getting-started
-    @update="user.give_introduction = false"
-    v-if="onboarding.active && onboarding.popup"
-  />
-  <develop-panel v-if="development" />
-
-  <SearchPopup :show="search" v-on:close="search = false" />
 </template>
 
 <script>
@@ -233,11 +225,8 @@ import axios from "axios"
 import store from "@/store"
 import { mapState } from "vuex"
 
-import GettingStarted from "@/components/onboarding/GettingStarted.vue"
-import DevelopPanel from "@/components/devpanel/DevelopPanel.vue"
 import SideMenu from "@/layouts/elements/SideMenu.vue"
 import MenuBottom from "@/layouts/elements/MenuBottom.vue"
-import SearchPopup from "@/layouts/elements/SearchPopup.vue"
 
 import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/vue"
 import { BellIcon, ArrowTopRightOnSquareIcon } from "@heroicons/vue/24/outline"
@@ -253,10 +242,7 @@ export default {
     MenuButton,
     MenuItem,
     MenuItems,
-    ArrowTopRightOnSquareIcon,
-    GettingStarted,
-    DevelopPanel,
-    SearchPopup
+    ArrowTopRightOnSquareIcon
   },
   setup() {
     return {

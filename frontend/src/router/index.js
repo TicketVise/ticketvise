@@ -127,10 +127,10 @@ const routes = [
   {
     path: '/inboxes/:inboxId/labels',
     name: 'Labels',
-    component: () => import(/* webpackChunkName: "labels" */ '@/views/Labels.vue'),
-    meta: {
-      layout: 'AppLayoutInbox'
-    }
+    redirect: to => ({
+      name: 'Settings',
+      params: { inboxId: to.params.inboxId, tab: 'labels' }
+    })
   },
   {
     path: '/inboxes/:inboxId/labels/:labelId',

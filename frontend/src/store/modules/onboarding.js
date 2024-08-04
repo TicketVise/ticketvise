@@ -9,23 +9,40 @@ const state = () => ({
 })
 
 const actions = {
+  start({ commit }) {
+    commit('start')
+  },
   next({ commit, state }) {
     commit('next')
 
-    if (state.status.step === 0) {
-      commit('open')
-    }
-    if (state.status.step === 1) {
-      commit('close')
-    }
-    if (state.status.step === 2) {
-      router.push('tickets')
-      commit('close')
+    switch (state.status.step) {
+      case 0:
+        commit('open')
+        break;
+      case 1:
+        commit('close')
+        break;
+      case 2:
+        router.push('tickets')
+        commit('close')
+        break;
+      case 3:
+        router.push('public')
+        commit('close')
+        break;
+      case 4:
+        router.push('labels')
+        commit('close')
+        break;
     }
   }
 }
 
 const mutations = {
+  start(state) {
+    state.status.active = true
+    state.status.popup = true
+  },
   next(state) {
     state.status.step++
   },

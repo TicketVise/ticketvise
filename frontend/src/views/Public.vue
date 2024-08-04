@@ -1,4 +1,18 @@
 <template>
+  <!-- Onboarding information -->
+  <div v-if="onboarding.active" class="m-4 border border-primary rounded-lg flex px-4 py-3 max-w-xl">
+    <div class="flex flex-col text-gray-800 w-full">
+      <h2 class="font-bold text-primary text-xl">Public tickets</h2>
+      <p class="text-sm mt-1 text-justify">Here will the <strong>public tickets</strong> live!</p>
+      <p class="text-sm mt-1 text-justify">Public tickets are available to everyone in the inbox. So these tickets can be used for questions that are relevant for all the students or discussions about topics.</p>
+      <div class="flex justify-end text-sm mt-2">
+        <button @click="nextStep()">
+          <span class="text-primary uppercase font-medium">Got it!</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
   <!-- Pinned tickets -->
   <div v-if="pinnedTickets?.length > 0" class="px-4 mt-6 sm:px-6 lg:px-8 mb-6">
     <h2
@@ -365,8 +379,8 @@
 <script>
 import axios from "axios";
 import store from "@/store";
-import { mapState } from "vuex";
 import moment from "moment";
+import { mapState, mapActions } from "vuex";
 
 import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/vue";
 import {
@@ -404,6 +418,10 @@ export default {
     this.getTickets();
   },
   methods: {
+    ...mapActions('onboarding', {
+      nextStep: 'next',
+      prevStep: 'prev'
+    }),
     getTickets() {
       const { inboxId } = this.$route.params;
 
@@ -460,6 +478,9 @@ export default {
         return store.getters.inbox(this.$route.params.inboxId)?.public_tickets;
       },
     }),
+    ...mapState('onboarding', {
+      onboarding: (state) => state.status
+    })
   },
 };
 </script>

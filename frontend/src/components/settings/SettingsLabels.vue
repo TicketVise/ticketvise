@@ -1,4 +1,27 @@
 <template>
+  <!-- Onboarding information -->
+  <div v-if="onboarding.active" class="mb-4 border border-primary rounded-lg flex px-4 py-3 max-w-xl">
+    <div class="flex flex-col text-gray-800 w-full">
+      <h2 class="font-bold text-primary text-xl">Labels</h2>
+      <p class="text-sm mt-1 text-justify">Here will the <strong>labels</strong> of your inbox! You get here via the settings menu item.</p>
+      <p class="text-sm mt-1 text-justify">Based on our experience we recommend starting with the following labels, but feel free to create them yourself:</p>
+      <div class="mt-2 flex select-none items-center space-x-1">
+        <Chip>General</Chip>
+        <Chip>Lectures</Chip>
+        <Chip>Assignment 1</Chip>
+        <Chip>Exam</Chip>
+      </div>
+      <button class="inline w-fit">
+        <span class="text-primary text-sm font-medium">Use these labels</span>
+      </button>
+      <div class="flex justify-end text-sm mt-2">
+        <button @click="nextStep()">
+          <span class="text-primary uppercase font-medium">Got it!</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
   <div v-if="!selected">
     <!-- Labels list (only on smallest breakpoint) -->
     <div class="h-full overflow-y-auto sm:hidden">
@@ -115,13 +138,14 @@
 
 <script>
 import axios from 'axios'
-import { mapState } from 'vuex'
+import { mapState, mapActions } from 'vuex'
 
 import SettingsLabel from '@/components/settings/SettingsLabel.vue'
 
 import { Menu, MenuButton, MenuItem, MenuItems } from '@headlessui/vue'
 import { ChevronRightIcon, EllipsisVerticalIcon, ArrowTopRightOnSquareIcon } from '@heroicons/vue/24/solid'
 import { TrashIcon } from '@heroicons/vue/24/outline'
+import Chip from '@/components/chip/Chip.vue'
 
 export default {
   name: 'Labels',
@@ -134,7 +158,8 @@ export default {
     MenuItem,
     MenuItems,
     TrashIcon,
-    SettingsLabel
+    SettingsLabel,
+    Chip
   },
   data: () => ({
     is_staff: false,
@@ -158,6 +183,10 @@ export default {
     })
   },
   methods: {
+    ...mapActions('onboarding', {
+      nextStep: 'next',
+      prevStep: 'prev'
+    }),
     deleteLabel(label) {
       const { inboxId } = this.$route.params
 
@@ -171,6 +200,9 @@ export default {
   computed: {
     ...mapState({
       user: (state) => state.user
+    }),
+    ...mapState('onboarding', {
+      onboarding: (state) => state.status
     })
   }
 }

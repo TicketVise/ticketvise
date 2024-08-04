@@ -1,5 +1,5 @@
 <template>
-  <div v-if="false && role == 'MANAGER'">
+  <div v-if="role == 'MANAGER'">
     <div class="overflow-y-auto p-4">
       <div class="mx-auto flex max-w-3xl flex-col space-y-3">
         <!-- <h2 class="text-xl font-bold leading-6 text-gray-700">Overview</h2> -->
@@ -16,7 +16,7 @@
                     <dt class="truncate text-sm font-medium text-gray-700">Helpfulness</dt>
                     <dd class="flex items-center justify-between">
                       <div class="text-xl font-medium text-primary">
-                        {{ statsData.staff.filter(s => s.amount_of_helpful_comments > 0).reduce(s => s.helpfulness) / statsData.staff.filter(s => s.amount_of_helpful_comments > 0).length }}%
+                        {{ statsData.staff?.filter(s => s.amount_of_helpful_comments > 0).length > 0 ? statsData.staff.filter(s => s.amount_of_helpful_comments > 0).reduce(s => s.helpfulness) / statsData.staff.filter(s => s.amount_of_helpful_comments > 0).length : '0' }}%
                       </div>
 
                       <!-- <div :class="['increase' === 'increase' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800', 'inline-flex items-baseline rounded-full px-2.5 py-0.5 text-sm font-medium md:mt-2 lg:mt-0']">
@@ -60,7 +60,7 @@
             </div>
           </div>
 
-          <div v-if="ticketsFlattened?.length == 0" class="rounded-md bg-blue-50 p-4 col-span-2">
+          <div v-if="ticketsFlattened?.length == 0 && !onboarding.active" class="rounded-md bg-blue-50 p-4 col-span-2">
             <div class="flex">
               <div class="flex-shrink-0">
                 <InformationCircleIcon class="h-5 w-5 text-blue-400" aria-hidden="true" />
@@ -68,7 +68,7 @@
               <div class="ml-3">
                 <h3 class="text-sm font-medium text-blue-700">No questions yet</h3>
                 <div class="mt-2 text-sm text-blue-700">
-                  <p>The information is limited right now. This is because there are no tickets yet from students. If you need help setting up the inbox, <strong>click here</strong>.</p>
+                  <p>The information is limited right now. This is because there are no tickets yet from students.</p>
                 </div>
               </div>
             </div>
@@ -80,7 +80,24 @@
         <div v-if="onboarding.active" class="flex rounded-lg border border-primary px-4 py-3">
           <div class="flex flex-col text-gray-800">
             <h2 class="text-xl font-bold text-primary">Hi There! 👋</h2>
-            <p class="mt-1 text-justify text-sm">This is the <strong>overview page</strong>. Here you will find the necessary information relevant for you. We will show you important insights about the inbox and show you the tickets that are relevant for you. Like the example ticket you see below!</p>
+            <p class="mt-1 text-justify text-sm">This is the <strong>overview page</strong>. Here you will find the necessary information relevant for you. We will show you <u>important insights</u> about the inbox and show you the tickets that are relevant for you. Like the example ticket you see below!</p>
+
+            <div class="rounded-md bg-blue-50 p-4 col-span-2 mt-4">
+              <div class="flex">
+                <div class="flex-shrink-0">
+                  <InformationCircleIcon class="h-5 w-5 text-blue-400" aria-hidden="true" />
+                </div>
+                <div class="ml-3">
+                  <h3 class="text-sm font-medium text-blue-700">Example question</h3>
+                  <div class="mt-2 text-sm text-blue-700">
+                    <p>The question you see down below is an example question, just to show you how it will look like. This example ticket will disapear after the setup.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <p class="text-justify text-sm mt-4">Student will only see their own tickets and tickets that are shared with them.</p>
+
             <div class="mt-2 flex justify-end text-sm">
               <button @click="nextStep()">
                 <span class="font-medium uppercase text-primary">Got it!</span>
@@ -121,13 +138,13 @@
           <h2 class="pt-4 text-lg font-semibold leading-4 text-gray-700">Tickets</h2>
 
           <div class="group mt-2 flex flex-col rounded-lg border p-3">
-            <div class="mb-1 flex justify-between">
+            <!-- <div class="mb-1 flex justify-between">
               <div class="flex space-x-2 text-red-600">
                 <ExclamationCircleIcon class="h-5 w-5" />
                 <span class="text-sm font-medium">HIGH</span>
               </div>
               <span class="inline-flex items-center rounded bg-green-100 px-2 py-0.5 text-xs font-medium text-green-800">Created</span>
-            </div>
+            </div> -->
 
             <h2 class="text-lg font-semibold leading-6 group-hover:underline">This is an example ticket</h2>
 

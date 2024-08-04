@@ -173,10 +173,12 @@
       </div>
     </div> -->
 
-    <div v-if="onboarding.active" class="mx-4 border border-primary rounded-lg flex px-4 py-3 max-w-lg">
-      <div class="flex flex-col text-gray-800">
+    <div v-if="onboarding.active" class="mx-4 border border-primary rounded-lg flex px-4 py-3 max-w-xl">
+      <div class="flex flex-col text-gray-800 w-full">
         <h2 class="font-bold text-primary text-xl">The tickets</h2>
         <p class="text-sm mt-1 text-justify">This is the <strong>tickets page</strong>. Here you will find every ticket in the inbox. They are organized by their status.</p>
+        <p class="text-sm mt-1 text-justify">New tickets come in from the left, hey! there is our example ticket from just now.</p>
+        <p class="text-sm mt-1 text-justify">Once someone of the teaching team is assigned to the ticket and there are reaction on it, the ticket will travel from left to right. All the way to the closed column.</p>
         <div class="flex justify-end text-sm mt-2">
           <button @click="nextStep()">
             <span class="text-primary uppercase font-medium">Got it!</span>
@@ -510,6 +512,14 @@ export default {
     ...mapState({
       user: (state) => state.user,
       tickets() {
+        if (this.onboarding.active) return [
+          {"has_next":false,"total":0,"page_num":1,"label":"Pending","tickets":[
+            {"id":1,"title":"This is an example ticket","ticket_inbox_id":'#', author: {first_name: 'John', last_name: 'Doe'}, assignee: {first_name: 'unknown'}, labels: [{name: 'Lecture', color: 'rgb(221, 107, 32)'}]},
+          ]},
+          {"has_next":false,"total":0,"page_num":1,"label":"Assigned","tickets":[]},
+          {"has_next":false,"total":0,"page_num":1,"label":"Awaiting response","tickets":[]},
+          {"has_next":false,"total":0,"page_num":1,"label":"Closed","tickets":[]}
+        ];
         return store.getters.inbox(this.$route.params.inboxId)?.tickets;
       },
     }),

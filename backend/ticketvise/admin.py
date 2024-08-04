@@ -40,7 +40,10 @@ class CustomUserAdmin(UserAdmin):
     """
     list_display = ('id', 'username', 'email', 'first_name', 'last_name', 'is_staff')
     inlines = (InboxInlineAdmin,)
-
+    fieldsets = (
+        (None, {'fields': ['username']}),
+        (None, {'fields': ['give_introduction']})
+    )
 
 class NotificationAdmin(admin.ModelAdmin):
     list_display = ('id', 'receiver', 'is_read', 'email_message_id', 'date_edited', 'date_created')
