@@ -149,8 +149,9 @@ def update_inbox_users(inbox: Inbox, message_launch: DjangoMessageLaunch):
     members = nrps.get_members()
     
     for member in members:
+        print(member)
         new_user = None
-        user_id = message_launch_data["sub"]
+        user_id = member["user_id"]
 
         # Check for the deprecated lti1.1 user_id to migrate to lti1.3
         lti1p1_user_id = member["lti11_legacy_user_id"]
@@ -214,6 +215,7 @@ def LTILaunchView(request):
         return HttpResponse("Invalid launch")
     
     message_launch_data = message_launch.get_launch_data()
+    print(message_launch_data)
     
     # Check if user exists and create if not
     user = handle_lti_user(message_launch)
