@@ -86,21 +86,26 @@ def handle_lti_user(message_launch: DjangoMessageLaunch) -> User:
 
     if not User.objects.filter(lti_id=user_id).exists():
         # Create new user
-        user = User.objects.create(
-            first_name=message_launch_data["given_name"],
-            last_name=message_launch_data["family_name"],
-            username=message_launch_data["name"],
-            email=message_launch_data["email"],
-            lti_id=user_id, # use new lti1.3 user_id
-            password=make_password(None),
-            avatar_url=message_launch_data["picture"],
-        )
+        if "email" not in message_launch_data:
+            print("No email for user", message_launch_data)
+            return
+        if message_launch_data["name"] != "Test student":
+            user = User.objects.create(
+                first_name=message_launch_data["given_name"],
+                last_name=message_launch_data["family_name"],
+                username=message_launch_data["name"],
+                email=message_launch_data["email"],
+                lti_id=user_id, # use new lti1.3 user_id
+                password=make_password(None),
+                avatar_url=message_launch_data["picture"],
+            )
     else:
         # Update user data
         user = User.objects.filter(lti_id=user_id).first()
         user.first_name = message_launch_data["given_name"]
         user.last_name = message_launch_data["family_name"]
-        user.email = message_launch_data["email"]
+        if "email" in message_launch_data:
+            user.email = message_launch_data["email"]
         user.avatar_url = message_launch_data["picture"]
         user.save()
         
@@ -109,10 +114,10 @@ def handle_lti_user(message_launch: DjangoMessageLaunch) -> User:
 def update_user_role(user: User, inbox: Inbox, message_launch: DjangoMessageLaunch):
     user_role = Role.GUEST
     
-    if message_launch.check_teacher_access():
-        user_role = Role.MANAGER
-    elif message_launch.check_teaching_assistant_access():
+    if message_launch.check_teaching_assistant_access():
         user_role = Role.AGENT
+    elif message_launch.check_teacher_access():
+        user_role = Role.MANAGER
 
     relation = UserInbox.objects.filter(user=user, inbox=inbox).first()
 
@@ -163,15 +168,19 @@ def update_inbox_users(inbox: Inbox, message_launch: DjangoMessageLaunch):
 
         if not User.objects.filter(lti_id=user_id).exists():
             # Create new user
-            new_user = User.objects.create(
-                first_name=member["given_name"],
-                last_name=member["family_name"],
-                username=member["name"],
-                email=member["email"],
-                lti_id=user_id, # use new lti1.3 user_id
-                password=make_password(None),
-                avatar_url=member["picture"],
-            )
+            if "email" not in member:
+                print("No email for user", member)
+                return
+            if member["name"] != "Test student":
+                new_user = User.objects.create(
+                    first_name=member["given_name"],
+                    last_name=member["family_name"],
+                    username=member["name"],
+                    email=member["email"],
+                    lti_id=user_id, # use new lti1.3 user_id
+                    password=make_password(None),
+                    avatar_url=member["picture"],
+                )
         else:
             # Update user data
             new_user = User.objects.filter(lti_id=user_id).first()
@@ -191,10 +200,10 @@ def update_inbox_users(inbox: Inbox, message_launch: DjangoMessageLaunch):
         jwt_body["https://purl.imsglobal.org/spec/lti/claim/roles"] = member["roles"]
 
         user_role = Role.GUEST
-        if TeacherRole(jwt_body).check():
-            user_role = Role.MANAGER
-        elif TeachingAssistantRole(jwt_body).check():
+        if TeachingAssistantRole(jwt_body).check():
             user_role = Role.AGENT
+        elif TeacherRole(jwt_body).check():
+            user_role = Role.MANAGER
 
         relation = UserInbox.objects.filter(user=new_user, inbox=inbox).first()
 
