@@ -39,8 +39,10 @@ export default {
         yAxes: [{
           display: true,
           ticks: {
-            stepSize: 1
-          }
+            stepSize: 1,
+            min: 0
+          },
+          min: 0
         }]
       }
     }

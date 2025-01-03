@@ -1,3 +1,5 @@
+load('ext://uibutton', 'cmd_button', 'location', 'text_input')
+
 docker_build(
   'backend',
   context='.',
@@ -13,3 +15,7 @@ k8s_resource('backend', labels=['backend'], links=[link('ivan.ticketvise.com/api
 k8s_resource('database', labels=['backend'])
 
 k8s_resource('s3', port_forwards=9001, labels=['storage'])
+
+cmd_button(name='insert demo data', resource='backend', argv=["kubectl", "exec", "-it", "deploy/backend", "--", "python", "manage.py", "insert_demo_data"])
+cmd_button(name='remove data', resource='backend', argv=["kubectl", "exec", "-it", "deploy/backend", "--", "python", "manage.py", "remove_demo_data"])
+cmd_button(name='insert admin user', resource='backend', argv=["kubectl", "exec", "-it", "deploy/backend", "--", "python", "manage.py", "insert_admin_user"])
